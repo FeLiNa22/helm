@@ -1,0 +1,102 @@
+{{- if .Values.sabnzbd.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-sabnzbd
+  labels:
+    app.kubernetes.io/name: sabnzbd
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  {{- if not .Values.sabnzbd.autoscaling.enabled }}
+  replicas: {{ .Values.sabnzbd.replicaCount }}
+  {{- end }}
+  strategy:
+    {{- .Values.sabnzbd.deployment.strategy | toYaml | nindent 4 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sabnzbd
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      {{- with .Values.sabnzbd.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: sabnzbd
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    spec:
+      {{- with .Values.sabnzbd.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.sabnzbd.serviceAccount.name | default (printf "%s-sabnzbd" .Release.Name) }}
+      securityContext:
+        {{- toYaml .Values.sabnzbd.podSecurityContext | nindent 8 }}
+      {{- if .Values.sabnzbd.initContainers }}
+      initContainers:
+        {{- toYaml .Values.sabnzbd.initContainers | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          {{- if .Values.sabnzbd.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.sabnzbd.persistence.existingClaim | default (printf "%s-sabnzbd" .Release.Name) }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
+        - name: media
+          {{- if and .Values.jellyfin.enabled .Values.jellyfin.persistence.media.enabled .Values.sabnzbd.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.jellyfin.persistence.media.existingClaim }}{{ .Values.jellyfin.persistence.media.existingClaim }}{{- else }}{{ .Release.Name }}-jellyfin-media{{- end }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
+        {{- if .Values.sabnzbd.persistence.additionalVolumes }}
+          {{- .Values.sabnzbd.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.sabnzbd.securityContext | nindent 12 }}
+          image: "{{ .Values.sabnzbd.image.repository }}:{{ .Values.sabnzbd.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.sabnzbd.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /config
+              name: config
+          {{- if and .Values.jellyfin.enabled .Values.jellyfin.persistence.media.enabled .Values.sabnzbd.persistence.enabled }}
+            - mountPath: "/media/{{ .Values.sabnzbd.persistence.path }}"
+              name: media
+              subPath: {{ .Values.sabnzbd.persistence.path }}
+          {{- end }}
+          {{- if .Values.sabnzbd.persistence.additionalMounts }}
+            {{- .Values.sabnzbd.persistence.additionalMounts | toYaml | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            {{- range $k,$v := .Values.sabnzbd.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.sabnzbd.resources | nindent 12 }}
+      {{- with .Values.sabnzbd.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.sabnzbd.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.sabnzbd.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

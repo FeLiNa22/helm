@@ -1475,3 +1475,1278 @@ cleanuparr:
     size: 100Mi
     additionalVolumes: []
     additionalMounts: []
+
+## @section SABnzbd parameters
+
+## @param sabnzbd.enabled Whether to enable SABnzbd.
+## @param sabnzbd.replicaCount The number of replicas to deploy.
+## @param sabnzbd.image.repository The Docker repository to pull the image from.
+## @param sabnzbd.image.tag The image tag to use.
+## @param sabnzbd.image.pullPolicy The logic of image pulling.
+## @param sabnzbd.imagePullSecrets The image pull secrets to use.
+## @param sabnzbd.deployment.strategy.type The deployment strategy to use.
+## @param sabnzbd.serviceAccount.create Whether to create a service account.
+## @param sabnzbd.serviceAccount.annotations Additional annotations to add to the service account.
+## @param sabnzbd.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
+## @param sabnzbd.podAnnotations Additional annotations to add to the pod.
+## @param sabnzbd.podSecurityContext The security context to use for the pod.
+## @param sabnzbd.securityContext The security context to use for the container.
+## @param sabnzbd.initContainers Additional init containers to add to the pod.
+## @param sabnzbd.service.type The type of service to create.
+## @param sabnzbd.service.port The port on which the service will run.
+## @param sabnzbd.service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param sabnzbd.ingress.enabled Whether to create an ingress for the service.
+## @param sabnzbd.ingress.className The ingress class name to use.
+## @param sabnzbd.ingress.annotations Additional annotations to add to the ingress.
+## @param sabnzbd.ingress.hosts[0].host The host to use for the ingress.
+## @param sabnzbd.ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param sabnzbd.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param sabnzbd.ingress.tls The TLS configuration for the ingress.
+## @param sabnzbd.resources The resources to use for the pod.
+## @param sabnzbd.autoscaling.enabled Whether to enable autoscaling.
+## @param sabnzbd.autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param sabnzbd.autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param sabnzbd.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param sabnzbd.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
+## @param sabnzbd.nodeSelector The node selector to use for the pod.
+## @param sabnzbd.tolerations The tolerations to use for the pod.
+## @param sabnzbd.affinity The affinity to use for the pod.
+## @param sabnzbd.env.PUID The user ID to use for the pod.
+## @param sabnzbd.env.PGID The group ID to use for the pod.
+## @param sabnzbd.env.TZ The timezone to use for the pod.
+## @param sabnzbd.persistence.enabled Whether to enable persistence.
+## @param sabnzbd.persistence.path The subdirectory path to use within jellyfin's media PVC (e.g., 'downloads'). No leading or trailing slashes.
+## @param sabnzbd.persistence.storageClass The storage class to use for the persistence.
+## @param sabnzbd.persistence.existingClaim The name of an existing claim to use for the persistence.
+## @param sabnzbd.persistence.accessMode The access mode to use for the persistence.
+## @param sabnzbd.persistence.size The size to use for the persistence.
+## @param sabnzbd.persistence.additionalVolumes Additional volumes to add to the pod.
+## @param sabnzbd.persistence.additionalMounts Additional volume mounts to add to the pod.
+##
+sabnzbd:
+  enabled: false
+  replicaCount: 1
+
+  image:
+    repository: lscr.io/linuxserver/sabnzbd
+    pullPolicy: IfNotPresent
+    tag: "4.3.3"
+
+  imagePullSecrets: []
+
+  deployment:
+    strategy:
+      type: Recreate
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  initContainers: []
+    # - name: init-container
+    #   image: busybox
+    #   command: ['sh', '-c', 'echo "this is an init container"']
+
+  service:
+    type: ClusterIP
+    port: 8080
+    nodePort: ""
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  env:
+    PUID: "1000"
+    PGID: "1000"
+    TZ: "Europe/London"
+
+  persistence:
+    enabled: true
+    path: downloads
+    storageClass: ""
+    existingClaim: ""
+    accessMode: ReadWriteOnce
+    size: 800Mi
+    additionalVolumes: []
+    additionalMounts: []
+
+## @section Plex parameters
+
+## @param plex.enabled Whether to enable Plex.
+## @param plex.replicaCount The number of replicas to deploy.
+## @param plex.image.repository The Docker repository to pull the image from.
+## @param plex.image.tag The image tag to use.
+## @param plex.image.pullPolicy The logic of image pulling.
+## @param plex.imagePullSecrets The image pull secrets to use.
+## @param plex.deployment.strategy.type The deployment strategy to use.
+## @param plex.serviceAccount.create Whether to create a service account.
+## @param plex.serviceAccount.annotations Additional annotations to add to the service account.
+## @param plex.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
+## @param plex.podAnnotations Additional annotations to add to the pod.
+## @param plex.podSecurityContext The security context to use for the pod.
+## @param plex.securityContext The security context to use for the container.
+## @param plex.initContainers Additional init containers to add to the pod.
+## @param plex.service.type The type of service to create.
+## @param plex.service.port The port on which the service will run.
+## @param plex.service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param plex.ingress.enabled Whether to create an ingress for the service.
+## @param plex.ingress.className The ingress class name to use.
+## @param plex.ingress.annotations Additional annotations to add to the ingress.
+## @param plex.ingress.hosts[0].host The host to use for the ingress.
+## @param plex.ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param plex.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param plex.ingress.tls The TLS configuration for the ingress.
+## @param plex.resources The resources to use for the pod.
+## @param plex.autoscaling.enabled Whether to enable autoscaling.
+## @param plex.autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param plex.autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param plex.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param plex.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
+## @param plex.nodeSelector The node selector to use for the pod.
+## @param plex.tolerations The tolerations to use for the pod.
+## @param plex.affinity The affinity to use for the pod.
+## @param plex.env.PUID The user ID to use for the pod.
+## @param plex.env.PGID The group ID to use for the pod.
+## @param plex.env.TZ The timezone to use for the pod.
+## @param plex.env.VERSION Docker image version to use. Valid options are docker, latest, public, or a specific version.
+## @param plex.persistence.enabled Whether to enable persistence.
+## @param plex.persistence.storageClass The storage class to use for the persistence.
+## @param plex.persistence.existingClaim The name of an existing claim to use for the persistence.
+## @param plex.persistence.accessMode The access mode to use for the persistence.
+## @param plex.persistence.size The size to use for the persistence.
+## @param plex.persistence.additionalVolumes Additional volumes to add to the pod.
+## @param plex.persistence.additionalMounts Additional volume mounts to add to the pod.
+##
+plex:
+  enabled: false
+  replicaCount: 1
+
+  image:
+    repository: lscr.io/linuxserver/plex
+    pullPolicy: IfNotPresent
+    tag: "1.41.2"
+
+  imagePullSecrets: []
+
+  deployment:
+    strategy:
+      type: Recreate
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  initContainers: []
+    # - name: init-container
+    #   image: busybox
+    #   command: ['sh', '-c', 'echo "this is an init container"']
+
+  service:
+    type: ClusterIP
+    port: 32400
+    nodePort: ""
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  env:
+    PUID: "1000"
+    PGID: "1000"
+    TZ: "Europe/London"
+    VERSION: "docker"
+
+  persistence:
+    enabled: true
+    storageClass: ""
+    existingClaim: ""
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    additionalVolumes: []
+    additionalMounts: []
+
+## @section Emby parameters
+
+## @param emby.enabled Whether to enable Emby.
+## @param emby.replicaCount The number of replicas to deploy.
+## @param emby.image.repository The Docker repository to pull the image from.
+## @param emby.image.tag The image tag to use.
+## @param emby.image.pullPolicy The logic of image pulling.
+## @param emby.imagePullSecrets The image pull secrets to use.
+## @param emby.deployment.strategy.type The deployment strategy to use.
+## @param emby.serviceAccount.create Whether to create a service account.
+## @param emby.serviceAccount.annotations Additional annotations to add to the service account.
+## @param emby.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
+## @param emby.podAnnotations Additional annotations to add to the pod.
+## @param emby.podSecurityContext The security context to use for the pod.
+## @param emby.securityContext The security context to use for the container.
+## @param emby.initContainers Additional init containers to add to the pod.
+## @param emby.service.type The type of service to create.
+## @param emby.service.port The port on which the service will run.
+## @param emby.service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param emby.ingress.enabled Whether to create an ingress for the service.
+## @param emby.ingress.className The ingress class name to use.
+## @param emby.ingress.annotations Additional annotations to add to the ingress.
+## @param emby.ingress.hosts[0].host The host to use for the ingress.
+## @param emby.ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param emby.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param emby.ingress.tls The TLS configuration for the ingress.
+## @param emby.resources The resources to use for the pod.
+## @param emby.autoscaling.enabled Whether to enable autoscaling.
+## @param emby.autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param emby.autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param emby.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param emby.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
+## @param emby.nodeSelector The node selector to use for the pod.
+## @param emby.tolerations The tolerations to use for the pod.
+## @param emby.affinity The affinity to use for the pod.
+## @param emby.env.PUID The user ID to use for the pod.
+## @param emby.env.PGID The group ID to use for the pod.
+## @param emby.env.TZ The timezone to use for the pod.
+## @param emby.persistence.enabled Whether to enable persistence.
+## @param emby.persistence.storageClass The storage class to use for the persistence.
+## @param emby.persistence.existingClaim The name of an existing claim to use for the persistence.
+## @param emby.persistence.accessMode The access mode to use for the persistence.
+## @param emby.persistence.size The size to use for the persistence.
+## @param emby.persistence.additionalVolumes Additional volumes to add to the pod.
+## @param emby.persistence.additionalMounts Additional volume mounts to add to the pod.
+##
+emby:
+  enabled: false
+  replicaCount: 1
+
+  image:
+    repository: lscr.io/linuxserver/emby
+    pullPolicy: IfNotPresent
+    tag: "4.8.10"
+
+  imagePullSecrets: []
+
+  deployment:
+    strategy:
+      type: Recreate
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  initContainers: []
+    # - name: init-container
+    #   image: busybox
+    #   command: ['sh', '-c', 'echo "this is an init container"']
+
+  service:
+    type: ClusterIP
+    port: 8096
+    nodePort: ""
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  env:
+    PUID: "1000"
+    PGID: "1000"
+    TZ: "Europe/London"
+
+  persistence:
+    enabled: true
+    storageClass: ""
+    existingClaim: ""
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    additionalVolumes: []
+    additionalMounts: []
+
+## @section Mealie parameters
+
+## @param mealie.enabled Whether to enable Mealie.
+## @param mealie.replicaCount The number of replicas to deploy.
+## @param mealie.image.repository The Docker repository to pull the image from.
+## @param mealie.image.tag The image tag to use.
+## @param mealie.image.pullPolicy The logic of image pulling.
+## @param mealie.imagePullSecrets The image pull secrets to use.
+## @param mealie.deployment.strategy.type The deployment strategy to use.
+## @param mealie.serviceAccount.create Whether to create a service account.
+## @param mealie.serviceAccount.annotations Additional annotations to add to the service account.
+## @param mealie.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
+## @param mealie.podAnnotations Additional annotations to add to the pod.
+## @param mealie.podSecurityContext The security context to use for the pod.
+## @param mealie.securityContext The security context to use for the container.
+## @param mealie.initContainers Additional init containers to add to the pod.
+## @param mealie.service.type The type of service to create.
+## @param mealie.service.port The port on which the service will run.
+## @param mealie.service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param mealie.ingress.enabled Whether to create an ingress for the service.
+## @param mealie.ingress.className The ingress class name to use.
+## @param mealie.ingress.annotations Additional annotations to add to the ingress.
+## @param mealie.ingress.hosts[0].host The host to use for the ingress.
+## @param mealie.ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param mealie.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param mealie.ingress.tls The TLS configuration for the ingress.
+## @param mealie.resources The resources to use for the pod.
+## @param mealie.autoscaling.enabled Whether to enable autoscaling.
+## @param mealie.autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param mealie.autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param mealie.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param mealie.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
+## @param mealie.nodeSelector The node selector to use for the pod.
+## @param mealie.tolerations The tolerations to use for the pod.
+## @param mealie.affinity The affinity to use for the pod.
+## @param mealie.env.ALLOW_SIGNUP Whether to allow signups.
+## @param mealie.env.TZ The timezone to use for the pod.
+## @param mealie.persistence.enabled Whether to enable persistence.
+## @param mealie.persistence.storageClass The storage class to use for the persistence.
+## @param mealie.persistence.existingClaim The name of an existing claim to use for the persistence.
+## @param mealie.persistence.accessMode The access mode to use for the persistence.
+## @param mealie.persistence.size The size to use for the persistence.
+## @param mealie.persistence.additionalVolumes Additional volumes to add to the pod.
+## @param mealie.persistence.additionalMounts Additional volume mounts to add to the pod.
+##
+mealie:
+  enabled: false
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/mealie-recipes/mealie
+    pullPolicy: IfNotPresent
+    tag: "v2.2.0"
+
+  imagePullSecrets: []
+
+  deployment:
+    strategy:
+      type: Recreate
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  initContainers: []
+    # - name: init-container
+    #   image: busybox
+    #   command: ['sh', '-c', 'echo "this is an init container"']
+
+  service:
+    type: ClusterIP
+    port: 9000
+    nodePort: ""
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  env:
+    ALLOW_SIGNUP: "true"
+    TZ: "Europe/London"
+
+  persistence:
+    enabled: true
+    storageClass: ""
+    existingClaim: ""
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    additionalVolumes: []
+    additionalMounts: []
+
+## @section Frigate parameters
+
+## @param frigate.enabled Whether to enable Frigate.
+## @param frigate.replicaCount The number of replicas to deploy.
+## @param frigate.image.repository The Docker repository to pull the image from.
+## @param frigate.image.tag The image tag to use.
+## @param frigate.image.pullPolicy The logic of image pulling.
+## @param frigate.imagePullSecrets The image pull secrets to use.
+## @param frigate.deployment.strategy.type The deployment strategy to use.
+## @param frigate.serviceAccount.create Whether to create a service account.
+## @param frigate.serviceAccount.annotations Additional annotations to add to the service account.
+## @param frigate.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
+## @param frigate.podAnnotations Additional annotations to add to the pod.
+## @param frigate.podSecurityContext The security context to use for the pod.
+## @param frigate.securityContext The security context to use for the container.
+## @param frigate.initContainers Additional init containers to add to the pod.
+## @param frigate.service.type The type of service to create.
+## @param frigate.service.port The port on which the service will run.
+## @param frigate.service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param frigate.ingress.enabled Whether to create an ingress for the service.
+## @param frigate.ingress.className The ingress class name to use.
+## @param frigate.ingress.annotations Additional annotations to add to the ingress.
+## @param frigate.ingress.hosts[0].host The host to use for the ingress.
+## @param frigate.ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param frigate.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param frigate.ingress.tls The TLS configuration for the ingress.
+## @param frigate.resources The resources to use for the pod.
+## @param frigate.autoscaling.enabled Whether to enable autoscaling.
+## @param frigate.autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param frigate.autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param frigate.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param frigate.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
+## @param frigate.nodeSelector The node selector to use for the pod.
+## @param frigate.tolerations The tolerations to use for the pod.
+## @param frigate.affinity The affinity to use for the pod.
+## @param frigate.env.TZ The timezone to use for the pod.
+## @param frigate.tmpfs.size The size of the tmpfs cache for Frigate.
+## @param frigate.persistence.config.enabled Whether to enable persistence for the config.
+## @param frigate.persistence.config.storageClass The storage class to use for the config.
+## @param frigate.persistence.config.existingClaim The name of an existing claim to use for the config.
+## @param frigate.persistence.config.accessMode The access mode to use for the config.
+## @param frigate.persistence.config.size The size to use for the config.
+## @param frigate.persistence.media.enabled Whether to enable persistence for the media.
+## @param frigate.persistence.media.storageClass The storage class to use for the media.
+## @param frigate.persistence.media.existingClaim The name of an existing claim to use for the media.
+## @param frigate.persistence.media.accessMode The access mode to use for the media.
+## @param frigate.persistence.media.size The size to use for the media.
+## @param frigate.persistence.additionalVolumes Additional volumes to add to the pod.
+## @param frigate.persistence.additionalMounts Additional volume mounts to add to the pod.
+##
+frigate:
+  enabled: false
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/blakeblackshear/frigate
+    pullPolicy: IfNotPresent
+    tag: "0.14.1"
+
+  imagePullSecrets: []
+
+  deployment:
+    strategy:
+      type: Recreate
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext:
+    privileged: true
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  initContainers: []
+    # - name: init-container
+    #   image: busybox
+    #   command: ['sh', '-c', 'echo "this is an init container"']
+
+  service:
+    type: ClusterIP
+    port: 5000
+    nodePort: ""
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  env:
+    TZ: "Europe/London"
+
+  tmpfs:
+    size: 1Gi
+
+  persistence:
+    config:
+      enabled: true
+      storageClass: ""
+      existingClaim: ""
+      accessMode: ReadWriteOnce
+      size: 1Gi
+    media:
+      enabled: true
+      storageClass: ""
+      existingClaim: ""
+      accessMode: ReadWriteOnce
+      size: 10Gi
+    additionalVolumes: []
+    additionalMounts: []
+
+## @section Vaultwarden parameters
+
+## @param vaultwarden.enabled Whether to enable Vaultwarden.
+## @param vaultwarden.replicaCount The number of replicas to deploy.
+## @param vaultwarden.image.repository The Docker repository to pull the image from.
+## @param vaultwarden.image.tag The image tag to use.
+## @param vaultwarden.image.pullPolicy The logic of image pulling.
+## @param vaultwarden.imagePullSecrets The image pull secrets to use.
+## @param vaultwarden.deployment.strategy.type The deployment strategy to use.
+## @param vaultwarden.serviceAccount.create Whether to create a service account.
+## @param vaultwarden.serviceAccount.annotations Additional annotations to add to the service account.
+## @param vaultwarden.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
+## @param vaultwarden.podAnnotations Additional annotations to add to the pod.
+## @param vaultwarden.podSecurityContext The security context to use for the pod.
+## @param vaultwarden.securityContext The security context to use for the container.
+## @param vaultwarden.initContainers Additional init containers to add to the pod.
+## @param vaultwarden.service.type The type of service to create.
+## @param vaultwarden.service.port The port on which the service will run.
+## @param vaultwarden.service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param vaultwarden.ingress.enabled Whether to create an ingress for the service.
+## @param vaultwarden.ingress.className The ingress class name to use.
+## @param vaultwarden.ingress.annotations Additional annotations to add to the ingress.
+## @param vaultwarden.ingress.hosts[0].host The host to use for the ingress.
+## @param vaultwarden.ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param vaultwarden.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param vaultwarden.ingress.tls The TLS configuration for the ingress.
+## @param vaultwarden.resources The resources to use for the pod.
+## @param vaultwarden.autoscaling.enabled Whether to enable autoscaling.
+## @param vaultwarden.autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param vaultwarden.autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param vaultwarden.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param vaultwarden.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
+## @param vaultwarden.nodeSelector The node selector to use for the pod.
+## @param vaultwarden.tolerations The tolerations to use for the pod.
+## @param vaultwarden.affinity The affinity to use for the pod.
+## @param vaultwarden.env.SIGNUPS_ALLOWED Whether to allow signups.
+## @param vaultwarden.persistence.enabled Whether to enable persistence.
+## @param vaultwarden.persistence.storageClass The storage class to use for the persistence.
+## @param vaultwarden.persistence.existingClaim The name of an existing claim to use for the persistence.
+## @param vaultwarden.persistence.accessMode The access mode to use for the persistence.
+## @param vaultwarden.persistence.size The size to use for the persistence.
+## @param vaultwarden.persistence.additionalVolumes Additional volumes to add to the pod.
+## @param vaultwarden.persistence.additionalMounts Additional volume mounts to add to the pod.
+##
+vaultwarden:
+  enabled: false
+  replicaCount: 1
+
+  image:
+    repository: vaultwarden/server
+    pullPolicy: IfNotPresent
+    tag: "1.32.4"
+
+  imagePullSecrets: []
+
+  deployment:
+    strategy:
+      type: Recreate
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  initContainers: []
+    # - name: init-container
+    #   image: busybox
+    #   command: ['sh', '-c', 'echo "this is an init container"']
+
+  service:
+    type: ClusterIP
+    port: 80
+    nodePort: ""
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  env:
+    SIGNUPS_ALLOWED: "true"
+
+  persistence:
+    enabled: true
+    storageClass: ""
+    existingClaim: ""
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    additionalVolumes: []
+    additionalMounts: []
+
+## @section Immich parameters
+
+## @param immich.enabled Whether to enable Immich.
+## @param immich.replicaCount The number of replicas to deploy.
+## @param immich.image.repository The Docker repository to pull the image from.
+## @param immich.image.tag The image tag to use.
+## @param immich.image.pullPolicy The logic of image pulling.
+## @param immich.imagePullSecrets The image pull secrets to use.
+## @param immich.deployment.strategy.type The deployment strategy to use.
+## @param immich.serviceAccount.create Whether to create a service account.
+## @param immich.serviceAccount.annotations Additional annotations to add to the service account.
+## @param immich.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
+## @param immich.podAnnotations Additional annotations to add to the pod.
+## @param immich.podSecurityContext The security context to use for the pod.
+## @param immich.securityContext The security context to use for the container.
+## @param immich.initContainers Additional init containers to add to the pod.
+## @param immich.service.type The type of service to create.
+## @param immich.service.port The port on which the service will run.
+## @param immich.service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param immich.ingress.enabled Whether to create an ingress for the service.
+## @param immich.ingress.className The ingress class name to use.
+## @param immich.ingress.annotations Additional annotations to add to the ingress.
+## @param immich.ingress.hosts[0].host The host to use for the ingress.
+## @param immich.ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param immich.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param immich.ingress.tls The TLS configuration for the ingress.
+## @param immich.resources The resources to use for the pod.
+## @param immich.autoscaling.enabled Whether to enable autoscaling.
+## @param immich.autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param immich.autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param immich.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param immich.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
+## @param immich.nodeSelector The node selector to use for the pod.
+## @param immich.tolerations The tolerations to use for the pod.
+## @param immich.affinity The affinity to use for the pod.
+## @param immich.env.TZ The timezone to use for the pod.
+## @param immich.env.DB_HOSTNAME The hostname of the database.
+## @param immich.env.DB_USERNAME The username to use for the database.
+## @param immich.env.DB_PASSWORD The password to use for the database.
+## @param immich.env.DB_DATABASE_NAME The name of the database.
+## @param immich.env.REDIS_HOSTNAME The hostname of the Redis server.
+## @param immich.persistence.library.enabled Whether to enable persistence for the library.
+## @param immich.persistence.library.storageClass The storage class to use for the library.
+## @param immich.persistence.library.existingClaim The name of an existing claim to use for the library.
+## @param immich.persistence.library.accessMode The access mode to use for the library.
+## @param immich.persistence.library.size The size to use for the library.
+## @param immich.persistence.additionalVolumes Additional volumes to add to the pod.
+## @param immich.persistence.additionalMounts Additional volume mounts to add to the pod.
+##
+immich:
+  enabled: false
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/immich-app/immich-server
+    pullPolicy: IfNotPresent
+    tag: "v1.120.2"
+
+  imagePullSecrets: []
+
+  deployment:
+    strategy:
+      type: Recreate
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  initContainers: []
+    # - name: init-container
+    #   image: busybox
+    #   command: ['sh', '-c', 'echo "this is an init container"']
+
+  service:
+    type: ClusterIP
+    port: 2283
+    nodePort: ""
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  env:
+    TZ: "Europe/London"
+    DB_HOSTNAME: "immich-postgresql"
+    DB_USERNAME: "immich"
+    DB_PASSWORD: "immich"
+    DB_DATABASE_NAME: "immich"
+    REDIS_HOSTNAME: "immich-redis"
+
+  persistence:
+    library:
+      enabled: true
+      storageClass: ""
+      existingClaim: ""
+      accessMode: ReadWriteOnce
+      size: 10Gi
+    additionalVolumes: []
+    additionalMounts: []
+
+## @section Nextcloud parameters
+
+## @param nextcloud.enabled Whether to enable Nextcloud.
+## @param nextcloud.replicaCount The number of replicas to deploy.
+## @param nextcloud.image.repository The Docker repository to pull the image from.
+## @param nextcloud.image.tag The image tag to use.
+## @param nextcloud.image.pullPolicy The logic of image pulling.
+## @param nextcloud.imagePullSecrets The image pull secrets to use.
+## @param nextcloud.deployment.strategy.type The deployment strategy to use.
+## @param nextcloud.serviceAccount.create Whether to create a service account.
+## @param nextcloud.serviceAccount.annotations Additional annotations to add to the service account.
+## @param nextcloud.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
+## @param nextcloud.podAnnotations Additional annotations to add to the pod.
+## @param nextcloud.podSecurityContext The security context to use for the pod.
+## @param nextcloud.securityContext The security context to use for the container.
+## @param nextcloud.initContainers Additional init containers to add to the pod.
+## @param nextcloud.service.type The type of service to create.
+## @param nextcloud.service.port The port on which the service will run.
+## @param nextcloud.service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param nextcloud.ingress.enabled Whether to create an ingress for the service.
+## @param nextcloud.ingress.className The ingress class name to use.
+## @param nextcloud.ingress.annotations Additional annotations to add to the ingress.
+## @param nextcloud.ingress.hosts[0].host The host to use for the ingress.
+## @param nextcloud.ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param nextcloud.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param nextcloud.ingress.tls The TLS configuration for the ingress.
+## @param nextcloud.resources The resources to use for the pod.
+## @param nextcloud.autoscaling.enabled Whether to enable autoscaling.
+## @param nextcloud.autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param nextcloud.autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param nextcloud.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param nextcloud.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
+## @param nextcloud.nodeSelector The node selector to use for the pod.
+## @param nextcloud.tolerations The tolerations to use for the pod.
+## @param nextcloud.affinity The affinity to use for the pod.
+## @param nextcloud.env.NEXTCLOUD_ADMIN_USER The admin username.
+## @param nextcloud.env.NEXTCLOUD_ADMIN_PASSWORD The admin password.
+## @param nextcloud.env.NEXTCLOUD_TRUSTED_DOMAINS Trusted domains for Nextcloud.
+## @param nextcloud.persistence.enabled Whether to enable persistence.
+## @param nextcloud.persistence.storageClass The storage class to use for the persistence.
+## @param nextcloud.persistence.existingClaim The name of an existing claim to use for the persistence.
+## @param nextcloud.persistence.accessMode The access mode to use for the persistence.
+## @param nextcloud.persistence.size The size to use for the persistence.
+## @param nextcloud.persistence.additionalVolumes Additional volumes to add to the pod.
+## @param nextcloud.persistence.additionalMounts Additional volume mounts to add to the pod.
+##
+nextcloud:
+  enabled: false
+  replicaCount: 1
+
+  image:
+    repository: docker.io/library/nextcloud
+    pullPolicy: IfNotPresent
+    tag: "30.0.2"
+
+  imagePullSecrets: []
+
+  deployment:
+    strategy:
+      type: Recreate
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  initContainers: []
+    # - name: init-container
+    #   image: busybox
+    #   command: ['sh', '-c', 'echo "this is an init container"']
+
+  service:
+    type: ClusterIP
+    port: 80
+    nodePort: ""
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  env:
+    NEXTCLOUD_ADMIN_USER: "admin"
+    NEXTCLOUD_ADMIN_PASSWORD: "admin"
+    NEXTCLOUD_TRUSTED_DOMAINS: "localhost"
+
+  persistence:
+    enabled: true
+    storageClass: ""
+    existingClaim: ""
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    additionalVolumes: []
+    additionalMounts: []
+
+## @section Home Assistant parameters
+
+## @param home-assistant.enabled Whether to enable Home Assistant.
+## @param home-assistant.replicaCount The number of replicas to deploy.
+## @param home-assistant.image.repository The Docker repository to pull the image from.
+## @param home-assistant.image.tag The image tag to use.
+## @param home-assistant.image.pullPolicy The logic of image pulling.
+## @param home-assistant.imagePullSecrets The image pull secrets to use.
+## @param home-assistant.deployment.strategy.type The deployment strategy to use.
+## @param home-assistant.serviceAccount.create Whether to create a service account.
+## @param home-assistant.serviceAccount.annotations Additional annotations to add to the service account.
+## @param home-assistant.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
+## @param home-assistant.podAnnotations Additional annotations to add to the pod.
+## @param home-assistant.podSecurityContext The security context to use for the pod.
+## @param home-assistant.securityContext The security context to use for the container.
+## @param home-assistant.initContainers Additional init containers to add to the pod.
+## @param home-assistant.service.type The type of service to create.
+## @param home-assistant.service.port The port on which the service will run.
+## @param home-assistant.service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param home-assistant.ingress.enabled Whether to create an ingress for the service.
+## @param home-assistant.ingress.className The ingress class name to use.
+## @param home-assistant.ingress.annotations Additional annotations to add to the ingress.
+## @param home-assistant.ingress.hosts[0].host The host to use for the ingress.
+## @param home-assistant.ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param home-assistant.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param home-assistant.ingress.tls The TLS configuration for the ingress.
+## @param home-assistant.resources The resources to use for the pod.
+## @param home-assistant.autoscaling.enabled Whether to enable autoscaling.
+## @param home-assistant.autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param home-assistant.autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param home-assistant.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param home-assistant.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
+## @param home-assistant.nodeSelector The node selector to use for the pod.
+## @param home-assistant.tolerations The tolerations to use for the pod.
+## @param home-assistant.affinity The affinity to use for the pod.
+## @param home-assistant.env.TZ The timezone to use for the pod.
+## @param home-assistant.persistence.enabled Whether to enable persistence.
+## @param home-assistant.persistence.storageClass The storage class to use for the persistence.
+## @param home-assistant.persistence.existingClaim The name of an existing claim to use for the persistence.
+## @param home-assistant.persistence.accessMode The access mode to use for the persistence.
+## @param home-assistant.persistence.size The size to use for the persistence.
+## @param home-assistant.persistence.additionalVolumes Additional volumes to add to the pod.
+## @param home-assistant.persistence.additionalMounts Additional volume mounts to add to the pod.
+##
+home-assistant:
+  enabled: false
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/home-assistant/home-assistant
+    pullPolicy: IfNotPresent
+    tag: "2024.11.3"
+
+  imagePullSecrets: []
+
+  deployment:
+    strategy:
+      type: Recreate
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext:
+    privileged: true
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  initContainers: []
+    # - name: init-container
+    #   image: busybox
+    #   command: ['sh', '-c', 'echo "this is an init container"']
+
+  service:
+    type: ClusterIP
+    port: 8123
+    nodePort: ""
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  env:
+    TZ: "Europe/London"
+
+  persistence:
+    enabled: true
+    storageClass: ""
+    existingClaim: ""
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    additionalVolumes: []
+    additionalMounts: []

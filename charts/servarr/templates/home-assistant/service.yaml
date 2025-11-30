@@ -1,0 +1,24 @@
+{{- if index .Values "home-assistant" "enabled" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-home-assistant
+  labels:
+    app.kubernetes.io/name: home-assistant
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  type: {{ (index .Values "home-assistant" "service" "type") | default "ClusterIP" }}
+  ports:
+    - port: {{ (index .Values "home-assistant" "service" "port") | default 8123 }}
+      targetPort: http
+      protocol: TCP
+      name: http
+{{ if (and (eq (index .Values "home-assistant" "service" "type") "NodePort") (not (empty (index .Values "home-assistant" "service" "nodePort")))) }}
+      nodePort: {{ index .Values "home-assistant" "service" "nodePort" }}
+{{ end }}
+  selector:
+    app.kubernetes.io/name: home-assistant
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

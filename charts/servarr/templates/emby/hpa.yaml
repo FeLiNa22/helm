@@ -1,0 +1,31 @@
+{{- if and .Values.emby.enabled .Values.emby.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-emby
+  labels:
+    app.kubernetes.io/name: emby
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-emby
+  minReplicas: {{ .Values.emby.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.emby.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.emby.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.emby.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.emby.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.emby.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

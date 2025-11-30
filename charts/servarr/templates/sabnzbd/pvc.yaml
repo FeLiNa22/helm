@@ -1,0 +1,24 @@
+{{- if and .Values.sabnzbd.enabled .Values.sabnzbd.persistence.enabled (not .Values.sabnzbd.persistence.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-sabnzbd
+  labels:
+    app.kubernetes.io/name: sabnzbd
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+  {{- if .Values.sabnzbd.persistence.annotations }}
+  annotations:
+    {{- toYaml .Values.sabnzbd.persistence.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.sabnzbd.persistence.accessMode | quote }}
+  {{- if .Values.sabnzbd.persistence.storageClass }}
+  storageClassName: {{ .Values.sabnzbd.persistence.storageClass | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.sabnzbd.persistence.size | quote }}
+{{- end }}

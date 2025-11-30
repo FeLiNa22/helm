@@ -1,0 +1,31 @@
+{{- if and .Values.vaultwarden.enabled .Values.vaultwarden.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-vaultwarden
+  labels:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-vaultwarden
+  minReplicas: {{ .Values.vaultwarden.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.vaultwarden.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.vaultwarden.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.vaultwarden.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.vaultwarden.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.vaultwarden.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

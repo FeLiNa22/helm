@@ -1,0 +1,24 @@
+{{- if and .Values.vaultwarden.enabled .Values.vaultwarden.persistence.enabled (not .Values.vaultwarden.persistence.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-vaultwarden
+  labels:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+  {{- if .Values.vaultwarden.persistence.annotations }}
+  annotations:
+    {{- toYaml .Values.vaultwarden.persistence.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.vaultwarden.persistence.accessMode | quote }}
+  {{- if .Values.vaultwarden.persistence.storageClass }}
+  storageClassName: {{ .Values.vaultwarden.persistence.storageClass | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.vaultwarden.persistence.size | quote }}
+{{- end }}

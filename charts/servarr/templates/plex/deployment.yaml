@@ -1,0 +1,112 @@
+{{- if .Values.plex.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-plex
+  labels:
+    app.kubernetes.io/name: plex
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  {{- if not .Values.plex.autoscaling.enabled }}
+  replicas: {{ .Values.plex.replicaCount }}
+  {{- end }}
+  strategy:
+    {{- .Values.plex.deployment.strategy | toYaml | nindent 4 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: plex
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      {{- with .Values.plex.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: plex
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    spec:
+      {{- with .Values.plex.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.plex.serviceAccount.name | default (printf "%s-plex" .Release.Name) }}
+      securityContext:
+        {{- toYaml .Values.plex.podSecurityContext | nindent 8 }}
+      {{- if .Values.plex.initContainers }}
+      initContainers:
+        {{- toYaml .Values.plex.initContainers | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          {{- if .Values.plex.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.plex.persistence.existingClaim | default (printf "%s-plex" .Release.Name) }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
+        - name: media
+          {{- if and .Values.jellyfin.enabled .Values.jellyfin.persistence.media.enabled .Values.plex.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.jellyfin.persistence.media.existingClaim }}{{ .Values.jellyfin.persistence.media.existingClaim }}{{- else }}{{ .Release.Name }}-jellyfin-media{{- end }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
+        {{- if .Values.plex.persistence.additionalVolumes }}
+          {{- .Values.plex.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.plex.securityContext | nindent 12 }}
+          image: "{{ .Values.plex.image.repository }}:{{ .Values.plex.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.plex.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /config
+              name: config
+          {{- if and .Values.jellyfin.enabled .Values.jellyfin.persistence.media.enabled .Values.sonarr.enabled .Values.sonarr.persistence.enabled .Values.plex.persistence.enabled }}
+            - mountPath: "/media/{{ .Values.sonarr.persistence.path }}"
+              name: media
+              subPath: {{ .Values.sonarr.persistence.path }}
+          {{- end }}
+          {{- if and .Values.jellyfin.enabled .Values.jellyfin.persistence.media.enabled .Values.radarr.enabled .Values.radarr.persistence.enabled .Values.plex.persistence.enabled }}
+            - mountPath: "/media/{{ .Values.radarr.persistence.path }}"
+              name: media
+              subPath: {{ .Values.radarr.persistence.path }}
+          {{- end }}
+          {{- if and .Values.jellyfin.enabled .Values.jellyfin.persistence.media.enabled .Values.lidarr.enabled .Values.lidarr.persistence.enabled .Values.plex.persistence.enabled }}
+            - mountPath: "/media/{{ .Values.lidarr.persistence.path }}"
+              name: media
+              subPath: {{ .Values.lidarr.persistence.path }}
+          {{- end }}
+          {{- if .Values.plex.persistence.additionalMounts }}
+            {{- .Values.plex.persistence.additionalMounts | toYaml | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 32400
+              protocol: TCP
+          env:
+            {{- range $k,$v := .Values.plex.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.plex.resources | nindent 12 }}
+      {{- with .Values.plex.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.plex.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.plex.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

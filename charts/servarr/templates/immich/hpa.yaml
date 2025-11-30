@@ -1,0 +1,31 @@
+{{- if and .Values.immich.enabled .Values.immich.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-immich
+  labels:
+    app.kubernetes.io/name: immich
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-immich
+  minReplicas: {{ .Values.immich.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.immich.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.immich.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.immich.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.immich.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.immich.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

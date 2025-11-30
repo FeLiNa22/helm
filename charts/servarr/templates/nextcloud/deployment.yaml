@@ -1,0 +1,90 @@
+{{- if .Values.nextcloud.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-nextcloud
+  labels:
+    app.kubernetes.io/name: nextcloud
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  {{- if not .Values.nextcloud.autoscaling.enabled }}
+  replicas: {{ .Values.nextcloud.replicaCount }}
+  {{- end }}
+  strategy:
+    {{- .Values.nextcloud.deployment.strategy | toYaml | nindent 4 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nextcloud
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      {{- with .Values.nextcloud.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: nextcloud
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    spec:
+      {{- with .Values.nextcloud.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.nextcloud.serviceAccount.name | default (printf "%s-nextcloud" .Release.Name) }}
+      securityContext:
+        {{- toYaml .Values.nextcloud.podSecurityContext | nindent 8 }}
+      {{- if .Values.nextcloud.initContainers }}
+      initContainers:
+        {{- toYaml .Values.nextcloud.initContainers | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: data
+          {{- if .Values.nextcloud.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.nextcloud.persistence.existingClaim | default (printf "%s-nextcloud" .Release.Name) }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
+        {{- if .Values.nextcloud.persistence.additionalVolumes }}
+          {{- .Values.nextcloud.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.nextcloud.securityContext | nindent 12 }}
+          image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.nextcloud.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: data
+          {{- if .Values.nextcloud.persistence.additionalMounts }}
+            {{- .Values.nextcloud.persistence.additionalMounts | toYaml | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env:
+            {{- range $k,$v := .Values.nextcloud.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.nextcloud.resources | nindent 12 }}
+      {{- with .Values.nextcloud.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nextcloud.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nextcloud.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

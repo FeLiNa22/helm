@@ -1,0 +1,24 @@
+{{- if .Values.sabnzbd.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-sabnzbd
+  labels:
+    app.kubernetes.io/name: sabnzbd
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  type: {{ .Values.sabnzbd.service.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.sabnzbd.service.port | default 8080 }}
+      targetPort: http
+      protocol: TCP
+      name: http
+{{ if (and (eq .Values.sabnzbd.service.type "NodePort") (not (empty .Values.sabnzbd.service.nodePort))) }}
+      nodePort: {{.Values.sabnzbd.service.nodePort}}
+{{ end }}
+  selector:
+    app.kubernetes.io/name: sabnzbd
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

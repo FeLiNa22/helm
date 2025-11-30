@@ -1,0 +1,24 @@
+{{- if .Values.immich.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-immich
+  labels:
+    app.kubernetes.io/name: immich
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  type: {{ .Values.immich.service.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.immich.service.port | default 2283 }}
+      targetPort: http
+      protocol: TCP
+      name: http
+{{ if (and (eq .Values.immich.service.type "NodePort") (not (empty .Values.immich.service.nodePort))) }}
+      nodePort: {{.Values.immich.service.nodePort}}
+{{ end }}
+  selector:
+    app.kubernetes.io/name: immich
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

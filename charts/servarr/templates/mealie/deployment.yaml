@@ -1,0 +1,90 @@
+{{- if .Values.mealie.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-mealie
+  labels:
+    app.kubernetes.io/name: mealie
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  {{- if not .Values.mealie.autoscaling.enabled }}
+  replicas: {{ .Values.mealie.replicaCount }}
+  {{- end }}
+  strategy:
+    {{- .Values.mealie.deployment.strategy | toYaml | nindent 4 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mealie
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      {{- with .Values.mealie.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: mealie
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    spec:
+      {{- with .Values.mealie.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.mealie.serviceAccount.name | default (printf "%s-mealie" .Release.Name) }}
+      securityContext:
+        {{- toYaml .Values.mealie.podSecurityContext | nindent 8 }}
+      {{- if .Values.mealie.initContainers }}
+      initContainers:
+        {{- toYaml .Values.mealie.initContainers | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: data
+          {{- if .Values.mealie.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.mealie.persistence.existingClaim | default (printf "%s-mealie" .Release.Name) }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
+        {{- if .Values.mealie.persistence.additionalVolumes }}
+          {{- .Values.mealie.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.mealie.securityContext | nindent 12 }}
+          image: "{{ .Values.mealie.image.repository }}:{{ .Values.mealie.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.mealie.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /app/data
+              name: data
+          {{- if .Values.mealie.persistence.additionalMounts }}
+            {{- .Values.mealie.persistence.additionalMounts | toYaml | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 9000
+              protocol: TCP
+          env:
+            {{- range $k,$v := .Values.mealie.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.mealie.resources | nindent 12 }}
+      {{- with .Values.mealie.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mealie.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mealie.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

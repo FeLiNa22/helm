@@ -1,0 +1,24 @@
+{{- if and .Values.plex.enabled .Values.plex.persistence.enabled (not .Values.plex.persistence.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-plex
+  labels:
+    app.kubernetes.io/name: plex
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+  {{- if .Values.plex.persistence.annotations }}
+  annotations:
+    {{- toYaml .Values.plex.persistence.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.plex.persistence.accessMode | quote }}
+  {{- if .Values.plex.persistence.storageClass }}
+  storageClassName: {{ .Values.plex.persistence.storageClass | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.plex.persistence.size | quote }}
+{{- end }}

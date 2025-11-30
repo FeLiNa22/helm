@@ -1,0 +1,24 @@
+{{- if .Values.nextcloud.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-nextcloud
+  labels:
+    app.kubernetes.io/name: nextcloud
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  type: {{ .Values.nextcloud.service.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.nextcloud.service.port | default 80 }}
+      targetPort: http
+      protocol: TCP
+      name: http
+{{ if (and (eq .Values.nextcloud.service.type "NodePort") (not (empty .Values.nextcloud.service.nodePort))) }}
+      nodePort: {{.Values.nextcloud.service.nodePort}}
+{{ end }}
+  selector:
+    app.kubernetes.io/name: nextcloud
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

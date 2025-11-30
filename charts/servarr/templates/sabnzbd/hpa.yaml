@@ -1,0 +1,31 @@
+{{- if and .Values.sabnzbd.enabled .Values.sabnzbd.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-sabnzbd
+  labels:
+    app.kubernetes.io/name: sabnzbd
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-sabnzbd
+  minReplicas: {{ .Values.sabnzbd.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.sabnzbd.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.sabnzbd.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.sabnzbd.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.sabnzbd.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.sabnzbd.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

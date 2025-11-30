@@ -1,0 +1,50 @@
+{{- if and .Values.frigate.enabled .Values.frigate.persistence.config.enabled (not .Values.frigate.persistence.config.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-frigate-config
+  labels:
+    app.kubernetes.io/name: frigate
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+  {{- if .Values.frigate.persistence.config.annotations }}
+  annotations:
+    {{- toYaml .Values.frigate.persistence.config.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.frigate.persistence.config.accessMode | quote }}
+  {{- if .Values.frigate.persistence.config.storageClass }}
+  storageClassName: {{ .Values.frigate.persistence.config.storageClass | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.frigate.persistence.config.size | quote }}
+{{- end }}
+
+---
+{{- if and .Values.frigate.enabled .Values.frigate.persistence.media.enabled (not .Values.frigate.persistence.media.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-frigate-media
+  labels:
+    app.kubernetes.io/name: frigate
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+  {{- if .Values.frigate.persistence.media.annotations }}
+  annotations:
+    {{- toYaml .Values.frigate.persistence.media.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.frigate.persistence.media.accessMode | quote }}
+  {{- if .Values.frigate.persistence.media.storageClass }}
+  storageClassName: {{ .Values.frigate.persistence.media.storageClass | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.frigate.persistence.media.size | quote }}
+{{- end }}

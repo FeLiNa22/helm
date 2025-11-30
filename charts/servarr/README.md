@@ -554,6 +554,193 @@ The command removes all the Kubernetes components associated with the chart and 
 | `cleanuparr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                            |
 | `cleanuparr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                            |
 
+### SABnzbd parameters
+
+| Name                                                       | Description                                                                                                                         | Value                          |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| `sabnzbd.enabled`                                          | Whether to enable SABnzbd.                                                                                                          | `false`                        |
+| `sabnzbd.replicaCount`                                     | The number of replicas to deploy.                                                                                                   | `1`                            |
+| `sabnzbd.image.repository`                                 | The Docker repository to pull the image from.                                                                                       | `lscr.io/linuxserver/sabnzbd`  |
+| `sabnzbd.image.tag`                                        | The image tag to use.                                                                                                               | `4.3.3`                        |
+| `sabnzbd.image.pullPolicy`                                 | The logic of image pulling.                                                                                                         | `IfNotPresent`                 |
+| `sabnzbd.imagePullSecrets`                                 | The image pull secrets to use.                                                                                                      | `[]`                           |
+| `sabnzbd.deployment.strategy.type`                         | The deployment strategy to use.                                                                                                     | `Recreate`                     |
+| `sabnzbd.serviceAccount.create`                            | Whether to create a service account.                                                                                                | `true`                         |
+| `sabnzbd.serviceAccount.annotations`                       | Additional annotations to add to the service account.                                                                               | `{}`                           |
+| `sabnzbd.serviceAccount.name`                              | The name of the service account to use.                                                                                             | `""`                           |
+| `sabnzbd.podAnnotations`                                   | Additional annotations to add to the pod.                                                                                           | `{}`                           |
+| `sabnzbd.podSecurityContext`                               | The security context to use for the pod.                                                                                            | `{}`                           |
+| `sabnzbd.securityContext`                                  | The security context to use for the container.                                                                                      | `{}`                           |
+| `sabnzbd.initContainers`                                   | Additional init containers to add to the pod.                                                                                       | `[]`                           |
+| `sabnzbd.service.type`                                     | The type of service to create.                                                                                                      | `ClusterIP`                    |
+| `sabnzbd.service.port`                                     | The port on which the service will run.                                                                                             | `8080`                         |
+| `sabnzbd.service.nodePort`                                 | The nodePort to use for the service. Only used if service.type is NodePort.                                                         | `""`                           |
+| `sabnzbd.ingress.enabled`                                  | Whether to create an ingress for the service.                                                                                       | `false`                        |
+| `sabnzbd.ingress.className`                                | The ingress class name to use.                                                                                                      | `""`                           |
+| `sabnzbd.ingress.annotations`                              | Additional annotations to add to the ingress.                                                                                       | `{}`                           |
+| `sabnzbd.ingress.hosts[0].host`                            | The host to use for the ingress.                                                                                                    | `chart-example.local`          |
+| `sabnzbd.ingress.hosts[0].paths[0].path`                   | The path to use for the ingress.                                                                                                    | `/`                            |
+| `sabnzbd.ingress.hosts[0].paths[0].pathType`               | The path type to use for the ingress.                                                                                               | `ImplementationSpecific`       |
+| `sabnzbd.ingress.tls`                                      | The TLS configuration for the ingress.                                                                                              | `[]`                           |
+| `sabnzbd.resources`                                        | The resources to use for the pod.                                                                                                   | `{}`                           |
+| `sabnzbd.autoscaling.enabled`                              | Whether to enable autoscaling.                                                                                                      | `false`                        |
+| `sabnzbd.autoscaling.minReplicas`                          | The minimum number of replicas to scale to.                                                                                         | `1`                            |
+| `sabnzbd.autoscaling.maxReplicas`                          | The maximum number of replicas to scale to.                                                                                         | `100`                          |
+| `sabnzbd.autoscaling.targetCPUUtilizationPercentage`       | The target CPU utilization percentage to use for autoscaling.                                                                       | `80`                           |
+| `sabnzbd.autoscaling.targetMemoryUtilizationPercentage`    | The target memory utilization percentage to use for autoscaling.                                                                    | `80`                           |
+| `sabnzbd.nodeSelector`                                     | The node selector to use for the pod.                                                                                               | `{}`                           |
+| `sabnzbd.tolerations`                                      | The tolerations to use for the pod.                                                                                                 | `[]`                           |
+| `sabnzbd.affinity`                                         | The affinity to use for the pod.                                                                                                    | `{}`                           |
+| `sabnzbd.env.PUID`                                         | The user ID to use for the pod.                                                                                                     | `1000`                         |
+| `sabnzbd.env.PGID`                                         | The group ID to use for the pod.                                                                                                    | `1000`                         |
+| `sabnzbd.env.TZ`                                           | The timezone to use for the pod.                                                                                                    | `Europe/London`                |
+| `sabnzbd.persistence.enabled`                              | Whether to enable persistence.                                                                                                      | `true`                         |
+| `sabnzbd.persistence.path`                                 | The subdirectory path to use within jellyfin's media PVC (e.g., 'downloads'). No leading or trailing slashes.                      | `downloads`                    |
+| `sabnzbd.persistence.storageClass`                         | The storage class to use for the persistence.                                                                                       | `""`                           |
+| `sabnzbd.persistence.existingClaim`                        | The name of an existing claim to use for the persistence.                                                                           | `""`                           |
+| `sabnzbd.persistence.accessMode`                           | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`                |
+| `sabnzbd.persistence.size`                                 | The size to use for the persistence.                                                                                                | `800Mi`                        |
+| `sabnzbd.persistence.additionalVolumes`                    | Additional volumes to add to the pod.                                                                                               | `[]`                           |
+| `sabnzbd.persistence.additionalMounts`                     | Additional volume mounts to add to the pod.                                                                                         | `[]`                           |
+
+### Plex parameters
+
+| Name                                                   | Description                                                                                                                         | Value                      |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| `plex.enabled`                                         | Whether to enable Plex. Uses jellyfin's media PVC.                                                                                  | `false`                    |
+| `plex.replicaCount`                                    | The number of replicas to deploy.                                                                                                   | `1`                        |
+| `plex.image.repository`                                | The Docker repository to pull the image from.                                                                                       | `lscr.io/linuxserver/plex` |
+| `plex.image.tag`                                       | The image tag to use.                                                                                                               | `1.41.2`                   |
+| `plex.image.pullPolicy`                                | The logic of image pulling.                                                                                                         | `IfNotPresent`             |
+| `plex.service.type`                                    | The type of service to create.                                                                                                      | `ClusterIP`                |
+| `plex.service.port`                                    | The port on which the service will run.                                                                                             | `32400`                    |
+| `plex.env.PUID`                                        | The user ID to use for the pod.                                                                                                     | `1000`                     |
+| `plex.env.PGID`                                        | The group ID to use for the pod.                                                                                                    | `1000`                     |
+| `plex.env.TZ`                                          | The timezone to use for the pod.                                                                                                    | `Europe/London`            |
+| `plex.env.VERSION`                                     | Docker image version to use.                                                                                                        | `docker`                   |
+| `plex.persistence.enabled`                             | Whether to enable persistence.                                                                                                      | `true`                     |
+| `plex.persistence.size`                                | The size to use for the persistence.                                                                                                | `1Gi`                      |
+
+### Emby parameters
+
+| Name                                                   | Description                                                                                                                         | Value                      |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| `emby.enabled`                                         | Whether to enable Emby. Uses jellyfin's media PVC.                                                                                  | `false`                    |
+| `emby.replicaCount`                                    | The number of replicas to deploy.                                                                                                   | `1`                        |
+| `emby.image.repository`                                | The Docker repository to pull the image from.                                                                                       | `lscr.io/linuxserver/emby` |
+| `emby.image.tag`                                       | The image tag to use.                                                                                                               | `4.8.10`                   |
+| `emby.image.pullPolicy`                                | The logic of image pulling.                                                                                                         | `IfNotPresent`             |
+| `emby.service.type`                                    | The type of service to create.                                                                                                      | `ClusterIP`                |
+| `emby.service.port`                                    | The port on which the service will run.                                                                                             | `8096`                     |
+| `emby.env.PUID`                                        | The user ID to use for the pod.                                                                                                     | `1000`                     |
+| `emby.env.PGID`                                        | The group ID to use for the pod.                                                                                                    | `1000`                     |
+| `emby.env.TZ`                                          | The timezone to use for the pod.                                                                                                    | `Europe/London`            |
+| `emby.persistence.enabled`                             | Whether to enable persistence.                                                                                                      | `true`                     |
+| `emby.persistence.size`                                | The size to use for the persistence.                                                                                                | `1Gi`                      |
+
+### Mealie parameters
+
+| Name                                                   | Description                                                                                                                         | Value                             |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| `mealie.enabled`                                       | Whether to enable Mealie.                                                                                                           | `false`                           |
+| `mealie.replicaCount`                                  | The number of replicas to deploy.                                                                                                   | `1`                               |
+| `mealie.image.repository`                              | The Docker repository to pull the image from.                                                                                       | `ghcr.io/mealie-recipes/mealie`   |
+| `mealie.image.tag`                                     | The image tag to use.                                                                                                               | `v2.2.0`                          |
+| `mealie.image.pullPolicy`                              | The logic of image pulling.                                                                                                         | `IfNotPresent`                    |
+| `mealie.service.type`                                  | The type of service to create.                                                                                                      | `ClusterIP`                       |
+| `mealie.service.port`                                  | The port on which the service will run.                                                                                             | `9000`                            |
+| `mealie.env.ALLOW_SIGNUP`                              | Whether to allow signups.                                                                                                           | `true`                            |
+| `mealie.env.TZ`                                        | The timezone to use for the pod.                                                                                                    | `Europe/London`                   |
+| `mealie.persistence.enabled`                           | Whether to enable persistence.                                                                                                      | `true`                            |
+| `mealie.persistence.size`                              | The size to use for the persistence.                                                                                                | `1Gi`                             |
+
+### Frigate parameters
+
+| Name                                                    | Description                                                                                                                         | Value                                  |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| `frigate.enabled`                                       | Whether to enable Frigate.                                                                                                          | `false`                                |
+| `frigate.replicaCount`                                  | The number of replicas to deploy.                                                                                                   | `1`                                    |
+| `frigate.image.repository`                              | The Docker repository to pull the image from.                                                                                       | `ghcr.io/blakeblackshear/frigate`      |
+| `frigate.image.tag`                                     | The image tag to use.                                                                                                               | `0.14.1`                               |
+| `frigate.image.pullPolicy`                              | The logic of image pulling.                                                                                                         | `IfNotPresent`                         |
+| `frigate.securityContext`                               | The security context to use for the container.                                                                                      | `{privileged: true}`                   |
+| `frigate.service.type`                                  | The type of service to create.                                                                                                      | `ClusterIP`                            |
+| `frigate.service.port`                                  | The port on which the service will run.                                                                                             | `5000`                                 |
+| `frigate.env.TZ`                                        | The timezone to use for the pod.                                                                                                    | `Europe/London`                        |
+| `frigate.tmpfs.size`                                    | The size of the tmpfs cache for Frigate.                                                                                            | `1Gi`                                  |
+| `frigate.persistence.config.enabled`                    | Whether to enable persistence for the config.                                                                                       | `true`                                 |
+| `frigate.persistence.config.size`                       | The size to use for the config.                                                                                                     | `1Gi`                                  |
+| `frigate.persistence.media.enabled`                     | Whether to enable persistence for the media.                                                                                        | `true`                                 |
+| `frigate.persistence.media.size`                        | The size to use for the media.                                                                                                      | `10Gi`                                 |
+
+### Vaultwarden parameters
+
+| Name                                                        | Description                                                                                                                         | Value                |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| `vaultwarden.enabled`                                       | Whether to enable Vaultwarden.                                                                                                      | `false`              |
+| `vaultwarden.replicaCount`                                  | The number of replicas to deploy.                                                                                                   | `1`                  |
+| `vaultwarden.image.repository`                              | The Docker repository to pull the image from.                                                                                       | `vaultwarden/server` |
+| `vaultwarden.image.tag`                                     | The image tag to use.                                                                                                               | `1.32.4`             |
+| `vaultwarden.image.pullPolicy`                              | The logic of image pulling.                                                                                                         | `IfNotPresent`       |
+| `vaultwarden.service.type`                                  | The type of service to create.                                                                                                      | `ClusterIP`          |
+| `vaultwarden.service.port`                                  | The port on which the service will run.                                                                                             | `80`                 |
+| `vaultwarden.env.SIGNUPS_ALLOWED`                           | Whether to allow signups.                                                                                                           | `true`               |
+| `vaultwarden.persistence.enabled`                           | Whether to enable persistence.                                                                                                      | `true`               |
+| `vaultwarden.persistence.size`                              | The size to use for the persistence.                                                                                                | `1Gi`                |
+
+### Immich parameters
+
+| Name                                                   | Description                                                                                                                         | Value                              |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `immich.enabled`                                       | Whether to enable Immich.                                                                                                           | `false`                            |
+| `immich.replicaCount`                                  | The number of replicas to deploy.                                                                                                   | `1`                                |
+| `immich.image.repository`                              | The Docker repository to pull the image from.                                                                                       | `ghcr.io/immich-app/immich-server` |
+| `immich.image.tag`                                     | The image tag to use.                                                                                                               | `v1.120.2`                         |
+| `immich.image.pullPolicy`                              | The logic of image pulling.                                                                                                         | `IfNotPresent`                     |
+| `immich.service.type`                                  | The type of service to create.                                                                                                      | `ClusterIP`                        |
+| `immich.service.port`                                  | The port on which the service will run.                                                                                             | `2283`                             |
+| `immich.env.TZ`                                        | The timezone to use for the pod.                                                                                                    | `Europe/London`                    |
+| `immich.env.DB_HOSTNAME`                               | The hostname of the database.                                                                                                       | `immich-postgresql`                |
+| `immich.env.DB_USERNAME`                               | The username to use for the database.                                                                                               | `immich`                           |
+| `immich.env.DB_PASSWORD`                               | The password to use for the database.                                                                                               | `immich`                           |
+| `immich.env.DB_DATABASE_NAME`                          | The name of the database.                                                                                                           | `immich`                           |
+| `immich.env.REDIS_HOSTNAME`                            | The hostname of the Redis server.                                                                                                   | `immich-redis`                     |
+| `immich.persistence.library.enabled`                   | Whether to enable persistence for the library.                                                                                      | `true`                             |
+| `immich.persistence.library.size`                      | The size to use for the library.                                                                                                    | `10Gi`                             |
+
+### Nextcloud parameters
+
+| Name                                                      | Description                                                                                                                         | Value                       |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| `nextcloud.enabled`                                       | Whether to enable Nextcloud.                                                                                                        | `false`                     |
+| `nextcloud.replicaCount`                                  | The number of replicas to deploy.                                                                                                   | `1`                         |
+| `nextcloud.image.repository`                              | The Docker repository to pull the image from.                                                                                       | `docker.io/library/nextcloud` |
+| `nextcloud.image.tag`                                     | The image tag to use.                                                                                                               | `30.0.2`                    |
+| `nextcloud.image.pullPolicy`                              | The logic of image pulling.                                                                                                         | `IfNotPresent`              |
+| `nextcloud.service.type`                                  | The type of service to create.                                                                                                      | `ClusterIP`                 |
+| `nextcloud.service.port`                                  | The port on which the service will run.                                                                                             | `80`                        |
+| `nextcloud.env.NEXTCLOUD_ADMIN_USER`                      | The admin username.                                                                                                                 | `admin`                     |
+| `nextcloud.env.NEXTCLOUD_ADMIN_PASSWORD`                  | The admin password.                                                                                                                 | `admin`                     |
+| `nextcloud.env.NEXTCLOUD_TRUSTED_DOMAINS`                 | Trusted domains for Nextcloud.                                                                                                      | `localhost`                 |
+| `nextcloud.persistence.enabled`                           | Whether to enable persistence.                                                                                                      | `true`                      |
+| `nextcloud.persistence.size`                              | The size to use for the persistence.                                                                                                | `10Gi`                      |
+
+### Home Assistant parameters
+
+| Name                                                             | Description                                                                                                                         | Value                                    |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| `home-assistant.enabled`                                         | Whether to enable Home Assistant.                                                                                                   | `false`                                  |
+| `home-assistant.replicaCount`                                    | The number of replicas to deploy.                                                                                                   | `1`                                      |
+| `home-assistant.image.repository`                                | The Docker repository to pull the image from.                                                                                       | `ghcr.io/home-assistant/home-assistant` |
+| `home-assistant.image.tag`                                       | The image tag to use.                                                                                                               | `2024.11.3`                              |
+| `home-assistant.image.pullPolicy`                                | The logic of image pulling.                                                                                                         | `IfNotPresent`                           |
+| `home-assistant.securityContext`                                 | The security context to use for the container.                                                                                      | `{privileged: true}`                     |
+| `home-assistant.service.type`                                    | The type of service to create.                                                                                                      | `ClusterIP`                              |
+| `home-assistant.service.port`                                    | The port on which the service will run.                                                                                             | `8123`                                   |
+| `home-assistant.env.TZ`                                          | The timezone to use for the pod.                                                                                                    | `Europe/London`                          |
+| `home-assistant.persistence.enabled`                             | Whether to enable persistence.                                                                                                      | `true`                                   |
+| `home-assistant.persistence.size`                                | The size to use for the persistence.                                                                                                | `1Gi`                                    |
+
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```console

@@ -1,0 +1,111 @@
+{{- if .Values.frigate.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-frigate
+  labels:
+    app.kubernetes.io/name: frigate
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  {{- if not .Values.frigate.autoscaling.enabled }}
+  replicas: {{ .Values.frigate.replicaCount }}
+  {{- end }}
+  strategy:
+    {{- .Values.frigate.deployment.strategy | toYaml | nindent 4 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: frigate
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      {{- with .Values.frigate.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: frigate
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    spec:
+      {{- with .Values.frigate.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.frigate.serviceAccount.name | default (printf "%s-frigate" .Release.Name) }}
+      securityContext:
+        {{- toYaml .Values.frigate.podSecurityContext | nindent 8 }}
+      {{- if .Values.frigate.initContainers }}
+      initContainers:
+        {{- toYaml .Values.frigate.initContainers | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          {{- if .Values.frigate.persistence.config.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.frigate.persistence.config.existingClaim | default (printf "%s-frigate-config" .Release.Name) }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
+        - name: media
+          {{- if .Values.frigate.persistence.media.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.frigate.persistence.media.existingClaim | default (printf "%s-frigate-media" .Release.Name) }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
+        - name: cache
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.frigate.tmpfs.size | default "1Gi" }}
+        {{- if .Values.frigate.persistence.additionalVolumes }}
+          {{- .Values.frigate.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.frigate.securityContext | nindent 12 }}
+          image: "{{ .Values.frigate.image.repository }}:{{ .Values.frigate.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.frigate.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /config
+              name: config
+            - mountPath: /media/frigate
+              name: media
+            - mountPath: /tmp/cache
+              name: cache
+          {{- if .Values.frigate.persistence.additionalMounts }}
+            {{- .Values.frigate.persistence.additionalMounts | toYaml | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+            - name: rtsp
+              containerPort: 8554
+              protocol: TCP
+            - name: webrtc
+              containerPort: 8555
+              protocol: TCP
+          env:
+            {{- range $k,$v := .Values.frigate.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.frigate.resources | nindent 12 }}
+      {{- with .Values.frigate.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.frigate.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.frigate.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
