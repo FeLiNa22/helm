@@ -10,6 +10,8 @@ on:
 jobs:
   release:
     name: Release Helm Charts
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -20,9 +22,6 @@ jobs:
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-      - name: Add Dependencies
-        run: |
-          helm repo add kubitodev https://charts.kubito.dev
       - name: Run Release
         uses: helm/chart-releaser-action@v1.6.0
         env:
