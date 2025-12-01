@@ -1,4 +1,4 @@
-# Kubito Helm Charts PR Checklist
+# Helm Charts PR Checklist
 
 Thank you for your contribution! Please ensure the following:
 
