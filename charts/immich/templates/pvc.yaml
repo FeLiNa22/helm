@@ -1,0 +1,23 @@
+{{- if and .Values.enabled .Values.persistence.library.enabled (not .Values.persistence.library.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-library
+  labels:
+    app.kubernetes.io/name: immich
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+  {{- if .Values.persistence.library.annotations }}
+  annotations:
+    {{- toYaml .Values.persistence.library.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.library.accessMode | quote }}
+  {{- if .Values.persistence.library.storageClass }}
+  storageClassName: {{ .Values.persistence.library.storageClass | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.library.size | quote }}

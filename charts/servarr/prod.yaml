@@ -81,7 +81,7 @@ jellyfin:
   enableDLNA: false
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 8096
     nodePort: ""
     annotations: {}
@@ -91,14 +91,15 @@ jellyfin:
     externalTrafficPolicy: null
 
   ingress:
-    enabled: false
-    labels: {}
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    path: /
+    enabled: true
+    className: ""
+    annotations:
+      kubernetes.io/ingress.class: "traefik"
+      traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+      traefik.ingress.kubernetes.io/router.tls: "true"
+      traefik.ingress.kubernetes.io/router.tls.certresolver: "letsencrypt"
     hosts:
-      - chart-example.local
+      - watch.raulpatel.com
     tls: []
     #  - secretName: chart-example-tls
     #    hosts:
@@ -107,7 +108,7 @@ jellyfin:
   persistence:
     config:
       enabled: true
-      storageClass: ""
+      storageClass: "ceph-rbd"
       existingClaim: ""
       subPath: ""
       accessMode: ReadWriteOnce
@@ -116,11 +117,11 @@ jellyfin:
       annotations: {}
     media:
       enabled: true
-      storageClass: ""
-      existingClaim: ""
+      storageClass: "cephfs"
+      existingClaim: "media-cephfs"
       subPath: ""
-      accessMode: ReadWriteOnce
-      size: 10Gi
+      accessMode: ReadWriteMany
+      size: 12Ti
       labels: {}
       annotations: {}
 
@@ -289,7 +290,7 @@ sonarr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 80
     nodePort: ""
 
@@ -297,8 +298,6 @@ sonarr:
     enabled: false
     className: ""
     annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
     hosts:
       - host: chart-example.local
         paths:
@@ -339,13 +338,12 @@ sonarr:
   persistence:
     enabled: true
     path: tv
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 1Gi
     additionalVolumes: []
     additionalMounts: []
-
 ## @section qBittorrent parameters
 
 ## @param qbittorrent.enabled Whether to enable qBittorrent.
@@ -436,11 +434,11 @@ qbittorrent:
 
   service:
     web:
-      type: ClusterIP
+      type: LoadBalancer
       port: 8080
       nodePort: ""
     bt:
-      type: ClusterIP
+      type: LoadBalancer
       port: 6881
       nodePort: ""
 
@@ -489,10 +487,10 @@ qbittorrent:
   persistence:
     enabled: true
     path: downloads
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 1Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -583,7 +581,7 @@ prowlarr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 9696
     nodePort: ""
 
@@ -632,7 +630,7 @@ prowlarr:
 
   persistence:
     enabled: true
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -728,8 +726,8 @@ flaresolverr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
-    port: 8191
+    type: LoadBalancer
+    port: 80
     nodePort: ""
 
   ingress:
@@ -852,18 +850,20 @@ jellyseerr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 5055
     nodePort: ""
 
   ingress:
-    enabled: false
+    enabled: true
     className: ""
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
+    annotations:
+      kubernetes.io/ingress.class: "traefik"
+      traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+      traefik.ingress.kubernetes.io/router.tls: "true"
+      traefik.ingress.kubernetes.io/router.tls.certresolver: "letsencrypt"
     hosts:
-      - host: chart-example.local
+      - host: request.raulpatel.com
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -895,7 +895,7 @@ jellyseerr:
 
   persistence:
     enabled: true
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -955,7 +955,7 @@ bazarr:
   image:
     repository: lscr.io/linuxserver/bazarr
     pullPolicy: IfNotPresent
-    tag: "1.4.5"
+    tag: "latest"
 
   imagePullSecrets: []
 
@@ -987,7 +987,7 @@ bazarr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 6767
     nodePort: ""
 
@@ -1035,10 +1035,10 @@ bazarr:
 
   persistence:
     enabled: true
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 1Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -1129,8 +1129,8 @@ radarr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
-    port: 7878
+    type: LoadBalancer
+    port: 80
     nodePort: ""
 
   ingress:
@@ -1179,10 +1179,10 @@ radarr:
   persistence:
     enabled: true
     path: movies
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 1Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -1273,8 +1273,8 @@ lidarr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
-    port: 8686
+    type: LoadBalancer
+    port: 80
     nodePort: ""
 
   ingress:
@@ -1323,10 +1323,10 @@ lidarr:
   persistence:
     enabled: true
     path: music
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 1Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -1418,8 +1418,8 @@ cleanuparr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
-    port: 11011
+    type: LoadBalancer
+    port: 80
     nodePort: ""
 
   ingress:
@@ -1475,428 +1475,4 @@ cleanuparr:
     size: 100Mi
     additionalVolumes: []
     additionalMounts: []
-
-## @section SABnzbd parameters
-
-## @param sabnzbd.enabled Whether to enable SABnzbd.
-## @param sabnzbd.replicaCount The number of replicas to deploy.
-## @param sabnzbd.image.repository The Docker repository to pull the image from.
-## @param sabnzbd.image.tag The image tag to use.
-## @param sabnzbd.image.pullPolicy The logic of image pulling.
-## @param sabnzbd.imagePullSecrets The image pull secrets to use.
-## @param sabnzbd.deployment.strategy.type The deployment strategy to use.
-## @param sabnzbd.serviceAccount.create Whether to create a service account.
-## @param sabnzbd.serviceAccount.annotations Additional annotations to add to the service account.
-## @param sabnzbd.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
-## @param sabnzbd.podAnnotations Additional annotations to add to the pod.
-## @param sabnzbd.podSecurityContext The security context to use for the pod.
-## @param sabnzbd.securityContext The security context to use for the container.
-## @param sabnzbd.initContainers Additional init containers to add to the pod.
-## @param sabnzbd.service.type The type of service to create.
-## @param sabnzbd.service.port The port on which the service will run.
-## @param sabnzbd.service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
-## @param sabnzbd.ingress.enabled Whether to create an ingress for the service.
-## @param sabnzbd.ingress.className The ingress class name to use.
-## @param sabnzbd.ingress.annotations Additional annotations to add to the ingress.
-## @param sabnzbd.ingress.hosts[0].host The host to use for the ingress.
-## @param sabnzbd.ingress.hosts[0].paths[0].path The path to use for the ingress.
-## @param sabnzbd.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
-## @param sabnzbd.ingress.tls The TLS configuration for the ingress.
-## @param sabnzbd.resources The resources to use for the pod.
-## @param sabnzbd.autoscaling.enabled Whether to enable autoscaling.
-## @param sabnzbd.autoscaling.minReplicas The minimum number of replicas to scale to.
-## @param sabnzbd.autoscaling.maxReplicas The maximum number of replicas to scale to.
-## @param sabnzbd.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
-## @param sabnzbd.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
-## @param sabnzbd.nodeSelector The node selector to use for the pod.
-## @param sabnzbd.tolerations The tolerations to use for the pod.
-## @param sabnzbd.affinity The affinity to use for the pod.
-## @param sabnzbd.env.PUID The user ID to use for the pod.
-## @param sabnzbd.env.PGID The group ID to use for the pod.
-## @param sabnzbd.env.TZ The timezone to use for the pod.
-## @param sabnzbd.persistence.enabled Whether to enable persistence.
-## @param sabnzbd.persistence.path The subdirectory path to use within jellyfin's media PVC (e.g., 'downloads'). No leading or trailing slashes.
-## @param sabnzbd.persistence.storageClass The storage class to use for the persistence.
-## @param sabnzbd.persistence.existingClaim The name of an existing claim to use for the persistence.
-## @param sabnzbd.persistence.accessMode The access mode to use for the persistence.
-## @param sabnzbd.persistence.size The size to use for the persistence.
-## @param sabnzbd.persistence.additionalVolumes Additional volumes to add to the pod.
-## @param sabnzbd.persistence.additionalMounts Additional volume mounts to add to the pod.
-##
-sabnzbd:
-  enabled: false
-  replicaCount: 1
-
-  image:
-    repository: lscr.io/linuxserver/sabnzbd
-    pullPolicy: IfNotPresent
-    tag: "4.3.3"
-
-  imagePullSecrets: []
-
-  deployment:
-    strategy:
-      type: Recreate
-
-  serviceAccount:
-    create: true
-    annotations: {}
-    name: ""
-
-  podAnnotations: {}
-
-  podSecurityContext: {}
-    # fsGroup: 2000
-
-  securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
-  initContainers: []
-    # - name: init-container
-    #   image: busybox
-    #   command: ['sh', '-c', 'echo "this is an init container"']
-
-  service:
-    type: ClusterIP
-    port: 8080
-    nodePort: ""
-
-  ingress:
-    enabled: false
-    className: ""
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
-
-  resources: {}
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    targetMemoryUtilizationPercentage: 80
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
-
-  env:
-    PUID: "1000"
-    PGID: "1000"
-    TZ: "Europe/London"
-
-  persistence:
-    enabled: true
-    path: downloads
-    storageClass: ""
-    existingClaim: ""
-    accessMode: ReadWriteOnce
-    size: 800Mi
-    additionalVolumes: []
-    additionalMounts: []
-
-## @section Plex parameters
-
-## @param plex.enabled Whether to enable Plex.
-## @param plex.replicaCount The number of replicas to deploy.
-## @param plex.image.repository The Docker repository to pull the image from.
-## @param plex.image.tag The image tag to use.
-## @param plex.image.pullPolicy The logic of image pulling.
-## @param plex.imagePullSecrets The image pull secrets to use.
-## @param plex.deployment.strategy.type The deployment strategy to use.
-## @param plex.serviceAccount.create Whether to create a service account.
-## @param plex.serviceAccount.annotations Additional annotations to add to the service account.
-## @param plex.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
-## @param plex.podAnnotations Additional annotations to add to the pod.
-## @param plex.podSecurityContext The security context to use for the pod.
-## @param plex.securityContext The security context to use for the container.
-## @param plex.initContainers Additional init containers to add to the pod.
-## @param plex.service.type The type of service to create.
-## @param plex.service.port The port on which the service will run.
-## @param plex.service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
-## @param plex.ingress.enabled Whether to create an ingress for the service.
-## @param plex.ingress.className The ingress class name to use.
-## @param plex.ingress.annotations Additional annotations to add to the ingress.
-## @param plex.ingress.hosts[0].host The host to use for the ingress.
-## @param plex.ingress.hosts[0].paths[0].path The path to use for the ingress.
-## @param plex.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
-## @param plex.ingress.tls The TLS configuration for the ingress.
-## @param plex.resources The resources to use for the pod.
-## @param plex.autoscaling.enabled Whether to enable autoscaling.
-## @param plex.autoscaling.minReplicas The minimum number of replicas to scale to.
-## @param plex.autoscaling.maxReplicas The maximum number of replicas to scale to.
-## @param plex.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
-## @param plex.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
-## @param plex.nodeSelector The node selector to use for the pod.
-## @param plex.tolerations The tolerations to use for the pod.
-## @param plex.affinity The affinity to use for the pod.
-## @param plex.env.PUID The user ID to use for the pod.
-## @param plex.env.PGID The group ID to use for the pod.
-## @param plex.env.TZ The timezone to use for the pod.
-## @param plex.env.VERSION Docker image version to use. Valid options are docker, latest, public, or a specific version.
-## @param plex.persistence.enabled Whether to enable persistence.
-## @param plex.persistence.storageClass The storage class to use for the persistence.
-## @param plex.persistence.existingClaim The name of an existing claim to use for the persistence.
-## @param plex.persistence.accessMode The access mode to use for the persistence.
-## @param plex.persistence.size The size to use for the persistence.
-## @param plex.persistence.additionalVolumes Additional volumes to add to the pod.
-## @param plex.persistence.additionalMounts Additional volume mounts to add to the pod.
-##
-plex:
-  enabled: false
-  replicaCount: 1
-
-  image:
-    repository: lscr.io/linuxserver/plex
-    pullPolicy: IfNotPresent
-    tag: "1.41.2"
-
-  imagePullSecrets: []
-
-  deployment:
-    strategy:
-      type: Recreate
-
-  serviceAccount:
-    create: true
-    annotations: {}
-    name: ""
-
-  podAnnotations: {}
-
-  podSecurityContext: {}
-    # fsGroup: 2000
-
-  securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
-  initContainers: []
-    # - name: init-container
-    #   image: busybox
-    #   command: ['sh', '-c', 'echo "this is an init container"']
-
-  service:
-    type: ClusterIP
-    port: 32400
-    nodePort: ""
-
-  ingress:
-    enabled: false
-    className: ""
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
-
-  resources: {}
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    targetMemoryUtilizationPercentage: 80
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
-
-  env:
-    PUID: "1000"
-    PGID: "1000"
-    TZ: "Europe/London"
-    VERSION: "docker"
-
-  persistence:
-    enabled: true
-    storageClass: ""
-    existingClaim: ""
-    accessMode: ReadWriteOnce
-    size: 1Gi
-    additionalVolumes: []
-    additionalMounts: []
-
-## @section Emby parameters
-
-## @param emby.enabled Whether to enable Emby.
-## @param emby.replicaCount The number of replicas to deploy.
-## @param emby.image.repository The Docker repository to pull the image from.
-## @param emby.image.tag The image tag to use.
-## @param emby.image.pullPolicy The logic of image pulling.
-## @param emby.imagePullSecrets The image pull secrets to use.
-## @param emby.deployment.strategy.type The deployment strategy to use.
-## @param emby.serviceAccount.create Whether to create a service account.
-## @param emby.serviceAccount.annotations Additional annotations to add to the service account.
-## @param emby.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
-## @param emby.podAnnotations Additional annotations to add to the pod.
-## @param emby.podSecurityContext The security context to use for the pod.
-## @param emby.securityContext The security context to use for the container.
-## @param emby.initContainers Additional init containers to add to the pod.
-## @param emby.service.type The type of service to create.
-## @param emby.service.port The port on which the service will run.
-## @param emby.service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
-## @param emby.ingress.enabled Whether to create an ingress for the service.
-## @param emby.ingress.className The ingress class name to use.
-## @param emby.ingress.annotations Additional annotations to add to the ingress.
-## @param emby.ingress.hosts[0].host The host to use for the ingress.
-## @param emby.ingress.hosts[0].paths[0].path The path to use for the ingress.
-## @param emby.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
-## @param emby.ingress.tls The TLS configuration for the ingress.
-## @param emby.resources The resources to use for the pod.
-## @param emby.autoscaling.enabled Whether to enable autoscaling.
-## @param emby.autoscaling.minReplicas The minimum number of replicas to scale to.
-## @param emby.autoscaling.maxReplicas The maximum number of replicas to scale to.
-## @param emby.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
-## @param emby.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
-## @param emby.nodeSelector The node selector to use for the pod.
-## @param emby.tolerations The tolerations to use for the pod.
-## @param emby.affinity The affinity to use for the pod.
-## @param emby.env.PUID The user ID to use for the pod.
-## @param emby.env.PGID The group ID to use for the pod.
-## @param emby.env.TZ The timezone to use for the pod.
-## @param emby.persistence.enabled Whether to enable persistence.
-## @param emby.persistence.storageClass The storage class to use for the persistence.
-## @param emby.persistence.existingClaim The name of an existing claim to use for the persistence.
-## @param emby.persistence.accessMode The access mode to use for the persistence.
-## @param emby.persistence.size The size to use for the persistence.
-## @param emby.persistence.additionalVolumes Additional volumes to add to the pod.
-## @param emby.persistence.additionalMounts Additional volume mounts to add to the pod.
-##
-emby:
-  enabled: false
-  replicaCount: 1
-
-  image:
-    repository: lscr.io/linuxserver/emby
-    pullPolicy: IfNotPresent
-    tag: "4.8.10"
-
-  imagePullSecrets: []
-
-  deployment:
-    strategy:
-      type: Recreate
-
-  serviceAccount:
-    create: true
-    annotations: {}
-    name: ""
-
-  podAnnotations: {}
-
-  podSecurityContext: {}
-    # fsGroup: 2000
-
-  securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
-  initContainers: []
-    # - name: init-container
-    #   image: busybox
-    #   command: ['sh', '-c', 'echo "this is an init container"']
-
-  service:
-    type: ClusterIP
-    port: 8096
-    nodePort: ""
-
-  ingress:
-    enabled: false
-    className: ""
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
-
-  resources: {}
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    targetMemoryUtilizationPercentage: 80
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
-
-  env:
-    PUID: "1000"
-    PGID: "1000"
-    TZ: "Europe/London"
-
-  persistence:
-    enabled: true
-    storageClass: ""
-    existingClaim: ""
-    accessMode: ReadWriteOnce
-    size: 1Gi
-    additionalVolumes: []
-    additionalMounts: []
-
+    

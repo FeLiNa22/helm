@@ -1,0 +1,138 @@
+## @section Nextcloud parameters
+
+## @param enabled Whether to enable Nextcloud.
+## @param replicaCount The number of replicas to deploy.
+## @param image.repository The Docker repository to pull the image from.
+## @param image.tag The image tag to use.
+## @param image.pullPolicy The logic of image pulling.
+## @param imagePullSecrets The image pull secrets to use.
+## @param deployment.strategy.type The deployment strategy to use.
+## @param serviceAccount.create Whether to create a service account.
+## @param serviceAccount.annotations Additional annotations to add to the service account.
+## @param serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
+## @param podAnnotations Additional annotations to add to the pod.
+## @param podSecurityContext The security context to use for the pod.
+## @param securityContext The security context to use for the container.
+## @param initContainers Additional init containers to add to the pod.
+## @param service.type The type of service to create.
+## @param service.port The port on which the service will run.
+## @param service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param ingress.enabled Whether to create an ingress for the service.
+## @param ingress.className The ingress class name to use.
+## @param ingress.annotations Additional annotations to add to the ingress.
+## @param ingress.hosts[0].host The host to use for the ingress.
+## @param ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param ingress.tls The TLS configuration for the ingress.
+## @param resources The resources to use for the pod.
+## @param autoscaling.enabled Whether to enable autoscaling.
+## @param autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
+## @param nodeSelector The node selector to use for the pod.
+## @param tolerations The tolerations to use for the pod.
+## @param affinity The affinity to use for the pod.
+## @param env.NEXTCLOUD_ADMIN_USER The admin username.
+## @param env.NEXTCLOUD_ADMIN_PASSWORD The admin password.
+## @param env.NEXTCLOUD_TRUSTED_DOMAINS Trusted domains for Nextcloud.
+## @param persistence.enabled Whether to enable persistence.
+## @param persistence.storageClass The storage class to use for the persistence.
+## @param persistence.existingClaim The name of an existing claim to use for the persistence.
+## @param persistence.accessMode The access mode to use for the persistence.
+## @param persistence.size The size to use for the persistence.
+## @param persistence.additionalVolumes Additional volumes to add to the pod.
+## @param persistence.additionalMounts Additional volume mounts to add to the pod.
+##
+enabled: true
+replicaCount: 1
+
+image:
+  repository: docker.io/library/nextcloud
+  pullPolicy: IfNotPresent
+  tag: "30.0.2"
+
+imagePullSecrets: []
+
+deployment:
+  strategy:
+    type: Recreate
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+initContainers: []
+  # - name: init-container
+  #   image: busybox
+  #   command: ['sh', '-c', 'echo "this is an init container"']
+
+service:
+  type: ClusterIP
+  port: 80
+  nodePort: ""
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+env:
+  NEXTCLOUD_ADMIN_USER: "admin"
+  NEXTCLOUD_ADMIN_PASSWORD: "admin"
+  NEXTCLOUD_TRUSTED_DOMAINS: "localhost"
+
+persistence:
+  enabled: true
+  storageClass: ""
+  existingClaim: ""
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  additionalVolumes: []
+  additionalMounts: []

@@ -1,0 +1,17 @@
+name: vaultwarden
+maintainers:
+  - name: kubitodev
+    url: https://kubito.dev
+apiVersion: v2
+appVersion: 1.32.4
+version: 1.0.0
+description: Vaultwarden Helm Chart
+home: https://github.com/kubitodev/helm/tree/main/charts/vaultwarden
+icon: https://kubito.dev/images/kubito.svg
+keywords:
+  - kubernetes
+  - vaultwarden
+  - bitwarden
+  - password-manager
+sources:
+  - https://github.com/dani-garcia/vaultwarden

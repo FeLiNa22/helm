@@ -1,0 +1,18 @@
+name: frigate
+maintainers:
+  - name: kubitodev
+    url: https://kubito.dev
+apiVersion: v2
+appVersion: 0.14.1
+version: 1.0.0
+description: Frigate NVR Helm Chart
+home: https://github.com/kubitodev/helm/tree/main/charts/frigate
+icon: https://kubito.dev/images/kubito.svg
+keywords:
+  - kubernetes
+  - frigate
+  - nvr
+  - security
+  - cameras
+sources:
+  - https://github.com/blakeblackshear/frigate

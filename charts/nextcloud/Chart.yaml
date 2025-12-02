@@ -1,0 +1,17 @@
+name: nextcloud
+maintainers:
+  - name: kubitodev
+    url: https://kubito.dev
+apiVersion: v2
+appVersion: 30.0.2
+version: 1.0.0
+description: Nextcloud Helm Chart
+home: https://github.com/kubitodev/helm/tree/main/charts/nextcloud
+icon: https://kubito.dev/images/kubito.svg
+keywords:
+  - kubernetes
+  - nextcloud
+  - cloud
+  - storage
+sources:
+  - https://github.com/nextcloud/server

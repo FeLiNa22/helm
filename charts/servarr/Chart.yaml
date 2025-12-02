@@ -21,13 +21,8 @@ keywords:
   - prowlarr
   - cleanuparr
   - sabnzbd
-  - mealie
   - frigate
-  - vaultwarden
   - plex
   - emby
-  - immich
-  - nextcloud
-  - home-assistant
 sources:
   - https://github.com/Servarr

@@ -1,0 +1,17 @@
+name: mealie
+maintainers:
+  - name: kubitodev
+    url: https://kubito.dev
+apiVersion: v2
+appVersion: v2.2.0
+version: 1.0.0
+description: Mealie Helm Chart
+home: https://github.com/kubitodev/helm/tree/main/charts/mealie
+icon: https://kubito.dev/images/kubito.svg
+keywords:
+  - kubernetes
+  - mealie
+  - recipes
+  - cookbook
+sources:
+  - https://github.com/mealie-recipes/mealie

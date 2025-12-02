@@ -1,0 +1,17 @@
+name: home-assistant
+maintainers:
+  - name: kubitodev
+    url: https://kubito.dev
+apiVersion: v2
+appVersion: 2024.11.3
+version: 1.0.0
+description: Home Assistant Helm Chart
+home: https://github.com/kubitodev/helm/tree/main/charts/home-assistant
+icon: https://kubito.dev/images/kubito.svg
+keywords:
+  - kubernetes
+  - home-assistant
+  - smart-home
+  - automation
+sources:
+  - https://github.com/home-assistant/core
