@@ -3,7 +3,8 @@ apiVersion: {{ ternary "autoscaling/v2" "autoscaling/v2beta2" (.Capabilities.API
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
