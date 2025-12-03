@@ -1,8 +1,8 @@
 apiVersion: v2
-name: postgresql-cluster
+name: postgresql-ha
 description: A Helm chart for PostgreSQL using CloudNativePG operator with cluster scaling capabilities
 type: application
-version: 0.1.0
+version: 1.0.0
 appVersion: "16.6"
 keywords:
   - postgresql
