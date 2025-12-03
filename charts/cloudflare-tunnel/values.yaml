@@ -48,8 +48,8 @@ metrics:
 ## @param managed.token The connector token provided at the end of the CF Zero Trust tunnel creation.
 ## @param managed.existingSecret The name of the existing secret containing the token. The secret key must be set to 'cf-tunnel-token'.
 managed:
-  enabled: true
-  token: "eyJhIjoiZjQxM2VjNDQ4ZTJhOGQ2YzhkODY4ZjAyNzNmNjc5NjciLCJ0IjoiNThlNzk0Y2ItNzliZi00OGQ0LWE0N2QtZjEzNzMyNGQ0NDkzIiwicyI6Ik5XTmxPRGRqT0dRdE5USmpPUzAwTVdVMkxUbGtNamd0WldJeU1UTTROamxqTmpKaCJ9"
+  enabled: false
+  token: ""
   existingSecret: ""
 
 ## @param local.enabled Whether to enable Local (CLI) tunnel configuration. Cannot coexist with the managed one.
