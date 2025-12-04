@@ -20,8 +20,17 @@ ingress:
         - path: /
           pathType: ImplementationSpecific
 
+# Database configuration
+database:
+  enabled: true
+  instances: 1
+  storage:
+    size: 1Gi
+    storageClass: "ceph-rbd"
+
 persistence:
   library:
     enabled: true
     storageClass: "ceph-rbd"
     accessMode: ReadWriteOnce
+    size: 100Gi

@@ -220,7 +220,7 @@ flaresolverr:
 
 # Plex - Alternative media server
 plex:
-  enabled: false
+  enabled: true
   service:
     type: LoadBalancer
     port: 80
@@ -244,7 +244,7 @@ plex:
 
 # Emby - Alternative media server
 emby:
-  enabled: false
+  enabled: true
   service:
     type: LoadBalancer
     port: 80
@@ -268,7 +268,7 @@ emby:
 
 # SABnzbd - Usenet client
 sabnzbd:
-  enabled: false
+  enabled: true
   service:
     type: LoadBalancer
     port: 80
@@ -292,7 +292,7 @@ sabnzbd:
 
 # Cleanuparr - Media cleanup tool
 cleanuparr:
-  enabled: false
+  enabled: true
   service:
     type: LoadBalancer
     port: 80
@@ -310,6 +310,6 @@ cleanuparr:
           - path: /
             pathType: ImplementationSpecific
   persistence:
-    enabled: false
+    enabled: true
     storageClass: "ceph-rbd"
     accessMode: ReadWriteOnce

@@ -1,0 +1,80 @@
+{{- if and .Values.enabled .Values.database.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.database.name }}
+  labels:
+    app.kubernetes.io/name: immich-database
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: database
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  instances: {{ .Values.database.instances }}
+  primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
+
+  imageName: {{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}
+
+  {{- if or .Values.database.superuserSecret.name .Values.database.superuserSecret.create }}
+  superuserSecret:
+    name: {{ .Values.database.superuserSecret.name | default (printf "%s-immich-db-superuser" .Release.Name) }}
+  {{- end }}
+
+  bootstrap:
+    initdb:
+      database: {{ .Values.database.database }}
+      owner: {{ .Values.database.owner }}
+      {{- if or .Values.database.secret.name .Values.database.secret.create }}
+      secret:
+        name: {{ .Values.database.secret.name | default (printf "%s-immich-db-app" .Release.Name) }}
+      {{- end }}
+      # Initialize required PostgreSQL extensions for Immich
+      postInitApplicationSQL:
+        - CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
+        - CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
+        - CREATE EXTENSION IF NOT EXISTS pg_trgm;
+        - CREATE EXTENSION IF NOT EXISTS btree_gist;
+
+  storage:
+    size: {{ .Values.database.storage.size }}
+    {{- if .Values.database.storage.storageClass }}
+    storageClass: {{ .Values.database.storage.storageClass }}
+    {{- end }}
+
+  postgresql:
+    parameters:
+      max_connections: "200"
+      shared_buffers: "256MB"
+      effective_cache_size: "1GB"
+      maintenance_work_mem: "64MB"
+      checkpoint_completion_target: "0.9"
+      wal_buffers: "16MB"
+      default_statistics_target: "100"
+      random_page_cost: "1.1"
+      effective_io_concurrency: "200"
+      work_mem: "1310kB"
+      min_wal_size: "1GB"
+      max_wal_size: "4GB"
+    shared_preload_libraries:
+      - "vchord.so"
+    pg_hba:
+      - host all all all scram-sha-256
+
+  monitoring:
+    enablePodMonitor: false
+
+  {{- if .Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml .Values.nodeSelector | nindent 4 }}
+  {{- end }}
+
+  {{- if .Values.tolerations }}
+  tolerations:
+    {{- toYaml .Values.tolerations | nindent 4 }}
+  {{- end }}
+
+  {{- if .Values.affinity }}
+  affinity:
+    {{- toYaml .Values.affinity | nindent 4 }}
+  {{- end }}
+{{- end }}
