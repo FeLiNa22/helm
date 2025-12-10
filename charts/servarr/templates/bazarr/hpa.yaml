@@ -4,7 +4,11 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: {{ .Release.Name }}-bazarr
   labels:
-    {{- call "servarr.labels" "bazarr" | nindent 4 }}
+    app.kubernetes.io/name: bazarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-bazarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

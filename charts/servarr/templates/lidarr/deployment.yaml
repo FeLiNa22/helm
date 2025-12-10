@@ -4,7 +4,11 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-lidarr
   labels:
-    {{- call "servarr.labels" "lidarr" | nindent 4 }}
+    app.kubernetes.io/name: lidarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-lidarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   {{- if not .Values.lidarr.autoscaling.enabled }}
   replicas: {{ .Values.lidarr.replicaCount }}
@@ -13,7 +17,8 @@ spec:
     {{- .Values.lidarr.deployment.strategy | toYaml | nindent 4 }}
   selector:
     matchLabels:
-      {{- call "servarr.selectorLabels" "lidarr" | nindent 6 }}
+      app.kubernetes.io/name: lidarr
+      app.kubernetes.io/instance: {{ .Release.Name }}-lidarr
   template:
     metadata:
       {{- with .Values.lidarr.podAnnotations }}
@@ -21,7 +26,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- call "servarr.labels" "lidarr" | nindent 8 }}
+        app.kubernetes.io/name: lidarr
+        app.kubernetes.io/instance: {{ .Release.Name }}-lidarr
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/part-of: {{ .Release.Name | quote }}
     spec:
       {{- with .Values.lidarr.imagePullSecrets }}
       imagePullSecrets:

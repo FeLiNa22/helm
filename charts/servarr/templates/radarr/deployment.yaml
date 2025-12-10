@@ -4,7 +4,11 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-radarr
   labels:
-    {{- call "servarr.labels" "radarr" | nindent 4 }}
+    app.kubernetes.io/name: radarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-radarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   {{- if not .Values.radarr.autoscaling.enabled }}
   replicas: {{ .Values.radarr.replicaCount }}
@@ -13,7 +17,8 @@ spec:
     {{- .Values.radarr.deployment.strategy | toYaml | nindent 4 }}
   selector:
     matchLabels:
-      {{- call "servarr.selectorLabels" "radarr" | nindent 6 }}
+      app.kubernetes.io/name: radarr
+      app.kubernetes.io/instance: {{ .Release.Name }}-radarr
   template:
     metadata:
       {{- with .Values.radarr.podAnnotations }}
@@ -21,7 +26,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- call "servarr.labels" "radarr" | nindent 8 }}
+        app.kubernetes.io/name: radarr
+        app.kubernetes.io/instance: {{ .Release.Name }}-radarr
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/part-of: {{ .Release.Name | quote }}
     spec:
       {{- with .Values.radarr.imagePullSecrets }}
       imagePullSecrets:

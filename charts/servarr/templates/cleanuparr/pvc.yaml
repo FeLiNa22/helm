@@ -4,7 +4,11 @@ apiVersion: v1
 metadata:
   name: {{ .Release.Name }}-cleanuparr
   labels:
-    {{- call "servarr.labels" "cleanuparr" | nindent 4 }}
+    app.kubernetes.io/name: cleanuparr
+    app.kubernetes.io/instance: {{ .Release.Name }}-cleanuparr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
   {{- if .Values.cleanuparr.persistence.annotations }}
   annotations:
     {{- toYaml .Values.cleanuparr.persistence.annotations | nindent 4 }}

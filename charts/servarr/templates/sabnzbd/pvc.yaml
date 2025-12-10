@@ -4,7 +4,11 @@ apiVersion: v1
 metadata:
   name: {{ .Release.Name }}-sabnzbd
   labels:
-    {{- call "servarr.labels" "sabnzbd" | nindent 4 }}
+    app.kubernetes.io/name: sabnzbd
+    app.kubernetes.io/instance: {{ .Release.Name }}-sabnzbd
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
   {{- if .Values.sabnzbd.persistence.annotations }}
   annotations:
     {{- toYaml .Values.sabnzbd.persistence.annotations | nindent 4 }}

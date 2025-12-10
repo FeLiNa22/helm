@@ -4,7 +4,11 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-sabnzbd
   labels:
-    {{- call "servarr.labels" "sabnzbd" | nindent 4 }}
+    app.kubernetes.io/name: sabnzbd
+    app.kubernetes.io/instance: {{ .Release.Name }}-sabnzbd
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   type: {{ .Values.sabnzbd.service.type | default "ClusterIP" }}
   ports:
@@ -16,5 +20,6 @@ spec:
       nodePort: {{.Values.sabnzbd.service.nodePort}}
 {{ end }}
   selector:
-    {{- call "servarr.selectorLabels" "sabnzbd" | nindent 4 }}
+    app.kubernetes.io/name: sabnzbd
+    app.kubernetes.io/instance: {{ .Release.Name }}-sabnzbd
 {{- end }}

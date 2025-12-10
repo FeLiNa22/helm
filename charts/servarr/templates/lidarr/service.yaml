@@ -4,7 +4,11 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-lidarr
   labels:
-    {{- call "servarr.labels" "lidarr" | nindent 4 }}
+    app.kubernetes.io/name: lidarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-lidarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   type: {{ .Values.lidarr.service.type | default "ClusterIP" }}
   ports:
@@ -16,5 +20,6 @@ spec:
       nodePort: {{.Values.lidarr.service.nodePort}}
 {{ end }}
   selector:
-    {{- call "servarr.selectorLabels" "lidarr" | nindent 4 }}
+    app.kubernetes.io/name: lidarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-lidarr
 {{- end }}

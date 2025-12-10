@@ -4,7 +4,11 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-prowlarr
   labels:
-    {{- call "servarr.labels" "prowlarr" | nindent 4 }}
+    app.kubernetes.io/name: prowlarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-prowlarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   {{- if not .Values.prowlarr.autoscaling.enabled }}
   replicas: {{ .Values.prowlarr.replicaCount }}
@@ -13,7 +17,8 @@ spec:
     {{- .Values.prowlarr.deployment.strategy | toYaml | nindent 4 }}
   selector:
     matchLabels:
-      {{- call "servarr.selectorLabels" "prowlarr" | nindent 6 }}
+      app.kubernetes.io/name: prowlarr
+      app.kubernetes.io/instance: {{ .Release.Name }}-prowlarr
   template:
     metadata:
       {{- with .Values.prowlarr.podAnnotations }}
@@ -21,7 +26,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- call "servarr.labels" "prowlarr" | nindent 8 }}
+        app.kubernetes.io/name: prowlarr
+        app.kubernetes.io/instance: {{ .Release.Name }}-prowlarr
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/part-of: {{ .Release.Name | quote }}
     spec:
       {{- with .Values.prowlarr.imagePullSecrets }}
       imagePullSecrets:

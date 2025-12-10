@@ -17,7 +17,11 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- call "servarr.labels" "prowlarr" | nindent 4 }}
+    app.kubernetes.io/name: prowlarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-prowlarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
   {{- with .Values.prowlarr.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

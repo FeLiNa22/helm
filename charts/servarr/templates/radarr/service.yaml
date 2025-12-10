@@ -4,7 +4,11 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-radarr
   labels:
-    {{- call "servarr.labels" "radarr" | nindent 4 }}
+    app.kubernetes.io/name: radarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-radarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   type: {{ .Values.radarr.service.type | default "ClusterIP" }}
   ports:
@@ -16,5 +20,6 @@ spec:
       nodePort: {{.Values.radarr.service.nodePort}}
 {{ end }}
   selector:
-    {{- call "servarr.selectorLabels" "radarr" | nindent 4 }}
+    app.kubernetes.io/name: radarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-radarr
 {{- end }}

@@ -4,7 +4,11 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-flaresolverr
   labels:
-    {{- call "servarr.labels" "flaresolverr" | nindent 4 }}
+    app.kubernetes.io/name: flaresolverr
+    app.kubernetes.io/instance: {{ .Release.Name }}-flaresolverr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   type: {{ .Values.flaresolverr.service.type | default "ClusterIP" }}
   ports:
@@ -16,5 +20,6 @@ spec:
       nodePort: {{.Values.flaresolverr.service.nodePort}}
 {{ end }}
   selector:
-    {{- call "servarr.selectorLabels" "flaresolverr" | nindent 4 }}
+    app.kubernetes.io/name: flaresolverr
+    app.kubernetes.io/instance: {{ .Release.Name }}-flaresolverr
 {{- end }}

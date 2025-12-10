@@ -4,7 +4,11 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-cleanuparr
   labels:
-    {{- call "servarr.labels" "cleanuparr" | nindent 4 }}
+    app.kubernetes.io/name: cleanuparr
+    app.kubernetes.io/instance: {{ .Release.Name }}-cleanuparr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   {{- if not .Values.cleanuparr.autoscaling.enabled }}
   replicas: {{ .Values.cleanuparr.replicaCount }}
@@ -13,7 +17,8 @@ spec:
     {{- .Values.cleanuparr.deployment.strategy | toYaml | nindent 4 }}
   selector:
     matchLabels:
-      {{- call "servarr.selectorLabels" "cleanuparr" | nindent 6 }}
+      app.kubernetes.io/name: cleanuparr
+      app.kubernetes.io/instance: {{ .Release.Name }}-cleanuparr
   template:
     metadata:
       {{- with .Values.cleanuparr.podAnnotations }}
@@ -21,7 +26,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- call "servarr.labels" "cleanuparr" | nindent 8 }}
+        app.kubernetes.io/name: cleanuparr
+        app.kubernetes.io/instance: {{ .Release.Name }}-cleanuparr
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/part-of: {{ .Release.Name | quote }}
     spec:
       {{- with .Values.cleanuparr.imagePullSecrets }}
       imagePullSecrets:

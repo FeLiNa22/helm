@@ -4,7 +4,11 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-qbittorrent-web
   labels:
-    {{- call "servarr.labels" "qbittorrent" | nindent 4 }}
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   type: {{ .Values.qbittorrent.service.web.type | default "ClusterIP" }}
   ports:
@@ -16,7 +20,8 @@ spec:
       nodePort: {{ .Values.qbittorrent.service.web.nodePort }}
   {{- end }}
   selector:
-    {{- call "servarr.selectorLabels" "qbittorrent" | nindent 4 }}
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
 
 ---
 apiVersion: v1
@@ -24,7 +29,11 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-qbittorrent-bt
   labels:
-    {{- call "servarr.labels" "qbittorrent" | nindent 4 }}
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   type: {{ .Values.qbittorrent.service.bt.type | default "ClusterIP" }}
   ports:
@@ -43,5 +52,6 @@ spec:
       nodePort: {{ .Values.qbittorrent.service.bt.nodePort }}
   {{- end }}
   selector:
-    {{- call "servarr.selectorLabels" "qbittorrent" | nindent 4 }}
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
 {{- end }}

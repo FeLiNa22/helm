@@ -4,7 +4,11 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-emby
   labels:
-    {{- call "servarr.labels" "emby" | nindent 4 }}
+    app.kubernetes.io/name: emby
+    app.kubernetes.io/instance: {{ .Release.Name }}-emby
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   {{- if not .Values.emby.autoscaling.enabled }}
   replicas: {{ .Values.emby.replicaCount }}
@@ -13,7 +17,8 @@ spec:
     {{- .Values.emby.deployment.strategy | toYaml | nindent 4 }}
   selector:
     matchLabels:
-      {{- call "servarr.selectorLabels" "emby" | nindent 6 }}
+      app.kubernetes.io/name: emby
+      app.kubernetes.io/instance: {{ .Release.Name }}-emby
   template:
     metadata:
       {{- with .Values.emby.podAnnotations }}
@@ -21,7 +26,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- call "servarr.labels" "emby" | nindent 8 }}
+        app.kubernetes.io/name: emby
+        app.kubernetes.io/instance: {{ .Release.Name }}-emby
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/part-of: {{ .Release.Name | quote }}
     spec:
       {{- with .Values.emby.imagePullSecrets }}
       imagePullSecrets:

@@ -4,7 +4,11 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-cleanuparr
   labels:
-    {{- call "servarr.labels" "cleanuparr" | nindent 4 }}
+    app.kubernetes.io/name: cleanuparr
+    app.kubernetes.io/instance: {{ .Release.Name }}-cleanuparr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   type: {{ .Values.cleanuparr.service.type | default "ClusterIP" }}
   ports:
@@ -16,5 +20,6 @@ spec:
       nodePort: {{.Values.cleanuparr.service.nodePort}}
 {{ end }}
   selector:
-    {{- call "servarr.selectorLabels" "cleanuparr" | nindent 4 }}
+    app.kubernetes.io/name: cleanuparr
+    app.kubernetes.io/instance: {{ .Release.Name }}-cleanuparr
 {{- end }}

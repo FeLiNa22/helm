@@ -4,7 +4,11 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-plex
   labels:
-    {{- call "servarr.labels" "plex" | nindent 4 }}
+    app.kubernetes.io/name: plex
+    app.kubernetes.io/instance: {{ .Release.Name }}-plex
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   type: {{ .Values.plex.service.type | default "ClusterIP" }}
   ports:
@@ -16,5 +20,6 @@ spec:
       nodePort: {{.Values.plex.service.nodePort}}
 {{ end }}
   selector:
-    {{- call "servarr.selectorLabels" "plex" | nindent 4 }}
+    app.kubernetes.io/name: plex
+    app.kubernetes.io/instance: {{ .Release.Name }}-plex
 {{- end }}

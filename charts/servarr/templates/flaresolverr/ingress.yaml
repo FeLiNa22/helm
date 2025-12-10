@@ -17,7 +17,11 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- call "servarr.labels" "flaresolverr" | nindent 4 }}
+    app.kubernetes.io/name: flaresolverr
+    app.kubernetes.io/instance: {{ .Release.Name }}-flaresolverr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
   {{- with .Values.flaresolverr.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

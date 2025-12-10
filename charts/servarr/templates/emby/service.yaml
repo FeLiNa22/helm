@@ -4,7 +4,11 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-emby
   labels:
-    {{- call "servarr.labels" "emby" | nindent 4 }}
+    app.kubernetes.io/name: emby
+    app.kubernetes.io/instance: {{ .Release.Name }}-emby
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   type: {{ .Values.emby.service.type | default "ClusterIP" }}
   ports:
@@ -16,5 +20,6 @@ spec:
       nodePort: {{.Values.emby.service.nodePort}}
 {{ end }}
   selector:
-    {{- call "servarr.selectorLabels" "emby" | nindent 4 }}
+    app.kubernetes.io/name: emby
+    app.kubernetes.io/instance: {{ .Release.Name }}-emby
 {{- end }}

@@ -4,7 +4,11 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-prowlarr
   labels:
-    {{- call "servarr.labels" "prowlarr" | nindent 4 }}
+    app.kubernetes.io/name: prowlarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-prowlarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   type: {{ .Values.prowlarr.service.type | default "ClusterIP" }}
   ports:
@@ -16,5 +20,6 @@ spec:
       nodePort: {{.Values.prowlarr.service.nodePort}}
 {{ end }}
   selector:
-    {{- call "servarr.selectorLabels" "prowlarr" | nindent 4 }}
+    app.kubernetes.io/name: prowlarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-prowlarr
 {{- end }}

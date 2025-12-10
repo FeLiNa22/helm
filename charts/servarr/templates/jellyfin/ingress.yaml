@@ -4,7 +4,11 @@ kind: Ingress
 metadata:
   name: {{ .Release.Name }}-jellyfin
   labels:
-    {{- call "servarr.labels" "jellyfin" | nindent 4 }}
+    app.kubernetes.io/name: jellyfin
+    app.kubernetes.io/instance: {{ .Release.Name }}-jellyfin
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
     {{- with .Values.jellyfin.ingress.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -50,7 +54,11 @@ kind: Ingress
 metadata:
   name: {{ .Release.Name }}-jellyfin
   labels:
-    {{- call "servarr.labels" "jellyfin" | nindent 4 }}
+    app.kubernetes.io/name: jellyfin
+    app.kubernetes.io/instance: {{ .Release.Name }}-jellyfin
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   defaultBackend:
     service:

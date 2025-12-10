@@ -4,7 +4,11 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-sabnzbd
   labels:
-    {{- call "servarr.labels" "sabnzbd" | nindent 4 }}
+    app.kubernetes.io/name: sabnzbd
+    app.kubernetes.io/instance: {{ .Release.Name }}-sabnzbd
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   {{- if not .Values.sabnzbd.autoscaling.enabled }}
   replicas: {{ .Values.sabnzbd.replicaCount }}
@@ -13,7 +17,8 @@ spec:
     {{- .Values.sabnzbd.deployment.strategy | toYaml | nindent 4 }}
   selector:
     matchLabels:
-      {{- call "servarr.selectorLabels" "sabnzbd" | nindent 6 }}
+      app.kubernetes.io/name: sabnzbd
+      app.kubernetes.io/instance: {{ .Release.Name }}-sabnzbd
   template:
     metadata:
       {{- with .Values.sabnzbd.podAnnotations }}
@@ -21,7 +26,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- call "servarr.labels" "sabnzbd" | nindent 8 }}
+        app.kubernetes.io/name: sabnzbd
+        app.kubernetes.io/instance: {{ .Release.Name }}-sabnzbd
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/part-of: {{ .Release.Name | quote }}
     spec:
       {{- with .Values.sabnzbd.imagePullSecrets }}
       imagePullSecrets:
