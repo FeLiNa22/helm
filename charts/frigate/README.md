@@ -11,3 +11,8 @@ helm install frigate ./frigate
 ## Configuration
 
 See `values.yaml` for configuration options.
+
+## Parameters
+
+### Frigate parameters
+

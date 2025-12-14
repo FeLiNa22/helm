@@ -44,3 +44,8 @@ You need to configure persistent storage for Immich's library:
 - `persistence.library.enabled`: Enable persistent storage (default: true)
 - `persistence.library.size`: Storage size (default: 10Gi)
 - `persistence.library.existingClaim`: Use an existing PVC (optional)
+
+## Parameters
+
+### Immich parameters
+

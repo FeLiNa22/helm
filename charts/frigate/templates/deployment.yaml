@@ -90,6 +90,13 @@ spec:
               containerPort: 8555
               protocol: TCP
           env:
+            {{- if .Values.database.enabled }}
+            - name: FRIGATE_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.secret.name | default (printf "%s-frigate-db-app" .Release.Name) }}
+                  key: database-url
+            {{- end }}
             {{- range $k,$v := .Values.env }}
             - name: {{ $k }}
               value: {{ $v | quote }}

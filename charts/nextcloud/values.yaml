@@ -36,6 +36,23 @@
 ## @param env.NEXTCLOUD_ADMIN_USER The admin username.
 ## @param env.NEXTCLOUD_ADMIN_PASSWORD The admin password.
 ## @param env.NEXTCLOUD_TRUSTED_DOMAINS Trusted domains for Nextcloud.
+## @param database.enabled Whether to enable PostgreSQL database for Nextcloud.
+## @param database.name Name of the database cluster (will be suffixed with release name).
+## @param database.instances Number of PostgreSQL instances (replicas).
+## @param database.image.repository PostgreSQL container image repository.
+## @param database.image.tag PostgreSQL container image tag.
+## @param database.database Name of the database to create.
+## @param database.owner Owner of the database.
+## @param database.storage.size Size of the storage for each instance.
+## @param database.storage.storageClass Storage class name for persistent volumes.
+## @param database.secret.name Name of the secret containing database credentials.
+## @param database.secret.create Whether to create the database secret.
+## @param database.secret.username Database user username.
+## @param database.secret.password Database user password (leave empty to auto-generate).
+## @param database.superuserSecret.name Name of the secret containing the superuser credentials.
+## @param database.superuserSecret.create Whether to create the superuser secret.
+## @param database.superuserSecret.username Superuser username.
+## @param database.superuserSecret.password Superuser password (leave empty to auto-generate).
 ## @param persistence.enabled Whether to enable persistence.
 ## @param persistence.storageClass The storage class to use for the persistence.
 ## @param persistence.existingClaim The name of an existing claim to use for the persistence.
@@ -127,6 +144,43 @@ env:
   NEXTCLOUD_ADMIN_USER: "admin"
   NEXTCLOUD_ADMIN_PASSWORD: "admin"
   NEXTCLOUD_TRUSTED_DOMAINS: "localhost"
+  # Database connection will be configured via secrets when database.enabled=true
+  # Otherwise, configure these manually:
+  # POSTGRES_HOST: "nextcloud-postgresql"
+  # POSTGRES_USER: "nextcloud"
+  # POSTGRES_PASSWORD: "nextcloud"
+  # POSTGRES_DB: "nextcloud"
+
+# Database configuration using CloudNativePG
+database:
+  enabled: true
+  # Name of the database cluster (will be suffixed with release name)
+  name: nextcloud-db
+  # Number of PostgreSQL instances (replicas)
+  instances: 1
+  # PostgreSQL image
+  image:
+    repository: ghcr.io/cloudnative-pg/postgresql
+    tag: "16.6"
+  # Database configuration
+  database: nextcloud
+  owner: nextcloud
+  # Storage configuration
+  storage:
+    size: 10Gi
+    storageClass: ""
+  # Secret configuration
+  secret:
+    name: ""  # Leave empty to auto-generate
+    create: true
+    username: nextcloud
+    password: ""  # Leave empty to auto-generate
+  # Superuser secret
+  superuserSecret:
+    name: ""  # Leave empty to auto-generate
+    create: true
+    username: postgres
+    password: ""  # Leave empty to auto-generate
 
 persistence:
   enabled: true

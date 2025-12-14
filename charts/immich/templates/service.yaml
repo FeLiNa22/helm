@@ -21,3 +21,4 @@ spec:
   selector:
     app.kubernetes.io/name: immich
     app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

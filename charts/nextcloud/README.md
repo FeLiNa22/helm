@@ -11,3 +11,8 @@ helm install nextcloud ./nextcloud
 ## Configuration
 
 See `values.yaml` for configuration options.
+
+## Parameters
+
+### Nextcloud parameters
+

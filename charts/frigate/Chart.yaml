@@ -4,8 +4,9 @@ maintainers:
     url: https://raulpatel.com
 apiVersion: v2
 appVersion: 0.14.1
-version: 1.0.1
+version: 1.0.2
 description: Frigate NVR Helm Chart
+type: application
 home: https://github.com/FeLiNa22/homeserver/tree/main/charts/frigate
 icon: https://raulpatel.com/images/raul.svg
 keywords:
