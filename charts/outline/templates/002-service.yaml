@@ -7,8 +7,9 @@ metadata:
     app: {{ .Release.Name }}
     release: {{ .Release.Name }}
 spec:
+  type: {{ .Values.service.type }}
   ports:
-    - port: 3000
+    - port: {{ .Values.service.port }}
       targetPort: 3000
       name: web
   selector:

@@ -81,7 +81,7 @@ jellyfin:
   enableDLNA: false
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 8096
     nodePort: ""
     annotations: {}
@@ -107,7 +107,7 @@ jellyfin:
   persistence:
     config:
       enabled: true
-      storageClass: ""
+      storageClass: "ceph-rbd"
       existingClaim: ""
       subPath: ""
       accessMode: ReadWriteOnce
@@ -116,10 +116,10 @@ jellyfin:
       annotations: {}
     media:
       enabled: true
-      storageClass: ""
+      storageClass: "cephfs"
       existingClaim: ""
       subPath: ""
-      accessMode: ReadWriteOnce
+      accessMode: ReadWriteMany
       size: 10Gi
       labels: {}
       annotations: {}
@@ -289,7 +289,7 @@ sonarr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 80
     nodePort: ""
 
@@ -339,7 +339,7 @@ sonarr:
   persistence:
     enabled: true
     path: tv
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -436,11 +436,11 @@ qbittorrent:
 
   service:
     web:
-      type: ClusterIP
+      type: LoadBalancer
       port: 8080
       nodePort: ""
     bt:
-      type: ClusterIP
+      type: LoadBalancer
       port: 6881
       nodePort: ""
 
@@ -489,7 +489,7 @@ qbittorrent:
   persistence:
     enabled: true
     path: downloads
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -583,7 +583,7 @@ prowlarr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 9696
     nodePort: ""
 
@@ -632,7 +632,7 @@ prowlarr:
 
   persistence:
     enabled: true
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -728,7 +728,7 @@ flaresolverr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 8191
     nodePort: ""
 
@@ -852,7 +852,7 @@ jellyseerr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 5055
     nodePort: ""
 
@@ -895,7 +895,7 @@ jellyseerr:
 
   persistence:
     enabled: true
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -987,7 +987,7 @@ bazarr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 6767
     nodePort: ""
 
@@ -1035,7 +1035,7 @@ bazarr:
 
   persistence:
     enabled: true
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -1129,7 +1129,7 @@ radarr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 7878
     nodePort: ""
 
@@ -1179,7 +1179,7 @@ radarr:
   persistence:
     enabled: true
     path: movies
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -1273,7 +1273,7 @@ lidarr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 8686
     nodePort: ""
 
@@ -1323,7 +1323,7 @@ lidarr:
   persistence:
     enabled: true
     path: music
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -1418,7 +1418,7 @@ cleanuparr:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 11011
     nodePort: ""
 
@@ -1469,7 +1469,7 @@ cleanuparr:
 
   persistence:
     enabled: false
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 100Mi
@@ -1562,7 +1562,7 @@ sabnzbd:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 8080
     nodePort: ""
 
@@ -1611,7 +1611,7 @@ sabnzbd:
   persistence:
     enabled: true
     path: downloads
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -1704,7 +1704,7 @@ plex:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 32400
     nodePort: ""
 
@@ -1753,7 +1753,7 @@ plex:
 
   persistence:
     enabled: true
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 1Gi
@@ -1845,7 +1845,7 @@ emby:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 8096
     nodePort: ""
 
@@ -1893,7 +1893,7 @@ emby:
 
   persistence:
     enabled: true
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 1Gi

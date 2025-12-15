@@ -81,7 +81,7 @@ initContainers: []
   #   command: ['sh', '-c', 'echo "this is an init container"']
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 9000
   nodePort: ""
 
@@ -128,7 +128,7 @@ env:
 
 persistence:
   enabled: true
-  storageClass: ""
+  storageClass: "ceph-rbd"
   existingClaim: ""
   accessMode: ReadWriteOnce
   size: 1Gi

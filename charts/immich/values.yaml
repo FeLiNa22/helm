@@ -98,7 +98,7 @@ initContainers: []
   #   command: ['sh', '-c', 'echo "this is an init container"']
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 2283
   nodePort: ""
 
@@ -166,7 +166,7 @@ database:
   # Storage configuration
   storage:
     size: 10Gi
-    storageClass: ""
+    storageClass: "ceph-rbd"
   # Secret configuration
   secret:
     name: ""  # Leave empty to auto-generate
@@ -183,7 +183,7 @@ database:
 persistence:
   library:
     enabled: true
-    storageClass: ""
+    storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 10Gi
