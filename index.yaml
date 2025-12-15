@@ -65,6 +65,29 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/cloudflare-tunnel-1.0.1/cloudflare-tunnel-1.0.1.tgz
     version: 1.0.1
+  crewai:
+  - apiVersion: v2
+    appVersion: 0.121.1
+    created: "2025-12-15T03:27:38.387542775Z"
+    description: CrewAI Enterprise Helm Chart - Deploy AI agent workflows to Kubernetes
+    digest: 1dca77c886612399e084f4d9c40f99364451b0a362afe055e10958378bca992f
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/crewai
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - crewai
+    - ai
+    - agents
+    - llm
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: crewai
+    sources:
+    - https://github.com/crewAIInc/crewAI
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/crewai-1.0.0/crewai-1.0.0.tgz
+    version: 1.0.0
   excalidraw:
   - apiVersion: v2
     appVersion: 0.17.6
@@ -574,4 +597,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2025-12-15T02:08:52.125327565Z"
+generated: "2025-12-15T03:27:38.387571909Z"
