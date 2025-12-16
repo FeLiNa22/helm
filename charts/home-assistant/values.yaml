@@ -81,12 +81,12 @@ initContainers: []
   #   command: ['sh', '-c', 'echo "this is an init container"']
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 8123
   nodePort: ""
 
 ingress:
-  enabled: false
+  enabled: true
   className: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
@@ -127,7 +127,7 @@ env:
 
 persistence:
   enabled: true
-  storageClass: ""
+  storageClass: "ceph-rbd"
   existingClaim: ""
   accessMode: ReadWriteOnce
   size: 1Gi

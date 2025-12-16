@@ -106,7 +106,7 @@ outline:
     port: 3000
   fileStorage:
     type: s3 # set to local|s3
-    storageClassName: ""
+    storageClassName: "ceph-rbd"
     storageSize: 250Gi
     localRootDir: /var/lib/outline/data
     uploadMaxSize: "26214400"
@@ -245,6 +245,15 @@ auth:
     displayName: OpenID Connect
     scopes: openid profile email
 
+## @section Service parameters
+
+## @param service.type The type of service to create.
+## @param service.port The port on which the service will run.
+##
+service:
+  type: LoadBalancer
+  port: 80
+
 ## @section Ingress parameters
 
 ## @param ingress.enabled Whether to enable the ingress.
@@ -258,7 +267,7 @@ auth:
 ## @param ingress.rules.http.paths[0].backend.service.port.name Name of the service port.
 ##
 ingress:
-  enabled: false
+  enabled: true
   annotations: {}
   tls:
     enabled: false

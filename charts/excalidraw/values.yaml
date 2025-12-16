@@ -71,7 +71,7 @@ initContainers: []
   #   command: ['sh', '-c', 'echo "this is an init container"']
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 8080
   nodePort: ""
 

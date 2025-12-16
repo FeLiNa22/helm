@@ -11,3 +11,9 @@ helm install mealie ./mealie
 ## Configuration
 
 See `values.yaml` for configuration options.
+
+## Parameters
+
+| Name | Description | Value |
+|------|-------------|-------|
+| `replicaCount` | Number of replicas | `1` |
