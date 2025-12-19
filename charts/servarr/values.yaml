@@ -1,4 +1,20 @@
-## Default values for Jellyfin
+## @section Media parameters
+
+## @param media.enabled Whether to enable media storage
+## @param media.storageClass The storage class to use for the config.
+## @param media.existingClaim The name of an existing claim to use for the config.
+## @param media.accessMode The access mode to use for the config.
+## @param media.size The size to use for the config.
+## @param media.labels Additional labels to add to the config.
+## @param media.annotations Additional annotations to add to the config.
+media:
+  enabled: true
+  storageClass: ""
+  existingClaim: ""
+  accessMode: ReadWriteMany
+  size: 10Gi
+  labels: {}
+  annotations: {}
 
 ## @section Jellyfin parameters
 
@@ -26,9 +42,9 @@
 ## @param jellyfin.persistence.storageClass The storage class to use for the config.
 ## @param jellyfin.persistence.existingClaim The name of an existing claim to use for the config.
 ## @param jellyfin.persistence.accessMode The access mode to use for the config.
-## @param jellyfin.persistence.config.size The size to use for the config.
-## @param jellyfin.persistence.config.labels Additional labels to add to the config.
-## @param jellyfin.persistence.config.annotations Additional annotations to add to the config.
+## @param jellyfin.persistence.size The size to use for the config.
+## @param jellyfin.persistence.labels Additional labels to add to the config.
+## @param jellyfin.persistence.annotations Additional annotations to add to the config.
 ## @param jellyfin.persistence.extraExistingClaimMounts Additional existing claim mounts to add to the pod.
 ## @param jellyfin.resources The resources to use for the pod.
 ## @param jellyfin.nodeSelector The node selector to use for the pod.
@@ -88,12 +104,11 @@ jellyfin:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
-
+  
   persistence:
     enabled: true
     storageClass: ""
     existingClaim: ""
-    subPath: ""
     accessMode: ReadWriteOnce
     size: 1Gi
     labels: {}
