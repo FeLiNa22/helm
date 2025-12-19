@@ -7,6 +7,10 @@
 ## @param media.size The size to use for the config.
 ## @param media.labels Additional labels to add to the config.
 ## @param media.annotations Additional annotations to add to the config.
+## @param media.paths.tv The subpath for TV shows within the media PVC. Don't use leading or trailing slashes.
+## @param media.paths.movies The subpath for movies within the media PVC. Don't use leading or trailing slashes.
+## @param media.paths.music The subpath for music within the media PVC. Don't use leading or trailing slashes.
+## @param media.paths.downloads The subpath for downloads within the media PVC. Don't use leading or trailing slashes.
 media:
   enabled: true
   storageClass: ""
@@ -15,6 +19,11 @@ media:
   size: 10Gi
   labels: {}
   annotations: {}
+  paths:
+    tv: tv
+    movies: movies
+    music: music
+    downloads: downloads
 
 ## @section Jellyfin parameters
 
@@ -237,7 +246,6 @@ jellyfin:
 ## @param sonarr.env.TZ The timezone to use for the pod.
 ## @param sonarr.env.UMASK The umask to use for the pod.
 ## @param sonarr.persistence.enabled Whether to enable persistence.
-## @param sonarr.persistence.path The path to use for the persistence. Don't use slashes.
 ## @param sonarr.persistence.storageClass The storage class to use for the persistence.
 ## @param sonarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param sonarr.persistence.accessMode The access mode to use for the persistence.
@@ -334,7 +342,6 @@ sonarr:
 
   persistence:
     enabled: true
-    path: tv
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
@@ -384,7 +391,6 @@ sonarr:
 ## @param qbittorrent.env.PGID The group ID to use for the pod.
 ## @param qbittorrent.env.TZ The timezone to use for the pod.
 ## @param qbittorrent.persistence.enabled Whether to enable persistence.
-## @param qbittorrent.persistence.path The path to use for the persistence. Don't use slashes.
 ## @param qbittorrent.persistence.storageClass The storage class to use for the persistence.
 ## @param qbittorrent.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param qbittorrent.persistence.accessMode The access mode to use for the persistence.
@@ -484,7 +490,6 @@ qbittorrent:
 
   persistence:
     enabled: true
-    path: downloads
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
@@ -1078,7 +1083,6 @@ bazarr:
 ## @param radarr.env.TZ The timezone to use for the pod.
 ## @param radarr.env.UMASK The umask to use for the pod.
 ## @param radarr.persistence.enabled Whether to enable persistence.
-## @param radarr.persistence.path The path to use for the persistence. Don't use slashes.
 ## @param radarr.persistence.storageClass The storage class to use for the persistence.
 ## @param radarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param radarr.persistence.accessMode The access mode to use for the persistence.
@@ -1174,7 +1178,6 @@ radarr:
 
   persistence:
     enabled: true
-    path: movies
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
@@ -1222,7 +1225,6 @@ radarr:
 ## @param lidarr.env.TZ The timezone to use for the pod.
 ## @param lidarr.env.UMASK The umask to use for the pod.
 ## @param lidarr.persistence.enabled Whether to enable persistence.
-## @param lidarr.persistence.path The path to use for the persistence. Don't use slashes.
 ## @param lidarr.persistence.storageClass The storage class to use for the persistence.
 ## @param lidarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param lidarr.persistence.accessMode The access mode to use for the persistence.
@@ -1318,7 +1320,6 @@ lidarr:
 
   persistence:
     enabled: true
-    path: music
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
@@ -1511,7 +1512,6 @@ cleanuparr:
 ## @param sabnzbd.env.PGID The group ID to use for the pod.
 ## @param sabnzbd.env.TZ The timezone to use for the pod.
 ## @param sabnzbd.persistence.enabled Whether to enable persistence.
-## @param sabnzbd.persistence.path The subdirectory path to use within jellyfin's media PVC (e.g., 'downloads'). No leading or trailing slashes.
 ## @param sabnzbd.persistence.storageClass The storage class to use for the persistence.
 ## @param sabnzbd.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param sabnzbd.persistence.accessMode The access mode to use for the persistence.
@@ -1606,7 +1606,6 @@ sabnzbd:
 
   persistence:
     enabled: true
-    path: downloads
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce

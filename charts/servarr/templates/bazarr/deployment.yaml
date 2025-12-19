@@ -71,14 +71,14 @@ spec:
             - mountPath: /config
               name: config
           {{- if and .Values.media.enabled .Values.sonarr.persistence.enabled .Values.bazarr.persistence.enabled }}
-            - mountPath: "/media/{{ .Values.sonarr.persistence.path }}"
+            - mountPath: "/media/{{ .Values.media.paths.tv }}"
               name: media
-              subPath: {{ .Values.sonarr.persistence.path }}
+              subPath: {{ .Values.media.paths.tv }}
           {{- end }}
           {{- if and .Values.media.enabled .Values.radarr.persistence.enabled .Values.bazarr.persistence.enabled }}
-            - mountPath: "/media/{{ .Values.radarr.persistence.path }}"
+            - mountPath: "/media/{{ .Values.media.paths.movies }}"
               name: media
-              subPath: {{ .Values.radarr.persistence.path }}
+              subPath: {{ .Values.media.paths.movies }}
           {{- end }}
           {{- if .Values.bazarr.persistence.additionalMounts }}
             {{- .Values.bazarr.persistence.additionalMounts | toYaml | nindent 12 }}

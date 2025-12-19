@@ -125,19 +125,19 @@ spec:
             {{- toYaml .Values.jellyfin.extraVolumeMounts | nindent 12 }}
             {{- end }}
             {{- if and .Values.sonarr.enabled .Values.sonarr.persistence.enabled }}
-            - mountPath: "/media/{{ .Values.sonarr.persistence.path }}"
+            - mountPath: "/media/{{ .Values.media.paths.tv }}"
               name: media
-              subPath: {{ .Values.sonarr.persistence.path }}
+              subPath: {{ .Values.media.paths.tv }}
             {{- end }}
             {{- if and .Values.radarr.enabled .Values.radarr.persistence.enabled }}
-            - mountPath: "/media/{{ .Values.radarr.persistence.path }}"
+            - mountPath: "/media/{{ .Values.media.paths.movies }}"
               name: media
-              subPath: {{ .Values.radarr.persistence.path }}
+              subPath: {{ .Values.media.paths.movies }}
             {{- end }}
             {{- if and .Values.lidarr.enabled .Values.lidarr.persistence.enabled }}
-            - mountPath: "/media/{{ .Values.lidarr.persistence.path }}"
+            - mountPath: "/media/{{ .Values.media.paths.music }}"
               name: media
-              subPath: {{ .Values.lidarr.persistence.path }}
+              subPath: {{ .Values.media.paths.music }}
             {{- end }}
           {{- if .Values.jellyfin.extraContainers }}
           {{- toYaml .Values.jellyfin.extraContainers | nindent 8 }}

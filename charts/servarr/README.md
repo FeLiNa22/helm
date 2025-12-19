@@ -42,6 +42,22 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ## Parameters
 
+### Media parameters
+
+| Name                     | Description                                                                                           | Value           |
+| ------------------------ | ----------------------------------------------------------------------------------------------------- | --------------- |
+| `media.enabled`          | Whether to enable media storage                                                                       | `true`          |
+| `media.storageClass`     | The storage class to use for the config.                                                              | `""`            |
+| `media.existingClaim`    | The name of an existing claim to use for the config.                                                  | `""`            |
+| `media.accessMode`       | The access mode to use for the config.                                                                | `ReadWriteMany` |
+| `media.size`             | The size to use for the config.                                                                       | `10Gi`          |
+| `media.labels`           | Additional labels to add to the config.                                                               | `{}`            |
+| `media.annotations`      | Additional annotations to add to the config.                                                          | `{}`            |
+| `media.paths.tv`         | The subpath for TV shows within the media PVC. Don't use leading or trailing slashes.                | `tv`           |
+| `media.paths.movies`     | The subpath for movies within the media PVC. Don't use leading or trailing slashes.                  | `movies`       |
+| `media.paths.music`      | The subpath for music within the media PVC. Don't use leading or trailing slashes.                   | `music`        |
+| `media.paths.downloads`  | The subpath for downloads within the media PVC. Don't use leading or trailing slashes.               | `downloads`    |
+
 ### Jellyfin parameters
 
 | Name                                            | Description                                                                                                                                                                                                        | Value                          |
@@ -155,7 +171,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sonarr.env.TZ`                                        | The timezone to use for the pod.                                                                                                    | `Europe/London`              |
 | `sonarr.env.UMASK`                                     | The umask to use for the pod.                                                                                                       | `002`                        |
 | `sonarr.persistence.enabled`                           | Whether to enable persistence.                                                                                                      | `true`                       |
-| `sonarr.persistence.path`                              | The path to use for the persistence. Don't use slashes.                                                                             | `tv`                         |
 | `sonarr.persistence.storageClass`                      | The storage class to use for the persistence.                                                                                       | `""`                         |
 | `sonarr.persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                         |
 | `sonarr.persistence.accessMode`                        | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`              |
@@ -207,7 +222,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `qbittorrent.env.PGID`                                      | The group ID to use for the pod.                                                                                                    | `1000`                            |
 | `qbittorrent.env.TZ`                                        | The timezone to use for the pod.                                                                                                    | `Europe/London`                   |
 | `qbittorrent.persistence.enabled`                           | Whether to enable persistence.                                                                                                      | `true`                            |
-| `qbittorrent.persistence.path`                              | The path to use for the persistence. Don't use slashes.                                                                             | `downloads`                       |
 | `qbittorrent.persistence.storageClass`                      | The storage class to use for the persistence.                                                                                       | `""`                              |
 | `qbittorrent.persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                              |
 | `qbittorrent.persistence.accessMode`                        | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`                   |
@@ -445,7 +459,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `radarr.env.TZ`                                        | The timezone to use for the pod.                                                                                                    | `Europe/London`              |
 | `radarr.env.UMASK`                                     | The umask to use for the pod.                                                                                                       | `002`                        |
 | `radarr.persistence.enabled`                           | Whether to enable persistence.                                                                                                      | `true`                       |
-| `radarr.persistence.path`                              | The path to use for the persistence. Don't use slashes.                                                                             | `movies`                     |
 | `radarr.persistence.storageClass`                      | The storage class to use for the persistence.                                                                                       | `""`                         |
 | `radarr.persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                         |
 | `radarr.persistence.accessMode`                        | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`              |
@@ -495,7 +508,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `lidarr.env.TZ`                                        | The timezone to use for the pod.                                                                                                    | `Europe/London`              |
 | `lidarr.env.UMASK`                                     | The umask to use for the pod.                                                                                                       | `002`                        |
 | `lidarr.persistence.enabled`                           | Whether to enable persistence.                                                                                                      | `true`                       |
-| `lidarr.persistence.path`                              | The path to use for the persistence. Don't use slashes.                                                                             | `music`                      |
 | `lidarr.persistence.storageClass`                      | The storage class to use for the persistence.                                                                                       | `""`                         |
 | `lidarr.persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                         |
 | `lidarr.persistence.accessMode`                        | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`              |
@@ -595,7 +607,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sabnzbd.env.PGID`                                         | The group ID to use for the pod.                                                                                                    | `1000`                         |
 | `sabnzbd.env.TZ`                                           | The timezone to use for the pod.                                                                                                    | `Europe/London`                |
 | `sabnzbd.persistence.enabled`                              | Whether to enable persistence.                                                                                                      | `true`                         |
-| `sabnzbd.persistence.path`                                 | The subdirectory path to use within jellyfin's media PVC (e.g., 'downloads'). No leading or trailing slashes.                      | `downloads`                    |
 | `sabnzbd.persistence.storageClass`                         | The storage class to use for the persistence.                                                                                       | `""`                           |
 | `sabnzbd.persistence.existingClaim`                        | The name of an existing claim to use for the persistence.                                                                           | `""`                           |
 | `sabnzbd.persistence.accessMode`                           | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`                |

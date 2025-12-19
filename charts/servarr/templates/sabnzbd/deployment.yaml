@@ -71,9 +71,9 @@ spec:
             - mountPath: /config
               name: config
           {{- if and .Values.media.enabled .Values.sabnzbd.persistence.enabled }}
-            - mountPath: "/media/{{ .Values.sabnzbd.persistence.path }}"
+            - mountPath: "/media/{{ .Values.media.paths.downloads }}"
               name: media
-              subPath: {{ .Values.sabnzbd.persistence.path }}
+              subPath: {{ .Values.media.paths.downloads }}
           {{- end }}
           {{- if .Values.sabnzbd.persistence.additionalMounts }}
             {{- .Values.sabnzbd.persistence.additionalMounts | toYaml | nindent 12 }}

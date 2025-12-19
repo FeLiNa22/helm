@@ -43,7 +43,7 @@ spec:
       initContainers:
         - name: init-directories
           image: busybox
-          command: ['sh', '-c', 'mkdir -p /media/{{ .Values.lidarr.persistence.path }} /media/{{ .Values.qbittorrent.persistence.path }} && chown -R 1000:1000 /media/{{ .Values.lidarr.persistence.path }} /media/{{ .Values.qbittorrent.persistence.path }}']
+          command: ['sh', '-c', 'mkdir -p /media/{{ .Values.media.paths.music }} /media/{{ .Values.media.paths.downloads }} && chown -R 1000:1000 /media/{{ .Values.media.paths.music }} /media/{{ .Values.media.paths.downloads }}']
           volumeMounts:
             - name: media
               mountPath: /media
