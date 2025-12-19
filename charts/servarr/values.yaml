@@ -94,16 +94,16 @@ jellyfin:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
-
-    persistence:
-      enabled: true
-      storageClass: ""
-      existingClaim: ""
-      subPath: ""
-      accessMode: ReadWriteOnce
-      size: 1Gi
-      labels: {}
-      annotations: {}
+  
+  persistence:
+    enabled: true
+    storageClass: ""
+    existingClaim: ""
+    subPath: ""
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    labels: {}
+    annotations: {}
 
     extraExistingClaimMounts: []
       # - name: external-mount
