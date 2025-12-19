@@ -9,24 +9,24 @@ metadata:
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-  {{- with .Values.jellyfin.persistence.config.labels }}
+  {{- with .Values.jellyfin.persistence.labels }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with .Values.jellyfin.persistence.config.annotations }}
+  {{- with .Values.jellyfin.persistence.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   accessModes:
-    - {{ .Values.jellyfin.persistence.config.accessMode | quote }}
+    - {{ .Values.jellyfin.persistence.accessMode | quote }}
   resources:
     requests:
-      storage: {{ .Values.jellyfin.persistence.config.size | quote }}
-  {{- if .Values.jellyfin.persistence.config.storageClass }}
-  {{- if (eq "-" .Values.jellyfin.persistence.config.storageClass) }}
+      storage: {{ .Values.jellyfin.persistence.size | quote }}
+  {{- if .Values.jellyfin.persistence.storageClass }}
+  {{- if (eq "-" .Values.jellyfin.persistence.storageClass) }}
   storageClassName: ""
   {{- else }}
-  storageClassName: "{{ .Values.jellyfin.persistence.config.storageClass }}"
+  storageClassName: "{{ .Values.jellyfin.persistence.storageClass }}"
   {{- end }}
   {{- end }}
 {{- end }}
