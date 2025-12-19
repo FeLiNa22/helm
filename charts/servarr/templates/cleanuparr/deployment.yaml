@@ -54,7 +54,7 @@ spec:
         - name: media
           {{- if and .Values.media.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-media
+            claimName: {{ if .Values.media.existingClaim }}{{ .Values.media.existingClaim }}{{- else }}{{ .Release.Name }}-media{{- end }}
           {{- else }}
           emptyDir: { }
           {{- end }}
