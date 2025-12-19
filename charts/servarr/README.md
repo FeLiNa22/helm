@@ -106,12 +106,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `jellyfin.readinessProbe.periodSeconds`         | The number of seconds between probe attempts.                                                                                                                                                                      | `10`                           |
 | `jellyfin.readinessProbe.successThreshold`      | The minimum consecutive successes required to consider the probe successful.                                                                                                                                       | `1`                            |
 | `jellyfin.readinessProbe.timeoutSeconds`        | The number of seconds after which the probe times out.                                                                                                                                                             | `1`                            |
-| `jellyfin.tailscale.enabled`                    | Whether to enable tailscale integration.                                                                                                                                                                           | `false`                        |
-| `jellyfin.tailscale.sidecar.enabled`            | Whether to enable sidecar container mode. Requires the tailscale auth key.                                                                                                                                         | `true`                         |
-| `jellyfin.tailscale.sidecar.authKey`            | The tailscale auth key to use for the sidecar container.                                                                                                                                                           | `""`                           |
-| `jellyfin.tailscale.sidecar.existingAuthSecret` | The name of an existing secret containing the tailscale auth key as TS_AUTHKEY.                                                                                                                                    | `""`                           |
-| `jellyfin.tailscale.ingress.enabled`            | Whether to enable ingress mode. Requires the tailscale operator to be preinstalled and is required when enableDLNA is true.                                                                                        | `false`                        |
-| `jellyfin.tailscale.ingress.host`               | The hostname of the tailscale node. Uses magicDNS, requires it to be enabled along with HTTPS on the tailscale dashboard.                                                                                          | `""`                           |
 
 ### Sonarr parameters
 
@@ -827,12 +821,6 @@ jellyfin:
         - name: custom-cont-init
           mountPath: /custom-cont-init.d
 ```
-
-### Tailscale
-
-This chart supports Tailscale in two modes: ingress and sidecar. By default, it deploys in sidecar mode, it will create a secret containing the Tailscale auth key that you provide. If you already have a secret with the Tailscale auth key, you can use that by setting the `tailscale.sidecar.existingAuthSecret` value. It sets the correct permissions for the service account to be able to read the secret. Once Jellyfin runs, it will join your tailnet and you will be able to access the apps from any device on your tailnet.
-
-If you want to use ingress mode, you need to have the Tailscale operator deployed in the same cluster and set the `tailscale.ingress.host` value to the ingress host you want to use. You need to enable MagicDNS and HTTPS in the Tailscale admin console to be able to use this mode. To deploy the Tailscale operator, see the [Tailscale operator documentation](https://tailscale.com/kb/1236/kubernetes-operator).
 
 ## License
 

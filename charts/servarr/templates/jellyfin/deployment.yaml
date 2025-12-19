@@ -30,28 +30,7 @@ spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
     {{- end }}
-    {{- if and .Values.jellyfin.tailscale.enabled .Values.jellyfin.tailscale.sidecar.enabled }}
-      serviceAccountName: jellyfin-tailscale
-    {{- end }}
       containers:
-    {{- if and .Values.jellyfin.tailscale.enabled .Values.jellyfin.tailscale.sidecar.enabled }}
-        - name: tailscale-sidecar
-          image: ghcr.io/tailscale/tailscale:latest
-          env:
-            - name: TS_KUBE_SECRET
-              value: {{ .Values.jellyfin.tailscale.sidecar.existingAuthSecret | default "tailscale-auth-secret" }}
-            - name: TS_AUTHKEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.jellyfin.tailscale.sidecar.existingAuthSecret | default "tailscale-auth-secret" }}
-                  key: TS_AUTHKEY
-            - name: TS_USERSPACE
-              value: "false"
-          securityContext:
-            capabilities:
-              add:
-                - NET_ADMIN
-    {{- end }}
         - name: {{ .Release.Name }}
           image: "{{ .Values.jellyfin.image.repository }}:{{ .Values.jellyfin.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.jellyfin.image.pullPolicy }}

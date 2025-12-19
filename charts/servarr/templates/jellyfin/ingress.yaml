@@ -46,27 +46,3 @@ spec:
                   name: http
   {{- end }}
 {{- end }}
-
----
-{{ if and .Values.jellyfin.tailscale.enabled .Values.jellyfin.tailscale.ingress.enabled }}
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: {{ .Release.Name }}-jellyfin
-  labels:
-    app.kubernetes.io/name: jellyfin
-    app.kubernetes.io/instance: {{ .Release.Name }}-jellyfin
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-spec:
-  defaultBackend:
-    service:
-      name: {{ .Release.Name }}-jellyfin
-      port:
-        number: {{ .Values.jellyfin.service.port }}
-  ingressClassName: tailscale
-  tls:
-    - hosts:
-        - {{ .Values.jellyfin.tailscale.ingress.host }}
-{{ end }}
