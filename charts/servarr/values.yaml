@@ -91,7 +91,7 @@ jellyfin:
     externalTrafficPolicy: null
 
   ingress:
-    enabled: true
+    enabled: false
     labels: {}
     annotations: {}
       # kubernetes.io/ingress.class: nginx
@@ -107,7 +107,7 @@ jellyfin:
   persistence:
     config:
       enabled: true
-      storageClass: "ceph-rbd"
+      storageClass: ""
       existingClaim: ""
       subPath: ""
       accessMode: ReadWriteOnce
@@ -116,7 +116,7 @@ jellyfin:
       annotations: {}
     media:
       enabled: true
-      storageClass: "cephfs"
+      storageClass: ""
       existingClaim: ""
       subPath: ""
       accessMode: ReadWriteMany
@@ -339,7 +339,7 @@ sonarr:
   persistence:
     enabled: true
     path: tv
-    storageClass: "ceph-rbd"
+    storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -489,7 +489,7 @@ qbittorrent:
   persistence:
     enabled: true
     path: downloads
-    storageClass: "ceph-rbd"
+    storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -632,7 +632,7 @@ prowlarr:
 
   persistence:
     enabled: true
-    storageClass: "ceph-rbd"
+    storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -857,7 +857,7 @@ jellyseerr:
     nodePort: ""
 
   ingress:
-    enabled: true
+    enabled: false
     className: ""
     annotations: {}
       # kubernetes.io/ingress.class: nginx
@@ -895,7 +895,7 @@ jellyseerr:
 
   persistence:
     enabled: true
-    storageClass: "ceph-rbd"
+    storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -1035,7 +1035,7 @@ bazarr:
 
   persistence:
     enabled: true
-    storageClass: "ceph-rbd"
+    storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -1179,7 +1179,7 @@ radarr:
   persistence:
     enabled: true
     path: movies
-    storageClass: "ceph-rbd"
+    storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -1323,7 +1323,7 @@ lidarr:
   persistence:
     enabled: true
     path: music
-    storageClass: "ceph-rbd"
+    storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -1469,7 +1469,7 @@ cleanuparr:
 
   persistence:
     enabled: false
-    storageClass: "ceph-rbd"
+    storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 100Mi
@@ -1611,7 +1611,7 @@ sabnzbd:
   persistence:
     enabled: true
     path: downloads
-    storageClass: "ceph-rbd"
+    storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
@@ -1709,7 +1709,7 @@ plex:
     nodePort: ""
 
   ingress:
-    enabled: true
+    enabled: false
     className: ""
     annotations: {}
       # kubernetes.io/ingress.class: nginx
@@ -1753,7 +1753,7 @@ plex:
 
   persistence:
     enabled: true
-    storageClass: "ceph-rbd"
+    storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 1Gi
@@ -1850,7 +1850,7 @@ emby:
     nodePort: ""
 
   ingress:
-    enabled: true
+    enabled: false
     className: ""
     annotations: {}
       # kubernetes.io/ingress.class: nginx
@@ -1893,10 +1893,29 @@ emby:
 
   persistence:
     enabled: true
-    storageClass: "ceph-rbd"
+    storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 1Gi
     additionalVolumes: []
     additionalMounts: []
+
+## @section Media parameters
+
+## @param media.enabled Whether to create a shared media PVC.
+## @param media.storageClass The storage class to use for the shared media PVC.
+## @param media.existingClaim The name of an existing claim to use for the shared media PVC.
+## @param media.accessMode The access mode to use for the shared media PVC. Shared volume between all servarr applications, if running on different nodes, set to ReadWriteMany.
+## @param media.size The size to use for the shared media PVC.
+## @param media.labels Additional labels to add to the shared media PVC.
+## @param media.annotations Additional annotations to add to the shared media PVC.
+##
+media:
+  enabled: true
+  storageClass: ""
+  existingClaim: ""
+  accessMode: ReadWriteMany
+  size: 10Gi
+  labels: {}
+  annotations: {}
 

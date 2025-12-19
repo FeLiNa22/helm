@@ -52,9 +52,9 @@ spec:
           emptyDir: { }
           {{- end }}
         - name: media
-          {{- if and .Values.jellyfin.enabled .Values.jellyfin.persistence.media.enabled .Values.emby.persistence.enabled }}
+          {{- if and .Values.media.enabled .Values.emby.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ if .Values.jellyfin.persistence.media.existingClaim }}{{ .Values.jellyfin.persistence.media.existingClaim }}{{- else }}{{ .Release.Name }}-jellyfin-media{{- end }}
+            claimName: {{ if .Values.media.existingClaim }}{{ .Values.media.existingClaim }}{{- else }}{{ .Release.Name }}-media{{- end }}
           {{- else }}
           emptyDir: { }
           {{- end }}
@@ -70,17 +70,17 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
-          {{- if and .Values.jellyfin.enabled .Values.jellyfin.persistence.media.enabled .Values.sonarr.enabled .Values.sonarr.persistence.enabled .Values.emby.persistence.enabled }}
+          {{- if and .Values.media.enabled .Values.sonarr.enabled .Values.sonarr.persistence.enabled .Values.emby.persistence.enabled }}
             - mountPath: "/media/{{ .Values.sonarr.persistence.path }}"
               name: media
               subPath: {{ .Values.sonarr.persistence.path }}
           {{- end }}
-          {{- if and .Values.jellyfin.enabled .Values.jellyfin.persistence.media.enabled .Values.radarr.enabled .Values.radarr.persistence.enabled .Values.emby.persistence.enabled }}
+          {{- if and .Values.media.enabled .Values.radarr.enabled .Values.radarr.persistence.enabled .Values.emby.persistence.enabled }}
             - mountPath: "/media/{{ .Values.radarr.persistence.path }}"
               name: media
               subPath: {{ .Values.radarr.persistence.path }}
           {{- end }}
-          {{- if and .Values.jellyfin.enabled .Values.jellyfin.persistence.media.enabled .Values.lidarr.enabled .Values.lidarr.persistence.enabled .Values.emby.persistence.enabled }}
+          {{- if and .Values.media.enabled .Values.lidarr.enabled .Values.lidarr.persistence.enabled .Values.emby.persistence.enabled }}
             - mountPath: "/media/{{ .Values.lidarr.persistence.path }}"
               name: media
               subPath: {{ .Values.lidarr.persistence.path }}

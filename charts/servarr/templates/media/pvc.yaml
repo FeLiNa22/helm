@@ -1,0 +1,32 @@
+{{- if and .Values.media.enabled (not .Values.media.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-media
+  labels:
+    app.kubernetes.io/name: media
+    app.kubernetes.io/instance: {{ .Release.Name }}-media
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+  {{- with .Values.media.labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.media.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.media.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.media.size | quote }}
+  {{- if .Values.media.storageClass }}
+  {{- if (eq "-" .Values.media.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: "{{ .Values.media.storageClass }}"
+  {{- end }}
+  {{- end }}
+{{- end }}

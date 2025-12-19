@@ -157,14 +157,14 @@ spec:
       - name: config
       {{- if .Values.jellyfin.persistence.config.enabled }}
         persistentVolumeClaim:
-          claimName: {{ if .Values.jellyfin.persistence.config.existingClaim }}{{ .Values.jellyfin.persistence.config.existingClaim }}{{- else }}{{ .Release.Name }}-jellyfin-config{{- end }}
+          claimName: {{ if .Values.jellyfin.persistence.config.existingClaim }}{{ .Values.jellyfin.persistence.config.existingClaim }}{{- else }}{{ .Release.Name }}-jellyfin{{- end }}
       {{- else }}
         emptyDir: {}
       {{- end }}
       - name: media
-      {{- if .Values.jellyfin.persistence.media.enabled }}
+      {{- if .Values.media.enabled }}
         persistentVolumeClaim:
-          claimName: {{ if .Values.jellyfin.persistence.media.existingClaim }}{{ .Values.jellyfin.persistence.media.existingClaim }}{{- else }}{{ .Release.Name }}-jellyfin-media{{- end }}
+          claimName: {{ if .Values.media.existingClaim }}{{ .Values.media.existingClaim }}{{- else }}{{ .Release.Name }}-media{{- end }}
       {{- else }}
         emptyDir: {}
       {{- end }}
