@@ -1,14 +1,10 @@
-{{- if and .Values.cleanuparr.enabled .Values.cleanuparr.ingress.enabled -}}
-{{- $fullName := printf "%s-cleanuparr" .Release.Name -}}
-{{- $svcPort := .Values.cleanuparr.service.port -}}
-{{- if and .Values.cleanuparr.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
-  {{- if not (hasKey .Values.cleanuparr.ingress.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.cleanuparr.ingress.annotations "kubernetes.io/ingress.class" .Values.cleanuparr.ingress.className}}
+{{- if and .Values.authelia.enabled .Values.authelia.ingress.enabled }}
+{{- $fullName := printf "%s-authelia" .Release.Name -}}
+{{- $svcPort := .Values.authelia.service.port -}}
+{{- if and .Values.authelia.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.authelia.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.authelia.ingress.annotations "kubernetes.io/ingress.class" .Values.authelia.ingress.className}}
   {{- end }}
-{{- end }}
-{{- if and .Values.authelia.enabled .Values.authelia.autoConfigureApps }}
-  {{- $_ := set .Values.cleanuparr.ingress.annotations "nginx.ingress.kubernetes.io/auth-url" (printf "http://%s-authelia.%s.svc.cluster.local:9091/api/verify" .Release.Name .Release.Namespace) }}
-  {{- $_ := set .Values.cleanuparr.ingress.annotations "nginx.ingress.kubernetes.io/auth-signin" (printf "https://%s/api/auth/signin?rm=$request_method" (index .Values.authelia.ingress.hosts 0).host) }}
 {{- end }}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
@@ -21,22 +17,22 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    app.kubernetes.io/name: cleanuparr
-    app.kubernetes.io/instance: {{ .Release.Name }}-cleanuparr
+    app.kubernetes.io/name: authelia
+    app.kubernetes.io/instance: {{ .Release.Name }}-authelia
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-  {{- with .Values.cleanuparr.ingress.annotations }}
+  {{- with .Values.authelia.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if and .Values.cleanuparr.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
-  ingressClassName: {{ .Values.cleanuparr.ingress.className }}
+  {{- if and .Values.authelia.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.authelia.ingress.className }}
   {{- end }}
-  {{- if .Values.cleanuparr.ingress.tls }}
+  {{- if .Values.authelia.ingress.tls }}
   tls:
-    {{- range .Values.cleanuparr.ingress.tls }}
+    {{- range .Values.authelia.ingress.tls }}
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
@@ -45,7 +41,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.cleanuparr.ingress.hosts }}
+    {{- range .Values.authelia.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:

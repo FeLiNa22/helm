@@ -1,0 +1,110 @@
+{{- if .Values.authelia.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-authelia
+  labels:
+    app.kubernetes.io/name: authelia
+    app.kubernetes.io/instance: {{ .Release.Name }}-authelia
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  {{- if not .Values.authelia.autoscaling.enabled }}
+  replicas: {{ .Values.authelia.replicaCount }}
+  {{- end }}
+  strategy:
+    {{- .Values.authelia.deployment.strategy | toYaml | nindent 4 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: authelia
+      app.kubernetes.io/instance: {{ .Release.Name }}-authelia
+  template:
+    metadata:
+      {{- with .Values.authelia.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: authelia
+        app.kubernetes.io/instance: {{ .Release.Name }}-authelia
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    spec:
+      {{- with .Values.authelia.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.authelia.serviceAccount.name | default (printf "%s-authelia" .Release.Name) }}
+      securityContext:
+        {{- toYaml .Values.authelia.podSecurityContext | nindent 8 }}
+      {{- if .Values.authelia.initContainers }}
+      initContainers:
+        {{- toYaml .Values.authelia.initContainers | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          {{- if .Values.authelia.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.authelia.persistence.existingClaim | default (printf "%s-authelia" .Release.Name) }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
+        {{- if .Values.authelia.persistence.additionalVolumes }}
+          {{- .Values.authelia.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.authelia.securityContext | nindent 12 }}
+          image: "{{ .Values.authelia.image.repository }}:{{ .Values.authelia.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.authelia.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /config
+              name: config
+          {{- if .Values.authelia.persistence.additionalMounts }}
+            {{- .Values.authelia.persistence.additionalMounts | toYaml | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 9091
+              protocol: TCP
+          env:
+            {{- range $k,$v := .Values.authelia.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            failureThreshold: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            failureThreshold: 5
+            periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            failureThreshold: 30
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.authelia.resources | nindent 12 }}
+      {{- with .Values.authelia.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.authelia.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.authelia.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

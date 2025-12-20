@@ -1,0 +1,28 @@
+{{- if .Values.authelia.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-authelia
+  labels:
+    app.kubernetes.io/name: authelia
+    app.kubernetes.io/instance: {{ .Release.Name }}-authelia
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  type: {{ .Values.authelia.service.type }}
+  {{- if .Values.authelia.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.authelia.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.authelia.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if and (eq .Values.authelia.service.type "NodePort") .Values.authelia.service.nodePort }}
+      nodePort: {{ .Values.authelia.service.nodePort }}
+      {{- end }}
+  selector:
+    app.kubernetes.io/name: authelia
+    app.kubernetes.io/instance: {{ .Release.Name }}-authelia
+{{- end }}

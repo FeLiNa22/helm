@@ -1,0 +1,36 @@
+{{- if and .Values.authelia.enabled .Values.authelia.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-authelia
+  labels:
+    app.kubernetes.io/name: authelia
+    app.kubernetes.io/instance: {{ .Release.Name }}-authelia
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-authelia
+  minReplicas: {{ .Values.authelia.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.authelia.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.authelia.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.authelia.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.authelia.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.authelia.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

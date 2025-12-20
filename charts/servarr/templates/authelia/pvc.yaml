@@ -1,0 +1,29 @@
+{{- if and .Values.authelia.enabled .Values.authelia.persistence.enabled (not .Values.authelia.persistence.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-authelia
+  labels:
+    app.kubernetes.io/name: authelia
+    app.kubernetes.io/instance: {{ .Release.Name }}-authelia
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+  {{- with .Values.authelia.persistence.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.authelia.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.authelia.persistence.size | quote }}
+  {{- if .Values.authelia.persistence.storageClass }}
+  {{- if (eq "-" .Values.authelia.persistence.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: {{ .Values.authelia.persistence.storageClass | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }}

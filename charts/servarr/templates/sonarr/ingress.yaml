@@ -6,6 +6,10 @@
   {{- $_ := set .Values.sonarr.ingress.annotations "kubernetes.io/ingress.class" .Values.sonarr.ingress.className}}
   {{- end }}
 {{- end }}
+{{- if and .Values.authelia.enabled .Values.authelia.autoConfigureApps }}
+  {{- $_ := set .Values.sonarr.ingress.annotations "nginx.ingress.kubernetes.io/auth-url" (printf "http://%s-authelia.%s.svc.cluster.local:9091/api/verify" .Release.Name .Release.Namespace) }}
+  {{- $_ := set .Values.sonarr.ingress.annotations "nginx.ingress.kubernetes.io/auth-signin" (printf "https://%s/api/auth/signin?rm=$request_method" (index .Values.authelia.ingress.hosts 0).host) }}
+{{- end }}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
 {{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
