@@ -768,6 +768,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `authelia.persistence.size`                               | The size to use for the persistence.                                                                                                | `100Mi`                            |
 | `authelia.autoConfigureApps`                              | When enabled, automatically adds Authelia authentication middleware annotations to ingresses of all enabled apps.                   | `true`                             |
 | `authelia.ingressController`                              | Ingress controller to use for auto-configuration. Supported values: nginx, traefik.                                                 | `nginx`                            |
+| `authelia.excludeApps`                                    | List of apps to exclude from auto-configuration. By default excludes media servers (plex, emby, jellyfin).                          | `[plex, emby, jellyfin]`           |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
@@ -797,6 +798,29 @@ Authelia is an authentication and authorization server that provides single sign
 The chart supports automatic configuration for the following ingress controllers:
 - **Nginx** (default)
 - **Traefik**
+
+#### Media Servers and Authentication
+
+By default, media servers (Plex, Emby, and Jellyfin) are **excluded** from auto-configuration because they have their own built-in authentication systems. These applications work better with LDAP integration for SSO rather than reverse proxy authentication. Using reverse proxy auth on top of their native authentication can cause issues.
+
+If you want to protect these apps anyway, you can override the `excludeApps` list:
+
+```yaml
+authelia:
+  enabled: true
+  excludeApps: []  # Empty list to protect all apps including media servers
+```
+
+Or selectively include/exclude apps:
+
+```yaml
+authelia:
+  enabled: true
+  excludeApps:
+    - plex    # Keep Plex excluded
+    - emby    # Keep Emby excluded
+    # jellyfin removed from list, will be protected
+```
 
 #### Enabling Authelia with Nginx
 

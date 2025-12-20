@@ -1927,6 +1927,7 @@ emby:
 ## @param authelia.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param authelia.autoConfigureApps Whether to automatically configure Authelia authentication for all enabled apps' ingresses.
 ## @param authelia.ingressController The ingress controller to use for auto-configuration. Supported values: nginx, traefik.
+## @param authelia.excludeApps List of apps to exclude from auto-configuration. Media servers (plex, emby, jellyfin) are excluded by default as they have their own authentication and work better with LDAP integration.
 ##
 authelia:
   enabled: false
@@ -2030,5 +2031,13 @@ authelia:
   # Ingress controller to use for auto-configuration
   # Supported values: nginx, traefik
   ingressController: "nginx"
+  
+  # List of apps to exclude from auto-configuration
+  # Media servers like Plex, Emby, and Jellyfin have their own authentication
+  # and work better with LDAP integration rather than reverse proxy authentication
+  excludeApps:
+    - plex
+    - emby
+    - jellyfin
 
 

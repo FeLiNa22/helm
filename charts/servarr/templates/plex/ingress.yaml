@@ -6,7 +6,7 @@
   {{- $_ := set .Values.plex.ingress.annotations "kubernetes.io/ingress.class" .Values.plex.ingress.className}}
   {{- end }}
 {{- end }}
-{{- if and .Values.authelia.enabled .Values.authelia.autoConfigureApps .Values.authelia.ingress.hosts }}
+{{- if and .Values.authelia.enabled .Values.authelia.autoConfigureApps .Values.authelia.ingress.hosts (not (has "plex" .Values.authelia.excludeApps)) }}
   {{- if eq .Values.authelia.ingressController "nginx" }}
     {{- $_ := set .Values.plex.ingress.annotations "nginx.ingress.kubernetes.io/auth-url" (printf "http://%s-authelia.%s.svc.cluster.local:9091/api/verify" .Release.Name .Release.Namespace) }}
     {{- $_ := set .Values.plex.ingress.annotations "nginx.ingress.kubernetes.io/auth-signin" (printf "https://%s/api/auth/signin?rm=$request_method" (index .Values.authelia.ingress.hosts 0).host) }}

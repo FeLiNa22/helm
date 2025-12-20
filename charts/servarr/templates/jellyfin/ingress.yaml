@@ -1,5 +1,5 @@
 {{- if and .Values.jellyfin.enabled .Values.jellyfin.ingress.enabled }}
-{{- if and .Values.authelia.enabled .Values.authelia.autoConfigureApps .Values.authelia.ingress.hosts }}
+{{- if and .Values.authelia.enabled .Values.authelia.autoConfigureApps .Values.authelia.ingress.hosts (not (has "jellyfin" .Values.authelia.excludeApps)) }}
   {{- if eq .Values.authelia.ingressController "nginx" }}
     {{- $_ := set .Values.jellyfin.ingress.annotations "nginx.ingress.kubernetes.io/auth-url" (printf "http://%s-authelia.%s.svc.cluster.local:9091/api/verify" .Release.Name .Release.Namespace) }}
     {{- $_ := set .Values.jellyfin.ingress.annotations "nginx.ingress.kubernetes.io/auth-signin" (printf "https://%s/api/auth/signin?rm=$request_method" (index .Values.authelia.ingress.hosts 0).host) }}
