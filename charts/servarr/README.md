@@ -746,6 +746,28 @@ The command removes all the Kubernetes components associated with the chart and 
 | `home-assistant.persistence.enabled`                             | Whether to enable persistence.                                                                                                      | `true`                                   |
 | `home-assistant.persistence.size`                                | The size to use for the persistence.                                                                                                | `1Gi`                                    |
 
+### Authelia parameters
+
+| Name                                                      | Description                                                                                                                         | Value                              |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `authelia.enabled`                                        | Whether to enable Authelia authentication server.                                                                                   | `false`                            |
+| `authelia.replicaCount`                                   | The number of replicas to deploy.                                                                                                   | `1`                                |
+| `authelia.image.repository`                               | The Docker repository to pull the image from.                                                                                       | `ghcr.io/authelia/authelia`        |
+| `authelia.image.tag`                                      | The image tag to use.                                                                                                               | `4.38.16`                          |
+| `authelia.image.pullPolicy`                               | The logic of image pulling.                                                                                                         | `IfNotPresent`                     |
+| `authelia.service.type`                                   | The type of service to create.                                                                                                      | `ClusterIP`                        |
+| `authelia.service.port`                                   | The port on which the service will run.                                                                                             | `9091`                             |
+| `authelia.ingress.enabled`                                | Whether to create an ingress for the service.                                                                                       | `false`                            |
+| `authelia.ingress.className`                              | The ingress class name to use.                                                                                                      | `""`                               |
+| `authelia.ingress.annotations`                            | Additional annotations to add to the ingress.                                                                                       | `{}`                               |
+| `authelia.ingress.hosts[0].host`                          | The host to use for the Authelia ingress.                                                                                           | `auth.example.local`               |
+| `authelia.env.PUID`                                       | The user ID to use for the pod.                                                                                                     | `1000`                             |
+| `authelia.env.PGID`                                       | The group ID to use for the pod.                                                                                                    | `1000`                             |
+| `authelia.env.TZ`                                         | The timezone to use for the pod.                                                                                                    | `Europe/London`                    |
+| `authelia.persistence.enabled`                            | Whether to enable persistence.                                                                                                      | `true`                             |
+| `authelia.persistence.size`                               | The size to use for the persistence.                                                                                                | `100Mi`                            |
+| `authelia.autoConfigureApps`                              | When enabled, automatically adds Authelia authentication middleware annotations to ingresses of all enabled apps.                   | `true`                             |
+
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```console
@@ -764,6 +786,78 @@ helm install example -f values.yaml raulpatel/example
 > **Tip**: You can use the default [values.yaml](values.yaml)
 
 ## Configuration and helpful examples
+
+### Authelia Authentication
+
+Authelia is an authentication and authorization server that provides single sign-on (SSO) and two-factor authentication (2FA) for your applications. This chart includes built-in support for Authelia that can automatically protect all your servarr applications.
+
+#### Enabling Authelia
+
+To enable Authelia with automatic protection for all apps:
+
+```yaml
+authelia:
+  enabled: true
+  autoConfigureApps: true
+  
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: auth.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: authelia-tls
+        hosts:
+          - auth.example.com
+
+# Enable ingress for the apps you want to protect
+sonarr:
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: sonarr.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+
+radarr:
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: radarr.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+```
+
+When `authelia.autoConfigureApps` is set to `true`, the chart will automatically add the necessary Nginx ingress annotations to all enabled app ingresses to integrate with Authelia. This includes:
+
+- `nginx.ingress.kubernetes.io/auth-url`: Points to the Authelia verification endpoint
+- `nginx.ingress.kubernetes.io/auth-signin`: Redirects to the Authelia sign-in page when authentication is required
+
+#### Manual Configuration
+
+If you need more control over which apps are protected, you can disable `autoConfigureApps` and manually add the annotations:
+
+```yaml
+authelia:
+  enabled: true
+  autoConfigureApps: false
+
+sonarr:
+  ingress:
+    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/auth-url: "http://RELEASE-NAME-authelia.NAMESPACE.svc.cluster.local:9091/api/verify"
+      nginx.ingress.kubernetes.io/auth-signin: "https://auth.example.com/api/auth/signin?rm=$request_method"
+```
+
+**Note**: Authelia requires additional configuration to work properly, including setting up authentication backends, access control rules, and session configuration. Please refer to the [Authelia documentation](https://www.authelia.com/configuration/prologue/introduction/) for detailed configuration instructions.
 
 ### Shared volume and Sonarr hardlinks
 
