@@ -39,9 +39,17 @@ spec:
       serviceAccountName: {{ .Values.sabnzbd.serviceAccount.name | default (printf "%s-sabnzbd" .Release.Name) }}
       securityContext:
         {{- toYaml .Values.sabnzbd.podSecurityContext | nindent 8 }}
-      {{- if .Values.sabnzbd.initContainers }}
+      {{- if and .Values.media.enabled .Values.sabnzbd.persistence.enabled }}
       initContainers:
+        - name: init-directories
+          image: busybox
+          command: ['sh', '-c', 'mkdir -p /media/{{ .Values.media.paths.downloads }} && chown -R 1000:1000 /media/{{ .Values.media.paths.downloads }}']
+          volumeMounts:
+            - name: media
+              mountPath: /media
+      {{- if .Values.sabnzbd.initContainers }}
         {{- toYaml .Values.sabnzbd.initContainers | nindent 8 }}
+      {{- end }}
       {{- end }}
       volumes:
         - name: config

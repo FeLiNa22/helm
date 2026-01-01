@@ -39,9 +39,17 @@ spec:
       serviceAccountName: {{ .Values.qbittorrent.serviceAccount.name | default (printf "%s-qbittorrent" .Release.Name) }}
       securityContext:
         {{- toYaml .Values.qbittorrent.podSecurityContext | nindent 8 }}
-      {{- if .Values.qbittorrent.initContainers }}
+      {{- if and .Values.media.enabled .Values.qbittorrent.persistence.enabled }}
       initContainers:
+        - name: init-directories
+          image: busybox
+          command: ['sh', '-c', 'mkdir -p /media/{{ .Values.media.paths.downloads }} && chown -R 1000:1000 /media/{{ .Values.media.paths.downloads }}']
+          volumeMounts:
+            - name: media
+              mountPath: /media
+      {{- if .Values.qbittorrent.initContainers }}
         {{- toYaml .Values.qbittorrent.initContainers | nindent 8 }}
+      {{- end }}
       {{- end }}
       volumes:
         - name: config
