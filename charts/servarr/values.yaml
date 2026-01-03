@@ -382,12 +382,8 @@ sonarr:
 ## @param qbittorrent.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param qbittorrent.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param qbittorrent.localStorage.enabled Whether to enable local storage for temporary files and downloads.
-## @param qbittorrent.localStorage.type The type of local storage to use (hostPath or pvc).
 ## @param qbittorrent.localStorage.mountPath The mount path for the local storage.
-## @param qbittorrent.localStorage.hostPath The host path to use when type is hostPath.
-## @param qbittorrent.localStorage.storageClass The storage class to use when type is pvc.
-## @param qbittorrent.localStorage.accessMode The access mode to use when type is pvc.
-## @param qbittorrent.localStorage.size The size to use when type is pvc.
+## @param qbittorrent.localStorage.size The size limit for the temporary storage (emptyDir).
 ##
 qbittorrent:
   enabled: true
@@ -490,12 +486,8 @@ qbittorrent:
 
   localStorage:
     enabled: false
-    type: hostPath
     mountPath: /local-storage
-    hostPath: /mnt/local-storage/qbittorrent
-    storageClass: ""
-    accessMode: ReadWriteOnce
-    size: 100Gi
+    size: 1Gi
 
 ## @section Prowlarr parameters
 
@@ -1519,12 +1511,8 @@ cleanuparr:
 ## @param sabnzbd.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param sabnzbd.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param sabnzbd.localStorage.enabled Whether to enable local storage for temporary files and downloads.
-## @param sabnzbd.localStorage.type The type of local storage to use (hostPath or pvc).
 ## @param sabnzbd.localStorage.mountPath The mount path for the local storage.
-## @param sabnzbd.localStorage.hostPath The host path to use when type is hostPath.
-## @param sabnzbd.localStorage.storageClass The storage class to use when type is pvc.
-## @param sabnzbd.localStorage.accessMode The access mode to use when type is pvc.
-## @param sabnzbd.localStorage.size The size to use when type is pvc.
+## @param sabnzbd.localStorage.size The size limit for the temporary storage (emptyDir).
 ##
 sabnzbd:
   enabled: false
@@ -1622,12 +1610,8 @@ sabnzbd:
 
   localStorage:
     enabled: false
-    type: hostPath
     mountPath: /local-storage
-    hostPath: /mnt/local-storage/sabnzbd
-    storageClass: ""
-    accessMode: ReadWriteOnce
-    size: 100Gi
+    size: 1Gi
 
 ## @section Plex parameters
 

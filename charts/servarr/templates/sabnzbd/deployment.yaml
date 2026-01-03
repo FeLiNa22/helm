@@ -68,14 +68,8 @@ spec:
           {{- end }}
         {{- if .Values.sabnzbd.localStorage.enabled }}
         - name: local-storage
-          {{- if eq .Values.sabnzbd.localStorage.type "hostPath" }}
-          hostPath:
-            path: {{ .Values.sabnzbd.localStorage.hostPath }}
-            type: DirectoryOrCreate
-          {{- else if eq .Values.sabnzbd.localStorage.type "pvc" }}
-          persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-sabnzbd-local-storage
-          {{- end }}
+          emptyDir:
+            sizeLimit: {{ .Values.sabnzbd.localStorage.size }}
         {{- end }}
         {{- if .Values.sabnzbd.persistence.additionalVolumes }}
           {{- .Values.sabnzbd.persistence.additionalVolumes | toYaml | nindent 8}}

@@ -223,12 +223,8 @@ The command removes all the Kubernetes components associated with the chart and 
 | `qbittorrent.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                              |
 | `qbittorrent.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                              |
 | `qbittorrent.localStorage.enabled`                          | Whether to enable local storage for temporary files and downloads.                                                                  | `false`                           |
-| `qbittorrent.localStorage.type`                             | The type of local storage to use (hostPath or pvc).                                                                                 | `hostPath`                        |
 | `qbittorrent.localStorage.mountPath`                        | The mount path for the local storage.                                                                                               | `/local-storage`                  |
-| `qbittorrent.localStorage.hostPath`                         | The host path to use when type is hostPath.                                                                                         | `/mnt/local-storage/qbittorrent`  |
-| `qbittorrent.localStorage.storageClass`                     | The storage class to use when type is pvc.                                                                                          | `""`                              |
-| `qbittorrent.localStorage.accessMode`                       | The access mode to use when type is pvc.                                                                                            | `ReadWriteOnce`                   |
-| `qbittorrent.localStorage.size`                             | The size to use when type is pvc.                                                                                                   | `100Gi`                           |
+| `qbittorrent.localStorage.size`                             | The size limit for the temporary storage (emptyDir).                                                                                | `1Gi`                             |
 
 ### Prowlarr parameters
 
@@ -615,12 +611,8 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sabnzbd.persistence.additionalVolumes`                    | Additional volumes to add to the pod.                                                                                               | `[]`                           |
 | `sabnzbd.persistence.additionalMounts`                     | Additional volume mounts to add to the pod.                                                                                         | `[]`                           |
 | `sabnzbd.localStorage.enabled`                             | Whether to enable local storage for temporary files and downloads.                                                                  | `false`                        |
-| `sabnzbd.localStorage.type`                                | The type of local storage to use (hostPath or pvc).                                                                                 | `hostPath`                     |
 | `sabnzbd.localStorage.mountPath`                           | The mount path for the local storage.                                                                                               | `/local-storage`               |
-| `sabnzbd.localStorage.hostPath`                            | The host path to use when type is hostPath.                                                                                         | `/mnt/local-storage/sabnzbd`   |
-| `sabnzbd.localStorage.storageClass`                        | The storage class to use when type is pvc.                                                                                          | `""`                           |
-| `sabnzbd.localStorage.accessMode`                          | The access mode to use when type is pvc.                                                                                            | `ReadWriteOnce`                |
-| `sabnzbd.localStorage.size`                                | The size to use when type is pvc.                                                                                                   | `100Gi`                        |
+| `sabnzbd.localStorage.size`                                | The size limit for the temporary storage (emptyDir).                                                                                | `1Gi`                          |
 
 ### Plex parameters
 
@@ -818,38 +810,31 @@ jellyfin:
 
 ### Local storage for temporary files and downloads
 
-Services like SABnzbd and qBittorrent can benefit from local storage for temporary files, incomplete downloads, and caching. This feature allows you to attach high-performance local storage (such as NVMe SSDs) directly to these services for better performance.
+Services like SABnzbd and qBittorrent can benefit from local storage for temporary files, incomplete downloads, and caching. This feature creates an emptyDir volume with a configurable size limit for temporary storage needs.
 
-The `localStorage` configuration supports two types:
-- **hostPath**: Directly mount a directory from the host node
-- **pvc**: Create a PersistentVolumeClaim with a local storage class
-
-#### Example: Using hostPath for SABnzbd
+#### Example: Enabling temporary storage for SABnzbd
 
 ```yaml
 sabnzbd:
   enabled: true
   localStorage:
     enabled: true
-    type: hostPath
     mountPath: /local-storage
-    hostPath: /mnt/nvme/sabnzbd-temp
+    size: 5Gi
 ```
 
-#### Example: Using PVC with local storage class for qBittorrent
+#### Example: Enabling temporary storage for qBittorrent
 
 ```yaml
 qbittorrent:
   enabled: true
   localStorage:
     enabled: true
-    type: pvc
-    mountPath: /local-storage
-    storageClass: local-path
-    size: 500Gi
+    mountPath: /incomplete-downloads
+    size: 10Gi
 ```
 
-**Note**: When using `hostPath`, ensure that the path exists on the node and has appropriate permissions. When using `pvc` with a local storage class, the pod will be scheduled on nodes where the storage is available.
+**Note**: The localStorage uses an emptyDir volume type, which provides a temporary directory that persists for the lifetime of the pod. When the pod is deleted or restarted, the data in this directory is lost. The `size` parameter sets the maximum size limit for the temporary storage.
 
 ### Intro Skipper plugin for Jellyfin permissions fix
 

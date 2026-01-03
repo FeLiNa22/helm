@@ -23,25 +23,3 @@ spec:
     requests:
       storage: {{ .Values.sabnzbd.persistence.size | quote }}
 {{- end }}
----
-{{- if and .Values.sabnzbd.enabled .Values.sabnzbd.localStorage.enabled (eq .Values.sabnzbd.localStorage.type "pvc") }}
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: {{ .Release.Name }}-sabnzbd-local-storage
-  labels:
-    app.kubernetes.io/name: sabnzbd
-    app.kubernetes.io/instance: {{ .Release.Name }}-sabnzbd
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-spec:
-  accessModes:
-    - {{ .Values.sabnzbd.localStorage.accessMode | quote }}
-  {{- if .Values.sabnzbd.localStorage.storageClass }}
-  storageClassName: {{ .Values.sabnzbd.localStorage.storageClass | quote }}
-  {{- end }}
-  resources:
-    requests:
-      storage: {{ .Values.sabnzbd.localStorage.size | quote }}
-{{- end }}

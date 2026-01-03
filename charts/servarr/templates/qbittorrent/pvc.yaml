@@ -23,25 +23,3 @@ spec:
     requests:
       storage: {{ .Values.qbittorrent.persistence.size | quote }}
 {{- end }}
----
-{{- if and .Values.qbittorrent.enabled .Values.qbittorrent.localStorage.enabled (eq .Values.qbittorrent.localStorage.type "pvc") }}
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: {{ .Release.Name }}-qbittorrent-local-storage
-  labels:
-    app.kubernetes.io/name: qbittorrent
-    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-spec:
-  accessModes:
-    - {{ .Values.qbittorrent.localStorage.accessMode | quote }}
-  {{- if .Values.qbittorrent.localStorage.storageClass }}
-  storageClassName: {{ .Values.qbittorrent.localStorage.storageClass | quote }}
-  {{- end }}
-  resources:
-    requests:
-      storage: {{ .Values.qbittorrent.localStorage.size | quote }}
-{{- end }}

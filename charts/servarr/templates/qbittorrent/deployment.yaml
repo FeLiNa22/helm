@@ -68,14 +68,8 @@ spec:
           {{- end }}
         {{- if .Values.qbittorrent.localStorage.enabled }}
         - name: local-storage
-          {{- if eq .Values.qbittorrent.localStorage.type "hostPath" }}
-          hostPath:
-            path: {{ .Values.qbittorrent.localStorage.hostPath }}
-            type: DirectoryOrCreate
-          {{- else if eq .Values.qbittorrent.localStorage.type "pvc" }}
-          persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-qbittorrent-local-storage
-          {{- end }}
+          emptyDir:
+            sizeLimit: {{ .Values.qbittorrent.localStorage.size }}
         {{- end }}
         {{- if .Values.qbittorrent.persistence.additionalVolumes }}
           {{- .Values.qbittorrent.persistence.additionalVolumes | toYaml | nindent 8}}
