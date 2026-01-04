@@ -67,7 +67,7 @@ replicaCount: 1
 image:
   repository: docker.io/library/nextcloud
   pullPolicy: IfNotPresent
-  tag: "30.0.2"
+  tag: "32.0.3"
 
 imagePullSecrets: []
 
