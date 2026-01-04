@@ -226,6 +226,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `qbittorrent.gluetun.env.OPENVPN_USER`                      | Username for OpenVPN authentication (if using OpenVPN).                                                                             | `""`                              |
 | `qbittorrent.gluetun.env.OPENVPN_PASSWORD`                  | Password for OpenVPN authentication (if using OpenVPN).                                                                             | `""`                              |
 | `qbittorrent.gluetun.env.SERVER_COUNTRIES`                  | Comma-separated list of server countries to use.                                                                                    | `""`                              |
+| `qbittorrent.gluetun.env.SERVER_REGION`                     | Region for server selection (e.g., for VPN providers that use regions instead of countries).                                        | `""`                              |
+| `qbittorrent.gluetun.env.SERVER_NAMES`                      | Comma-separated list of specific server names to use.                                                                               | `""`                              |
+| `qbittorrent.gluetun.env.SERVER_HOSTNAMES`                  | Comma-separated list of specific server hostnames to use.                                                                           | `""`                              |
 | `qbittorrent.gluetun.env.FIREWALL_OUTBOUND_SUBNETS`         | Comma-separated list of subnets to allow outbound traffic to (e.g., local network).                                                 | `""`                              |
 | `qbittorrent.gluetun.resources`                             | Resource limits and requests for the Gluetun container.                                                                             | `{}`                              |
 
