@@ -110,9 +110,22 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.sabnzbd.affinity }}
+      {{- if .Values.sabnzbd.affinity }}
       affinity:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml .Values.sabnzbd.affinity | nindent 8 }}
+      {{- else if .Values.sabnzbd.preferredNodes }}
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          {{- range .Values.sabnzbd.preferredNodes }}
+            - weight: {{ .weight }}
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - {{ .name }}
+          {{- end }}
       {{- end }}
       {{- with .Values.sabnzbd.tolerations }}
       tolerations:

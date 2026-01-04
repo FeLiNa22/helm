@@ -40,29 +40,46 @@ helm delete servarr
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
 
-## Internet Speed-Based Pod Scheduling
+## Node-Based Pod Scheduling
 
-The chart includes built-in support for automatically scheduling download applications (qBittorrent and SABnzbd) on nodes with the best internet download speeds. This is achieved through Kubernetes node affinity.
+For applications that benefit from specific node characteristics (like faster internet connectivity), you can configure preferred nodes using the `preferredNodes` parameter. This allows pods to schedule on any node but prioritizes specific nodes when available.
 
-### Setup
+### Configuration
 
-1. Label your nodes with their internet speed capability:
+Configure preferred nodes for qBittorrent or SABnzbd in your values file:
 
-```console
-kubectl label nodes <node-name> internet-speed=high
-kubectl label nodes <node-name> internet-speed=medium
-kubectl label nodes <node-name> internet-speed=low
+```yaml
+qbittorrent:
+  preferredNodes:
+    - name: node-with-fast-internet  # The exact hostname of your node
+      weight: 100                     # Priority (1-100, higher is preferred)
+    - name: backup-node
+      weight: 50
+
+sabnzbd:
+  preferredNodes:
+    - name: node-with-fast-internet
+      weight: 100
 ```
 
-2. Deploy the chart - qBittorrent and SABnzbd will automatically prefer nodes with higher internet speeds:
-   - Nodes labeled `internet-speed=high` receive a weight of 100 (highest preference)
-   - Nodes labeled `internet-speed=medium` receive a weight of 50
+### How It Works
 
-3. If no nodes have these labels, pods will schedule normally on any available node.
+- Pods can schedule on **any** available node in your cluster
+- If preferred nodes are available, the scheduler prioritizes them based on weight
+- Higher weight values (up to 100) indicate stronger preferences
+- No node labeling required - uses the built-in `kubernetes.io/hostname` label
 
-### Customization
+### Finding Node Names
 
-You can override the default affinity behavior by setting custom affinity rules in your values:
+To get the exact hostnames of your nodes:
+
+```console
+kubectl get nodes -o custom-columns=NAME:.metadata.name
+```
+
+### Advanced Usage
+
+For more complex scheduling requirements, you can still use the `affinity` parameter directly, which takes precedence over `preferredNodes`:
 
 ```yaml
 qbittorrent:
@@ -71,17 +88,10 @@ qbittorrent:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: internet-speed
+          - key: custom-label
             operator: In
             values:
-            - high
-```
-
-Or disable the default affinity entirely by setting it to an empty object:
-
-```yaml
-qbittorrent:
-  affinity: {}
+            - custom-value
 ```
 
 ## Parameters
@@ -255,7 +265,8 @@ qbittorrent:
 | `qbittorrent.autoscaling.targetMemoryUtilizationPercentage` | The target memory utilization percentage to use for autoscaling.                                                                    | `80`                              |
 | `qbittorrent.nodeSelector`                                  | The node selector to use for the pod.                                                                                               | `{}`                              |
 | `qbittorrent.tolerations`                                   | The tolerations to use for the pod.                                                                                                 | `[]`                              |
-| `qbittorrent.affinity`                                      | The affinity to use for the pod. By default, prefers nodes labeled with `internet-speed=high` (weight 100) or `internet-speed=medium` (weight 50) for optimal download performance. | See values.yaml                   |
+| `qbittorrent.affinity`                                      | The affinity to use for the pod. Takes precedence over `preferredNodes`.                                                            | `{}`                              |
+| `qbittorrent.preferredNodes`                                | List of preferred nodes by hostname for scheduling. Each entry has `name` (node hostname) and `weight` (1-100). Pods can schedule on any node but will prefer these. | `[]`                              |
 | `qbittorrent.env.PUID`                                      | The user ID to use for the pod.                                                                                                     | `1000`                            |
 | `qbittorrent.env.PGID`                                      | The group ID to use for the pod.                                                                                                    | `1000`                            |
 | `qbittorrent.env.TZ`                                        | The timezone to use for the pod.                                                                                                    | `Europe/London`                   |
@@ -643,7 +654,8 @@ qbittorrent:
 | `sabnzbd.autoscaling.targetMemoryUtilizationPercentage`    | The target memory utilization percentage to use for autoscaling.                                                                    | `80`                           |
 | `sabnzbd.nodeSelector`                                     | The node selector to use for the pod.                                                                                               | `{}`                           |
 | `sabnzbd.tolerations`                                      | The tolerations to use for the pod.                                                                                                 | `[]`                           |
-| `sabnzbd.affinity`                                         | The affinity to use for the pod. By default, prefers nodes labeled with `internet-speed=high` (weight 100) or `internet-speed=medium` (weight 50) for optimal download performance. | See values.yaml                |
+| `sabnzbd.affinity`                                         | The affinity to use for the pod. Takes precedence over `preferredNodes`.                                                            | `{}`                           |
+| `sabnzbd.preferredNodes`                                   | List of preferred nodes by hostname for scheduling. Each entry has `name` (node hostname) and `weight` (1-100). Pods can schedule on any node but will prefer these. | `[]`                           |
 | `sabnzbd.env.PUID`                                         | The user ID to use for the pod.                                                                                                     | `1000`                         |
 | `sabnzbd.env.PGID`                                         | The group ID to use for the pod.                                                                                                    | `1000`                         |
 | `sabnzbd.env.TZ`                                           | The timezone to use for the pod.                                                                                                    | `Europe/London`                |

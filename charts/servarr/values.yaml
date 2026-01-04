@@ -371,6 +371,7 @@ sonarr:
 ## @param qbittorrent.nodeSelector The node selector to use for the pod.
 ## @param qbittorrent.tolerations The tolerations to use for the pod.
 ## @param qbittorrent.affinity The affinity to use for the pod.
+## @param qbittorrent.preferredNodes List of preferred nodes by hostname for scheduling. Each entry should have 'name' (node hostname) and 'weight' (1-100, higher is more preferred).
 ## @param qbittorrent.env.PUID The user ID to use for the pod.
 ## @param qbittorrent.env.PGID The group ID to use for the pod.
 ## @param qbittorrent.env.TZ The timezone to use for the pod.
@@ -468,23 +469,15 @@ qbittorrent:
 
   tolerations: []
 
-  affinity:
-    nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          preference:
-            matchExpressions:
-              - key: internet-speed
-                operator: In
-                values:
-                  - high
-        - weight: 50
-          preference:
-            matchExpressions:
-              - key: internet-speed
-                operator: In
-                values:
-                  - medium
+  affinity: {}
+  
+  # List of preferred nodes for scheduling (by hostname). Pods can schedule on any node but will prefer these.
+  # Example:
+  #   - name: node-with-fast-internet
+  #     weight: 100
+  #   - name: backup-node
+  #     weight: 50
+  preferredNodes: []
 
   env:
     PUID: "1000"
@@ -1516,6 +1509,7 @@ cleanuparr:
 ## @param sabnzbd.nodeSelector The node selector to use for the pod.
 ## @param sabnzbd.tolerations The tolerations to use for the pod.
 ## @param sabnzbd.affinity The affinity to use for the pod.
+## @param sabnzbd.preferredNodes List of preferred nodes by hostname for scheduling. Each entry should have 'name' (node hostname) and 'weight' (1-100, higher is more preferred).
 ## @param sabnzbd.env.PUID The user ID to use for the pod.
 ## @param sabnzbd.env.PGID The group ID to use for the pod.
 ## @param sabnzbd.env.TZ The timezone to use for the pod.
@@ -1608,23 +1602,15 @@ sabnzbd:
 
   tolerations: []
 
-  affinity:
-    nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          preference:
-            matchExpressions:
-              - key: internet-speed
-                operator: In
-                values:
-                  - high
-        - weight: 50
-          preference:
-            matchExpressions:
-              - key: internet-speed
-                operator: In
-                values:
-                  - medium
+  affinity: {}
+  
+  # List of preferred nodes for scheduling (by hostname). Pods can schedule on any node but will prefer these.
+  # Example:
+  #   - name: node-with-fast-internet
+  #     weight: 100
+  #   - name: backup-node
+  #     weight: 50
+  preferredNodes: []
 
   env:
     PUID: "1000"

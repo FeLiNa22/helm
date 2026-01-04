@@ -116,9 +116,22 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.qbittorrent.affinity }}
+      {{- if .Values.qbittorrent.affinity }}
       affinity:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml .Values.qbittorrent.affinity | nindent 8 }}
+      {{- else if .Values.qbittorrent.preferredNodes }}
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          {{- range .Values.qbittorrent.preferredNodes }}
+            - weight: {{ .weight }}
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - {{ .name }}
+          {{- end }}
       {{- end }}
       {{- with .Values.qbittorrent.tolerations }}
       tolerations:
