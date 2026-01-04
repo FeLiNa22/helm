@@ -85,7 +85,7 @@ jellyfin:
 
   image:
     repository: lscr.io/linuxserver/jellyfin
-    tag: "10.10.1"
+    tag: "10.11.5"
     pullPolicy: IfNotPresent
 
   enableDLNA: false
@@ -244,7 +244,7 @@ sonarr:
   image:
     repository: lscr.io/linuxserver/sonarr
     pullPolicy: IfNotPresent
-    tag: "4.0.10"
+    tag: "4.0.16"
 
   imagePullSecrets: []
 
@@ -392,7 +392,7 @@ qbittorrent:
   image:
     repository: lscr.io/linuxserver/qbittorrent
     pullPolicy: IfNotPresent
-    tag: "4.6.7"
+    tag: "5.1.4"
 
   imagePullSecrets: []
 
@@ -543,7 +543,7 @@ prowlarr:
   image:
     repository: lscr.io/linuxserver/prowlarr
     pullPolicy: IfNotPresent
-    tag: "1.25.4"
+    tag: "2.3.0"
 
   imagePullSecrets: []
 
@@ -812,7 +812,7 @@ jellyseerr:
   image:
     repository: docker.io/fallenbagel/jellyseerr
     pullPolicy: IfNotPresent
-    tag: "2.0.1"
+    tag: "2.7.3"
 
   imagePullSecrets: []
 
@@ -948,7 +948,7 @@ bazarr:
   image:
     repository: lscr.io/linuxserver/bazarr
     pullPolicy: IfNotPresent
-    tag: "1.4.5"
+    tag: "1.5.3"
 
   imagePullSecrets: []
 
@@ -1089,7 +1089,7 @@ radarr:
   image:
     repository: lscr.io/linuxserver/radarr
     pullPolicy: IfNotPresent
-    tag: "5.14.0"
+    tag: "6.0.4"
 
   imagePullSecrets: []
 
@@ -1231,7 +1231,7 @@ lidarr:
   image:
     repository: lscr.io/linuxserver/lidarr
     pullPolicy: IfNotPresent
-    tag: "2.7.1"
+    tag: "3.1.0"
 
   imagePullSecrets: []
 
@@ -1667,7 +1667,7 @@ plex:
   image:
     repository: lscr.io/linuxserver/plex
     pullPolicy: IfNotPresent
-    tag: "1.41.2"
+    tag: "1.42.2"
 
   imagePullSecrets: []
 
@@ -1808,7 +1808,7 @@ emby:
   image:
     repository: lscr.io/linuxserver/emby
     pullPolicy: IfNotPresent
-    tag: "4.8.10"
+    tag: "4.9.1"
 
   imagePullSecrets: []
 
