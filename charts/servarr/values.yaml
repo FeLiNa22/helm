@@ -499,6 +499,9 @@ qbittorrent:
   ## @param qbittorrent.gluetun.env.OPENVPN_USER Username for OpenVPN authentication (if using OpenVPN).
   ## @param qbittorrent.gluetun.env.OPENVPN_PASSWORD Password for OpenVPN authentication (if using OpenVPN).
   ## @param qbittorrent.gluetun.env.SERVER_COUNTRIES Comma-separated list of server countries to use.
+  ## @param qbittorrent.gluetun.env.SERVER_REGION Region for server selection (e.g., for VPN providers that use regions instead of countries).
+  ## @param qbittorrent.gluetun.env.SERVER_NAMES Comma-separated list of specific server names to use.
+  ## @param qbittorrent.gluetun.env.SERVER_HOSTNAMES Comma-separated list of specific server hostnames to use.
   ## @param qbittorrent.gluetun.env.FIREWALL_OUTBOUND_SUBNETS Comma-separated list of subnets to allow outbound traffic to (e.g., local network).
   ## @param qbittorrent.gluetun.resources Resource limits and requests for the Gluetun container.
   gluetun:
@@ -517,6 +520,9 @@ qbittorrent:
       OPENVPN_USER: ""
       OPENVPN_PASSWORD: ""
       SERVER_COUNTRIES: ""
+      SERVER_REGION: ""
+      SERVER_NAMES: ""
+      SERVER_HOSTNAMES: ""
       FIREWALL_OUTBOUND_SUBNETS: ""
     resources: {}
     # limits:
