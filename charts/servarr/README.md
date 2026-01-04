@@ -40,6 +40,50 @@ helm delete servarr
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
 
+## Internet Speed-Based Pod Scheduling
+
+The chart includes built-in support for automatically scheduling download applications (qBittorrent and SABnzbd) on nodes with the best internet download speeds. This is achieved through Kubernetes node affinity.
+
+### Setup
+
+1. Label your nodes with their internet speed capability:
+
+```console
+kubectl label nodes <node-name> internet-speed=high
+kubectl label nodes <node-name> internet-speed=medium
+kubectl label nodes <node-name> internet-speed=low
+```
+
+2. Deploy the chart - qBittorrent and SABnzbd will automatically prefer nodes with higher internet speeds:
+   - Nodes labeled `internet-speed=high` receive a weight of 100 (highest preference)
+   - Nodes labeled `internet-speed=medium` receive a weight of 50
+
+3. If no nodes have these labels, pods will schedule normally on any available node.
+
+### Customization
+
+You can override the default affinity behavior by setting custom affinity rules in your values:
+
+```yaml
+qbittorrent:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: internet-speed
+            operator: In
+            values:
+            - high
+```
+
+Or disable the default affinity entirely by setting it to an empty object:
+
+```yaml
+qbittorrent:
+  affinity: {}
+```
+
 ## Parameters
 
 ### Media parameters
@@ -211,7 +255,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `qbittorrent.autoscaling.targetMemoryUtilizationPercentage` | The target memory utilization percentage to use for autoscaling.                                                                    | `80`                              |
 | `qbittorrent.nodeSelector`                                  | The node selector to use for the pod.                                                                                               | `{}`                              |
 | `qbittorrent.tolerations`                                   | The tolerations to use for the pod.                                                                                                 | `[]`                              |
-| `qbittorrent.affinity`                                      | The affinity to use for the pod.                                                                                                    | `{}`                              |
+| `qbittorrent.affinity`                                      | The affinity to use for the pod. By default, prefers nodes labeled with `internet-speed=high` (weight 100) or `internet-speed=medium` (weight 50) for optimal download performance. | See values.yaml                   |
 | `qbittorrent.env.PUID`                                      | The user ID to use for the pod.                                                                                                     | `1000`                            |
 | `qbittorrent.env.PGID`                                      | The group ID to use for the pod.                                                                                                    | `1000`                            |
 | `qbittorrent.env.TZ`                                        | The timezone to use for the pod.                                                                                                    | `Europe/London`                   |
@@ -599,7 +643,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sabnzbd.autoscaling.targetMemoryUtilizationPercentage`    | The target memory utilization percentage to use for autoscaling.                                                                    | `80`                           |
 | `sabnzbd.nodeSelector`                                     | The node selector to use for the pod.                                                                                               | `{}`                           |
 | `sabnzbd.tolerations`                                      | The tolerations to use for the pod.                                                                                                 | `[]`                           |
-| `sabnzbd.affinity`                                         | The affinity to use for the pod.                                                                                                    | `{}`                           |
+| `sabnzbd.affinity`                                         | The affinity to use for the pod. By default, prefers nodes labeled with `internet-speed=high` (weight 100) or `internet-speed=medium` (weight 50) for optimal download performance. | See values.yaml                |
 | `sabnzbd.env.PUID`                                         | The user ID to use for the pod.                                                                                                     | `1000`                         |
 | `sabnzbd.env.PGID`                                         | The group ID to use for the pod.                                                                                                    | `1000`                         |
 | `sabnzbd.env.TZ`                                           | The timezone to use for the pod.                                                                                                    | `Europe/London`                |

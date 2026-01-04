@@ -468,7 +468,23 @@ qbittorrent:
 
   tolerations: []
 
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: internet-speed
+                operator: In
+                values:
+                  - high
+        - weight: 50
+          preference:
+            matchExpressions:
+              - key: internet-speed
+                operator: In
+                values:
+                  - medium
 
   env:
     PUID: "1000"
@@ -1592,7 +1608,23 @@ sabnzbd:
 
   tolerations: []
 
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: internet-speed
+                operator: In
+                values:
+                  - high
+        - weight: 50
+          preference:
+            matchExpressions:
+              - key: internet-speed
+                operator: In
+                values:
+                  - medium
 
   env:
     PUID: "1000"
