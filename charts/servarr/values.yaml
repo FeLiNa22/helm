@@ -489,6 +489,43 @@ qbittorrent:
     mountPath: /local-storage
     size: 1Gi
 
+  ## @param qbittorrent.gluetun.enabled Whether to enable Gluetun VPN sidecar for routing qBittorrent traffic through a VPN.
+  ## @param qbittorrent.gluetun.image.repository The Docker repository to pull the Gluetun image from.
+  ## @param qbittorrent.gluetun.image.tag The image tag to use for Gluetun.
+  ## @param qbittorrent.gluetun.image.pullPolicy The logic of image pulling for Gluetun.
+  ## @param qbittorrent.gluetun.securityContext.capabilities.add Security capabilities for the Gluetun container. NET_ADMIN is required for VPN functionality.
+  ## @param qbittorrent.gluetun.env.VPN_SERVICE_PROVIDER The VPN service provider (e.g., nordvpn, expressvpn, mullvad, etc.).
+  ## @param qbittorrent.gluetun.env.VPN_TYPE The type of VPN protocol to use (openvpn or wireguard).
+  ## @param qbittorrent.gluetun.env.OPENVPN_USER Username for OpenVPN authentication (if using OpenVPN).
+  ## @param qbittorrent.gluetun.env.OPENVPN_PASSWORD Password for OpenVPN authentication (if using OpenVPN).
+  ## @param qbittorrent.gluetun.env.SERVER_COUNTRIES Comma-separated list of server countries to use.
+  ## @param qbittorrent.gluetun.env.FIREWALL_OUTBOUND_SUBNETS Comma-separated list of subnets to allow outbound traffic to (e.g., local network).
+  ## @param qbittorrent.gluetun.resources Resource limits and requests for the Gluetun container.
+  gluetun:
+    enabled: false
+    image:
+      repository: qmcgaw/gluetun
+      tag: "v3.39.2"
+      pullPolicy: IfNotPresent
+    securityContext:
+      capabilities:
+        add:
+          - NET_ADMIN
+    env:
+      VPN_SERVICE_PROVIDER: ""
+      VPN_TYPE: "openvpn"
+      OPENVPN_USER: ""
+      OPENVPN_PASSWORD: ""
+      SERVER_COUNTRIES: ""
+      FIREWALL_OUTBOUND_SUBNETS: ""
+    resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 50m
+      #   memory: 64Mi
+
 ## @section Prowlarr parameters
 
 ## @param prowlarr.enabled Whether to enable Prowlarr.

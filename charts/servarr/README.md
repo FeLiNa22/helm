@@ -216,6 +216,18 @@ The command removes all the Kubernetes components associated with the chart and 
 | `qbittorrent.localStorage.enabled`                          | Whether to enable local storage for temporary files and downloads.                                                                  | `false`                           |
 | `qbittorrent.localStorage.mountPath`                        | The mount path for the local storage.                                                                                               | `/local-storage`                  |
 | `qbittorrent.localStorage.size`                             | The size limit for the temporary storage (emptyDir).                                                                                | `1Gi`                             |
+| `qbittorrent.gluetun.enabled`                               | Whether to enable Gluetun VPN sidecar for routing qBittorrent traffic through a VPN.                                                | `false`                           |
+| `qbittorrent.gluetun.image.repository`                      | The Docker repository to pull the Gluetun image from.                                                                               | `qmcgaw/gluetun`                  |
+| `qbittorrent.gluetun.image.tag`                             | The image tag to use for Gluetun.                                                                                                   | `v3.39.2`                         |
+| `qbittorrent.gluetun.image.pullPolicy`                      | The logic of image pulling for Gluetun.                                                                                             | `IfNotPresent`                    |
+| `qbittorrent.gluetun.securityContext.capabilities.add`      | Security capabilities for the Gluetun container. NET_ADMIN is required for VPN functionality.                                       | `["NET_ADMIN"]`                   |
+| `qbittorrent.gluetun.env.VPN_SERVICE_PROVIDER`              | The VPN service provider (e.g., nordvpn, expressvpn, mullvad, etc.).                                                                | `""`                              |
+| `qbittorrent.gluetun.env.VPN_TYPE`                          | The type of VPN protocol to use (openvpn or wireguard).                                                                             | `openvpn`                         |
+| `qbittorrent.gluetun.env.OPENVPN_USER`                      | Username for OpenVPN authentication (if using OpenVPN).                                                                             | `""`                              |
+| `qbittorrent.gluetun.env.OPENVPN_PASSWORD`                  | Password for OpenVPN authentication (if using OpenVPN).                                                                             | `""`                              |
+| `qbittorrent.gluetun.env.SERVER_COUNTRIES`                  | Comma-separated list of server countries to use.                                                                                    | `""`                              |
+| `qbittorrent.gluetun.env.FIREWALL_OUTBOUND_SUBNETS`         | Comma-separated list of subnets to allow outbound traffic to (e.g., local network).                                                 | `""`                              |
+| `qbittorrent.gluetun.resources`                             | Resource limits and requests for the Gluetun container.                                                                             | `{}`                              |
 
 ### Prowlarr parameters
 
