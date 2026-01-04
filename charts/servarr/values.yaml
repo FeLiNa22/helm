@@ -1531,7 +1531,7 @@ sabnzbd:
   image:
     repository: lscr.io/linuxserver/sabnzbd
     pullPolicy: IfNotPresent
-    tag: "4.3.3"
+    tag: "4.5.5"
 
   imagePullSecrets: []
 
