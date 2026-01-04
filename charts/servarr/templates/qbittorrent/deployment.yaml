@@ -75,6 +75,30 @@ spec:
           {{- .Values.qbittorrent.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
       containers:
+      {{- if .Values.qbittorrent.gluetun.enabled }}
+        - name: gluetun
+          image: "{{ .Values.qbittorrent.gluetun.image.repository }}:{{ .Values.qbittorrent.gluetun.image.tag }}"
+          imagePullPolicy: {{ .Values.qbittorrent.gluetun.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.qbittorrent.gluetun.securityContext | nindent 12 }}
+          env:
+            {{- range $k,$v := .Values.qbittorrent.gluetun.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.qbittorrent.service.web.port | default 8080 }}
+              protocol: TCP
+            - name: bittorrent-tcp
+              containerPort: {{ .Values.qbittorrent.service.bt.port | default 6881 }}
+              protocol: TCP
+            - name: bittorrent-udp
+              containerPort: {{ .Values.qbittorrent.service.bt.port | default 6881 }}
+              protocol: UDP
+          resources:
+            {{- toYaml .Values.qbittorrent.gluetun.resources | nindent 12 }}
+      {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.qbittorrent.securityContext | nindent 12 }}
@@ -95,6 +119,7 @@ spec:
           {{- if .Values.qbittorrent.persistence.additionalMounts }}
             {{- .Values.qbittorrent.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}
+        {{- if not .Values.qbittorrent.gluetun.enabled }}
           ports:
             - name: http
               containerPort: {{ .Values.qbittorrent.service.web.port | default 8080 }}
@@ -105,6 +130,7 @@ spec:
             - name: bittorrent-udp
               containerPort: {{ .Values.qbittorrent.service.bt.port | default 6881 }}
               protocol: UDP
+        {{- end }}
           env:
             {{- range $k,$v := .Values.qbittorrent.env }}
             - name: {{ $k }}
