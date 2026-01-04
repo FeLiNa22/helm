@@ -24,6 +24,27 @@ entries:
     version: 1.0.1
   cloudflare-tunnel:
   - apiVersion: v2
+    appVersion: 2025.11.1
+    created: "2026-01-04T17:38:34.698367441Z"
+    description: Raul Cloudflared Tunnel Helm Chart
+    digest: 44f0d358e8c70f1cbb9d4c7995ed72ce6fd9987dc2bad590730ed0afbfe0e9c2
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/cloudflared
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - cloudflare
+    - cloudflared
+    - tunnel
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: cloudflare-tunnel
+    sources:
+    - https://github.com/cloudflare/cloudflared
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/cloudflare-tunnel-1.0.4/cloudflare-tunnel-1.0.4.tgz
+    version: 1.0.4
+  - apiVersion: v2
     appVersion: 2025.9.1
     created: "2025-12-16T01:50:38.953724301Z"
     description: Raul Cloudflared Tunnel Helm Chart
@@ -462,6 +483,28 @@ entries:
     version: 1.0.1
   nextcloud:
   - apiVersion: v2
+    appVersion: 32.0.3
+    created: "2026-01-04T17:38:34.813285316Z"
+    description: Nextcloud Helm Chart
+    digest: 0515554bc3c578d027c6059791b245c84651bf4e60806657a9c39f9c1034c7ac
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/nextcloud
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - nextcloud
+    - cloud
+    - storage
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: nextcloud
+    sources:
+    - https://github.com/nextcloud/server
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/nextcloud-1.0.4/nextcloud-1.0.4.tgz
+    version: 1.0.4
+  - apiVersion: v2
     appVersion: 30.0.2
     created: "2025-12-16T01:50:40.556156204Z"
     description: Nextcloud Helm Chart
@@ -527,6 +570,40 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/nextcloud-1.0.1/nextcloud-1.0.1.tgz
     version: 1.0.1
   outline:
+  - apiVersion: v2
+    appVersion: 0.87.4
+    created: "2026-01-04T17:38:35.002103419Z"
+    dependencies:
+    - condition: global.postgresqlEnabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 13.x.x
+    - condition: global.redisEnabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 18.x.x
+    - condition: global.minioEnabled
+      name: minio
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.x.x
+    description: Raul Outline Wiki Helm Chart
+    digest: b09a4801acc7abfa0bd0918dac61b6f041b0d7694253fdc907c3322ae216c2e6
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/outline
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - outline
+    - wiki
+    - docs
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: outline
+    sources:
+    - https://github.com/outline/outline
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/outline-1.0.3/outline-1.0.3.tgz
+    version: 1.0.3
   - apiVersion: v2
     appVersion: 0.82.0
     created: "2025-12-16T01:50:40.788703941Z"
@@ -596,6 +673,36 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/outline-1.0.1/outline-1.0.1.tgz
     version: 1.0.1
   penpot:
+  - apiVersion: v2
+    appVersion: 2.12.1
+    created: "2026-01-04T17:38:35.130136959Z"
+    dependencies:
+    - condition: global.postgresqlEnabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.x.x
+    - condition: global.redisEnabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 18.x.x
+    description: Raul Penpot Helm Chart
+    digest: baf50192b54f283f71f5fb82d48239e73397950f59d85a5ca1454e8a2e80a14c
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/penpot
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - penpot
+    - penpotapp
+    - design
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: penpot
+    sources:
+    - https://github.com/penpot/penpot
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/penpot-1.0.3/penpot-1.0.3.tgz
+    version: 1.0.3
   - apiVersion: v2
     appVersion: 2.2.1
     created: "2025-12-16T01:50:41.008645577Z"
@@ -727,6 +834,38 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/searxng-1.0.1/searxng-1.0.1.tgz
     version: 1.0.1
   servarr:
+  - apiVersion: v2
+    appVersion: 1.2.3
+    created: "2026-01-04T17:38:35.246719101Z"
+    description: Raul Servarr Helm Chart
+    digest: a726eaca0ce43a9e63816cc815c7f155fb8469ea4dbb298c00401d7819488265
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/servarr
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - bazarr
+    - lidarr
+    - sonarr
+    - radarr
+    - flaresolverr
+    - jellyfin
+    - jellyseerr
+    - qbittorrent
+    - prowlarr
+    - cleanuparr
+    - sabnzbd
+    - frigate
+    - plex
+    - emby
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: servarr
+    sources:
+    - https://github.com/Servarr
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/servarr-1.2.3/servarr-1.2.3.tgz
+    version: 1.2.3
   - apiVersion: v2
     appVersion: 1.2.2
     created: "2026-01-03T18:58:04.02033527Z"
@@ -1049,6 +1188,27 @@ entries:
     version: 1.0.1
   vaultwarden:
   - apiVersion: v2
+    appVersion: 1.35.1
+    created: "2026-01-04T17:38:35.399026052Z"
+    description: Vaultwarden Helm Chart
+    digest: c767b676a0d065d3d5fd08d77160fd965c9404e7c536d6b2366e9c3fb6d666af
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/vaultwarden
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - vaultwarden
+    - bitwarden
+    - password-manager
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: vaultwarden
+    sources:
+    - https://github.com/dani-garcia/vaultwarden
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.3/vaultwarden-1.0.3.tgz
+    version: 1.0.3
+  - apiVersion: v2
     appVersion: 1.32.4
     created: "2025-12-16T01:50:41.653736254Z"
     description: Vaultwarden Helm Chart
@@ -1090,4 +1250,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-01-03T18:58:04.02042454Z"
+generated: "2026-01-04T17:38:35.399203473Z"
