@@ -512,10 +512,7 @@ qbittorrent:
       repository: qmcgaw/gluetun
       tag: "v3.39.2"
       pullPolicy: IfNotPresent
-    securityContext:
-      capabilities:
-        add:
-          - NET_ADMIN
+
     env:
       VPN_SERVICE_PROVIDER: ""
       VPN_TYPE: "openvpn"
