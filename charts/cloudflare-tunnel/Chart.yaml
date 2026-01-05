@@ -3,8 +3,8 @@ maintainers:
   - name: raulpatel
     url: https://raulpatel.com
 apiVersion: v2
-appVersion: 2025.11.1
-version: 1.0.5
+appVersion: 2026.1.1
+version: 1.0.6
 description: Raul Cloudflared Tunnel Helm Chart
 home: https://github.com/FeLiNa22/homeserver/tree/main/charts/cloudflared
 icon: https://raulpatel.com/images/raul.svg
