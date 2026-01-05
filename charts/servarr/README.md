@@ -230,6 +230,10 @@ The command removes all the Kubernetes components associated with the chart and 
 | `qbittorrent.gluetun.env.SERVER_NAMES`                      | Comma-separated list of specific server names to use.                                                                               | `""`                              |
 | `qbittorrent.gluetun.env.SERVER_HOSTNAMES`                  | Comma-separated list of specific server hostnames to use.                                                                           | `""`                              |
 | `qbittorrent.gluetun.env.FIREWALL_OUTBOUND_SUBNETS`         | Comma-separated list of subnets to allow outbound traffic to (e.g., local network).                                                 | `""`                              |
+| `qbittorrent.gluetun.httpProxy.enabled`                     | Whether to enable HTTP proxy server in Gluetun.                                                                                     | `true`                            |
+| `qbittorrent.gluetun.httpProxy.port`                        | The port on which the HTTP proxy server will listen.                                                                                | `8888`                            |
+| `qbittorrent.gluetun.shadowsocksProxy.enabled`              | Whether to enable Shadowsocks proxy server in Gluetun.                                                                              | `true`                            |
+| `qbittorrent.gluetun.shadowsocksProxy.port`                 | The port on which the Shadowsocks proxy server will listen.                                                                         | `8388`                            |
 | `qbittorrent.gluetun.resources`                             | Resource limits and requests for the Gluetun container.                                                                             | `{}`                              |
 
 ### Prowlarr parameters
@@ -800,6 +804,55 @@ qbittorrent:
 ```
 
 **Note**: The localStorage uses an emptyDir volume type, which provides a temporary directory that persists for the lifetime of the pod. When the pod is deleted or restarted, the data in this directory is lost. The `size` parameter sets the maximum size limit for the temporary storage.
+
+### Using Gluetun VPN with qBittorrent and proxy services
+
+The qBittorrent deployment supports an optional Gluetun VPN sidecar container that can route qBittorrent traffic through a VPN connection. Additionally, Gluetun can expose HTTP and Shadowsocks proxy servers that other applications (like Prowlarr, Sonarr, Radarr, etc.) can use to route their traffic through the VPN.
+
+#### Enabling Gluetun VPN
+
+To enable Gluetun with qBittorrent:
+
+```yaml
+qbittorrent:
+  enabled: true
+  gluetun:
+    enabled: true
+    env:
+      VPN_SERVICE_PROVIDER: "nordvpn"  # or your VPN provider
+      VPN_TYPE: "openvpn"
+      OPENVPN_USER: "your-username"
+      OPENVPN_PASSWORD: "your-password"
+      SERVER_COUNTRIES: "United States"
+    httpProxy:
+      enabled: true
+      port: 8888
+    shadowsocksProxy:
+      enabled: true
+      port: 8388
+```
+
+#### Configuring other services to use Gluetun proxies
+
+When Gluetun proxies are enabled, they are accessible via Kubernetes services with the following naming pattern:
+
+- **HTTP Proxy**: `<release-name>-gluetun-http.<namespace>.svc.cluster.local:<port>`
+- **Shadowsocks Proxy**: `<release-name>-gluetun-shadowsocks.<namespace>.svc.cluster.local:<port>`
+
+**Example**: If you installed the chart with release name `servarr` in the `media` namespace with default ports, the proxy addresses would be:
+
+- **HTTP Proxy**: `servarr-gluetun-http.media.svc.cluster.local:8888`
+- **Shadowsocks Proxy**: `servarr-gluetun-shadowsocks.media.svc.cluster.local:8388`
+
+To configure Prowlarr (or other *arr applications) to use the Shadowsocks proxy:
+
+1. In Prowlarr, go to **Settings** → **Indexers** → **Add Indexer Proxy**
+2. Select **Socks5** as the proxy type (Shadowsocks uses SOCKS5 protocol)
+3. Enter the proxy hostname: `servarr-gluetun-shadowsocks.media.svc.cluster.local` (replace `servarr` with your release name and `media` with your namespace)
+4. Enter the port: `8388` (or your configured shadowsocksProxy.port)
+5. Test and save the configuration
+
+**Important**: Make sure to use `cluster.local` (not `cluster.loal`) as the cluster domain suffix in the hostname.
 
 ### Intro Skipper plugin for Jellyfin permissions fix
 
