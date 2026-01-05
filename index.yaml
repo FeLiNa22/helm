@@ -331,6 +331,28 @@ entries:
   homepage:
   - apiVersion: v2
     appVersion: v0.9.15
+    created: "2026-01-05T13:54:49.49631084Z"
+    description: Homepage Dashboard Helm Chart with Kubernetes Service Discovery
+    digest: 2a8e1b83623788445ddb7d88ccf86473cb82a4f884c6a2e8a325645d09061568
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/homepage
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - homepage
+    - dashboard
+    - service-discovery
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: homepage
+    sources:
+    - https://github.com/gethomepage/homepage
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/homepage-1.0.3/homepage-1.0.3.tgz
+    version: 1.0.3
+  - apiVersion: v2
+    appVersion: v0.9.15
     created: "2026-01-05T12:18:26.857088956Z"
     description: Homepage Dashboard Helm Chart with Kubernetes Service Discovery
     digest: 68c011a9af0fb796bf9f231dd58f4301fb73a17eebd8b93cf333f2fb4b6ec3a9
@@ -1573,4 +1595,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-01-05T12:18:26.857189313Z"
+generated: "2026-01-05T13:54:49.496444329Z"
