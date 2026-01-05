@@ -3,6 +3,11 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}
 spec:
+  securityContext:
+    sysctls:
+    # Allows ICMP traffic (ping, traceroute) to resources behind cloudflared.
+      - name: net.ipv4.ping_group_range
+        value: "65532 65532"
   selector:
     matchLabels:
       app: {{ .Release.Name }}
@@ -23,6 +28,7 @@ spec:
     spec:
       containers:
       - args:
+        - cloudflared
         - tunnel
         - --no-autoupdate
         {{- if .Values.metrics.enabled }}
@@ -36,12 +42,11 @@ spec:
         {{- if .Values.local.enabled }}
         - --config
         - /etc/cloudflared/config.yaml
-        - run
         {{- else if .Values.managed.enabled }}
-        - run
         - --token
         - $(CF_MANAGED_TUNNEL_TOKEN)
         {{- end }}
+        - run
         name: {{ .Release.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.imagePullPolicy }}
