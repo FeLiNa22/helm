@@ -505,8 +505,10 @@ qbittorrent:
   ## @param qbittorrent.gluetun.env.FIREWALL_OUTBOUND_SUBNETS Comma-separated list of subnets to allow outbound traffic to (e.g., local network).
   ## @param qbittorrent.gluetun.httpProxy.enabled Whether to enable HTTP proxy server in Gluetun.
   ## @param qbittorrent.gluetun.httpProxy.port The port on which the HTTP proxy server will listen.
+  ## @param qbittorrent.gluetun.httpProxy.type The type of service to create for the HTTP proxy.
   ## @param qbittorrent.gluetun.shadowsocksProxy.enabled Whether to enable Shadowsocks proxy server in Gluetun.
   ## @param qbittorrent.gluetun.shadowsocksProxy.port The port on which the Shadowsocks proxy server will listen.
+  ## @param qbittorrent.gluetun.shadowsocksProxy.type The type of service to create for the Shadowsocks proxy.
   ## @param qbittorrent.gluetun.resources Resource limits and requests for the Gluetun container.
   gluetun:
     enabled: false
@@ -531,9 +533,11 @@ qbittorrent:
     httpProxy:
       enabled: true
       port: 8888
+      type: LoadBalancer
     shadowsocksProxy:
       enabled: true
       port: 8388
+      type: LoadBalancer
     resources: {}
     # limits:
     #   cpu: 100m
