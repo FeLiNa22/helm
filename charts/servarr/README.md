@@ -230,6 +230,12 @@ The command removes all the Kubernetes components associated with the chart and 
 | `qbittorrent.gluetun.env.SERVER_NAMES`                      | Comma-separated list of specific server names to use.                                                                               | `""`                              |
 | `qbittorrent.gluetun.env.SERVER_HOSTNAMES`                  | Comma-separated list of specific server hostnames to use.                                                                           | `""`                              |
 | `qbittorrent.gluetun.env.FIREWALL_OUTBOUND_SUBNETS`         | Comma-separated list of subnets to allow outbound traffic to (e.g., local network).                                                 | `""`                              |
+| `qbittorrent.gluetun.httpProxy.enabled`                     | Whether to enable HTTP proxy server in Gluetun.                                                                                     | `true`                            |
+| `qbittorrent.gluetun.httpProxy.port`                        | The port on which the HTTP proxy server will listen.                                                                                | `8888`                            |
+| `qbittorrent.gluetun.httpProxy.type`                        | The type of service to create for the HTTP proxy.                                                                                   | `LoadBalancer`                    |
+| `qbittorrent.gluetun.shadowsocksProxy.enabled`              | Whether to enable Shadowsocks proxy server in Gluetun.                                                                              | `true`                            |
+| `qbittorrent.gluetun.shadowsocksProxy.port`                 | The port on which the Shadowsocks proxy server will listen.                                                                         | `8388`                            |
+| `qbittorrent.gluetun.shadowsocksProxy.type`                 | The type of service to create for the Shadowsocks proxy.                                                                            | `LoadBalancer`                    |
 | `qbittorrent.gluetun.resources`                             | Resource limits and requests for the Gluetun container.                                                                             | `{}`                              |
 
 ### Prowlarr parameters

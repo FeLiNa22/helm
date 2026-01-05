@@ -70,7 +70,7 @@ metadata:
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
     app.kubernetes.io/component: http-proxy
 spec:
-  type: ClusterIP
+  type: {{ .Values.qbittorrent.gluetun.httpProxy.type | default "LoadBalancer" }}
   ports:
     - port: {{ .Values.qbittorrent.gluetun.httpProxy.port }}
       targetPort: http-proxy
@@ -95,7 +95,7 @@ metadata:
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
     app.kubernetes.io/component: shadowsocks
 spec:
-  type: ClusterIP
+  type: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.type | default "LoadBalancer" }}
   ports:
     - port: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port }}
       targetPort: shadowsocks
