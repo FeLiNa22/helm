@@ -54,7 +54,8 @@ spec:
   selector:
     app.kubernetes.io/name: qbittorrent
     app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
-{{- if and .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.httpProxy.enabled }}
+{{- end }}
+{{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.httpProxy.enabled }}
 
 ---
 apiVersion: v1
@@ -79,7 +80,7 @@ spec:
     app.kubernetes.io/name: qbittorrent
     app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
 {{- end }}
-{{- if and .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.shadowsocksProxy.enabled }}
+{{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.shadowsocksProxy.enabled }}
 
 ---
 apiVersion: v1
@@ -103,5 +104,4 @@ spec:
   selector:
     app.kubernetes.io/name: qbittorrent
     app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
-{{- end }}
 {{- end }}
