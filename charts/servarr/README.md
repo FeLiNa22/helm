@@ -332,6 +332,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `flaresolverr.nodeSelector`                                  | The node selector to use for the pod.                                                                                               | `{}`                                |
 | `flaresolverr.tolerations`                                   | The tolerations to use for the pod.                                                                                                 | `[]`                                |
 | `flaresolverr.affinity`                                      | The affinity to use for the pod.                                                                                                    | `{}`                                |
+| `flaresolverr.env`                                           | Additional environment variables to add to the pod.                                                                                 | `[]`                                |
 
 ### Jellyseerr parameters
 
@@ -778,6 +779,50 @@ jellyfin:
       size: 100Gi
       accessMode: ReadWriteOnce
 ```
+
+### FlareSolverr environment variables
+
+FlareSolverr can be configured using environment variables to customize its behavior. The chart now supports adding custom environment variables to the FlareSolverr pod.
+
+#### Example: Configuring FlareSolverr with environment variables
+
+```yaml
+flaresolverr:
+  enabled: true
+  env:
+    - name: LOG_LEVEL
+      value: info
+    - name: LOG_HTML
+      value: "false"
+    - name: CAPTCHA_SOLVER
+      value: none
+    - name: TZ
+      value: America/New_York
+```
+
+You can also use secrets or configmaps for sensitive values:
+
+```yaml
+flaresolverr:
+  enabled: true
+  env:
+    - name: LOG_LEVEL
+      value: debug
+    - name: API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: flaresolverr-secret
+          key: api-key
+```
+
+Common FlareSolverr environment variables:
+- `LOG_LEVEL`: Set logging level (debug, info, warning, error)
+- `LOG_HTML`: Enable/disable HTML logging (true/false)
+- `CAPTCHA_SOLVER`: Configure captcha solver (none, hcaptcha-solver, etc.)
+- `TZ`: Set timezone for the container
+- `HEADLESS`: Run in headless mode (true/false)
+
+For a complete list of available environment variables, refer to the [FlareSolverr documentation](https://github.com/FlareSolverr/FlareSolverr).
 
 ### Local storage for temporary files and downloads
 
