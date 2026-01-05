@@ -64,6 +64,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | --------------------------------- | ----------------------------------------------- | --------- |
 | `config.enableKubernetes`         | Enable Kubernetes integration                   | `true`    |
 | `config.kubernetes.mode`          | Kubernetes mode (cluster or default)            | `cluster` |
+| `config.allowedHosts`             | Comma-separated list of allowed hosts for HOMEPAGE_ALLOWED_HOSTS environment variable | `""`      |
 
 ### RBAC Configuration
 

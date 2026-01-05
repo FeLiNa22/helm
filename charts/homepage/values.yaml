@@ -138,12 +138,16 @@ persistence:
 
 ## @param config.enableKubernetes Enable Kubernetes integration for service discovery
 ## @param config.kubernetes.mode Mode for Kubernetes integration (cluster or default)
+## @param config.allowedHosts Comma-separated list of allowed hosts for the HOMEPAGE_ALLOWED_HOSTS environment variable (e.g., "example.com,www.example.com")
 ##
 config:
   # Enable Kubernetes integration for automatic service discovery
   enableKubernetes: true
   kubernetes:
     mode: cluster
+  # Allowed hosts for Homepage (HOMEPAGE_ALLOWED_HOSTS environment variable)
+  # Leave empty to allow all hosts
+  allowedHosts: ""
 
 ## @section RBAC Configuration
 ## RBAC is required for Kubernetes service discovery

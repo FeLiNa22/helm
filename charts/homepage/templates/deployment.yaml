@@ -92,6 +92,10 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 3
           env:
+            {{- if .Values.config.allowedHosts }}
+            - name: HOMEPAGE_ALLOWED_HOSTS
+              value: {{ .Values.config.allowedHosts | quote }}
+            {{- end }}
             {{- range .Values.env }}
             - name: {{ .name }}
               value: {{ .value | quote }}
