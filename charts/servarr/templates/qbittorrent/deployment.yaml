@@ -79,6 +79,10 @@ spec:
         - name: gluetun
           image: "{{ .Values.qbittorrent.gluetun.image.repository }}:{{ .Values.qbittorrent.gluetun.image.tag }}"
           imagePullPolicy: {{ .Values.qbittorrent.gluetun.image.pullPolicy }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "(ip rule del table 51820; ip -6 rule del table 51820) || true"]
           securityContext:
             capabilities:
               add:
@@ -128,7 +132,7 @@ spec:
           resources:
             {{- toYaml .Values.qbittorrent.gluetun.resources | nindent 12 }}
       {{- end }}
-        - name: {{ .Chart.Name }}
+        - name: qbittorrent
           securityContext:
             {{- toYaml .Values.qbittorrent.securityContext | nindent 12 }}
           image: "{{ .Values.qbittorrent.image.repository }}:{{ .Values.qbittorrent.image.tag | default .Chart.AppVersion }}"
