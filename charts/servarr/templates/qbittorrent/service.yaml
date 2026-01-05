@@ -98,9 +98,13 @@ spec:
   type: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.type | default "LoadBalancer" }}
   ports:
     - port: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port }}
-      targetPort: shadowsocks
+      targetPort: shadowsocks-tcp
       protocol: TCP
-      name: shadowsocks
+      name: shadowsocks-tcp
+    - port: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port }}
+      targetPort: shadowsocks-udp
+      protocol: UDP
+      name: shadowsocks-udp
   selector:
     app.kubernetes.io/name: qbittorrent
     app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent

@@ -114,9 +114,12 @@ spec:
               protocol: TCP
             {{- end }}
             {{- if .Values.qbittorrent.gluetun.shadowsocksProxy.enabled }}
-            - name: shadowsocks
+            - name: shadowsocks-tcp
               containerPort: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port }}
               protocol: TCP
+            - name: shadowsocks-udp
+              containerPort: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port }}
+              protocol: UDP
             {{- end }}
           resources:
             {{- toYaml .Values.qbittorrent.gluetun.resources | nindent 12 }}
