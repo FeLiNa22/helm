@@ -27,63 +27,63 @@ spec:
           - name: net.ipv4.ping_group_range
             value: "65532 65532"
       containers:
-        name: {{ .Release.Name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
-        command:
-          - cloudflared
-          - tunnel
-          - --no-autoupdate
+        - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          name: {{ .Release.Name }}
+          imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          command:
+            - cloudflared
+            - tunnel
+            - --no-autoupdate
+            {{- if .Values.metrics.enabled }}
+            - --metrics
+            - "0.0.0.0:{{ .Values.metrics.port }}"
+            {{ end }}
+            {{- if .Values.logLevel }}
+            - --loglevel
+            - {{ .Values.logLevel }}
+            {{- end }}
+            {{- if .Values.local.enabled }}
+            - --config
+            - /etc/cloudflared/config.yaml
+            {{- end }}
+            - run
+          {{- if .Values.managed.enabled }}
+          env:
+          - name: TUNNEL_TOKEN
+            {{- if .Values.managed.existingSecret }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.managed.existingSecret }}
+                key: cf-tunnel-token
+            {{- else }}
+            value: {{ .Values.managed.token }}
+            {{- end }}
+          {{- end }}
           {{- if .Values.metrics.enabled }}
-          - --metrics
-          - "0.0.0.0:{{ .Values.metrics.port }}"
+          ports:
+           - name: metrics
+             containerPort: {{ .Values.metrics.port }}
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: metrics
+            failureThreshold: 1
+            initialDelaySeconds: 10
+            periodSeconds: 10
           {{ end }}
-          {{- if .Values.logLevel }}
-          - --loglevel
-          - {{ .Values.logLevel }}
-          {{- end }}
           {{- if .Values.local.enabled }}
-          - --config
-          - /etc/cloudflared/config.yaml
+          volumeMounts:
+          - mountPath: /etc/cloudflared/tunnel-config.json
+            name: tunnel-secret-volume
+            subPath: tunnel-config.json
+          - mountPath: /etc/cloudflared/config.yaml
+            name: cloudflared-config-volume
+            subPath: config.yaml
           {{- end }}
-          - run
-        {{- if .Values.managed.enabled }}
-        env:
-        - name: TUNNEL_TOKEN
-          {{- if .Values.managed.existingSecret }}
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.managed.existingSecret }}
-              key: cf-tunnel-token
-          {{- else }}
-          value: {{ .Values.managed.token }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 10 }}
           {{- end }}
-        {{- end }}
-        {{- if .Values.metrics.enabled }}
-        ports:
-         - name: metrics
-           containerPort: {{ .Values.metrics.port }}
-        livenessProbe:
-          httpGet:
-            path: /ready
-            port: metrics
-          failureThreshold: 1
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        {{ end }}
-        {{- if .Values.local.enabled }}
-        volumeMounts:
-        - mountPath: /etc/cloudflared/tunnel-config.json
-          name: tunnel-secret-volume
-          subPath: tunnel-config.json
-        - mountPath: /etc/cloudflared/config.yaml
-          name: cloudflared-config-volume
-          subPath: config.yaml
-        {{- end }}
-        {{- with .Values.resources }}
-        resources:
-          {{- toYaml . | nindent 10 }}
-        {{- end }}
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       {{- if .Values.priorityClassName }}
