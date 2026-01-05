@@ -64,7 +64,7 @@ metadata:
   name: {{ .Release.Name }}-gluetun-http
   labels:
     app.kubernetes.io/name: qbittorrent
-    app.kubernetes.io/instance: {{ .Release.Name }}-gluetun
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
@@ -78,7 +78,7 @@ spec:
       name: http-proxy
   selector:
     app.kubernetes.io/name: qbittorrent
-    app.kubernetes.io/instance: {{ .Release.Name }}-gluetun
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
 {{- end }}
 {{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.shadowsocksProxy.enabled }}
 
@@ -89,7 +89,7 @@ metadata:
   name: {{ .Release.Name }}-gluetun-shadowsocks
   labels:
     app.kubernetes.io/name: qbittorrent
-    app.kubernetes.io/instance: {{ .Release.Name }}-gluetun
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
@@ -103,5 +103,5 @@ spec:
       name: shadowsocks
   selector:
     app.kubernetes.io/name: qbittorrent
-    app.kubernetes.io/instance: {{ .Release.Name }}-gluetun
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
 {{- end }}
