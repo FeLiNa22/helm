@@ -86,6 +86,18 @@ spec:
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
+            {{- if .Values.qbittorrent.gluetun.httpProxy.enabled }}
+            - name: HTTPPROXY
+              value: "on"
+            - name: HTTPPROXY_LISTENING_ADDRESS
+              value: ":{{ .Values.qbittorrent.gluetun.httpProxy.port }}"
+            {{- end }}
+            {{- if .Values.qbittorrent.gluetun.shadowsocksProxy.enabled }}
+            - name: SHADOWSOCKS
+              value: "on"
+            - name: SHADOWSOCKS_LISTENING_ADDRESS
+              value: ":{{ .Values.qbittorrent.gluetun.shadowsocksProxy.port }}"
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.qbittorrent.service.web.port | default 8080 }}
@@ -96,6 +108,16 @@ spec:
             - name: bittorrent-udp
               containerPort: {{ .Values.qbittorrent.service.bt.port | default 6881 }}
               protocol: UDP
+            {{- if .Values.qbittorrent.gluetun.httpProxy.enabled }}
+            - name: http-proxy
+              containerPort: {{ .Values.qbittorrent.gluetun.httpProxy.port }}
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.qbittorrent.gluetun.shadowsocksProxy.enabled }}
+            - name: shadowsocks
+              containerPort: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port }}
+              protocol: TCP
+            {{- end }}
           resources:
             {{- toYaml .Values.qbittorrent.gluetun.resources | nindent 12 }}
       {{- end }}

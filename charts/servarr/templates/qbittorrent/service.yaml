@@ -54,4 +54,54 @@ spec:
   selector:
     app.kubernetes.io/name: qbittorrent
     app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
+{{- if and .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.httpProxy.enabled }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-qbittorrent-http-proxy
+  labels:
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: http-proxy
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.qbittorrent.gluetun.httpProxy.port }}
+      targetPort: http-proxy
+      protocol: TCP
+      name: http-proxy
+  selector:
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
+{{- end }}
+{{- if and .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.shadowsocksProxy.enabled }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-qbittorrent-shadowsocks
+  labels:
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: shadowsocks
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port }}
+      targetPort: shadowsocks
+      protocol: TCP
+      name: shadowsocks
+  selector:
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
+{{- end }}
 {{- end }}
