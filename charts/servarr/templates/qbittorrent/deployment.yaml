@@ -92,6 +92,8 @@ spec:
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
+            - name: DNS_KEEP_NAMESERVER
+              value: "on"
             - name: FIREWALL_INPUT_PORTS
               value: "{{ .Values.qbittorrent.service.web.port | default 8080 }},{{ .Values.qbittorrent.service.bt.port | default 6881 }},{{ .Values.qbittorrent.gluetun.httpProxy.port | default 8888 }}"
             {{- if .Values.qbittorrent.gluetun.httpProxy.enabled }}
