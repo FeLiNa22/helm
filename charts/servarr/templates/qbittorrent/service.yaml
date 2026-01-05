@@ -72,7 +72,7 @@ metadata:
 spec:
   type: {{ .Values.qbittorrent.gluetun.httpProxy.type | default "LoadBalancer" }}
   ports:
-    - port: {{ .Values.qbittorrent.gluetun.httpProxy.port }}
+    - port: {{ .Values.qbittorrent.gluetun.httpProxy.port | default 8888 }}
       targetPort: http-proxy
       protocol: TCP
       name: http-proxy
@@ -97,11 +97,11 @@ metadata:
 spec:
   type: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.type | default "LoadBalancer" }}
   ports:
-    - port: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port }}
+    - port: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port | default 8388 }}
       targetPort: shadowsocks-tcp
       protocol: TCP
       name: shadowsocks-tcp
-    - port: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port }}
+    - port: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port | default 8388 }}
       targetPort: shadowsocks-udp
       protocol: UDP
       name: shadowsocks-udp

@@ -110,15 +110,15 @@ spec:
               protocol: UDP
             {{- if .Values.qbittorrent.gluetun.httpProxy.enabled }}
             - name: http-proxy
-              containerPort: {{ .Values.qbittorrent.gluetun.httpProxy.port }}
+              containerPort: {{ .Values.qbittorrent.gluetun.httpProxy.port | default 8888 }}
               protocol: TCP
             {{- end }}
             {{- if .Values.qbittorrent.gluetun.shadowsocksProxy.enabled }}
             - name: shadowsocks-tcp
-              containerPort: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port }}
+              containerPort: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port | default 8388 }}
               protocol: TCP
             - name: shadowsocks-udp
-              containerPort: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port }}
+              containerPort: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port | default 8388 }}
               protocol: UDP
             {{- end }}
           resources:
