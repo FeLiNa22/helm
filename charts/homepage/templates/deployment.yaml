@@ -50,7 +50,7 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        - name: kubernetes-config
+        - name: homepage-config
           configMap:
             name: {{ .Release.Name }}-config
         {{- if .Values.persistence.additionalVolumes }}
@@ -66,8 +66,20 @@ spec:
             - mountPath: /app/config
               name: config
             - mountPath: /app/config/kubernetes.yaml
-              name: kubernetes-config
+              name: homepage-config
               subPath: kubernetes.yaml
+            - mountPath: /app/config/services.yaml
+              name: homepage-config
+              subPath: services.yaml
+            - mountPath: /app/config/settings.yaml
+              name: homepage-config
+              subPath: settings.yaml
+            - mountPath: /app/config/widgets.yaml
+              name: homepage-config
+              subPath: widgets.yaml
+            - mountPath: /app/config/bookmarks.yaml
+              name: homepage-config
+              subPath: bookmarks.yaml
           {{- if .Values.persistence.additionalMounts }}
             {{- .Values.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}
