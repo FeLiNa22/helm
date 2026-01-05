@@ -90,13 +90,13 @@ spec:
             - name: HTTPPROXY
               value: "on"
             - name: HTTPPROXY_LISTENING_ADDRESS
-              value: ":{{ .Values.qbittorrent.gluetun.httpProxy.port }}"
+              value: ":{{ .Values.qbittorrent.gluetun.httpProxy.port | default 8888 }}"
             {{- end }}
             {{- if .Values.qbittorrent.gluetun.shadowsocksProxy.enabled }}
             - name: SHADOWSOCKS
               value: "on"
             - name: SHADOWSOCKS_LISTENING_ADDRESS
-              value: ":{{ .Values.qbittorrent.gluetun.shadowsocksProxy.port }}"
+              value: ":{{ .Values.qbittorrent.gluetun.shadowsocksProxy.port | default 8388 }}"
             {{- end }}
           ports:
             - name: http
