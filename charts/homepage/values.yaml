@@ -48,7 +48,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/gethomepage/homepage
   pullPolicy: IfNotPresent
-  tag: "v0.9.15"
+  tag: "latest"
 
 imagePullSecrets: []
 
@@ -85,7 +85,7 @@ service:
   nodePort: ""
 
 ingress:
-  enabled: true
+  enabled: false
   className: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
