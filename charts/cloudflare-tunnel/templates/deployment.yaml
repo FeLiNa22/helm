@@ -3,11 +3,6 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}
 spec:
-  securityContext:
-    sysctls:
-    # Allows ICMP traffic (ping, traceroute) to resources behind cloudflared.
-      - name: net.ipv4.ping_group_range
-        value: "65532 65532"
   selector:
     matchLabels:
       app: {{ .Release.Name }}
@@ -26,33 +21,35 @@ spec:
         checksum/warp-routing: {{ .Values.local.warpRouting | toJson | sha256sum }}
       {{- end }}
     spec:
+      securityContext:
+        sysctls:
+        # Allows ICMP traffic (ping, traceroute) to resources behind cloudflared.
+          - name: net.ipv4.ping_group_range
+            value: "65532 65532"
       containers:
-      - args:
-        - cloudflared
-        - tunnel
-        - --no-autoupdate
-        {{- if .Values.metrics.enabled }}
-        - --metrics
-        - "0.0.0.0:{{ .Values.metrics.port }}"
-        {{ end }}
-        {{- if .Values.logLevel }}
-        - --loglevel
-        - {{ .Values.logLevel }}
-        {{- end }}
-        {{- if .Values.local.enabled }}
-        - --config
-        - /etc/cloudflared/config.yaml
-        {{- else if .Values.managed.enabled }}
-        - --token
-        - $(CF_MANAGED_TUNNEL_TOKEN)
-        {{- end }}
-        - run
         name: {{ .Release.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        command:
+          - cloudflared
+          - tunnel
+          - --no-autoupdate
+          {{- if .Values.metrics.enabled }}
+          - --metrics
+          - "0.0.0.0:{{ .Values.metrics.port }}"
+          {{ end }}
+          {{- if .Values.logLevel }}
+          - --loglevel
+          - {{ .Values.logLevel }}
+          {{- end }}
+          {{- if .Values.local.enabled }}
+          - --config
+          - /etc/cloudflared/config.yaml
+          {{- end }}
+          - run
         {{- if .Values.managed.enabled }}
         env:
-        - name: CF_MANAGED_TUNNEL_TOKEN
+        - name: TUNNEL_TOKEN
           {{- if .Values.managed.existingSecret }}
           valueFrom:
             secretKeyRef:
