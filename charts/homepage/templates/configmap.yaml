@@ -1,0 +1,258 @@
+{{- if .Values.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  labels:
+    app.kubernetes.io/name: homepage
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+data:
+  kubernetes.yaml: |
+    {{- if .Values.config.enableKubernetes }}
+    mode: {{ .Values.config.kubernetes.mode | default "cluster" }}
+    {{- end }}
+  
+  services.yaml: |
+    ---
+    # Servarr Services - Media Management Stack
+    - Media Management:
+        - Sonarr:
+            icon: sonarr.png
+            href: http://sonarr
+            description: TV Show Management
+            server: kubernetes
+            namespace: default
+            app: sonarr
+        - Radarr:
+            icon: radarr.png
+            href: http://radarr
+            description: Movie Management
+            server: kubernetes
+            namespace: default
+            app: radarr
+        - Lidarr:
+            icon: lidarr.png
+            href: http://lidarr
+            description: Music Management
+            server: kubernetes
+            namespace: default
+            app: lidarr
+        - Bazarr:
+            icon: bazarr.png
+            href: http://bazarr
+            description: Subtitle Management
+            server: kubernetes
+            namespace: default
+            app: bazarr
+        - Prowlarr:
+            icon: prowlarr.png
+            href: http://prowlarr
+            description: Indexer Management
+            server: kubernetes
+            namespace: default
+            app: prowlarr
+    
+    # Media Servers
+    - Media Servers:
+        - Jellyfin:
+            icon: jellyfin.png
+            href: http://jellyfin
+            description: Media Server
+            server: kubernetes
+            namespace: default
+            app: jellyfin
+        - Jellyseerr:
+            icon: jellyseerr.png
+            href: http://jellyseerr
+            description: Media Requests
+            server: kubernetes
+            namespace: default
+            app: jellyseerr
+        - Plex:
+            icon: plex.png
+            href: http://plex
+            description: Media Server
+            server: kubernetes
+            namespace: default
+            app: plex
+        - Emby:
+            icon: emby.png
+            href: http://emby
+            description: Media Server
+            server: kubernetes
+            namespace: default
+            app: emby
+    
+    # Download Clients
+    - Download Clients:
+        - qBittorrent:
+            icon: qbittorrent.png
+            href: http://qbittorrent
+            description: Torrent Client
+            server: kubernetes
+            namespace: default
+            app: qbittorrent
+        - SABnzbd:
+            icon: sabnzbd.png
+            href: http://sabnzbd
+            description: Usenet Client
+            server: kubernetes
+            namespace: default
+            app: sabnzbd
+        - FlareSolverr:
+            icon: flaresolverr.png
+            href: http://flaresolverr
+            description: Proxy Server
+            server: kubernetes
+            namespace: default
+            app: flaresolverr
+    
+    # Home Automation & Security
+    - Home & Security:
+        - Home Assistant:
+            icon: home-assistant.png
+            href: http://home-assistant
+            description: Home Automation
+            server: kubernetes
+            namespace: default
+            app: home-assistant
+        - Frigate:
+            icon: frigate.png
+            href: http://frigate
+            description: NVR
+            server: kubernetes
+            namespace: default
+            app: frigate
+    
+    # Productivity & Cloud Services
+    - Productivity:
+        - Nextcloud:
+            icon: nextcloud.png
+            href: http://nextcloud
+            description: File Sync & Share
+            server: kubernetes
+            namespace: default
+            app: nextcloud
+        - Vaultwarden:
+            icon: vaultwarden.png
+            href: http://vaultwarden
+            description: Password Manager
+            server: kubernetes
+            namespace: default
+            app: vaultwarden
+        - Mealie:
+            icon: mealie.png
+            href: http://mealie
+            description: Recipe Manager
+            server: kubernetes
+            namespace: default
+            app: mealie
+        - Outline:
+            icon: outline.png
+            href: http://outline
+            description: Wiki & Knowledge Base
+            server: kubernetes
+            namespace: default
+            app: outline
+        - Penpot:
+            icon: penpot.png
+            href: http://penpot
+            description: Design Tool
+            server: kubernetes
+            namespace: default
+            app: penpot
+        - Excalidraw:
+            icon: excalidraw.png
+            href: http://excalidraw
+            description: Whiteboard
+            server: kubernetes
+            namespace: default
+            app: excalidraw
+    
+    # Utilities & Infrastructure
+    - Utilities:
+        - Immich:
+            icon: immich.png
+            href: http://immich
+            description: Photo Management
+            server: kubernetes
+            namespace: default
+            app: immich
+        - SearXNG:
+            icon: searxng.png
+            href: http://searxng
+            description: Meta Search Engine
+            server: kubernetes
+            namespace: default
+            app: searxng
+        - Cloudflare Tunnel:
+            icon: cloudflare.png
+            href: http://cloudflare-tunnel
+            description: Secure Tunnel
+            server: kubernetes
+            namespace: default
+            app: cloudflare-tunnel
+        - Cloudflare Dynamic IP:
+            icon: cloudflare.png
+            href: http://cloudflare-dynamic-ip-updater
+            description: Dynamic DNS
+            server: kubernetes
+            namespace: default
+            app: cloudflare-dynamic-ip-updater
+        - CrewAI:
+            icon: https://avatars.githubusercontent.com/u/170677839
+            href: http://crewai
+            description: AI Orchestration
+            server: kubernetes
+            namespace: default
+            app: crewai
+    
+    # Maintenance & Tools
+    - Maintenance:
+        - Cleanuparr:
+            icon: https://github.com/Cleanuparr/Cleanuparr/raw/main/public/cleanuparr.png
+            href: http://cleanuparr
+            description: Media Cleanup
+            server: kubernetes
+            namespace: default
+            app: cleanuparr
+  
+  widgets.yaml: |
+    ---
+    # Add any custom widgets here
+  
+  bookmarks.yaml: |
+    ---
+    # Add any custom bookmarks here
+  
+  settings.yaml: |
+    ---
+    title: Home Dashboard
+    theme: dark
+    color: slate
+    hideVersion: true
+    layout:
+      Media Management:
+        style: row
+        columns: 3
+      Media Servers:
+        style: row
+        columns: 2
+      Download Clients:
+        style: row
+        columns: 3
+      Home & Security:
+        style: row
+        columns: 2
+      Productivity:
+        style: row
+        columns: 3
+      Utilities:
+        style: row
+        columns: 3
+      Maintenance:
+        style: row
+        columns: 2
+{{- end }}
