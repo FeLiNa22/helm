@@ -41,6 +41,7 @@
 ## @param persistence.size The size to use for the persistence.
 ## @param persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param persistence.additionalMounts Additional volume mounts to add to the pod.
+## @param env Additional environment variables to add to the pod.
 ##
 enabled: true
 replicaCount: 1
