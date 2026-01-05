@@ -25,6 +25,27 @@ entries:
   cloudflare-tunnel:
   - apiVersion: v2
     appVersion: 2025.11.1
+    created: "2026-01-05T14:15:49.570164379Z"
+    description: Raul Cloudflared Tunnel Helm Chart
+    digest: 2e88ed879503d8e0f049719921ad23f7e53d2acb4e955c679521a9c3b3d20106
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/cloudflared
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - cloudflare
+    - cloudflared
+    - tunnel
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: cloudflare-tunnel
+    sources:
+    - https://github.com/cloudflare/cloudflared
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/cloudflare-tunnel-1.0.5/cloudflare-tunnel-1.0.5.tgz
+    version: 1.0.5
+  - apiVersion: v2
+    appVersion: 2025.11.1
     created: "2026-01-04T17:38:34.698367441Z"
     description: Raul Cloudflared Tunnel Helm Chart
     digest: 44f0d358e8c70f1cbb9d4c7995ed72ce6fd9987dc2bad590730ed0afbfe0e9c2
@@ -1595,4 +1616,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-01-05T13:54:49.496444329Z"
+generated: "2026-01-05T14:15:49.570302627Z"
