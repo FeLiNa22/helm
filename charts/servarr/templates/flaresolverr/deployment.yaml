@@ -49,6 +49,10 @@ spec:
             {{- toYaml .Values.flaresolverr.securityContext | nindent 12 }}
           image: "{{ .Values.flaresolverr.image.repository }}:{{ .Values.flaresolverr.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.flaresolverr.image.pullPolicy }}
+          {{- if .Values.flaresolverr.env }}
+          env:
+            {{- toYaml .Values.flaresolverr.env | nindent 12 }}
+          {{- end }}
           ports:
             - name: http
               containerPort: 8191

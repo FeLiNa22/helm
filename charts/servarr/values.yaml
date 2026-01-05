@@ -724,6 +724,7 @@ prowlarr:
 ## @param flaresolverr.nodeSelector The node selector to use for the pod.
 ## @param flaresolverr.tolerations The tolerations to use for the pod.
 ## @param flaresolverr.affinity The affinity to use for the pod.
+## @param flaresolverr.env Additional environment variables to add to the pod.
 ##
 flaresolverr:
   enabled: true
@@ -810,6 +811,16 @@ flaresolverr:
   tolerations: []
 
   affinity: {}
+
+  env: []
+    # - name: LOG_LEVEL
+    #   value: "info"
+    # - name: LOG_HTML
+    #   value: "false"
+    # - name: CAPTCHA_SOLVER
+    #   value: "none"
+    # - name: TZ
+    #   value: "Europe/London"
 
 ## @section Jellyseerr parameters
 
