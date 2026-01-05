@@ -80,12 +80,17 @@ spec:
           image: "{{ .Values.qbittorrent.gluetun.image.repository }}:{{ .Values.qbittorrent.gluetun.image.tag }}"
           imagePullPolicy: {{ .Values.qbittorrent.gluetun.image.pullPolicy }}
           securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
             {{- toYaml .Values.qbittorrent.gluetun.securityContext | nindent 12 }}
           env:
             {{- range $k,$v := .Values.qbittorrent.gluetun.env }}
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
+            - name: FIREWALL_INPUT_PORTS
+              value: "{{ .Values.qbittorrent.service.web.port | default 8080 }},{{ .Values.qbittorrent.service.bt.port | default 6881 }}"
             {{- if .Values.qbittorrent.gluetun.httpProxy.enabled }}
             - name: HTTPPROXY
               value: "on"
