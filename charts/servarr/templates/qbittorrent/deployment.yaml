@@ -83,7 +83,6 @@ spec:
             capabilities:
               add:
                 - NET_ADMIN
-            {{- toYaml .Values.qbittorrent.gluetun.securityContext | nindent 12 }}
           env:
             {{- range $k,$v := .Values.qbittorrent.gluetun.env }}
             - name: {{ $k }}
