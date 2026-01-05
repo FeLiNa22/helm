@@ -498,11 +498,7 @@ qbittorrent:
   ## @param qbittorrent.gluetun.env.VPN_TYPE The type of VPN protocol to use (openvpn or wireguard).
   ## @param qbittorrent.gluetun.env.OPENVPN_USER Username for OpenVPN authentication (if using OpenVPN).
   ## @param qbittorrent.gluetun.env.OPENVPN_PASSWORD Password for OpenVPN authentication (if using OpenVPN).
-  ## @param qbittorrent.gluetun.env.SERVER_COUNTRIES Comma-separated list of server countries to use.
   ## @param qbittorrent.gluetun.env.SERVER_REGION Region for server selection (e.g., for VPN providers that use regions instead of countries).
-  ## @param qbittorrent.gluetun.env.SERVER_NAMES Comma-separated list of specific server names to use.
-  ## @param qbittorrent.gluetun.env.SERVER_HOSTNAMES Comma-separated list of specific server hostnames to use.
-  ## @param qbittorrent.gluetun.env.FIREWALL_OUTBOUND_SUBNETS Comma-separated list of subnets to allow outbound traffic to (e.g., local network).
   ## @param qbittorrent.gluetun.httpProxy.enabled Whether to enable HTTP proxy server in Gluetun.
   ## @param qbittorrent.gluetun.httpProxy.port The port on which the HTTP proxy server will listen.
   ## @param qbittorrent.gluetun.httpProxy.type The type of service to create for the HTTP proxy.
@@ -525,11 +521,7 @@ qbittorrent:
       VPN_TYPE: "openvpn"
       OPENVPN_USER: ""
       OPENVPN_PASSWORD: ""
-      SERVER_COUNTRIES: ""
       SERVER_REGION: ""
-      SERVER_NAMES: ""
-      SERVER_HOSTNAMES: ""
-      FIREWALL_OUTBOUND_SUBNETS: ""
     httpProxy:
       enabled: true
       port: 8888
