@@ -95,7 +95,7 @@ spec:
             - name: DNS_KEEP_NAMESERVER
               value: "on"
             - name: FIREWALL_OUTBOUND_SUBNETS
-              value: 10.42.0.0/16
+              value: 10.43.0.0/16
             - name: FIREWALL_INPUT_PORTS
               value: "{{ .Values.qbittorrent.service.web.port | default 8080 }},{{ .Values.qbittorrent.service.bt.port | default 6881 }}"
             {{- if .Values.qbittorrent.gluetun.httpProxy.enabled }}
