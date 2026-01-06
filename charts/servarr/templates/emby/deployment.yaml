@@ -51,6 +51,8 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        - name: cache
+          emptyDir: { }
         - name: media
           {{- if and .Values.media.enabled .Values.emby.persistence.enabled }}
           persistentVolumeClaim:
@@ -70,6 +72,8 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            - mountPath: /config/cache
+              name: cache
           {{- if and .Values.media.enabled .Values.sonarr.enabled .Values.sonarr.persistence.enabled .Values.emby.persistence.enabled }}
             - mountPath: "/media/{{ .Values.media.paths.tv }}"
               name: media
