@@ -824,8 +824,16 @@ flaresolverr:
 ## @param seerr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param seerr.podAnnotations Additional annotations to add to the pod.
 ## @param seerr.podLabels Additional labels to add to the pod.
-## @param seerr.podSecurityContext The security context to use for the pod.
-## @param seerr.securityContext The security context to use for the container.
+## @param seerr.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param seerr.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
+## @param seerr.securityContext.allowPrivilegeEscalation Whether to allow privilege escalation.
+## @param seerr.securityContext.capabilities.drop List of capabilities to drop.
+## @param seerr.securityContext.readOnlyRootFilesystem Whether the root filesystem should be read-only.
+## @param seerr.securityContext.runAsNonRoot Whether the container must run as a non-root user.
+## @param seerr.securityContext.privileged Whether the container runs in privileged mode.
+## @param seerr.securityContext.runAsUser The user ID to run the container as.
+## @param seerr.securityContext.runAsGroup The group ID to run the container as.
+## @param seerr.securityContext.seccompProfile.type The seccomp profile type.
 ## @param seerr.initContainers Additional init containers to add to the pod.
 ## @param seerr.service.type The type of service to create.
 ## @param seerr.service.port The port on which the service will run.
