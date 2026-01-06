@@ -9,15 +9,20 @@ metadata:
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-  {{- if .Values.seerr.persistence.annotations }}
+  {{- with .Values.seerr.persistence.annotations }}
   annotations:
-    {{- toYaml .Values.seerr.persistence.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  {{- with .Values.seerr.persistence.accessModes }}
   accessModes:
-    - {{ .Values.seerr.persistence.accessMode | quote }}
-  {{- if .Values.seerr.persistence.storageClass }}
-  storageClassName: {{ .Values.seerr.persistence.storageClass | quote }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- if .Values.seerr.persistence.volumeName }}
+  volumeName: {{ .Values.seerr.persistence.volumeName }}
+  {{- end }}
+  {{- with .Values.seerr.persistence.storageClass }}
+  storageClassName: {{ if (eq "-" .) }}""{{ else }}{{ . }}{{ end }}
   {{- end }}
   resources:
     requests:

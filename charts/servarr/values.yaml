@@ -828,6 +828,7 @@ flaresolverr:
 ## @param seerr.image.pullPolicy The logic of image pulling.
 ## @param seerr.imagePullSecrets The image pull secrets to use.
 ## @param seerr.serviceAccount.create Whether to create a service account.
+## @param seerr.serviceAccount.automount Automatically mount a ServiceAccount's API credentials.
 ## @param seerr.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param seerr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param seerr.podAnnotations Additional annotations to add to the pod.
@@ -857,8 +858,10 @@ flaresolverr:
 ## @param seerr.persistence.enabled Whether to enable persistence.
 ## @param seerr.persistence.storageClass The storage class to use for the persistence.
 ## @param seerr.persistence.existingClaim The name of an existing claim to use for the persistence.
-## @param seerr.persistence.accessMode The access mode to use for the persistence.
+## @param seerr.persistence.accessModes Access modes of persistent disk.
+## @param seerr.persistence.volumeName Name of the permanent volume to reference in the claim. Can be used to bind to existing volumes.
 ## @param seerr.persistence.size The size to use for the persistence.
+## @param seerr.persistence.annotations Annotations for PVCs.
 ## @param seerr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param seerr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param seerr.probes.livenessProbe.enabled Whether to enable the liveness probe.
@@ -890,6 +893,7 @@ seerr:
 
   serviceAccount:
     create: true
+    automount: true
     annotations: {}
     name: ""
 
@@ -966,8 +970,11 @@ seerr:
     enabled: true
     storageClass: ""
     existingClaim: ""
-    accessMode: ReadWriteOnce
+    accessModes:
+      - ReadWriteOnce
+    volumeName: ""
     size: 800Mi
+    annotations: {}
     additionalVolumes: []
     additionalMounts: []
   

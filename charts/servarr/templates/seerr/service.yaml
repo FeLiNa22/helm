@@ -22,4 +22,5 @@ spec:
   selector:
     app.kubernetes.io/name: seerr
     app.kubernetes.io/instance: {{ .Release.Name }}-seerr
+  ipFamilyPolicy: PreferDualStack
 {{- end }}
