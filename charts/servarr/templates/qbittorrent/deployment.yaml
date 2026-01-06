@@ -66,11 +66,6 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        {{- if .Values.qbittorrent.localStorage.enabled }}
-        - name: local-storage
-          emptyDir:
-            sizeLimit: {{ .Values.qbittorrent.localStorage.size }}
-        {{- end }}
         {{- if .Values.qbittorrent.persistence.additionalVolumes }}
           {{- .Values.qbittorrent.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
@@ -148,10 +143,6 @@ spec:
             - mountPath: "/media/{{ .Values.media.paths.downloads }}"
               name: media
               subPath: {{ .Values.media.paths.downloads }}
-          {{- end }}
-          {{- if .Values.qbittorrent.localStorage.enabled }}
-            - mountPath: {{ .Values.qbittorrent.localStorage.mountPath }}
-              name: local-storage
           {{- end }}
           {{- if .Values.qbittorrent.persistence.additionalMounts }}
             {{- .Values.qbittorrent.persistence.additionalMounts | toYaml | nindent 12 }}
