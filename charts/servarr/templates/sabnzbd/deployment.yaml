@@ -66,11 +66,6 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        {{- if .Values.sabnzbd.localStorage.enabled }}
-        - name: local-storage
-          emptyDir:
-            sizeLimit: {{ .Values.sabnzbd.localStorage.size }}
-        {{- end }}
         {{- if .Values.sabnzbd.persistence.additionalVolumes }}
           {{- .Values.sabnzbd.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
@@ -87,10 +82,6 @@ spec:
             - mountPath: "/media/{{ .Values.media.paths.downloads }}"
               name: media
               subPath: {{ .Values.media.paths.downloads }}
-          {{- end }}
-          {{- if .Values.sabnzbd.localStorage.enabled }}
-            - mountPath: {{ .Values.sabnzbd.localStorage.mountPath }}
-              name: local-storage
           {{- end }}
           {{- if .Values.sabnzbd.persistence.additionalMounts }}
             {{- .Values.sabnzbd.persistence.additionalMounts | toYaml | nindent 12 }}
