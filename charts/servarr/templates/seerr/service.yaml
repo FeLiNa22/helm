@@ -1,0 +1,26 @@
+{{- if .Values.seerr.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-seerr
+  labels:
+    app.kubernetes.io/name: seerr
+    app.kubernetes.io/instance: {{ .Release.Name }}-seerr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  type: {{ .Values.seerr.service.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.seerr.service.port | default 5055 }}
+      targetPort: http
+      protocol: TCP
+      name: http
+{{ if (and (eq .Values.seerr.service.type "NodePort") (not (empty .Values.seerr.service.nodePort))) }}
+      nodePort: {{.Values.seerr.service.nodePort}}
+{{ end }}
+  selector:
+    app.kubernetes.io/name: seerr
+    app.kubernetes.io/instance: {{ .Release.Name }}-seerr
+  ipFamilyPolicy: PreferDualStack
+{{- end }}
