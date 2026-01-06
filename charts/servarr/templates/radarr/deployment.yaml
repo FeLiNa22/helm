@@ -59,6 +59,8 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        - name: cache
+          emptyDir: { }
         - name: media
           {{- if and .Values.media.enabled .Values.radarr.persistence.enabled }}
           persistentVolumeClaim:
@@ -78,6 +80,8 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            - mountPath: /config/cache
+              name: cache
           {{- if and .Values.media.enabled .Values.radarr.persistence.enabled }}
             - mountPath: /media
               name: media
