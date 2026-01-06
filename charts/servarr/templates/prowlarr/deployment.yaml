@@ -51,6 +51,8 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        - name: cache
+          emptyDir: { }
         {{- if .Values.prowlarr.persistence.additionalVolumes }}
           {{- .Values.prowlarr.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
@@ -63,6 +65,8 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            - mountPath: /config/cache
+              name: cache
           {{- if .Values.prowlarr.persistence.additionalMounts }}
             {{- .Values.prowlarr.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}
