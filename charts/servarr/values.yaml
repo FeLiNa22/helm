@@ -493,7 +493,6 @@ qbittorrent:
   ## @param qbittorrent.gluetun.image.repository The Docker repository to pull the Gluetun image from.
   ## @param qbittorrent.gluetun.image.tag The image tag to use for Gluetun.
   ## @param qbittorrent.gluetun.image.pullPolicy The logic of image pulling for Gluetun.
-  ## @param qbittorrent.gluetun.securityContext.capabilities.add Security capabilities for the Gluetun container. NET_ADMIN is required for VPN functionality.
   ## @param qbittorrent.gluetun.env.VPN_SERVICE_PROVIDER The VPN service provider (e.g., nordvpn, expressvpn, mullvad, etc.).
   ## @param qbittorrent.gluetun.env.VPN_TYPE The type of VPN protocol to use (openvpn or wireguard).
   ## @param qbittorrent.gluetun.env.OPENVPN_USER Username for OpenVPN authentication (if using OpenVPN).
