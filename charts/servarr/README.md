@@ -878,6 +878,77 @@ jellyfin:
           mountPath: /custom-cont-init.d
 ```
 
+### Node Affinity for qBittorrent and SABnzbd
+
+qBittorrent and SABnzbd are download clients that can benefit from being scheduled on nodes with fast internet connections. You can use Kubernetes node affinity to ensure these services run on specific nodes based on labels.
+
+#### Example: Required node affinity for fast internet
+
+This example ensures that qBittorrent and SABnzbd will **only** be scheduled on nodes labeled with `internet-speed=fast`:
+
+```yaml
+qbittorrent:
+  enabled: true
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: internet-speed
+                operator: In
+                values:
+                  - fast
+
+sabnzbd:
+  enabled: true
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: internet-speed
+                operator: In
+                values:
+                  - fast
+```
+
+#### Example: Preferred node affinity for fast internet
+
+This example **prefers** to schedule qBittorrent and SABnzbd on nodes with fast internet, but will fall back to other nodes if necessary:
+
+```yaml
+qbittorrent:
+  enabled: true
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: internet-speed
+                operator: In
+                values:
+                  - fast
+
+sabnzbd:
+  enabled: true
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: internet-speed
+                operator: In
+                values:
+                  - fast
+```
+
+**Note**: Before using node affinity, make sure to label your nodes appropriately. For example:
+```bash
+kubectl label nodes <node-name> internet-speed=fast
+```
+
 ## License
 
 Copyright &copy; 2025 Raul Patel

@@ -466,6 +466,23 @@ qbittorrent:
   tolerations: []
 
   affinity: {}
+  # Example: Schedule qBittorrent on nodes with fast internet
+  #   nodeAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       nodeSelectorTerms:
+  #         - matchExpressions:
+  #             - key: internet-speed
+  #               operator: In
+  #               values:
+  #                 - fast
+  #     preferredDuringSchedulingIgnoredDuringExecution:
+  #       - weight: 100
+  #         preference:
+  #           matchExpressions:
+  #             - key: internet-speed
+  #               operator: In
+  #               values:
+  #                 - fast
 
   env:
     PUID: "1000"
@@ -1638,6 +1655,23 @@ sabnzbd:
   tolerations: []
 
   affinity: {}
+  # Example: Schedule SABnzbd on nodes with fast internet
+  #   nodeAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       nodeSelectorTerms:
+  #         - matchExpressions:
+  #             - key: internet-speed
+  #               operator: In
+  #               values:
+  #                 - fast
+  #     preferredDuringSchedulingIgnoredDuringExecution:
+  #       - weight: 100
+  #         preference:
+  #           matchExpressions:
+  #             - key: internet-speed
+  #               operator: In
+  #               values:
+  #                 - fast
 
   env:
     PUID: "1000"
