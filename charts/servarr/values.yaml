@@ -827,11 +827,11 @@ flaresolverr:
 ## @param seerr.image.tag The image tag to use.
 ## @param seerr.image.pullPolicy The logic of image pulling.
 ## @param seerr.imagePullSecrets The image pull secrets to use.
-## @param seerr.deployment.strategy.type The deployment strategy to use.
 ## @param seerr.serviceAccount.create Whether to create a service account.
 ## @param seerr.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param seerr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param seerr.podAnnotations Additional annotations to add to the pod.
+## @param seerr.podLabels Additional labels to add to the pod.
 ## @param seerr.podSecurityContext The security context to use for the pod.
 ## @param seerr.securityContext The security context to use for the container.
 ## @param seerr.initContainers Additional init containers to add to the pod.
@@ -861,6 +861,21 @@ flaresolverr:
 ## @param seerr.persistence.size The size to use for the persistence.
 ## @param seerr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param seerr.persistence.additionalMounts Additional volume mounts to add to the pod.
+## @param seerr.probes.livenessProbe.enabled Whether to enable the liveness probe.
+## @param seerr.probes.livenessProbe.initialDelaySeconds The number of seconds to wait before starting the liveness probe.
+## @param seerr.probes.livenessProbe.periodSeconds The number of seconds between liveness probe attempts.
+## @param seerr.probes.livenessProbe.timeoutSeconds The number of seconds after which the liveness probe times out.
+## @param seerr.probes.livenessProbe.successThreshold The minimum consecutive successes required to consider the liveness probe successful.
+## @param seerr.probes.livenessProbe.failureThreshold The number of times to retry the liveness probe before giving up.
+## @param seerr.probes.readinessProbe.enabled Whether to enable the readiness probe.
+## @param seerr.probes.readinessProbe.initialDelaySeconds The number of seconds to wait before starting the readiness probe.
+## @param seerr.probes.readinessProbe.periodSeconds The number of seconds between readiness probe attempts.
+## @param seerr.probes.readinessProbe.timeoutSeconds The number of seconds after which the readiness probe times out.
+## @param seerr.probes.readinessProbe.successThreshold The minimum consecutive successes required to consider the readiness probe successful.
+## @param seerr.probes.readinessProbe.failureThreshold The number of times to retry the readiness probe before giving up.
+## @param seerr.probes.startupProbe Configure startup probe.
+## @param seerr.extraEnv Additional environment variables to add to the seerr pods.
+## @param seerr.extraEnvFrom Additional environment variables from secrets or configmaps to add to the seerr pods.
 ##
 seerr:
   enabled: true
@@ -873,16 +888,14 @@ seerr:
 
   imagePullSecrets: []
 
-  deployment:
-    strategy:
-      type: Recreate
-
   serviceAccount:
     create: true
     annotations: {}
     name: ""
 
   podAnnotations: {}
+  
+  podLabels: {}
 
   podSecurityContext:
     fsGroup: 1000
@@ -958,7 +971,30 @@ seerr:
     additionalVolumes: []
     additionalMounts: []
   
-  env: {}
+  # Liveness / Readiness / Startup Probes
+  probes:
+    livenessProbe:
+      enabled: false
+      initialDelaySeconds: 60
+      periodSeconds: 30
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 5
+    readinessProbe:
+      enabled: false
+      initialDelaySeconds: 60
+      periodSeconds: 30
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 5
+    startupProbe: null
+    #  tcpSocket:
+    #    port: http
+
+  # -- Environment variables to add to the seerr pods
+  extraEnv: []
+  # -- Environment variables from secrets or configmaps to add to the seerr pods
+  extraEnvFrom: []
 
 ## @section Bazarr parameters
 

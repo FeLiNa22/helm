@@ -1,6 +1,6 @@
 {{- if .Values.seerr.enabled }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-seerr
   labels:
@@ -10,11 +10,10 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
+  serviceName: {{ .Release.Name }}-seerr
   {{- if not .Values.seerr.autoscaling.enabled }}
   replicas: {{ .Values.seerr.replicaCount }}
   {{- end }}
-  strategy:
-    {{- .Values.seerr.deployment.strategy | toYaml | nindent 4 }}
   selector:
     matchLabels:
       app.kubernetes.io/name: seerr
@@ -31,6 +30,9 @@ spec:
         app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
         app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
         app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+        {{- with .Values.seerr.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.seerr.imagePullSecrets }}
       imagePullSecrets:
@@ -60,23 +62,76 @@ spec:
             {{- toYaml .Values.seerr.securityContext | nindent 12 }}
           image: "{{ .Values.seerr.image.repository }}:{{ .Values.seerr.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.seerr.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5055
+              protocol: TCP
+          {{- if .Values.seerr.probes.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            {{- with .Values.seerr.probes.livenessProbe }}
+            {{- if .initialDelaySeconds }}
+            initialDelaySeconds: {{ .initialDelaySeconds }}
+            {{- end }}
+            {{- if .periodSeconds }}
+            periodSeconds: {{ .periodSeconds }}
+            {{- end }}
+            {{- if .timeoutSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
+            {{- end }}
+            {{- if .successThreshold }}
+            successThreshold: {{ .successThreshold }}
+            {{- end }}
+            {{- if .failureThreshold }}
+            failureThreshold: {{ .failureThreshold }}
+            {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- if .Values.seerr.probes.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            {{- with .Values.seerr.probes.readinessProbe }}
+            {{- if .initialDelaySeconds }}
+            initialDelaySeconds: {{ .initialDelaySeconds }}
+            {{- end }}
+            {{- if .periodSeconds }}
+            periodSeconds: {{ .periodSeconds }}
+            {{- end }}
+            {{- if .timeoutSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
+            {{- end }}
+            {{- if .successThreshold }}
+            successThreshold: {{ .successThreshold }}
+            {{- end }}
+            {{- if .failureThreshold }}
+            failureThreshold: {{ .failureThreshold }}
+            {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- if .Values.seerr.probes.startupProbe }}
+          startupProbe:
+            {{- toYaml .Values.seerr.probes.startupProbe | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.seerr.resources | nindent 12 }}
+          {{- with .Values.seerr.extraEnv }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.seerr.extraEnvFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
-            - mountPath: /app/config
-              name: config
+            - name: config
+              mountPath: /app/config
           {{- if .Values.seerr.persistence.additionalMounts }}
             {{- .Values.seerr.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}
-          ports:
-            - name: http
-              containerPort: {{ .Values.seerr.service.port | default 5055 }}
-              protocol: TCP
-          env:
-            {{- range $k,$v := .Values.seerr.env }}
-            - name: {{ $k }}
-              value: {{ $v | quote }}
-            {{- end }}
-          resources:
-            {{- toYaml .Values.seerr.resources | nindent 12 }}
       {{- with .Values.seerr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
