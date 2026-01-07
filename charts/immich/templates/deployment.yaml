@@ -49,6 +49,11 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if .Values.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.backup.existingClaim | default (printf "%s-backup" .Release.Name) }}
+        {{- end }}
         {{- if .Values.persistence.additionalVolumes }}
           {{- .Values.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
@@ -61,6 +66,10 @@ spec:
           volumeMounts:
             - mountPath: /usr/src/app/upload
               name: library
+          {{- if .Values.persistence.backup.enabled }}
+            - mountPath: /usr/src/app/upload/backups
+              name: backup
+          {{- end }}
           {{- if .Values.persistence.additionalMounts }}
             {{- .Values.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}

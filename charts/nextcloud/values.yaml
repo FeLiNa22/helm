@@ -58,6 +58,11 @@
 ## @param persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param persistence.accessMode The access mode to use for the persistence.
 ## @param persistence.size The size to use for the persistence.
+## @param persistence.backup.enabled Whether to enable backup persistence.
+## @param persistence.backup.storageClass The storage class to use for backup persistence.
+## @param persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param persistence.backup.accessMode The access mode to use for backup persistence.
+## @param persistence.backup.size The size to use for backup persistence.
 ## @param persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -188,5 +193,11 @@ persistence:
   existingClaim: ""
   accessMode: ReadWriteOnce
   size: 10Gi
+  backup:
+    enabled: false
+    storageClass: "ceph-rbd"
+    existingClaim: ""
+    accessMode: ReadWriteMany
+    size: 10Gi
   additionalVolumes: []
   additionalMounts: []
