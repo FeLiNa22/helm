@@ -1,6 +1,6 @@
 {{- if .Values.seerr.enabled }}
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: {{ .Release.Name }}-seerr
   labels:
@@ -10,7 +10,6 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
-  serviceName: {{ .Release.Name }}-seerr
   {{- if not .Values.seerr.autoscaling.enabled }}
   replicas: {{ .Values.seerr.replicaCount }}
   {{- end }}
