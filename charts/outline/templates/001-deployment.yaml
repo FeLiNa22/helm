@@ -419,10 +419,19 @@ spec:
           volumeMounts:
           - name: {{ .Release.Name }}-data
             mountPath: {{ .Values.outline.fileStorage.localRootDir }}
+        {{- if .Values.outline.fileStorage.backup.enabled }}
+          - name: {{ .Release.Name }}-backup
+            mountPath: {{ .Values.outline.fileStorage.localRootDir }}/backups
+        {{- end }}
       volumes:
       - name: {{ .Release.Name }}-data
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-data
+      {{- if .Values.outline.fileStorage.backup.enabled }}
+      - name: {{ .Release.Name }}-backup
+        persistentVolumeClaim:
+          claimName: {{ if .Values.outline.fileStorage.backup.existingClaim }}{{ .Values.outline.fileStorage.backup.existingClaim }}{{- else }}{{ .Release.Name }}-backup{{- end }}
+      {{- end }}
       {{- end }}
       {{- with .Values.outline.nodeSelector }}
       nodeSelector:
