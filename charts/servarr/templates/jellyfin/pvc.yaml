@@ -26,3 +26,26 @@ spec:
   storageClassName: {{ .Values.jellyfin.persistence.storageClass | quote }}
   {{- end }}
 {{- end }}
+
+---
+{{- if and .Values.jellyfin.enabled .Values.jellyfin.persistence.backup.enabled (not .Values.jellyfin.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-jellyfin-backup
+  labels:
+    app.kubernetes.io/name: jellyfin
+    app.kubernetes.io/instance: {{ .Release.Name }}-jellyfin
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.jellyfin.persistence.backup.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.jellyfin.persistence.backup.size | quote }}
+  {{- if .Values.jellyfin.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.jellyfin.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}

@@ -112,6 +112,12 @@ jellyfin:
     size: 1Gi
     labels: {}
     annotations: {}
+    backup:
+      enabled: false
+      storageClass: "cephfs"
+      existingClaim: ""
+      accessMode: ReadWriteMany
+      size: 5Gi
 
     extraExistingClaimMounts: []
       # - name: external-mount
@@ -320,6 +326,12 @@ sonarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    backup:
+      enabled: false
+      storageClass: "cephfs"
+      existingClaim: ""
+      accessMode: ReadWriteMany
+      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -468,6 +480,12 @@ qbittorrent:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    backup:
+      enabled: false
+      storageClass: "cephfs"
+      existingClaim: ""
+      accessMode: ReadWriteMany
+      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -656,6 +674,12 @@ prowlarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    backup:
+      enabled: false
+      storageClass: "cephfs"
+      existingClaim: ""
+      accessMode: ReadWriteMany
+      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -964,6 +988,12 @@ seerr:
     volumeName: ""
     size: 800Mi
     annotations: {}
+    backup:
+      enabled: false
+      storageClass: "cephfs"
+      existingClaim: ""
+      accessMode: ReadWriteMany
+      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
   
@@ -1129,6 +1159,12 @@ bazarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    backup:
+      enabled: false
+      storageClass: "cephfs"
+      existingClaim: ""
+      accessMode: ReadWriteMany
+      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -1271,6 +1307,12 @@ radarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    backup:
+      enabled: false
+      storageClass: "cephfs"
+      existingClaim: ""
+      accessMode: ReadWriteMany
+      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -1413,6 +1455,12 @@ lidarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    backup:
+      enabled: false
+      storageClass: "cephfs"
+      existingClaim: ""
+      accessMode: ReadWriteMany
+      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -1559,6 +1607,12 @@ cleanuparr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 100Mi
+    backup:
+      enabled: false
+      storageClass: "cephfs"
+      existingClaim: ""
+      accessMode: ReadWriteMany
+      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -1699,6 +1753,12 @@ sabnzbd:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    backup:
+      enabled: false
+      storageClass: "cephfs"
+      existingClaim: ""
+      accessMode: ReadWriteMany
+      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -1841,6 +1901,12 @@ plex:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 1Gi
+    backup:
+      enabled: false
+      storageClass: "cephfs"
+      existingClaim: ""
+      accessMode: ReadWriteMany
+      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -1981,6 +2047,12 @@ emby:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 1Gi
+    backup:
+      enabled: false
+      storageClass: "cephfs"
+      existingClaim: ""
+      accessMode: ReadWriteMany
+      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
 

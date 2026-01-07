@@ -68,6 +68,11 @@ spec:
           {{- end }}
         {{- if .Values.sabnzbd.persistence.additionalVolumes }}
           {{- .Values.sabnzbd.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- if .Values.sabnzbd.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.sabnzbd.persistence.backup.existingClaim | default (printf "%s-sabnzbd-backup" .Release.Name) }}
+        {{- end }}
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -78,6 +83,10 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+          {{- if .Values.sabnzbd.persistence.backup.enabled }}
+            - mountPath: /config/backups
+              name: backup
+          {{- end }}
           {{- if and .Values.media.enabled .Values.sabnzbd.persistence.enabled }}
             - mountPath: "/media/{{ .Values.media.paths.downloads }}"
               name: media
