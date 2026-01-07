@@ -1452,7 +1452,6 @@ lidarr:
 ## @param cleanuparr.tolerations The tolerations to use for the pod.
 ## @param cleanuparr.affinity The affinity to use for the pod.
 ## @param cleanuparr.env.BASE_PATH The base path to use for the service.
-## @param cleanuparr.env.PORT The port on which the service will run.
 ## @param cleanuparr.env.PUID The user ID to use for the pod.
 ## @param cleanuparr.env.PGID The group ID to use for the pod.
 ## @param cleanuparr.env.TZ The timezone to use for the pod.
@@ -1547,7 +1546,6 @@ cleanuparr:
 
   env:
     BASE_PATH: ""
-    PORT: "11011"
     PUID: "1000"
     PGID: "1000"
     TZ: "Europe/London"
