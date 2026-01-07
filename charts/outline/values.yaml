@@ -118,7 +118,7 @@ outline:
       enabled: false
     backup:
       enabled: false
-      storageClassName: "ceph-rbd"
+      storageClassName: "cephfs"
       storageSize: 250Gi
       existingClaim: ""
   nodeSelector: {}

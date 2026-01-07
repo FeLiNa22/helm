@@ -217,7 +217,7 @@ persistence:
   annotations: {}
   backup:
     enabled: false
-    storageClass: "ceph-rbd"
+    storageClass: "cephfs"
     existingClaim: ""
     accessModes:
       - ReadWriteMany

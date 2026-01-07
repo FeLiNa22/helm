@@ -138,7 +138,7 @@ persistence:
   size: 1Gi
   backup:
     enabled: false
-    storageClass: "ceph-rbd"
+    storageClass: "cephfs"
     existingClaim: ""
     accessMode: ReadWriteMany
     size: 5Gi
