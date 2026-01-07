@@ -23,3 +23,26 @@ spec:
     requests:
       storage: {{ .Values.radarr.persistence.size | quote }}
 {{- end }}
+
+---
+{{- if and .Values.radarr.enabled .Values.radarr.persistence.backup.enabled (not .Values.radarr.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-radarr-backup
+  labels:
+    app.kubernetes.io/name: radarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-radarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.radarr.persistence.backup.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.radarr.persistence.backup.size | quote }}
+  {{- if .Values.radarr.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.radarr.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}

@@ -23,3 +23,26 @@ spec:
     requests:
       storage: {{ .Values.sabnzbd.persistence.size | quote }}
 {{- end }}
+
+---
+{{- if and .Values.sabnzbd.enabled .Values.sabnzbd.persistence.backup.enabled (not .Values.sabnzbd.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-sabnzbd-backup
+  labels:
+    app.kubernetes.io/name: sabnzbd
+    app.kubernetes.io/instance: {{ .Release.Name }}-sabnzbd
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.sabnzbd.persistence.backup.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.sabnzbd.persistence.backup.size | quote }}
+  {{- if .Values.sabnzbd.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.sabnzbd.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}

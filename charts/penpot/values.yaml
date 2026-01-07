@@ -201,6 +201,11 @@ exporter:
 ## @param persistence.existingClaim The name of an existing PVC to use for persistence.
 ## @param persistence.accessModes Persistent Volume access modes.
 ## @param persistence.annotations Persistent Volume Claim annotations.
+## @param persistence.backup.enabled Whether to enable backup persistence.
+## @param persistence.backup.storageClass The storage class to use for backup persistence.
+## @param persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param persistence.backup.accessModes The access modes to use for backup persistence.
+## @param persistence.backup.size The size to use for backup persistence.
 ##
 persistence:
   enabled: false
@@ -210,6 +215,13 @@ persistence:
   accessModes:
     - ReadWriteOnce
   annotations: {}
+  backup:
+    enabled: false
+    storageClass: "cephfs"
+    existingClaim: ""
+    accessModes:
+      - ReadWriteMany
+    size: 8Gi
 
 ## @section Penpot Configuration parameters
 

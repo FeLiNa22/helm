@@ -23,3 +23,26 @@ spec:
     requests:
       storage: {{ .Values.lidarr.persistence.size | quote }}
 {{- end }}
+
+---
+{{- if and .Values.lidarr.enabled .Values.lidarr.persistence.backup.enabled (not .Values.lidarr.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-lidarr-backup
+  labels:
+    app.kubernetes.io/name: lidarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-lidarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.lidarr.persistence.backup.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.lidarr.persistence.backup.size | quote }}
+  {{- if .Values.lidarr.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.lidarr.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}

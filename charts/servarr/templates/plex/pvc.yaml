@@ -23,3 +23,26 @@ spec:
     requests:
       storage: {{ .Values.plex.persistence.size | quote }}
 {{- end }}
+
+---
+{{- if and .Values.plex.enabled .Values.plex.persistence.backup.enabled (not .Values.plex.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-plex-backup
+  labels:
+    app.kubernetes.io/name: plex
+    app.kubernetes.io/instance: {{ .Release.Name }}-plex
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.plex.persistence.backup.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.plex.persistence.backup.size | quote }}
+  {{- if .Values.plex.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.plex.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}

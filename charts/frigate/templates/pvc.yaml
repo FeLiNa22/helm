@@ -48,3 +48,29 @@ spec:
     requests:
       storage: {{ .Values.persistence.media.size | quote }}
 {{- end }}
+
+---
+{{- if and .Values.enabled .Values.persistence.backup.enabled (not .Values.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-backup
+  labels:
+    app.kubernetes.io/name: frigate
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+  {{- if .Values.persistence.backup.annotations }}
+  annotations:
+    {{- toYaml .Values.persistence.backup.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.backup.accessMode | quote }}
+  {{- if .Values.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.persistence.backup.storageClass | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.backup.size | quote }}
+{{- end }}

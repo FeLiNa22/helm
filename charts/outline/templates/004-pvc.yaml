@@ -14,3 +14,21 @@ spec:
     requests:
       storage: {{ .Values.outline.fileStorage.storageSize }}
 {{- end }}
+
+---
+{{- if and (eq .Values.outline.fileStorage.type "local") .Values.outline.fileStorage.backup.enabled (not .Values.outline.fileStorage.backup.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-backup
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  storageClassName: {{ .Values.outline.fileStorage.backup.storageClassName }}
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.outline.fileStorage.backup.storageSize }}
+{{- end }}

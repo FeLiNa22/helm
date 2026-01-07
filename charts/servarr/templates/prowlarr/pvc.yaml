@@ -23,3 +23,26 @@ spec:
     requests:
       storage: {{ .Values.prowlarr.persistence.size | quote }}
 {{- end }}
+
+---
+{{- if and .Values.prowlarr.enabled .Values.prowlarr.persistence.backup.enabled (not .Values.prowlarr.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-prowlarr-backup
+  labels:
+    app.kubernetes.io/name: prowlarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-prowlarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.prowlarr.persistence.backup.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.prowlarr.persistence.backup.size | quote }}
+  {{- if .Values.prowlarr.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.prowlarr.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}

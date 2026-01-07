@@ -23,3 +23,26 @@ spec:
     requests:
       storage: {{ .Values.sonarr.persistence.size | quote }}
 {{- end }}
+
+---
+{{- if and .Values.sonarr.enabled .Values.sonarr.persistence.backup.enabled (not .Values.sonarr.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-sonarr-backup
+  labels:
+    app.kubernetes.io/name: sonarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-sonarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.sonarr.persistence.backup.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.sonarr.persistence.backup.size | quote }}
+  {{- if .Values.sonarr.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.sonarr.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}

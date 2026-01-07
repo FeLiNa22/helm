@@ -53,6 +53,11 @@ spec:
         - name: homepage-config
           configMap:
             name: {{ .Release.Name }}-config
+        {{- if .Values.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.backup.existingClaim | default (printf "%s-backup" .Release.Name) }}
+        {{- end }}
         {{- if .Values.persistence.additionalVolumes }}
           {{- .Values.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
@@ -80,6 +85,10 @@ spec:
             - mountPath: /app/config/bookmarks.yaml
               name: homepage-config
               subPath: bookmarks.yaml
+          {{- if .Values.persistence.backup.enabled }}
+            - mountPath: /app/config/backups
+              name: backup
+          {{- end }}
           {{- if .Values.persistence.additionalMounts }}
             {{- .Values.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}

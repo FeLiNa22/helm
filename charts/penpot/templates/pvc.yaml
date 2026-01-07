@@ -25,3 +25,28 @@ spec:
   storageClassName: "{{ .Values.persistence.storageClass }}"
 {{- end }}
 {{- end -}}
+
+---
+{{- if and .Values.persistence.backup.enabled (not .Values.persistence.backup.existingClaim) -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-backup
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "penpot"
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+spec:
+  accessModes:
+  {{- range .Values.persistence.backup.accessModes }}
+    - {{ . | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.backup.size | quote }}
+{{- if .Values.persistence.backup.storageClass }}
+  storageClassName: "{{ .Values.persistence.backup.storageClass }}"
+{{- end }}
+{{- end -}}

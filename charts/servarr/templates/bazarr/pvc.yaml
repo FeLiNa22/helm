@@ -23,3 +23,26 @@ spec:
     requests:
       storage: {{ .Values.bazarr.persistence.size | quote }}
 {{- end }}
+
+---
+{{- if and .Values.bazarr.enabled .Values.bazarr.persistence.backup.enabled (not .Values.bazarr.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-bazarr-backup
+  labels:
+    app.kubernetes.io/name: bazarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-bazarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.bazarr.persistence.backup.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.bazarr.persistence.backup.size | quote }}
+  {{- if .Values.bazarr.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.bazarr.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}
