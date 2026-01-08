@@ -84,6 +84,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `jellyfin.persistence.size`                     | The size to use for the config.                                                                                                                                                                                    | `1Gi`                          |
 | `jellyfin.persistence.labels`                   | Additional labels to add to the config.                                                                                                                                                                            | `{}`                           |
 | `jellyfin.persistence.annotations`              | Additional annotations to add to the config.                                                                                                                                                                       | `{}`                           |
+| `jellyfin.persistence.cache.enabled`            | Whether to enable emptyDir cache volume for the service.                                                                                                                                                           | `true`                         |
 | `jellyfin.persistence.extraExistingClaimMounts` | Additional existing claim mounts to add to the pod.                                                                                                                                                                | `[]`                           |
 | `jellyfin.resources`                            | The resources to use for the pod.                                                                                                                                                                                  | `{}`                           |
 | `jellyfin.nodeSelector`                         | The node selector to use for the pod.                                                                                                                                                                              | `{}`                           |
@@ -155,6 +156,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sonarr.persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                         |
 | `sonarr.persistence.accessMode`                        | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`              |
 | `sonarr.persistence.size`                              | The size to use for the persistence.                                                                                                | `800Mi`                      |
+| `sonarr.persistence.cache.enabled`                     | Whether to enable emptyDir cache volume for the service.                                                                            | `true`                       |
 | `sonarr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                         |
 | `sonarr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                         |
 
@@ -274,6 +276,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `prowlarr.persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                           |
 | `prowlarr.persistence.accessMode`                        | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`                |
 | `prowlarr.persistence.size`                              | The size to use for the persistence.                                                                                                | `800Mi`                        |
+| `prowlarr.persistence.cache.enabled`                     | Whether to enable emptyDir cache volume for the service.                                                                            | `true`                         |
 | `prowlarr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                           |
 | `prowlarr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                           |
 
@@ -369,6 +372,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `seerr.persistence.volumeName`                        | Name of the permanent volume to reference in the claim. Can be used to bind to existing volumes.                                    | `""`                               |
 | `seerr.persistence.size`                              | The size to use for the persistence.                                                                                                | `800Mi`                            |
 | `seerr.persistence.annotations`                       | Annotations for PVCs.                                                                                                               | `{}`                               |
+| `seerr.persistence.cache.enabled`                     | Whether to enable emptyDir cache volume for the service.                                                                            | `true`                             |
 | `seerr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                               |
 | `seerr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                               |
 | `seerr.probes.livenessProbe.enabled`                  | Whether to enable the liveness probe.                                                                                               | `false`                            |
@@ -432,6 +436,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `bazarr.persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                         |
 | `bazarr.persistence.accessMode`                        | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`              |
 | `bazarr.persistence.size`                              | The size to use for the persistence.                                                                                                | `800Mi`                      |
+| `bazarr.persistence.cache.enabled`                     | Whether to enable emptyDir cache volume for the service.                                                                            | `true`                       |
 | `bazarr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                         |
 | `bazarr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                         |
 
@@ -481,6 +486,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `radarr.persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                         |
 | `radarr.persistence.accessMode`                        | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`              |
 | `radarr.persistence.size`                              | The size to use for the persistence.                                                                                                | `800Mi`                      |
+| `radarr.persistence.cache.enabled`                     | Whether to enable emptyDir cache volume for the service.                                                                            | `true`                       |
 | `radarr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                         |
 | `radarr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                         |
 
@@ -530,6 +536,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `lidarr.persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                         |
 | `lidarr.persistence.accessMode`                        | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`              |
 | `lidarr.persistence.size`                              | The size to use for the persistence.                                                                                                | `800Mi`                      |
+| `lidarr.persistence.cache.enabled`                     | Whether to enable emptyDir cache volume for the service.                                                                            | `true`                       |
 | `lidarr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                         |
 | `lidarr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                         |
 
@@ -729,6 +736,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `emby.persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                       |
 | `emby.persistence.accessMode`                        | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`            |
 | `emby.persistence.size`                              | The size to use for the persistence.                                                                                                | `1Gi`                      |
+| `emby.persistence.cache.enabled`                     | Whether to enable emptyDir cache volume for the service.                                                                            | `true`                     |
 | `emby.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                       |
 | `emby.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                       |
 
