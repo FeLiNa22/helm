@@ -1595,6 +1595,148 @@ cleanuparr:
     additionalVolumes: []
     additionalMounts: []
 
+## @section Huntarr parameters
+
+## @param huntarr.enabled Whether to enable Huntarr.
+## @param huntarr.replicaCount The number of replicas to deploy.
+## @param huntarr.image.repository The Docker repository to pull the image from.
+## @param huntarr.image.tag The image tag to use.
+## @param huntarr.image.pullPolicy The logic of image pulling.
+## @param huntarr.imagePullSecrets The image pull secrets to use.
+## @param huntarr.deployment.strategy.type The deployment strategy to use.
+## @param huntarr.serviceAccount.create Whether to create a service account.
+## @param huntarr.serviceAccount.annotations Additional annotations to add to the service account.
+## @param huntarr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
+## @param huntarr.podAnnotations Additional annotations to add to the pod.
+## @param huntarr.podSecurityContext The security context to use for the pod.
+## @param huntarr.securityContext The security context to use for the container.
+## @param huntarr.initContainers Additional init containers to add to the pod.
+## @param huntarr.service.type The type of service to create.
+## @param huntarr.service.port The port on which the service will run.
+## @param huntarr.service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param huntarr.ingress.enabled Whether to create an ingress for the service.
+## @param huntarr.ingress.className The ingress class name to use.
+## @param huntarr.ingress.annotations Additional annotations to add to the ingress.
+## @param huntarr.ingress.hosts[0].host The host to use for the ingress.
+## @param huntarr.ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param huntarr.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param huntarr.ingress.tls The TLS configuration for the ingress.
+## @param huntarr.resources The resources to use for the pod.
+## @param huntarr.autoscaling.enabled Whether to enable autoscaling.
+## @param huntarr.autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param huntarr.autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param huntarr.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param huntarr.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
+## @param huntarr.nodeSelector The node selector to use for the pod.
+## @param huntarr.tolerations The tolerations to use for the pod.
+## @param huntarr.affinity The affinity to use for the pod.
+## @param huntarr.env.PUID The user ID to use for the pod.
+## @param huntarr.env.PGID The group ID to use for the pod.
+## @param huntarr.env.TZ The timezone to use for the pod.
+## @param huntarr.env.UMASK The umask to use for the pod.
+## @param huntarr.persistence.enabled Whether to enable persistence.
+## @param huntarr.persistence.storageClass The storage class to use for the persistence.
+## @param huntarr.persistence.existingClaim The name of an existing claim to use for the persistence.
+## @param huntarr.persistence.accessMode The access mode to use for the persistence.
+## @param huntarr.persistence.size The size to use for the persistence.
+## @param huntarr.persistence.additionalVolumes Additional volumes to add to the pod.
+## @param huntarr.persistence.additionalMounts Additional volume mounts to add to the pod.
+##
+huntarr:
+  enabled: false
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/plexguide/huntarr
+    pullPolicy: IfNotPresent
+    tag: "latest"
+
+  imagePullSecrets: []
+
+  deployment:
+    strategy:
+      type: Recreate
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  initContainers: []
+    # - name: init-container
+    #   image: busybox
+    #   command: ['sh', '-c', 'echo "this is an init container"']
+
+  service:
+    type: LoadBalancer
+    port: 9705
+    nodePort: ""
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  env:
+    PUID: "1000"
+    PGID: "1000"
+    TZ: "Europe/London"
+    UMASK: "002"
+
+  persistence:
+    enabled: false
+    storageClass: ""
+    existingClaim: ""
+    accessMode: ReadWriteOnce
+    size: 100Mi
+    additionalVolumes: []
+    additionalMounts: []
+
 ## @section SABnzbd parameters
 
 ## @param sabnzbd.enabled Whether to enable SABnzbd.

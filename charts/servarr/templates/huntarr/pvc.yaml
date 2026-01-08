@@ -1,0 +1,25 @@
+{{- if and .Values.huntarr.enabled .Values.huntarr.persistence.enabled (not .Values.huntarr.persistence.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-huntarr
+  labels:
+    app.kubernetes.io/name: huntarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-huntarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+  {{- if .Values.huntarr.persistence.annotations }}
+  annotations:
+    {{- toYaml .Values.huntarr.persistence.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.huntarr.persistence.accessMode | quote }}
+  {{- if .Values.huntarr.persistence.storageClass }}
+  storageClassName: {{ .Values.huntarr.persistence.storageClass | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.huntarr.persistence.size | quote }}
+{{- end }}
