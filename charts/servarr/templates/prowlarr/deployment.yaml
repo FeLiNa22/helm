@@ -53,7 +53,10 @@ spec:
           {{- end }}
         {{- if .Values.prowlarr.persistence.cache.enabled }}
         - name: cache
-          emptyDir: { }
+          emptyDir:
+            {{- if .Values.prowlarr.persistence.cache.size }}
+            sizeLimit: {{ .Values.prowlarr.persistence.cache.size }}
+            {{- end }}
         {{- end }}
         {{- if .Values.prowlarr.persistence.additionalVolumes }}
           {{- .Values.prowlarr.persistence.additionalVolumes | toYaml | nindent 8}}

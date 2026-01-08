@@ -143,7 +143,10 @@ spec:
       {{- end }}
       {{- if .Values.jellyfin.persistence.cache.enabled }}
       - name: cache
-        emptyDir: {}
+        emptyDir:
+          {{- if .Values.jellyfin.persistence.cache.size }}
+          sizeLimit: {{ .Values.jellyfin.persistence.cache.size }}
+          {{- end }}
       {{- end }}
       - name: media
       {{- if .Values.media.enabled }}

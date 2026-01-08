@@ -61,7 +61,10 @@ spec:
           {{- end }}
         {{- if .Values.sonarr.persistence.cache.enabled }}
         - name: cache
-          emptyDir: { }
+          emptyDir:
+            {{- if .Values.sonarr.persistence.cache.size }}
+            sizeLimit: {{ .Values.sonarr.persistence.cache.size }}
+            {{- end }}
         {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.sonarr.persistence.enabled }}

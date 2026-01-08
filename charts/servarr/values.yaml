@@ -114,6 +114,7 @@ jellyfin:
     annotations: {}
     cache:
       enabled: true
+      size: ""
 
     extraExistingClaimMounts: []
       # - name: external-mount
@@ -324,6 +325,7 @@ sonarr:
     size: 800Mi
     cache:
       enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
 
@@ -662,6 +664,7 @@ prowlarr:
     size: 800Mi
     cache:
       enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
 
@@ -972,6 +975,7 @@ seerr:
     annotations: {}
     cache:
       enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
   
@@ -1139,6 +1143,7 @@ bazarr:
     size: 800Mi
     cache:
       enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
 
@@ -1283,6 +1288,7 @@ radarr:
     size: 800Mi
     cache:
       enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
 
@@ -1427,6 +1433,7 @@ lidarr:
     size: 800Mi
     cache:
       enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
 
@@ -1995,6 +2002,7 @@ emby:
     size: 1Gi
     cache:
       enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
 

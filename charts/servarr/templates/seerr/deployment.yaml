@@ -54,7 +54,10 @@ spec:
           {{- end }}
         {{- if .Values.seerr.persistence.cache.enabled }}
         - name: cache
-          emptyDir: { }
+          emptyDir:
+            {{- if .Values.seerr.persistence.cache.size }}
+            sizeLimit: {{ .Values.seerr.persistence.cache.size }}
+            {{- end }}
         {{- end }}
         {{- if .Values.seerr.persistence.additionalVolumes }}
           {{- .Values.seerr.persistence.additionalVolumes | toYaml | nindent 8}}

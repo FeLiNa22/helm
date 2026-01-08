@@ -53,7 +53,10 @@ spec:
           {{- end }}
         {{- if .Values.emby.persistence.cache.enabled }}
         - name: cache
-          emptyDir: { }
+          emptyDir:
+            {{- if .Values.emby.persistence.cache.size }}
+            sizeLimit: {{ .Values.emby.persistence.cache.size }}
+            {{- end }}
         {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.emby.persistence.enabled }}

@@ -61,7 +61,10 @@ spec:
           {{- end }}
         {{- if .Values.bazarr.persistence.cache.enabled }}
         - name: cache
-          emptyDir: { }
+          emptyDir:
+            {{- if .Values.bazarr.persistence.cache.size }}
+            sizeLimit: {{ .Values.bazarr.persistence.cache.size }}
+            {{- end }}
         {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.bazarr.persistence.enabled }}
