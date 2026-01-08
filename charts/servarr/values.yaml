@@ -1647,7 +1647,7 @@ huntarr:
 
   service:
     type: LoadBalancer
-    port: 8080
+    port: 9705
     nodePort: ""
 
   ingress:

@@ -12,7 +12,7 @@ metadata:
 spec:
   type: {{ .Values.huntarr.service.type | default "ClusterIP" }}
   ports:
-    - port: {{ .Values.huntarr.service.port | default 8080 }}
+    - port: {{ .Values.huntarr.service.port | default 9705 }}
       targetPort: http
       protocol: TCP
       name: http
