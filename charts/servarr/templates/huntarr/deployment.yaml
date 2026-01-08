@@ -70,7 +70,7 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
-          {{- if and .Values.media.enabled .Values.qbittorrent.persistence.enabled }}
+          {{- if and .Values.media.enabled .Values.huntarr.persistence.enabled }}
             - mountPath: "/media/{{ .Values.media.paths.downloads }}"
               name: media
               subPath: {{ .Values.media.paths.downloads }}
