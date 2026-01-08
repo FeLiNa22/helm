@@ -49,6 +49,8 @@ media:
 ## @param jellyfin.persistence.size The size to use for the config.
 ## @param jellyfin.persistence.labels Additional labels to add to the config.
 ## @param jellyfin.persistence.annotations Additional annotations to add to the config.
+## @param jellyfin.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
+## @param jellyfin.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param jellyfin.persistence.extraExistingClaimMounts Additional existing claim mounts to add to the pod.
 ## @param jellyfin.resources The resources to use for the pod.
 ## @param jellyfin.nodeSelector The node selector to use for the pod.
@@ -112,6 +114,9 @@ jellyfin:
     size: 1Gi
     labels: {}
     annotations: {}
+    cache:
+      enabled: true
+      size: ""
 
     extraExistingClaimMounts: []
       # - name: external-mount
@@ -224,6 +229,8 @@ jellyfin:
 ## @param sonarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param sonarr.persistence.accessMode The access mode to use for the persistence.
 ## @param sonarr.persistence.size The size to use for the persistence.
+## @param sonarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
+## @param sonarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param sonarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param sonarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -320,6 +327,9 @@ sonarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    cache:
+      enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
 
@@ -560,6 +570,8 @@ qbittorrent:
 ## @param prowlarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param prowlarr.persistence.accessMode The access mode to use for the persistence.
 ## @param prowlarr.persistence.size The size to use for the persistence.
+## @param prowlarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
+## @param prowlarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param prowlarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param prowlarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -656,6 +668,9 @@ prowlarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    cache:
+      enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
 
@@ -851,6 +866,8 @@ flaresolverr:
 ## @param seerr.persistence.volumeName Name of the permanent volume to reference in the claim. Can be used to bind to existing volumes.
 ## @param seerr.persistence.size The size to use for the persistence.
 ## @param seerr.persistence.annotations Annotations for PVCs.
+## @param seerr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
+## @param seerr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param seerr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param seerr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param seerr.probes.livenessProbe.enabled Whether to enable the liveness probe.
@@ -964,6 +981,9 @@ seerr:
     volumeName: ""
     size: 800Mi
     annotations: {}
+    cache:
+      enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
   
@@ -1035,6 +1055,8 @@ seerr:
 ## @param bazarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param bazarr.persistence.accessMode The access mode to use for the persistence.
 ## @param bazarr.persistence.size The size to use for the persistence.
+## @param bazarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
+## @param bazarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param bazarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param bazarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -1129,6 +1151,9 @@ bazarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    cache:
+      enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
 
@@ -1176,6 +1201,8 @@ bazarr:
 ## @param radarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param radarr.persistence.accessMode The access mode to use for the persistence.
 ## @param radarr.persistence.size The size to use for the persistence.
+## @param radarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
+## @param radarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param radarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param radarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -1271,6 +1298,9 @@ radarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    cache:
+      enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
 
@@ -1318,6 +1348,8 @@ radarr:
 ## @param lidarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param lidarr.persistence.accessMode The access mode to use for the persistence.
 ## @param lidarr.persistence.size The size to use for the persistence.
+## @param lidarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
+## @param lidarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param lidarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param lidarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -1413,6 +1445,9 @@ lidarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    cache:
+      enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
 
@@ -1885,6 +1920,8 @@ plex:
 ## @param emby.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param emby.persistence.accessMode The access mode to use for the persistence.
 ## @param emby.persistence.size The size to use for the persistence.
+## @param emby.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
+## @param emby.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param emby.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param emby.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -1979,6 +2016,9 @@ emby:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 1Gi
+    cache:
+      enabled: true
+      size: ""
     additionalVolumes: []
     additionalMounts: []
 
