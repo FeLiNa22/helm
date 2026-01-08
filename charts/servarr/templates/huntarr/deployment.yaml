@@ -51,13 +51,6 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        - name: media
-          {{- if and .Values.media.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ if .Values.media.existingClaim }}{{ .Values.media.existingClaim }}{{- else }}{{ .Release.Name }}-media{{- end }}
-          {{- else }}
-          emptyDir: { }
-          {{- end }}
         {{- if .Values.huntarr.persistence.additionalVolumes }}
           {{- .Values.huntarr.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
@@ -70,11 +63,6 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
-          {{- if and .Values.media.enabled .Values.huntarr.persistence.enabled }}
-            - mountPath: "/media/{{ .Values.media.paths.downloads }}"
-              name: media
-              subPath: {{ .Values.media.paths.downloads }}
-          {{- end }}
           {{- if .Values.huntarr.persistence.additionalMounts }}
             {{- .Values.huntarr.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}
