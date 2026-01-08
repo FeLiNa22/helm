@@ -112,6 +112,8 @@ jellyfin:
     size: 1Gi
     labels: {}
     annotations: {}
+    cache:
+      enabled: true
 
     extraExistingClaimMounts: []
       # - name: external-mount
@@ -320,6 +322,8 @@ sonarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    cache:
+      enabled: true
     additionalVolumes: []
     additionalMounts: []
 
@@ -656,6 +660,8 @@ prowlarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    cache:
+      enabled: true
     additionalVolumes: []
     additionalMounts: []
 
@@ -964,6 +970,8 @@ seerr:
     volumeName: ""
     size: 800Mi
     annotations: {}
+    cache:
+      enabled: true
     additionalVolumes: []
     additionalMounts: []
   
@@ -1129,6 +1137,8 @@ bazarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    cache:
+      enabled: true
     additionalVolumes: []
     additionalMounts: []
 
@@ -1271,6 +1281,8 @@ radarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    cache:
+      enabled: true
     additionalVolumes: []
     additionalMounts: []
 
@@ -1413,6 +1425,8 @@ lidarr:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 800Mi
+    cache:
+      enabled: true
     additionalVolumes: []
     additionalMounts: []
 
@@ -1979,6 +1993,8 @@ emby:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 1Gi
+    cache:
+      enabled: true
     additionalVolumes: []
     additionalMounts: []
 

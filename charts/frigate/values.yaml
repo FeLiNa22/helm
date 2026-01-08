@@ -51,6 +51,7 @@
 ## @param database.superuserSecret.create Whether to create the superuser secret.
 ## @param database.superuserSecret.username Superuser username.
 ## @param database.superuserSecret.password Superuser password (leave empty to auto-generate).
+## @param tmpfs.enabled Whether to enable tmpfs cache for Frigate.
 ## @param tmpfs.size The size of the tmpfs cache for Frigate.
 ## @param persistence.config.enabled Whether to enable persistence for the config.
 ## @param persistence.config.storageClass The storage class to use for the config.
@@ -183,6 +184,7 @@ database:
     password: ""  # Leave empty to auto-generate
 
 tmpfs:
+  enabled: true
   size: 1Gi
 
 persistence:

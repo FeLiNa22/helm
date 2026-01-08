@@ -56,10 +56,12 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if .Values.tmpfs.enabled }}
         - name: cache
           emptyDir:
             medium: Memory
             sizeLimit: {{ .Values.tmpfs.size | default "1Gi" }}
+        {{- end }}
         {{- if .Values.persistence.additionalVolumes }}
           {{- .Values.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
@@ -74,8 +76,10 @@ spec:
               name: config
             - mountPath: /media/frigate
               name: media
+            {{- if .Values.tmpfs.enabled }}
             - mountPath: /tmp/cache
               name: cache
+            {{- end }}
           {{- if .Values.persistence.additionalMounts }}
             {{- .Values.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}

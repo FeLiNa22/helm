@@ -59,8 +59,10 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if .Values.lidarr.persistence.cache.enabled }}
         - name: cache
           emptyDir: { }
+        {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.lidarr.persistence.enabled }}
           persistentVolumeClaim:
@@ -80,8 +82,10 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            {{- if .Values.lidarr.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache
+            {{- end }}
           {{- if and .Values.media.enabled .Values.lidarr.persistence.enabled }}
             - mountPath: /media
               name: media

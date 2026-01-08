@@ -95,8 +95,10 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            {{- if .Values.jellyfin.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache
+            {{- end }}
             {{- range .Values.jellyfin.persistence.extraExistingClaimMounts }}
             - name: {{ .name }}
               mountPath: {{ .mountPath }}
@@ -139,8 +141,10 @@ spec:
       {{- else }}
         emptyDir: {}
       {{- end }}
+      {{- if .Values.jellyfin.persistence.cache.enabled }}
       - name: cache
         emptyDir: {}
+      {{- end }}
       - name: media
       {{- if .Values.media.enabled }}
         persistentVolumeClaim:
