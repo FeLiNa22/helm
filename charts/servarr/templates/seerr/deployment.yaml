@@ -52,8 +52,13 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if .Values.seerr.persistence.cache.enabled }}
         - name: cache
-          emptyDir: { }
+          emptyDir:
+            {{- if .Values.seerr.persistence.cache.size }}
+            sizeLimit: {{ .Values.seerr.persistence.cache.size }}
+            {{- end }}
+        {{- end }}
         {{- if .Values.seerr.persistence.additionalVolumes }}
           {{- .Values.seerr.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
@@ -130,8 +135,10 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /app/config
+            {{- if .Values.seerr.persistence.cache.enabled }}
             - name: cache
               mountPath: /app/config/cache
+            {{- end }}
           {{- if .Values.seerr.persistence.additionalMounts }}
             {{- .Values.seerr.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}
