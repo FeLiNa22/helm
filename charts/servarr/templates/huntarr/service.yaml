@@ -1,0 +1,25 @@
+{{- if .Values.huntarr.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-huntarr
+  labels:
+    app.kubernetes.io/name: huntarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-huntarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  type: {{ .Values.huntarr.service.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.huntarr.service.port | default 8080 }}
+      targetPort: http
+      protocol: TCP
+      name: http
+{{ if (and (eq .Values.huntarr.service.type "NodePort") (not (empty .Values.huntarr.service.nodePort))) }}
+      nodePort: {{.Values.huntarr.service.nodePort}}
+{{ end }}
+  selector:
+    app.kubernetes.io/name: huntarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-huntarr
+{{- end }}
