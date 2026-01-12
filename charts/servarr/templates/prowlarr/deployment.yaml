@@ -101,7 +101,7 @@ spec:
           resources:
             {{- toYaml .Values.prowlarr.resources | nindent 12 }}
       {{- if .Values.prowlarr.runtimeClassName }}
-      runtimeClassName: {{ .Values.prowlarr.runtimeClassName }}
+      runtimeClassName: {{ .Values.prowlarr.runtimeClassName | quote }}
       {{- end }}
       {{- with .Values.prowlarr.nodeSelector }}
       nodeSelector:

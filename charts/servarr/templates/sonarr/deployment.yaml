@@ -120,7 +120,7 @@ spec:
           resources:
             {{- toYaml .Values.sonarr.resources | nindent 12 }}
       {{- if .Values.sonarr.runtimeClassName }}
-      runtimeClassName: {{ .Values.sonarr.runtimeClassName }}
+      runtimeClassName: {{ .Values.sonarr.runtimeClassName | quote }}
       {{- end }}
       {{- with .Values.sonarr.nodeSelector }}
       nodeSelector:

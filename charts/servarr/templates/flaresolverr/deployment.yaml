@@ -60,7 +60,7 @@ spec:
           resources:
             {{- toYaml .Values.flaresolverr.resources | nindent 12 }}
       {{- if .Values.flaresolverr.runtimeClassName }}
-      runtimeClassName: {{ .Values.flaresolverr.runtimeClassName }}
+      runtimeClassName: {{ .Values.flaresolverr.runtimeClassName | quote }}
       {{- end }}
       {{- with .Values.flaresolverr.nodeSelector }}
       nodeSelector:

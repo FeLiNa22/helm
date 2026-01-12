@@ -120,7 +120,7 @@ spec:
           resources:
             {{- toYaml .Values.radarr.resources | nindent 12 }}
       {{- if .Values.radarr.runtimeClassName }}
-      runtimeClassName: {{ .Values.radarr.runtimeClassName }}
+      runtimeClassName: {{ .Values.radarr.runtimeClassName | quote }}
       {{- end }}
       {{- with .Values.radarr.nodeSelector }}
       nodeSelector:
