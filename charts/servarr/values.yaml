@@ -313,7 +313,6 @@ sonarr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
-
   runtimeClassName: ""
 
   nodeSelector: {}
@@ -468,7 +467,6 @@ qbittorrent:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
-
 
   runtimeClassName: ""
 
@@ -662,7 +660,6 @@ prowlarr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
-
   runtimeClassName: ""
 
   nodeSelector: {}
@@ -814,7 +811,6 @@ flaresolverr:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
-
 
   runtimeClassName: ""
 
@@ -985,7 +981,6 @@ seerr:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
-
 
   runtimeClassName: ""
 
@@ -1158,7 +1153,6 @@ bazarr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
-
   runtimeClassName: ""
 
   nodeSelector: {}
@@ -1307,7 +1301,6 @@ radarr:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
-
 
   runtimeClassName: ""
 
@@ -1459,7 +1452,6 @@ lidarr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
-
   runtimeClassName: ""
 
   nodeSelector: {}
@@ -1609,7 +1601,6 @@ cleanuparr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
-
   runtimeClassName: ""
 
   nodeSelector: {}
@@ -1756,7 +1747,6 @@ huntarr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
-
   runtimeClassName: ""
 
   nodeSelector: {}
@@ -1901,7 +1891,6 @@ sabnzbd:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
-
   runtimeClassName: ""
 
   nodeSelector: {}
@@ -2045,7 +2034,6 @@ plex:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
-
 
   runtimeClassName: ""
 
@@ -2192,7 +2180,6 @@ emby:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
-
 
   runtimeClassName: ""
 
