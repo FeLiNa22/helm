@@ -74,6 +74,12 @@ spec:
             {{- toYaml .Values.emby.securityContext | nindent 12 }}
           image: "{{ .Values.emby.image.repository }}:{{ .Values.emby.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.emby.image.pullPolicy }}
+          entrypoint:
+            - "/bin/sh"
+            - "-c"
+            - echo IyEvYmluL2FzaAoKTlZJRElBX1ZFUlNJT049JChscyAvdXNyL2xpYjY0L2xpYmN1ZGEuc28uKiB8IHNlZCAtRSAncy8uKmxpYmN1ZGFcLnNvKFwuMXxcLik/Ly8nIHwgdHIgLWQgXFxuKQoKY2QgL3Vzci9saWI2NCAmJiBcCmxuIC1zIGxpYmN1ZGEuc28uJHtOVklESUFfVkVSU0lPTn0gbGliY3VkYS5zby4xICYmIFwKbG4gLXMgbGlibnZpZGlhLW9wdGljYWxmbG93LnNvLiR7TlZJRElBX1ZFUlNJT059IGxpYm52aWRpYS1vcHRpY2FsZmxvdy5zby4xICYmIFwKbG4gLXMgbGlibnZpZGlhLWVuY29kZS5zby4ke05WSURJQV9WRVJTSU9OfSBsaWJudmlkaWEtZW5jb2RlLnNvLjEgJiYgXApsbiAtcyBsaWJudmN1dmlkLnNvLiR7TlZJRElBX1ZFUlNJT059IGxpYm52Y3V2aWQuc28uMSAmJiBcCmxuIC1zIGxpYm52aWRpYS1jZmcuc28uJHtOVklESUFfVkVSU0lPTn0gbGlibnZpZGlhLWNmZy5zby4xICYmIFwKbG4gLXMgbGlidmRwYXVfbnZpZGlhLnNvLiR7TlZJRElBX1ZFUlNJT059IGxpYnZkcGF1X252aWRpYS5zby4xCgpsbiAtcyBsaWJudmlkaWEtZW5jb2RlLnNvLjEgbGlibnZpZGlhLWVuY29kZS5zbyAmJiBcCmxuIC1zIGxpYm52Y3V2aWQuc28uMSBsaWJudmN1dmlkLnNvICYmIFwKbG4gLXMgbGlibnZpZGlhLWNmZy5zby4xIGxpYm52aWRpYS1jZmcuc28KbG4gLXMgbGlidmRwYXVfbnZpZGlhLnNvLjEgbGlidmRwYXVfbnZpZGlhLnNvCgovaW5pdCAkQA==
+              | base64 -d > /nvidia-fix-init && chmod +x /nvidia-fix-init && /nvidia-fix-init
+              $$@
           volumeMounts:
             - mountPath: /config
               name: config
