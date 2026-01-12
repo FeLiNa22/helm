@@ -53,6 +53,7 @@ media:
 ## @param jellyfin.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param jellyfin.persistence.extraExistingClaimMounts Additional existing claim mounts to add to the pod.
 ## @param jellyfin.resources The resources to use for the pod.
+## @param jellyfin.runtimeClassName The runtime class to use for the pod.
 ## @param jellyfin.nodeSelector The node selector to use for the pod.
 ## @param jellyfin.tolerations The tolerations to use for the pod.
 ## @param jellyfin.affinity The affinity to use for the pod.
@@ -133,6 +134,8 @@ jellyfin:
     #  cpu: 100m
     #  memory: 128Mi
 
+  runtimeClassName: ""
+
   nodeSelector: {}
 
   tolerations: []
@@ -212,6 +215,7 @@ jellyfin:
 ## @param sonarr.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param sonarr.ingress.tls The TLS configuration for the ingress.
 ## @param sonarr.resources The resources to use for the pod.
+## @param sonarr.runtimeClassName The runtime class to use for the pod.
 ## @param sonarr.autoscaling.enabled Whether to enable autoscaling.
 ## @param sonarr.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param sonarr.autoscaling.maxReplicas The maximum number of replicas to scale to.
@@ -309,6 +313,9 @@ sonarr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
+
+  runtimeClassName: ""
+
   nodeSelector: {}
 
   tolerations: []
@@ -363,6 +370,7 @@ sonarr:
 ## @param qbittorrent.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param qbittorrent.ingress.tls The TLS configuration for the ingress.
 ## @param qbittorrent.resources The resources to use for the pod.
+## @param qbittorrent.runtimeClassName The runtime class to use for the pod.
 ## @param qbittorrent.autoscaling.enabled Whether to enable autoscaling.
 ## @param qbittorrent.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param qbittorrent.autoscaling.maxReplicas The maximum number of replicas to scale to.
@@ -461,6 +469,9 @@ qbittorrent:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
+
+  runtimeClassName: ""
+
   nodeSelector: {}
 
   tolerations: []
@@ -553,6 +564,7 @@ qbittorrent:
 ## @param prowlarr.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param prowlarr.ingress.tls The TLS configuration for the ingress.
 ## @param prowlarr.resources The resources to use for the pod.
+## @param prowlarr.runtimeClassName The runtime class to use for the pod.
 ## @param prowlarr.autoscaling.enabled Whether to enable autoscaling.
 ## @param prowlarr.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param prowlarr.autoscaling.maxReplicas The maximum number of replicas to scale to.
@@ -650,6 +662,9 @@ prowlarr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
+
+  runtimeClassName: ""
+
   nodeSelector: {}
 
   tolerations: []
@@ -709,6 +724,7 @@ prowlarr:
 ## @param flaresolverr.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param flaresolverr.ingress.tls The TLS configuration for the ingress.
 ## @param flaresolverr.resources The resources to use for the pod.
+## @param flaresolverr.runtimeClassName The runtime class to use for the pod.
 ## @param flaresolverr.autoscaling.enabled Whether to enable autoscaling.
 ## @param flaresolverr.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param flaresolverr.autoscaling.maxReplicas The maximum number of replicas to scale to.
@@ -799,6 +815,9 @@ flaresolverr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
+
+  runtimeClassName: ""
+
   nodeSelector: {}
 
   tolerations: []
@@ -851,6 +870,7 @@ flaresolverr:
 ## @param seerr.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param seerr.ingress.tls The TLS configuration for the ingress.
 ## @param seerr.resources The resources to use for the pod.
+## @param seerr.runtimeClassName The runtime class to use for the pod.
 ## @param seerr.autoscaling.enabled Whether to enable autoscaling.
 ## @param seerr.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param seerr.autoscaling.maxReplicas The maximum number of replicas to scale to.
@@ -966,6 +986,9 @@ seerr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
+
+  runtimeClassName: ""
+
   nodeSelector: {}
 
   tolerations: []
@@ -1039,6 +1062,7 @@ seerr:
 ## @param bazarr.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param bazarr.ingress.tls The TLS configuration for the ingress.
 ## @param bazarr.resources The resources to use for the pod.
+## @param bazarr.runtimeClassName The runtime class to use for the pod.
 ## @param bazarr.autoscaling.enabled Whether to enable autoscaling.
 ## @param bazarr.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param bazarr.autoscaling.maxReplicas The maximum number of replicas to scale to.
@@ -1134,6 +1158,9 @@ bazarr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
+
+  runtimeClassName: ""
+
   nodeSelector: {}
 
   tolerations: []
@@ -1184,6 +1211,7 @@ bazarr:
 ## @param radarr.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param radarr.ingress.tls The TLS configuration for the ingress.
 ## @param radarr.resources The resources to use for the pod.
+## @param radarr.runtimeClassName The runtime class to use for the pod.
 ## @param radarr.autoscaling.enabled Whether to enable autoscaling.
 ## @param radarr.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param radarr.autoscaling.maxReplicas The maximum number of replicas to scale to.
@@ -1280,6 +1308,9 @@ radarr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
+
+  runtimeClassName: ""
+
   nodeSelector: {}
 
   tolerations: []
@@ -1331,6 +1362,7 @@ radarr:
 ## @param lidarr.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param lidarr.ingress.tls The TLS configuration for the ingress.
 ## @param lidarr.resources The resources to use for the pod.
+## @param lidarr.runtimeClassName The runtime class to use for the pod.
 ## @param lidarr.autoscaling.enabled Whether to enable autoscaling.
 ## @param lidarr.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param lidarr.autoscaling.maxReplicas The maximum number of replicas to scale to.
@@ -1427,6 +1459,9 @@ lidarr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
+
+  runtimeClassName: ""
+
   nodeSelector: {}
 
   tolerations: []
@@ -1478,6 +1513,7 @@ lidarr:
 ## @param cleanuparr.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param cleanuparr.ingress.tls The TLS configuration for the ingress.
 ## @param cleanuparr.resources The resources to use for the pod.
+## @param cleanuparr.runtimeClassName The runtime class to use for the pod.
 ## @param cleanuparr.autoscaling.enabled Whether to enable autoscaling.
 ## @param cleanuparr.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param cleanuparr.autoscaling.maxReplicas The maximum number of replicas to scale to.
@@ -1573,6 +1609,9 @@ cleanuparr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
+
+  runtimeClassName: ""
+
   nodeSelector: {}
 
   tolerations: []
@@ -1622,6 +1661,7 @@ cleanuparr:
 ## @param huntarr.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param huntarr.ingress.tls The TLS configuration for the ingress.
 ## @param huntarr.resources The resources to use for the pod.
+## @param huntarr.runtimeClassName The runtime class to use for the pod.
 ## @param huntarr.autoscaling.enabled Whether to enable autoscaling.
 ## @param huntarr.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param huntarr.autoscaling.maxReplicas The maximum number of replicas to scale to.
@@ -1716,6 +1756,9 @@ huntarr:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
+
+  runtimeClassName: ""
+
   nodeSelector: {}
 
   tolerations: []
@@ -1764,6 +1807,7 @@ huntarr:
 ## @param sabnzbd.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param sabnzbd.ingress.tls The TLS configuration for the ingress.
 ## @param sabnzbd.resources The resources to use for the pod.
+## @param sabnzbd.runtimeClassName The runtime class to use for the pod.
 ## @param sabnzbd.autoscaling.enabled Whether to enable autoscaling.
 ## @param sabnzbd.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param sabnzbd.autoscaling.maxReplicas The maximum number of replicas to scale to.
@@ -1857,6 +1901,9 @@ sabnzbd:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
+
+  runtimeClassName: ""
+
   nodeSelector: {}
 
   tolerations: []
@@ -1904,6 +1951,7 @@ sabnzbd:
 ## @param plex.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param plex.ingress.tls The TLS configuration for the ingress.
 ## @param plex.resources The resources to use for the pod.
+## @param plex.runtimeClassName The runtime class to use for the pod.
 ## @param plex.autoscaling.enabled Whether to enable autoscaling.
 ## @param plex.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param plex.autoscaling.maxReplicas The maximum number of replicas to scale to.
@@ -1998,6 +2046,9 @@ plex:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 
+
+  runtimeClassName: ""
+
   nodeSelector: {}
 
   tolerations: []
@@ -2046,6 +2097,7 @@ plex:
 ## @param emby.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param emby.ingress.tls The TLS configuration for the ingress.
 ## @param emby.resources The resources to use for the pod.
+## @param emby.runtimeClassName The runtime class to use for the pod.
 ## @param emby.autoscaling.enabled Whether to enable autoscaling.
 ## @param emby.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param emby.autoscaling.maxReplicas The maximum number of replicas to scale to.
@@ -2140,6 +2192,9 @@ emby:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
+
+
+  runtimeClassName: ""
 
   nodeSelector: {}
 

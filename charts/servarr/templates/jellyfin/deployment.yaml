@@ -163,6 +163,9 @@ spec:
       {{- if .Values.jellyfin.extraVolumes }}
       {{- toYaml .Values.jellyfin.extraVolumes | nindent 6 }}
       {{- end }}
+      {{- if .Values.jellyfin.runtimeClassName }}
+      runtimeClassName: {{ .Values.jellyfin.runtimeClassName }}
+      {{- end }}
     {{- with .Values.jellyfin.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

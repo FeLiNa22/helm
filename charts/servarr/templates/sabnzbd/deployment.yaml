@@ -97,6 +97,9 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.sabnzbd.resources | nindent 12 }}
+      {{- if .Values.sabnzbd.runtimeClassName }}
+      runtimeClassName: {{ .Values.sabnzbd.runtimeClassName }}
+      {{- end }}
       {{- with .Values.sabnzbd.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
