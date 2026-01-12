@@ -89,6 +89,9 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.cleanuparr.resources | nindent 12 }}
+      {{- if .Values.cleanuparr.runtimeClassName }}
+      runtimeClassName: {{ .Values.cleanuparr.runtimeClassName | quote }}
+      {{- end }}
       {{- with .Values.cleanuparr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

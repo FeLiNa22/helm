@@ -142,6 +142,9 @@ spec:
           {{- if .Values.seerr.persistence.additionalMounts }}
             {{- .Values.seerr.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}
+      {{- if .Values.seerr.runtimeClassName }}
+      runtimeClassName: {{ .Values.seerr.runtimeClassName | quote }}
+      {{- end }}
       {{- with .Values.seerr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

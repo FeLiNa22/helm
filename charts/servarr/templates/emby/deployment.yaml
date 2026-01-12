@@ -110,6 +110,9 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.emby.resources | nindent 12 }}
+      {{- if .Values.emby.runtimeClassName }}
+      runtimeClassName: {{ .Values.emby.runtimeClassName | quote }}
+      {{- end }}
       {{- with .Values.emby.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

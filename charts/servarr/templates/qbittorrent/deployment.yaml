@@ -166,6 +166,9 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.qbittorrent.resources | nindent 12 }}
+      {{- if .Values.qbittorrent.runtimeClassName }}
+      runtimeClassName: {{ .Values.qbittorrent.runtimeClassName | quote }}
+      {{- end }}
       {{- with .Values.qbittorrent.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

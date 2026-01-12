@@ -113,6 +113,9 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.bazarr.resources | nindent 12 }}
+      {{- if .Values.bazarr.runtimeClassName }}
+      runtimeClassName: {{ .Values.bazarr.runtimeClassName | quote }}
+      {{- end }}
       {{- with .Values.bazarr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -77,6 +77,9 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.huntarr.resources | nindent 12 }}
+      {{- if .Values.huntarr.runtimeClassName }}
+      runtimeClassName: {{ .Values.huntarr.runtimeClassName | quote }}
+      {{- end }}
       {{- with .Values.huntarr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
