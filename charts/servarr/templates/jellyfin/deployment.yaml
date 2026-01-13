@@ -95,12 +95,14 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
-          {{- if .Values.jellyfin.persistence.backup.enabled }}
+            {{- if .Values.jellyfin.persistence.backup.enabled }}
             - mountPath: /config/backups
               name: backup
-          {{- end }}
+            {{- end }}
+            {{- if .Values.jellyfin.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache
+            {{- end }}
             {{- range .Values.jellyfin.persistence.extraExistingClaimMounts }}
             - name: {{ .name }}
               mountPath: {{ .mountPath }}
@@ -143,8 +145,13 @@ spec:
       {{- else }}
         emptyDir: {}
       {{- end }}
+      {{- if .Values.jellyfin.persistence.cache.enabled }}
       - name: cache
-        emptyDir: {}
+        emptyDir:
+          {{- if .Values.jellyfin.persistence.cache.size }}
+          sizeLimit: {{ .Values.jellyfin.persistence.cache.size }}
+          {{- end }}
+      {{- end }}
       - name: media
       {{- if .Values.media.enabled }}
         persistentVolumeClaim:
@@ -159,6 +166,9 @@ spec:
       {{- end }}
       {{- if .Values.jellyfin.extraVolumes }}
       {{- toYaml .Values.jellyfin.extraVolumes | nindent 6 }}
+      {{- end }}
+      {{- if .Values.jellyfin.runtimeClassName }}
+      runtimeClassName: {{ .Values.jellyfin.runtimeClassName | quote }}
       {{- end }}
     {{- with .Values.jellyfin.nodeSelector }}
       nodeSelector:

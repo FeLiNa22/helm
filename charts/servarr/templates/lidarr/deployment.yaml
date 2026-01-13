@@ -59,8 +59,13 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if .Values.lidarr.persistence.cache.enabled }}
         - name: cache
-          emptyDir: { }
+          emptyDir:
+            {{- if .Values.lidarr.persistence.cache.size }}
+            sizeLimit: {{ .Values.lidarr.persistence.cache.size }}
+            {{- end }}
+        {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.lidarr.persistence.enabled }}
           persistentVolumeClaim:
@@ -85,12 +90,14 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
-          {{- if .Values.lidarr.persistence.backup.enabled }}
+            {{- if .Values.lidarr.persistence.backup.enabled }}
             - mountPath: /config/backups
               name: backup
-          {{- end }}
+            {{- end }}
+            {{- if .Values.lidarr.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache
+            {{- end }}
           {{- if and .Values.media.enabled .Values.lidarr.persistence.enabled }}
             - mountPath: /media
               name: media
@@ -121,6 +128,9 @@ spec:
             periodSeconds: 10
           resources:
             {{- toYaml .Values.lidarr.resources | nindent 12 }}
+      {{- if .Values.lidarr.runtimeClassName }}
+      runtimeClassName: {{ .Values.lidarr.runtimeClassName | quote }}
+      {{- end }}
       {{- with .Values.lidarr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

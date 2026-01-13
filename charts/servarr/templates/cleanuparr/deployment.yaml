@@ -89,7 +89,7 @@ spec:
           {{- end }}
           ports:
             - name: http
-              containerPort: {{ .Values.cleanuparr.service.port | default 11011 }}
+              containerPort: 11011
               protocol: TCP
           env:
             {{- range $k,$v := .Values.cleanuparr.env }}
@@ -98,6 +98,9 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.cleanuparr.resources | nindent 12 }}
+      {{- if .Values.cleanuparr.runtimeClassName }}
+      runtimeClassName: {{ .Values.cleanuparr.runtimeClassName | quote }}
+      {{- end }}
       {{- with .Values.cleanuparr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

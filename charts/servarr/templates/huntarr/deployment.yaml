@@ -1,0 +1,95 @@
+{{- if .Values.huntarr.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-huntarr
+  labels:
+    app.kubernetes.io/name: huntarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-huntarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  {{- if not .Values.huntarr.autoscaling.enabled }}
+  replicas: {{ .Values.huntarr.replicaCount }}
+  {{- end }}
+  strategy:
+    {{- .Values.huntarr.deployment.strategy | toYaml | nindent 4 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: huntarr
+      app.kubernetes.io/instance: {{ .Release.Name }}-huntarr
+  template:
+    metadata:
+      {{- with .Values.huntarr.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: huntarr
+        app.kubernetes.io/instance: {{ .Release.Name }}-huntarr
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    spec:
+      {{- with .Values.huntarr.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.huntarr.serviceAccount.name | default (printf "%s-huntarr" .Release.Name) }}
+      securityContext:
+        {{- toYaml .Values.huntarr.podSecurityContext | nindent 8 }}
+      {{- if .Values.huntarr.initContainers }}
+      initContainers:
+        {{- toYaml .Values.huntarr.initContainers | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          {{- if .Values.huntarr.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.huntarr.persistence.existingClaim | default (printf "%s-huntarr" .Release.Name) }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
+        {{- if .Values.huntarr.persistence.additionalVolumes }}
+          {{- .Values.huntarr.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.huntarr.securityContext | nindent 12 }}
+          image: "{{ .Values.huntarr.image.repository }}:{{ .Values.huntarr.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.huntarr.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /config
+              name: config
+          {{- if .Values.huntarr.persistence.additionalMounts }}
+            {{- .Values.huntarr.persistence.additionalMounts | toYaml | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 9705
+              protocol: TCP
+          env:
+            {{- range $k,$v := .Values.huntarr.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.huntarr.resources | nindent 12 }}
+      {{- if .Values.huntarr.runtimeClassName }}
+      runtimeClassName: {{ .Values.huntarr.runtimeClassName | quote }}
+      {{- end }}
+      {{- with .Values.huntarr.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.huntarr.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.huntarr.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

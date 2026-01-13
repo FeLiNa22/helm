@@ -51,8 +51,13 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if .Values.emby.persistence.cache.enabled }}
         - name: cache
-          emptyDir: { }
+          emptyDir:
+            {{- if .Values.emby.persistence.cache.size }}
+            sizeLimit: {{ .Values.emby.persistence.cache.size }}
+            {{- end }}
+        {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.emby.persistence.enabled }}
           persistentVolumeClaim:
@@ -77,12 +82,14 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
-          {{- if .Values.emby.persistence.backup.enabled }}
+            {{- if .Values.emby.persistence.backup.enabled }}
             - mountPath: /config/backups
               name: backup
-          {{- end }}
+            {{- end }}
+            {{- if .Values.emby.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache
+            {{- end }}
           {{- if and .Values.media.enabled .Values.sonarr.enabled .Values.sonarr.persistence.enabled .Values.emby.persistence.enabled }}
             - mountPath: "/media/{{ .Values.media.paths.tv }}"
               name: media
@@ -112,6 +119,9 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.emby.resources | nindent 12 }}
+      {{- if .Values.emby.runtimeClassName }}
+      runtimeClassName: {{ .Values.emby.runtimeClassName | quote }}
+      {{- end }}
       {{- with .Values.emby.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

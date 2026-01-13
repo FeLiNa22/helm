@@ -59,8 +59,13 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if .Values.radarr.persistence.cache.enabled }}
         - name: cache
-          emptyDir: { }
+          emptyDir:
+            {{- if .Values.radarr.persistence.cache.size }}
+            sizeLimit: {{ .Values.radarr.persistence.cache.size }}
+            {{- end }}
+        {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.radarr.persistence.enabled }}
           persistentVolumeClaim:
@@ -85,12 +90,14 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
-          {{- if .Values.radarr.persistence.backup.enabled }}
+            {{- if .Values.radarr.persistence.backup.enabled }}
             - mountPath: /config/backups
               name: backup
-          {{- end }}
+            {{- end }}
+            {{- if .Values.radarr.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache
+            {{- end }}
           {{- if and .Values.media.enabled .Values.radarr.persistence.enabled }}
             - mountPath: /media
               name: media
@@ -121,6 +128,9 @@ spec:
             periodSeconds: 10
           resources:
             {{- toYaml .Values.radarr.resources | nindent 12 }}
+      {{- if .Values.radarr.runtimeClassName }}
+      runtimeClassName: {{ .Values.radarr.runtimeClassName | quote }}
+      {{- end }}
       {{- with .Values.radarr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

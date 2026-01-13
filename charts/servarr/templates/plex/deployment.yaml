@@ -108,6 +108,9 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.plex.resources | nindent 12 }}
+      {{- if .Values.plex.runtimeClassName }}
+      runtimeClassName: {{ .Values.plex.runtimeClassName | quote }}
+      {{- end }}
       {{- with .Values.plex.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

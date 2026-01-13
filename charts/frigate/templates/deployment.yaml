@@ -56,6 +56,7 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if .Values.tmpfs.enabled }}
         - name: cache
           emptyDir:
             medium: Memory
@@ -79,12 +80,14 @@ spec:
               name: config
             - mountPath: /media/frigate
               name: media
+            {{- if .Values.tmpfs.enabled }}
             - mountPath: /tmp/cache
               name: cache
-          {{- if .Values.persistence.backup.enabled }}
+            {{- end }}
+            {{- if .Values.persistence.backup.enabled }}
             - mountPath: /media/frigate/backups
               name: backup
-          {{- end }}
+            {{- end }}
           {{- if .Values.persistence.additionalMounts }}
             {{- .Values.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}
