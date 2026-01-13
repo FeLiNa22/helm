@@ -97,10 +97,10 @@ spec:
             {{- end }}
           ports:
             - name: aceengine
-              containerPort: {{ .Values.acestream.service.aceengine.port | default 6878 }}
+              containerPort: 6878
               protocol: TCP
             - name: threadfin
-              containerPort: {{ .Values.acestream.service.threadfin.port | default 34400 }}
+              containerPort: 34400
               protocol: TCP
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: http-proxy
@@ -137,7 +137,7 @@ spec:
         {{- if not .Values.acestream.gluetun.enabled }}
           ports:
             - name: aceengine
-              containerPort: {{ .Values.acestream.service.aceengine.port | default 6878 }}
+              containerPort: 6878
               protocol: TCP
         {{- end }}
           {{- if .Values.acestream.aceengine.env }}
@@ -161,7 +161,7 @@ spec:
         {{- if not .Values.acestream.gluetun.enabled }}
           ports:
             - name: threadfin
-              containerPort: {{ .Values.acestream.service.threadfin.port | default 34400 }}
+              containerPort: 34400
               protocol: TCP
         {{- end }}
           {{- if .Values.acestream.threadfin.env }}
