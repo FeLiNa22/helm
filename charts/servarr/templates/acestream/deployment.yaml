@@ -1,0 +1,188 @@
+{{- if .Values.acestream.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-acestream
+  labels:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  {{- if not .Values.acestream.autoscaling.enabled }}
+  replicas: {{ .Values.acestream.replicaCount }}
+  {{- end }}
+  strategy:
+    {{- .Values.acestream.deployment.strategy | toYaml | nindent 4 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: acestream
+      app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+  template:
+    metadata:
+      {{- with .Values.acestream.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: acestream
+        app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    spec:
+      {{- with .Values.acestream.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.acestream.serviceAccount.name | default (printf "%s-acestream" .Release.Name) }}
+      securityContext:
+        {{- toYaml .Values.acestream.podSecurityContext | nindent 8 }}
+      {{- if .Values.acestream.initContainers }}
+      initContainers:
+        {{- toYaml .Values.acestream.initContainers | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          {{- if .Values.acestream.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.acestream.persistence.existingClaim | default (printf "%s-acestream" .Release.Name) }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
+        {{- if .Values.acestream.persistence.additionalVolumes }}
+          {{- .Values.acestream.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- end }}
+        {{- if .Values.acestream.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.acestream.persistence.backup.existingClaim | default (printf "%s-acestream-backup" .Release.Name) }}
+        {{- end }}
+      containers:
+      {{- if .Values.acestream.gluetun.enabled }}
+        - name: gluetun
+          image: "{{ .Values.acestream.gluetun.image.repository }}:{{ .Values.acestream.gluetun.image.tag }}"
+          imagePullPolicy: {{ .Values.acestream.gluetun.image.pullPolicy }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "(ip rule del table 51820; ip -6 rule del table 51820) || true"]
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          env:
+            {{- range $k,$v := .Values.acestream.gluetun.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            - name: DNS_KEEP_NAMESERVER
+              value: "on"
+            - name: FIREWALL_OUTBOUND_SUBNETS
+              value: 10.43.0.0/16
+            - name: FIREWALL_INPUT_PORTS
+              value: "{{ .Values.acestream.service.aceengine.port | default 6878 }},{{ .Values.acestream.service.threadfin.port | default 34400 }}"
+            {{- if .Values.acestream.gluetun.httpProxy.enabled }}
+            - name: HTTPPROXY
+              value: "on"
+            - name: HTTPPROXY_LISTENING_ADDRESS
+              value: ":{{ .Values.acestream.gluetun.httpProxy.port | default 8888 }}"
+            {{- end }}
+            {{- if .Values.acestream.gluetun.shadowsocksProxy.enabled }}
+            - name: SHADOWSOCKS
+              value: "on"
+            - name: SHADOWSOCKS_LISTENING_ADDRESS
+              value: ":{{ .Values.acestream.gluetun.shadowsocksProxy.port | default 8388 }}"
+            {{- end }}
+          ports:
+            - name: aceengine
+              containerPort: {{ .Values.acestream.service.aceengine.port | default 6878 }}
+              protocol: TCP
+            - name: threadfin
+              containerPort: {{ .Values.acestream.service.threadfin.port | default 34400 }}
+              protocol: TCP
+            {{- if .Values.acestream.gluetun.httpProxy.enabled }}
+            - name: http-proxy
+              containerPort: {{ .Values.acestream.gluetun.httpProxy.port | default 8888 }}
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.acestream.gluetun.shadowsocksProxy.enabled }}
+            - name: shadowsocks-tcp
+              containerPort: {{ .Values.acestream.gluetun.shadowsocksProxy.port | default 8388 }}
+              protocol: TCP
+            - name: shadowsocks-udp
+              containerPort: {{ .Values.acestream.gluetun.shadowsocksProxy.port | default 8388 }}
+              protocol: UDP
+            {{- end }}
+          resources:
+            {{- toYaml .Values.acestream.gluetun.resources | nindent 12 }}
+      {{- end }}
+        - name: aceengine
+          securityContext:
+            {{- toYaml .Values.acestream.securityContext | nindent 12 }}
+          image: "{{ .Values.acestream.aceengine.image.repository }}:{{ .Values.acestream.aceengine.image.tag }}"
+          imagePullPolicy: {{ .Values.acestream.aceengine.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /srv/acestream
+              name: config
+              subPath: acestream
+          {{- if .Values.acestream.persistence.backup.enabled }}
+            - mountPath: /srv/acestream/backups
+              name: backup
+          {{- end }}
+          {{- if .Values.acestream.persistence.additionalMounts }}
+            {{- .Values.acestream.persistence.additionalMounts | toYaml | nindent 12 }}
+          {{- end }}
+        {{- if not .Values.acestream.gluetun.enabled }}
+          ports:
+            - name: aceengine
+              containerPort: {{ .Values.acestream.service.aceengine.port | default 6878 }}
+              protocol: TCP
+        {{- end }}
+          {{- if .Values.acestream.aceengine.env }}
+          env:
+            {{- toYaml .Values.acestream.aceengine.env | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.acestream.aceengine.resources | nindent 12 }}
+        - name: threadfin
+          securityContext:
+            {{- toYaml .Values.acestream.securityContext | nindent 12 }}
+          image: "{{ .Values.acestream.threadfin.image.repository }}:{{ .Values.acestream.threadfin.image.tag }}"
+          imagePullPolicy: {{ .Values.acestream.threadfin.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /home/threadfin/conf
+              name: config
+              subPath: threadfin
+          {{- if .Values.acestream.persistence.additionalMounts }}
+            {{- .Values.acestream.persistence.additionalMounts | toYaml | nindent 12 }}
+          {{- end }}
+        {{- if not .Values.acestream.gluetun.enabled }}
+          ports:
+            - name: threadfin
+              containerPort: {{ .Values.acestream.service.threadfin.port | default 34400 }}
+              protocol: TCP
+        {{- end }}
+          {{- if .Values.acestream.threadfin.env }}
+          env:
+            {{- toYaml .Values.acestream.threadfin.env | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.acestream.threadfin.resources | nindent 12 }}
+      {{- if .Values.acestream.runtimeClassName }}
+      runtimeClassName: {{ .Values.acestream.runtimeClassName | quote }}
+      {{- end }}
+      {{- with .Values.acestream.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.acestream.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.acestream.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

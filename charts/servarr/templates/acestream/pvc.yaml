@@ -1,0 +1,44 @@
+{{- if and .Values.acestream.enabled .Values.acestream.persistence.enabled (not .Values.acestream.persistence.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-acestream
+  labels:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.acestream.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.acestream.persistence.size }}
+  {{- if .Values.acestream.persistence.storageClass }}
+  storageClassName: {{ .Values.acestream.persistence.storageClass | quote }}
+  {{- end }}
+{{- end }}
+{{- if and .Values.acestream.enabled .Values.acestream.persistence.backup.enabled (not .Values.acestream.persistence.backup.existingClaim) }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-acestream-backup
+  labels:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.acestream.persistence.backup.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.acestream.persistence.backup.size }}
+  {{- if .Values.acestream.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.acestream.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}

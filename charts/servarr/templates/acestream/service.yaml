@@ -1,0 +1,106 @@
+{{- if .Values.acestream.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-acestream-aceengine
+  labels:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: aceengine
+spec:
+  type: {{ .Values.acestream.service.aceengine.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.acestream.service.aceengine.port | default 6878 }}
+      targetPort: aceengine
+      protocol: TCP
+      name: aceengine
+  {{- if (and (eq .Values.acestream.service.aceengine.type "NodePort") (not (empty .Values.acestream.service.aceengine.nodePort))) }}
+      nodePort: {{ .Values.acestream.service.aceengine.nodePort }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-acestream-threadfin
+  labels:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: threadfin
+spec:
+  type: {{ .Values.acestream.service.threadfin.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.acestream.service.threadfin.port | default 34400 }}
+      targetPort: threadfin
+      protocol: TCP
+      name: threadfin
+  {{- if (and (eq .Values.acestream.service.threadfin.type "NodePort") (not (empty .Values.acestream.service.threadfin.nodePort))) }}
+      nodePort: {{ .Values.acestream.service.threadfin.nodePort }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+{{- end }}
+{{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled .Values.acestream.gluetun.httpProxy.enabled }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-acestream-gluetun-http
+  labels:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: http-proxy
+spec:
+  type: {{ .Values.acestream.gluetun.httpProxy.type | default "LoadBalancer" }}
+  ports:
+    - port: {{ .Values.acestream.gluetun.httpProxy.port | default 8888 }}
+      targetPort: http-proxy
+      protocol: TCP
+      name: http-proxy
+  selector:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+{{- end }}
+{{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled .Values.acestream.gluetun.shadowsocksProxy.enabled }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-acestream-gluetun-shadowsocks
+  labels:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: shadowsocks
+spec:
+  type: {{ .Values.acestream.gluetun.shadowsocksProxy.type | default "LoadBalancer" }}
+  ports:
+    - port: {{ .Values.acestream.gluetun.shadowsocksProxy.port | default 8388 }}
+      targetPort: shadowsocks-tcp
+      protocol: TCP
+      name: shadowsocks-tcp
+    - port: {{ .Values.acestream.gluetun.shadowsocksProxy.port | default 8388 }}
+      targetPort: shadowsocks-udp
+      protocol: UDP
+      name: shadowsocks-udp
+  selector:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+{{- end }}
