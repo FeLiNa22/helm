@@ -75,6 +75,11 @@ spec:
           {{- end }}
         {{- if .Values.sonarr.persistence.additionalVolumes }}
           {{- .Values.sonarr.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- if .Values.sonarr.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.sonarr.persistence.backup.existingClaim | default (printf "%s-sonarr-backup" .Release.Name) }}
+        {{- end }}
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -85,6 +90,10 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            {{- if .Values.sonarr.persistence.backup.enabled }}
+            - mountPath: /config/backups
+              name: backup
+            {{- end }}
             {{- if .Values.sonarr.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache

@@ -52,6 +52,11 @@ spec:
             - mountPath: /opt/data
               name: app-data
               readOnly: false
+          {{- if .Values.persistence.backup.enabled }}
+            - mountPath: /opt/data/backups
+              name: backup
+              readOnly: false
+          {{- end }}
           env:
             - name: PENPOT_PUBLIC_URI
               value: {{ .Values.config.publicURI | quote }}
@@ -380,4 +385,9 @@ spec:
           claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{- else }}{{ .Release.Name }}{{- end }}
       {{- else }}
         emptyDir: {}
+      {{- end }}
+      {{- if .Values.persistence.backup.enabled }}
+      - name: backup
+        persistentVolumeClaim:
+          claimName: {{ if .Values.persistence.backup.existingClaim }}{{ .Values.persistence.backup.existingClaim }}{{- else }}{{ .Release.Name }}-backup{{- end }}
       {{- end }}

@@ -60,6 +60,11 @@ spec:
         {{- end }}
         {{- if .Values.prowlarr.persistence.additionalVolumes }}
           {{- .Values.prowlarr.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- if .Values.prowlarr.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.prowlarr.persistence.backup.existingClaim | default (printf "%s-prowlarr-backup" .Release.Name) }}
+        {{- end }}
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -70,6 +75,10 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            {{- if .Values.prowlarr.persistence.backup.enabled }}
+            - mountPath: /config/backups
+              name: backup
+            {{- end }}
             {{- if .Values.prowlarr.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache

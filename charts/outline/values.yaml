@@ -44,6 +44,10 @@ replicaCount: 1
 ## @param outline.fileStorage.localRootDir Local directory path for storing files, if using local storage.
 ## @param outline.fileStorage.uploadMaxSize Maximum file upload size limit.
 ## @param outline.fileStorage.initContainerSecurityContext.enabled Whether to set the security context for the initContainer. Useful for deployments on GKE and similar.
+## @param outline.fileStorage.backup.enabled Whether to enable backup persistence for file storage.
+## @param outline.fileStorage.backup.storageClassName The storage class to use for backup persistence.
+## @param outline.fileStorage.backup.storageSize The size to use for backup persistence.
+## @param outline.fileStorage.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param outline.nodeSelector Optional node selector to use.
 ## @param outline.tolerations Whether to set node tolerations.
 ## @param outline.affinity Whether to set node affinity.
@@ -112,6 +116,11 @@ outline:
     uploadMaxSize: "26214400"
     initContainerSecurityContext:
       enabled: false
+    backup:
+      enabled: false
+      storageClassName: "cephfs"
+      storageSize: 250Gi
+      existingClaim: ""
   nodeSelector: {}
   tolerations: []
   affinity: {}

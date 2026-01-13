@@ -75,6 +75,11 @@ spec:
           {{- end }}
         {{- if .Values.radarr.persistence.additionalVolumes }}
           {{- .Values.radarr.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- if .Values.radarr.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.radarr.persistence.backup.existingClaim | default (printf "%s-radarr-backup" .Release.Name) }}
+        {{- end }}
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -85,6 +90,10 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            {{- if .Values.radarr.persistence.backup.enabled }}
+            - mountPath: /config/backups
+              name: backup
+            {{- end }}
             {{- if .Values.radarr.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache

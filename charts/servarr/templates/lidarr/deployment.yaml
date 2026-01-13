@@ -75,6 +75,11 @@ spec:
           {{- end }}
         {{- if .Values.lidarr.persistence.additionalVolumes }}
           {{- .Values.lidarr.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- if .Values.lidarr.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.lidarr.persistence.backup.existingClaim | default (printf "%s-lidarr-backup" .Release.Name) }}
+        {{- end }}
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -85,6 +90,10 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            {{- if .Values.lidarr.persistence.backup.enabled }}
+            - mountPath: /config/backups
+              name: backup
+            {{- end }}
             {{- if .Values.lidarr.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache

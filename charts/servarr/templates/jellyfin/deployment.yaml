@@ -95,6 +95,10 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            {{- if .Values.jellyfin.persistence.backup.enabled }}
+            - mountPath: /config/backups
+              name: backup
+            {{- end }}
             {{- if .Values.jellyfin.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache

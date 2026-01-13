@@ -61,6 +61,11 @@ spec:
         {{- end }}
         {{- if .Values.seerr.persistence.additionalVolumes }}
           {{- .Values.seerr.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- if .Values.seerr.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.seerr.persistence.backup.existingClaim | default (printf "%s-seerr-backup" .Release.Name) }}
+        {{- end }}
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}

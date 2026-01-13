@@ -23,3 +23,26 @@ spec:
     requests:
       storage: {{ .Values.emby.persistence.size | quote }}
 {{- end }}
+
+---
+{{- if and .Values.emby.enabled .Values.emby.persistence.backup.enabled (not .Values.emby.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-emby-backup
+  labels:
+    app.kubernetes.io/name: emby
+    app.kubernetes.io/instance: {{ .Release.Name }}-emby
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.emby.persistence.backup.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.emby.persistence.backup.size | quote }}
+  {{- if .Values.emby.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.emby.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}

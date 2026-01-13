@@ -67,6 +67,11 @@ spec:
           {{- end }}
         {{- if .Values.emby.persistence.additionalVolumes }}
           {{- .Values.emby.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- if .Values.emby.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.emby.persistence.backup.existingClaim | default (printf "%s-emby-backup" .Release.Name) }}
+        {{- end }}
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -77,6 +82,10 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            {{- if .Values.emby.persistence.backup.enabled }}
+            - mountPath: /config/backups
+              name: backup
+            {{- end }}
             {{- if .Values.emby.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache

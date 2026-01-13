@@ -23,3 +23,26 @@ spec:
     requests:
       storage: {{ .Values.qbittorrent.persistence.size | quote }}
 {{- end }}
+
+---
+{{- if and .Values.qbittorrent.enabled .Values.qbittorrent.persistence.backup.enabled (not .Values.qbittorrent.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-qbittorrent-backup
+  labels:
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.qbittorrent.persistence.backup.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.qbittorrent.persistence.backup.size | quote }}
+  {{- if .Values.qbittorrent.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.qbittorrent.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}

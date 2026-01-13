@@ -60,6 +60,11 @@ spec:
           {{- end }}
         {{- if .Values.plex.persistence.additionalVolumes }}
           {{- .Values.plex.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- if .Values.plex.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.plex.persistence.backup.existingClaim | default (printf "%s-plex-backup" .Release.Name) }}
+        {{- end }}
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -70,6 +75,10 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+          {{- if .Values.plex.persistence.backup.enabled }}
+            - mountPath: /config/backups
+              name: backup
+          {{- end }}
           {{- if and .Values.media.enabled .Values.sonarr.enabled .Values.sonarr.persistence.enabled .Values.plex.persistence.enabled }}
             - mountPath: "/media/{{ .Values.media.paths.tv }}"
               name: media

@@ -61,6 +61,10 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: {{ .Values.tmpfs.size | default "1Gi" }}
+        {{- if .Values.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.backup.existingClaim | default (printf "%s-backup" .Release.Name) }}
         {{- end }}
         {{- if .Values.persistence.additionalVolumes }}
           {{- .Values.persistence.additionalVolumes | toYaml | nindent 8}}
@@ -79,6 +83,10 @@ spec:
             {{- if .Values.tmpfs.enabled }}
             - mountPath: /tmp/cache
               name: cache
+            {{- end }}
+            {{- if .Values.persistence.backup.enabled }}
+            - mountPath: /media/frigate/backups
+              name: backup
             {{- end }}
           {{- if .Values.persistence.additionalMounts }}
             {{- .Values.persistence.additionalMounts | toYaml | nindent 12 }}

@@ -75,6 +75,11 @@ spec:
           {{- end }}
         {{- if .Values.bazarr.persistence.additionalVolumes }}
           {{- .Values.bazarr.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- if .Values.bazarr.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.bazarr.persistence.backup.existingClaim | default (printf "%s-bazarr-backup" .Release.Name) }}
+        {{- end }}
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -85,6 +90,10 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            {{- if .Values.bazarr.persistence.backup.enabled }}
+            - mountPath: /config/backups
+              name: backup
+            {{- end }}
             {{- if .Values.bazarr.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache
