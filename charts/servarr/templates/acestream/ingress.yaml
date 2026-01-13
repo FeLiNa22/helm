@@ -37,9 +37,9 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ $.Release.Name }}-acestream-threadfin
+                name: {{ $.Release.Name }}-acestream-dispatcharr
                 port:
-                  number: {{ $.Values.acestream.service.threadfin.port | default 34400 }}
+                  number: {{ $.Values.acestream.service.dispatcharr.port | default 9191 }}
           {{- end }}
     {{- end }}
 {{- end }}

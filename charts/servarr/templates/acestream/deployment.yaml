@@ -82,7 +82,7 @@ spec:
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: 10.43.0.0/16
             - name: FIREWALL_INPUT_PORTS
-              value: "6878,34400"
+              value: "6878,9191"
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: HTTPPROXY
               value: "on"
@@ -99,8 +99,8 @@ spec:
             - name: aceengine
               containerPort: 6878
               protocol: TCP
-            - name: threadfin
-              containerPort: 34400
+            - name: dispatcharr
+              containerPort: 9191
               protocol: TCP
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: http-proxy
@@ -146,30 +146,30 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.acestream.aceengine.resources | nindent 12 }}
-        - name: threadfin
+        - name: dispatcharr
           securityContext:
             {{- toYaml .Values.acestream.securityContext | nindent 12 }}
-          image: "{{ .Values.acestream.threadfin.image.repository }}:{{ .Values.acestream.threadfin.image.tag }}"
-          imagePullPolicy: {{ .Values.acestream.threadfin.image.pullPolicy }}
+          image: "{{ .Values.acestream.dispatcharr.image.repository }}:{{ .Values.acestream.dispatcharr.image.tag }}"
+          imagePullPolicy: {{ .Values.acestream.dispatcharr.image.pullPolicy }}
           volumeMounts:
-            - mountPath: /home/threadfin/conf
+            - mountPath: /data
               name: config
-              subPath: threadfin
+              subPath: dispatcharr
           {{- if .Values.acestream.persistence.additionalMounts }}
             {{- .Values.acestream.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}
         {{- if not .Values.acestream.gluetun.enabled }}
           ports:
-            - name: threadfin
-              containerPort: 34400
+            - name: dispatcharr
+              containerPort: 9191
               protocol: TCP
         {{- end }}
-          {{- if .Values.acestream.threadfin.env }}
+          {{- if .Values.acestream.dispatcharr.env }}
           env:
-            {{- toYaml .Values.acestream.threadfin.env | nindent 12 }}
+            {{- toYaml .Values.acestream.dispatcharr.env | nindent 12 }}
           {{- end }}
           resources:
-            {{- toYaml .Values.acestream.threadfin.resources | nindent 12 }}
+            {{- toYaml .Values.acestream.dispatcharr.resources | nindent 12 }}
       {{- if .Values.acestream.runtimeClassName }}
       runtimeClassName: {{ .Values.acestream.runtimeClassName | quote }}
       {{- end }}
