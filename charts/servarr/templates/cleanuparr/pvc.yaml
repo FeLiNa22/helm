@@ -23,26 +23,3 @@ spec:
     requests:
       storage: {{ .Values.cleanuparr.persistence.size | quote }}
 {{- end }}
-
----
-{{- if and .Values.cleanuparr.enabled .Values.cleanuparr.persistence.backup.enabled (not .Values.cleanuparr.persistence.backup.existingClaim) }}
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: {{ .Release.Name }}-cleanuparr-backup
-  labels:
-    app.kubernetes.io/name: cleanuparr
-    app.kubernetes.io/instance: {{ .Release.Name }}-cleanuparr
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-spec:
-  accessModes:
-    - {{ .Values.cleanuparr.persistence.backup.accessMode | quote }}
-  resources:
-    requests:
-      storage: {{ .Values.cleanuparr.persistence.backup.size | quote }}
-  {{- if .Values.cleanuparr.persistence.backup.storageClass }}
-  storageClassName: {{ .Values.cleanuparr.persistence.backup.storageClass | quote }}
-  {{- end }}
-{{- end }}

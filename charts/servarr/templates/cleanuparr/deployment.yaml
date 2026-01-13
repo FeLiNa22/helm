@@ -60,11 +60,6 @@ spec:
           {{- end }}
         {{- if .Values.cleanuparr.persistence.additionalVolumes }}
           {{- .Values.cleanuparr.persistence.additionalVolumes | toYaml | nindent 8}}
-        {{- if .Values.cleanuparr.persistence.backup.enabled }}
-        - name: backup
-          persistentVolumeClaim:
-            claimName: {{ .Values.cleanuparr.persistence.backup.existingClaim | default (printf "%s-cleanuparr-backup" .Release.Name) }}
-        {{- end }}
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -75,10 +70,6 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
-          {{- if .Values.cleanuparr.persistence.backup.enabled }}
-            - mountPath: /config/backups
-              name: backup
-          {{- end }}
           {{- if and .Values.media.enabled .Values.qbittorrent.persistence.enabled }}
             - mountPath: "/media/{{ .Values.media.paths.downloads }}"
               name: media
