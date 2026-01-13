@@ -49,6 +49,11 @@ media:
 ## @param jellyfin.persistence.size The size to use for the config.
 ## @param jellyfin.persistence.labels Additional labels to add to the config.
 ## @param jellyfin.persistence.annotations Additional annotations to add to the config.
+## @param jellyfin.persistence.backup.enabled Whether to enable backup persistence for the config.
+## @param jellyfin.persistence.backup.storageClass The storage class to use for backup persistence.
+## @param jellyfin.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param jellyfin.persistence.backup.accessMode The access mode to use for backup persistence.
+## @param jellyfin.persistence.backup.size The size to use for backup persistence.
 ## @param jellyfin.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
 ## @param jellyfin.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param jellyfin.persistence.extraExistingClaimMounts Additional existing claim mounts to add to the pod.
@@ -239,6 +244,11 @@ jellyfin:
 ## @param sonarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param sonarr.persistence.accessMode The access mode to use for the persistence.
 ## @param sonarr.persistence.size The size to use for the persistence.
+## @param sonarr.persistence.backup.enabled Whether to enable backup persistence for the config.
+## @param sonarr.persistence.backup.storageClass The storage class to use for backup persistence.
+## @param sonarr.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param sonarr.persistence.backup.accessMode The access mode to use for backup persistence.
+## @param sonarr.persistence.backup.size The size to use for backup persistence.
 ## @param sonarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
 ## @param sonarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param sonarr.persistence.additionalVolumes Additional volumes to add to the pod.
@@ -398,6 +408,11 @@ sonarr:
 ## @param qbittorrent.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param qbittorrent.persistence.accessMode The access mode to use for the persistence.
 ## @param qbittorrent.persistence.size The size to use for the persistence.
+## @param qbittorrent.persistence.backup.enabled Whether to enable backup persistence for the config.
+## @param qbittorrent.persistence.backup.storageClass The storage class to use for backup persistence.
+## @param qbittorrent.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param qbittorrent.persistence.backup.accessMode The access mode to use for backup persistence.
+## @param qbittorrent.persistence.backup.size The size to use for backup persistence.
 ## @param qbittorrent.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param qbittorrent.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -598,6 +613,11 @@ qbittorrent:
 ## @param prowlarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param prowlarr.persistence.accessMode The access mode to use for the persistence.
 ## @param prowlarr.persistence.size The size to use for the persistence.
+## @param prowlarr.persistence.backup.enabled Whether to enable backup persistence for the config.
+## @param prowlarr.persistence.backup.storageClass The storage class to use for backup persistence.
+## @param prowlarr.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param prowlarr.persistence.backup.accessMode The access mode to use for backup persistence.
+## @param prowlarr.persistence.backup.size The size to use for backup persistence.
 ## @param prowlarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
 ## @param prowlarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param prowlarr.persistence.additionalVolumes Additional volumes to add to the pod.
@@ -906,6 +926,11 @@ flaresolverr:
 ## @param seerr.persistence.volumeName Name of the permanent volume to reference in the claim. Can be used to bind to existing volumes.
 ## @param seerr.persistence.size The size to use for the persistence.
 ## @param seerr.persistence.annotations Annotations for PVCs.
+## @param seerr.persistence.backup.enabled Whether to enable backup persistence for the config.
+## @param seerr.persistence.backup.storageClass The storage class to use for backup persistence.
+## @param seerr.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param seerr.persistence.backup.accessMode The access mode to use for backup persistence.
+## @param seerr.persistence.backup.size The size to use for backup persistence.
 ## @param seerr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
 ## @param seerr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param seerr.persistence.additionalVolumes Additional volumes to add to the pod.
@@ -1104,6 +1129,11 @@ seerr:
 ## @param bazarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param bazarr.persistence.accessMode The access mode to use for the persistence.
 ## @param bazarr.persistence.size The size to use for the persistence.
+## @param bazarr.persistence.backup.enabled Whether to enable backup persistence for the config.
+## @param bazarr.persistence.backup.storageClass The storage class to use for backup persistence.
+## @param bazarr.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param bazarr.persistence.backup.accessMode The access mode to use for backup persistence.
+## @param bazarr.persistence.backup.size The size to use for backup persistence.
 ## @param bazarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
 ## @param bazarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param bazarr.persistence.additionalVolumes Additional volumes to add to the pod.
@@ -1259,6 +1289,11 @@ bazarr:
 ## @param radarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param radarr.persistence.accessMode The access mode to use for the persistence.
 ## @param radarr.persistence.size The size to use for the persistence.
+## @param radarr.persistence.backup.enabled Whether to enable backup persistence for the config.
+## @param radarr.persistence.backup.storageClass The storage class to use for backup persistence.
+## @param radarr.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param radarr.persistence.backup.accessMode The access mode to use for backup persistence.
+## @param radarr.persistence.backup.size The size to use for backup persistence.
 ## @param radarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
 ## @param radarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param radarr.persistence.additionalVolumes Additional volumes to add to the pod.
@@ -1415,6 +1450,11 @@ radarr:
 ## @param lidarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param lidarr.persistence.accessMode The access mode to use for the persistence.
 ## @param lidarr.persistence.size The size to use for the persistence.
+## @param lidarr.persistence.backup.enabled Whether to enable backup persistence for the config.
+## @param lidarr.persistence.backup.storageClass The storage class to use for backup persistence.
+## @param lidarr.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param lidarr.persistence.backup.accessMode The access mode to use for backup persistence.
+## @param lidarr.persistence.backup.size The size to use for backup persistence.
 ## @param lidarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
 ## @param lidarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param lidarr.persistence.additionalVolumes Additional volumes to add to the pod.
@@ -1572,6 +1612,11 @@ lidarr:
 ## @param cleanuparr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param cleanuparr.persistence.accessMode The access mode to use for the persistence.
 ## @param cleanuparr.persistence.size The size to use for the persistence.
+## @param cleanuparr.persistence.backup.enabled Whether to enable backup persistence for the config.
+## @param cleanuparr.persistence.backup.storageClass The storage class to use for backup persistence.
+## @param cleanuparr.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param cleanuparr.persistence.backup.accessMode The access mode to use for backup persistence.
+## @param cleanuparr.persistence.backup.size The size to use for backup persistence.
 ## @param cleanuparr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param cleanuparr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -1718,6 +1763,11 @@ cleanuparr:
 ## @param huntarr.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param huntarr.persistence.accessMode The access mode to use for the persistence.
 ## @param huntarr.persistence.size The size to use for the persistence.
+## @param huntarr.persistence.backup.enabled Whether to enable backup persistence for the config.
+## @param huntarr.persistence.backup.storageClass The storage class to use for backup persistence.
+## @param huntarr.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param huntarr.persistence.backup.accessMode The access mode to use for backup persistence.
+## @param huntarr.persistence.backup.size The size to use for backup persistence.
 ## @param huntarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param huntarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -1868,6 +1918,11 @@ huntarr:
 ## @param sabnzbd.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param sabnzbd.persistence.accessMode The access mode to use for the persistence.
 ## @param sabnzbd.persistence.size The size to use for the persistence.
+## @param sabnzbd.persistence.backup.enabled Whether to enable backup persistence for the config.
+## @param sabnzbd.persistence.backup.storageClass The storage class to use for backup persistence.
+## @param sabnzbd.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param sabnzbd.persistence.backup.accessMode The access mode to use for backup persistence.
+## @param sabnzbd.persistence.backup.size The size to use for backup persistence.
 ## @param sabnzbd.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param sabnzbd.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -2018,6 +2073,11 @@ sabnzbd:
 ## @param plex.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param plex.persistence.accessMode The access mode to use for the persistence.
 ## @param plex.persistence.size The size to use for the persistence.
+## @param plex.persistence.backup.enabled Whether to enable backup persistence for the config.
+## @param plex.persistence.backup.storageClass The storage class to use for backup persistence.
+## @param plex.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param plex.persistence.backup.accessMode The access mode to use for backup persistence.
+## @param plex.persistence.backup.size The size to use for backup persistence.
 ## @param plex.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param plex.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -2168,6 +2228,11 @@ plex:
 ## @param emby.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param emby.persistence.accessMode The access mode to use for the persistence.
 ## @param emby.persistence.size The size to use for the persistence.
+## @param emby.persistence.backup.enabled Whether to enable backup persistence for the config.
+## @param emby.persistence.backup.storageClass The storage class to use for backup persistence.
+## @param emby.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
+## @param emby.persistence.backup.accessMode The access mode to use for backup persistence.
+## @param emby.persistence.backup.size The size to use for backup persistence.
 ## @param emby.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
 ## @param emby.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param emby.persistence.additionalVolumes Additional volumes to add to the pod.
