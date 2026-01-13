@@ -53,11 +53,11 @@ spec:
           {{- end }}
         {{- if .Values.acestream.persistence.additionalVolumes }}
           {{- .Values.acestream.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- end }}
         {{- if .Values.acestream.persistence.backup.enabled }}
         - name: backup
           persistentVolumeClaim:
             claimName: {{ .Values.acestream.persistence.backup.existingClaim | default (printf "%s-acestream-backup" .Release.Name) }}
-        {{- end }}
         {{- end }}
       containers:
       {{- if .Values.acestream.gluetun.enabled }}
