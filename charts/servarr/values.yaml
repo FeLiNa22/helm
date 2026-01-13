@@ -2356,17 +2356,17 @@ emby:
 ## @param acestream.aceengine.image.pullPolicy The logic of image pulling for Ace Stream Engine.
 ## @param acestream.aceengine.env Additional environment variables for Ace Stream Engine.
 ## @param acestream.aceengine.resources Resource limits and requests for the Ace Stream Engine container.
-## @param acestream.threadfin.image.repository The Docker repository to pull the Threadfin image from.
-## @param acestream.threadfin.image.tag The image tag to use for Threadfin.
-## @param acestream.threadfin.image.pullPolicy The logic of image pulling for Threadfin.
-## @param acestream.threadfin.env Additional environment variables for Threadfin.
-## @param acestream.threadfin.resources Resource limits and requests for the Threadfin container.
+## @param acestream.dispatcharr.image.repository The Docker repository to pull the Dispatcharr image from.
+## @param acestream.dispatcharr.image.tag The image tag to use for Dispatcharr.
+## @param acestream.dispatcharr.image.pullPolicy The logic of image pulling for Dispatcharr.
+## @param acestream.dispatcharr.env Additional environment variables for Dispatcharr.
+## @param acestream.dispatcharr.resources Resource limits and requests for the Dispatcharr container.
 ## @param acestream.service.aceengine.type The type of service to create for Ace Stream Engine.
 ## @param acestream.service.aceengine.port The port on which the Ace Stream Engine service will run.
 ## @param acestream.service.aceengine.nodePort The nodePort to use for the Ace Stream Engine service. Only used if service.type is NodePort.
-## @param acestream.service.threadfin.type The type of service to create for Threadfin.
-## @param acestream.service.threadfin.port The port on which the Threadfin service will run.
-## @param acestream.service.threadfin.nodePort The nodePort to use for the Threadfin service. Only used if service.type is NodePort.
+## @param acestream.service.dispatcharr.type The type of service to create for Dispatcharr.
+## @param acestream.service.dispatcharr.port The port on which the Dispatcharr service will run.
+## @param acestream.service.dispatcharr.nodePort The nodePort to use for the Dispatcharr service. Only used if service.type is NodePort.
 ## @param acestream.ingress.enabled Whether to create an ingress for the service.
 ## @param acestream.ingress.className The ingress class name to use.
 ## @param acestream.ingress.annotations Additional annotations to add to the ingress.
@@ -2462,9 +2462,9 @@ acestream:
       #   cpu: 100m
       #   memory: 128Mi
 
-  threadfin:
+  dispatcharr:
     image:
-      repository: fyb3roptik/threadfin
+      repository: ghcr.io/dispatcharr/dispatcharr
       pullPolicy: IfNotPresent
       tag: "latest"
     env: []
@@ -2483,9 +2483,9 @@ acestream:
       type: LoadBalancer
       port: 6878
       nodePort: ""
-    threadfin:
+    dispatcharr:
       type: LoadBalancer
-      port: 34400
+      port: 9191
       nodePort: ""
 
   ingress:

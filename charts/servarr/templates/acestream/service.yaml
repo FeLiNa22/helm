@@ -28,23 +28,23 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-acestream-threadfin
+  name: {{ .Release.Name }}-acestream-dispatcharr
   labels:
     app.kubernetes.io/name: acestream
     app.kubernetes.io/instance: {{ .Release.Name }}-acestream
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-    app.kubernetes.io/component: threadfin
+    app.kubernetes.io/component: dispatcharr
 spec:
-  type: {{ .Values.acestream.service.threadfin.type | default "ClusterIP" }}
+  type: {{ .Values.acestream.service.dispatcharr.type | default "ClusterIP" }}
   ports:
-    - port: {{ .Values.acestream.service.threadfin.port | default 34400 }}
-      targetPort: threadfin
+    - port: {{ .Values.acestream.service.dispatcharr.port | default 9191 }}
+      targetPort: dispatcharr
       protocol: TCP
-      name: threadfin
-  {{- if (and (eq .Values.acestream.service.threadfin.type "NodePort") (not (empty .Values.acestream.service.threadfin.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.threadfin.nodePort }}
+      name: dispatcharr
+  {{- if (and (eq .Values.acestream.service.dispatcharr.type "NodePort") (not (empty .Values.acestream.service.dispatcharr.nodePort))) }}
+      nodePort: {{ .Values.acestream.service.dispatcharr.nodePort }}
   {{- end }}
   selector:
     app.kubernetes.io/name: acestream
