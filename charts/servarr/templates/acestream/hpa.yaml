@@ -1,0 +1,36 @@
+{{- if and .Values.acestream.enabled .Values.acestream.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-acestream
+  labels:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-acestream
+  minReplicas: {{ .Values.acestream.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.acestream.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.acestream.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.acestream.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.acestream.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.acestream.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}
