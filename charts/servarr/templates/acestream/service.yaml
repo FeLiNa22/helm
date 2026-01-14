@@ -208,3 +208,31 @@ spec:
     app.kubernetes.io/name: acestream
     app.kubernetes.io/instance: {{ .Release.Name }}-acestream
 {{- end }}
+{{- if .Values.acestream.enabled }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-acestream-dispatcharr
+  labels:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: dispatcharr
+spec:
+  type: {{ .Values.acestream.service.dispatcharr.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.acestream.service.dispatcharr.port | default 9191 }}
+      targetPort: dispatcharr
+      protocol: TCP
+      name: dispatcharr
+  {{- if (and (eq .Values.acestream.service.dispatcharr.type "NodePort") (not (empty .Values.acestream.service.dispatcharr.nodePort))) }}
+      nodePort: {{ .Values.acestream.service.dispatcharr.nodePort }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+{{- end }}

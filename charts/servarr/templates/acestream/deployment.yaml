@@ -89,7 +89,7 @@ spec:
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: 10.43.0.0/16
             - name: FIREWALL_INPUT_PORTS
-              value: "8000,8080,8621,43110,43111,26552"
+              value: "8000,8080,8621,43110,43111,26552,9191"
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: HTTPPROXY
               value: "on"
@@ -120,6 +120,9 @@ spec:
               protocol: TCP
             - name: zeronet-peer2
               containerPort: 26552
+              protocol: TCP
+            - name: dispatcharr
+              containerPort: 9191
               protocol: TCP
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: http-proxy
@@ -184,6 +187,30 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.acestream.resources | nindent 12 }}
+        - name: dispatcharr
+          securityContext:
+            {{- toYaml .Values.acestream.securityContext | nindent 12 }}
+          image: "{{ .Values.acestream.dispatcharr.image.repository }}:{{ .Values.acestream.dispatcharr.image.tag }}"
+          imagePullPolicy: {{ .Values.acestream.dispatcharr.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /data
+              name: config
+              subPath: dispatcharr
+          {{- if .Values.acestream.persistence.additionalMounts }}
+            {{- .Values.acestream.persistence.additionalMounts | toYaml | nindent 12 }}
+          {{- end }}
+        {{- if not .Values.acestream.gluetun.enabled }}
+          ports:
+            - name: dispatcharr
+              containerPort: 9191
+              protocol: TCP
+        {{- end }}
+          {{- if .Values.acestream.dispatcharr.env }}
+          env:
+            {{- toYaml .Values.acestream.dispatcharr.env | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.acestream.dispatcharr.resources | nindent 12 }}
       {{- if .Values.acestream.runtimeClassName }}
       runtimeClassName: {{ .Values.acestream.runtimeClassName | quote }}
       {{- end }}
