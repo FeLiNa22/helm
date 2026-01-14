@@ -2414,7 +2414,6 @@ emby:
 ## @param acestream.persistence.backup.size The size to use for backup persistence.
 ## @param acestream.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param acestream.persistence.additionalMounts Additional volume mounts to add to the pod.
-## @param acestream.resources The resources to use for the pod.
 ## @param acestream.gluetun.enabled Whether to enable Gluetun VPN sidecar for routing acestream traffic through a VPN.
 ## @param acestream.gluetun.image.repository The Docker repository to pull the Gluetun image from.
 ## @param acestream.gluetun.image.tag The image tag to use for Gluetun.
