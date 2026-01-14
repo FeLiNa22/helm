@@ -2354,10 +2354,13 @@ emby:
 ## @param acestream.podSecurityContext The security context to use for the pod.
 ## @param acestream.securityContext The security context to use for the container.
 ## @param acestream.initContainers Additional init containers to add to the pod.
+## @param acestream.features.acexy.enabled Whether to enable Acexy proxy service and expose its port (controls service creation, not the container feature).
+## @param acestream.features.zeronet.enabled Whether to enable ZeroNet services and expose their ports (controls service creation, not the container feature).
+## @param acestream.features.acestreamEngine.enabled Whether to enable Acestream engine P2P service and expose its port (controls service creation, not the container feature).
 ## @param acestream.env.TZ The timezone to use for the application.
-## @param acestream.env.ENABLE_TOR Whether to enable TOR for ZeroNet connections.
-## @param acestream.env.ENABLE_ACEXY Whether to enable the Acexy proxy server.
-## @param acestream.env.ENABLE_ACESTREAM_ENGINE Whether to enable the internal Acestream engine.
+## @param acestream.env.ENABLE_TOR Whether to enable TOR for ZeroNet connections (string: "true" or "false").
+## @param acestream.env.ENABLE_ACEXY Whether to enable the Acexy proxy server in the container (string: "true" or "false").
+## @param acestream.env.ENABLE_ACESTREAM_ENGINE Whether to enable the internal Acestream engine in the container (string: "true" or "false").
 ## @param acestream.env.ACESTREAM_HTTP_PORT The HTTP port for the Acestream engine.
 ## @param acestream.env.FLASK_PORT The port for the Flask application.
 ## @param acestream.env.ACEXY_LISTEN_ADDR The address on which Acexy proxy will listen.
@@ -2476,6 +2479,14 @@ acestream:
     # - name: init-container
     #   image: busybox
     #   command: ['sh', '-c', 'echo "this is an init container"']
+
+  features:
+    acexy:
+      enabled: true
+    zeronet:
+      enabled: true
+    acestreamEngine:
+      enabled: true
 
   env:
     TZ: "Europe/Madrid"

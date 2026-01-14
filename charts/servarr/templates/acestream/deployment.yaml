@@ -89,7 +89,7 @@ spec:
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: 10.43.0.0/16
             - name: FIREWALL_INPUT_PORTS
-              value: "8000,8080,8621,43110,43111,26552,9191"
+              value: "8000{{- if .Values.acestream.features.acexy.enabled }},8080{{- end }}{{- if .Values.acestream.features.acestreamEngine.enabled }},8621{{- end }}{{- if .Values.acestream.features.zeronet.enabled }},43110,43111,26552{{- end }},9191"
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: HTTPPROXY
               value: "on"
@@ -106,12 +106,17 @@ spec:
             - name: flask
               containerPort: 8000
               protocol: TCP
+            {{- if .Values.acestream.features.acexy.enabled }}
             - name: acexy
               containerPort: 8080
               protocol: TCP
+            {{- end }}
+            {{- if .Values.acestream.features.acestreamEngine.enabled }}
             - name: p2p
               containerPort: 8621
               protocol: TCP
+            {{- end }}
+            {{- if .Values.acestream.features.zeronet.enabled }}
             - name: zeronet-ui
               containerPort: 43110
               protocol: TCP
@@ -121,6 +126,7 @@ spec:
             - name: zeronet-peer2
               containerPort: 26552
               protocol: TCP
+            {{- end }}
             - name: dispatcharr
               containerPort: 9191
               protocol: TCP
@@ -164,12 +170,17 @@ spec:
             - name: flask
               containerPort: 8000
               protocol: TCP
+            {{- if .Values.acestream.features.acexy.enabled }}
             - name: acexy
               containerPort: 8080
               protocol: TCP
+            {{- end }}
+            {{- if .Values.acestream.features.acestreamEngine.enabled }}
             - name: p2p
               containerPort: 8621
               protocol: TCP
+            {{- end }}
+            {{- if .Values.acestream.features.zeronet.enabled }}
             - name: zeronet-ui
               containerPort: 43110
               protocol: TCP
@@ -179,6 +190,7 @@ spec:
             - name: zeronet-peer2
               containerPort: 26552
               protocol: TCP
+            {{- end }}
         {{- end }}
           env:
             {{- range $k,$v := .Values.acestream.env }}
