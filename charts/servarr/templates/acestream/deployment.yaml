@@ -51,13 +51,6 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        - name: zeronet-data
-          {{- if .Values.acestream.persistence.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.acestream.persistence.existingClaim | default (printf "%s-acestream" .Release.Name) }}
-          {{- else }}
-          emptyDir: { }
-          {{- end }}
         {{- if .Values.acestream.persistence.additionalVolumes }}
           {{- .Values.acestream.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
@@ -155,9 +148,11 @@ spec:
             - mountPath: /app/config
               name: config
               subPath: config
+            {{- if .Values.acestream.features.zeronet.enabled }}
             - mountPath: /app/ZeroNet/data
-              name: zeronet-data
+              name: config
               subPath: zeronet
+            {{- end }}
           {{- if .Values.acestream.persistence.backup.enabled }}
             - mountPath: /app/config/backups
               name: backup
