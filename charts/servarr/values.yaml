@@ -2430,10 +2430,8 @@ emby:
 ## @param acestream.gluetun.env.SERVER_REGIONS Region for server selection (e.g., for VPN providers that use regions instead of countries).
 ## @param acestream.gluetun.httpProxy.enabled Whether to enable HTTP proxy server in Gluetun.
 ## @param acestream.gluetun.httpProxy.port The port on which the HTTP proxy server will listen.
-## @param acestream.gluetun.httpProxy.type The type of service to create for the HTTP proxy.
 ## @param acestream.gluetun.shadowsocksProxy.enabled Whether to enable Shadowsocks proxy server in Gluetun.
 ## @param acestream.gluetun.shadowsocksProxy.port The port on which the Shadowsocks proxy server will listen.
-## @param acestream.gluetun.shadowsocksProxy.type The type of service to create for the Shadowsocks proxy.
 ## @param acestream.gluetun.resources Resource limits and requests for the Gluetun container.
 ##
 acestream:
@@ -2608,11 +2606,9 @@ acestream:
     httpProxy:
       enabled: true
       port: 8888
-      type: LoadBalancer
     shadowsocksProxy:
       enabled: true
       port: 8388
-      type: LoadBalancer
     resources: {}
     # limits:
     #   cpu: 100m
