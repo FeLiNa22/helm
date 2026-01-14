@@ -2484,7 +2484,7 @@ acestream:
     acexy:
       enabled: true
     zeronet:
-      enabled: true
+      enabled: false
     acestreamEngine:
       enabled: true
 
