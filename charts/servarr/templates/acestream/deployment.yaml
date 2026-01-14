@@ -82,7 +82,7 @@ spec:
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: 10.43.0.0/16
             - name: FIREWALL_INPUT_PORTS
-              value: "8000{{- if .Values.acestream.features.acexy.enabled }},8080{{- end }}{{- if .Values.acestream.features.acestreamEngine.enabled }},8621{{- end }}{{- if .Values.acestream.features.zeronet.enabled }},43110,43111,26552{{- end }},9191"
+              value: "{{ .Values.acestream.env.FLASK_PORT | default 8000 }}{{- if .Values.acestream.features.acexy.enabled }},8080{{- end }}{{- if .Values.acestream.features.acestreamEngine.enabled }},8621{{- end }}{{- if .Values.acestream.features.zeronet.enabled }},43110,43111,26552{{- end }},9191"
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: HTTPPROXY
               value: "on"
@@ -97,7 +97,7 @@ spec:
             {{- end }}
           ports:
             - name: flask
-              containerPort: 8000
+              containerPort: {{ .Values.acestream.env.FLASK_PORT | default 8000 }}
               protocol: TCP
             {{- if .Values.acestream.features.acexy.enabled }}
             - name: acexy
