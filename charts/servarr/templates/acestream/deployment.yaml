@@ -163,7 +163,7 @@ spec:
         {{- if not .Values.acestream.gluetun.enabled }}
           ports:
             - name: flask
-              containerPort: 8000
+              containerPort: {{ .Values.acestream.env.FLASK_PORT | default 8000 }}
               protocol: TCP
             {{- if .Values.acestream.features.acexy.enabled }}
             - name: acexy
