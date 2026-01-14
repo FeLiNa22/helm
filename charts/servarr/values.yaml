@@ -2370,32 +2370,26 @@ emby:
 ## @param acestream.env.ACEXY_NO_RESPONSE_TIMEOUT Timeout for Acexy when no response is received.
 ## @param acestream.env.ACEXY_BUFFER_SIZE Buffer size for Acexy proxy.
 ## @param acestream.env.ACESTREAM_HTTP_HOST The host for Acestream HTTP connections.
-## @param acestream.service.flask.type The type of service to create for the Flask application.
+## @param acestream.service.type The type of service to create (applies to all ports).
 ## @param acestream.service.flask.port The port on which the Flask service will run.
 ## @param acestream.service.flask.nodePort The nodePort to use for the Flask service. Only used if service.type is NodePort.
-## @param acestream.service.acexy.type The type of service to create for the Acexy proxy.
 ## @param acestream.service.acexy.port The port on which the Acexy proxy service will run.
 ## @param acestream.service.acexy.nodePort The nodePort to use for the Acexy proxy service. Only used if service.type is NodePort.
-## @param acestream.service.p2p.type The type of service to create for Acestream P2P.
 ## @param acestream.service.p2p.port The port on which the Acestream P2P service will run.
 ## @param acestream.service.p2p.nodePort The nodePort to use for the Acestream P2P service. Only used if service.type is NodePort.
-## @param acestream.service.zeronetUI.type The type of service to create for ZeroNet UI.
 ## @param acestream.service.zeronetUI.port The port on which the ZeroNet UI service will run.
 ## @param acestream.service.zeronetUI.nodePort The nodePort to use for the ZeroNet UI service. Only used if service.type is NodePort.
-## @param acestream.service.zeronetPeer1.type The type of service to create for ZeroNet peer connections.
 ## @param acestream.service.zeronetPeer1.port The port on which the ZeroNet peer service will run.
 ## @param acestream.service.zeronetPeer1.nodePort The nodePort to use for the ZeroNet peer service. Only used if service.type is NodePort.
-## @param acestream.service.zeronetPeer2.type The type of service to create for ZeroNet peer connections.
 ## @param acestream.service.zeronetPeer2.port The port on which the ZeroNet peer service will run.
 ## @param acestream.service.zeronetPeer2.nodePort The nodePort to use for the ZeroNet peer service. Only used if service.type is NodePort.
+## @param acestream.service.dispatcharr.port The port on which the Dispatcharr service will run.
+## @param acestream.service.dispatcharr.nodePort The nodePort to use for the Dispatcharr service. Only used if service.type is NodePort.
 ## @param acestream.dispatcharr.image.repository The Docker repository to pull the Dispatcharr image from.
 ## @param acestream.dispatcharr.image.tag The image tag to use for Dispatcharr.
 ## @param acestream.dispatcharr.image.pullPolicy The logic of image pulling for Dispatcharr.
 ## @param acestream.dispatcharr.env Additional environment variables for Dispatcharr.
 ## @param acestream.dispatcharr.resources Resource limits and requests for the Dispatcharr container.
-## @param acestream.service.dispatcharr.type The type of service to create for Dispatcharr.
-## @param acestream.service.dispatcharr.port The port on which the Dispatcharr service will run.
-## @param acestream.service.dispatcharr.nodePort The nodePort to use for the Dispatcharr service. Only used if service.type is NodePort.
 ## @param acestream.ingress.enabled Whether to create an ingress for the service.
 ## @param acestream.ingress.className The ingress class name to use.
 ## @param acestream.ingress.annotations Additional annotations to add to the ingress.
@@ -2520,32 +2514,26 @@ acestream:
       #   memory: 128Mi
 
   service:
+    type: LoadBalancer
     flask:
-      type: LoadBalancer
       port: 8000
       nodePort: ""
     acexy:
-      type: LoadBalancer
       port: 8080
       nodePort: ""
     p2p:
-      type: LoadBalancer
       port: 8621
       nodePort: ""
     zeronetUI:
-      type: LoadBalancer
       port: 43110
       nodePort: ""
     zeronetPeer1:
-      type: LoadBalancer
       port: 43111
       nodePort: ""
     zeronetPeer2:
-      type: LoadBalancer
       port: 26552
       nodePort: ""
     dispatcharr:
-      type: LoadBalancer
       port: 9191
       nodePort: ""
 

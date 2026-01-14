@@ -37,7 +37,7 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ $.Release.Name }}-acestream-dispatcharr
+                name: {{ $.Release.Name }}-acestream
                 port:
                   number: {{ $.Values.acestream.service.dispatcharr.port | default 9191 }}
           {{- end }}
