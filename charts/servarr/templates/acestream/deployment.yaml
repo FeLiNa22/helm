@@ -51,6 +51,13 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        - name: zeronet-data
+          {{- if .Values.acestream.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.acestream.persistence.existingClaim | default (printf "%s-acestream" .Release.Name) }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
         {{- if .Values.acestream.persistence.additionalVolumes }}
           {{- .Values.acestream.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
@@ -82,7 +89,7 @@ spec:
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: 10.43.0.0/16
             - name: FIREWALL_INPUT_PORTS
-              value: "6878,9191"
+              value: "8000{{- if .Values.acestream.features.acexy.enabled }},8080{{- end }}{{- if .Values.acestream.features.acestreamEngine.enabled }},8621{{- end }}{{- if .Values.acestream.features.zeronet.enabled }},43110,43111,26552{{- end }},9191"
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: HTTPPROXY
               value: "on"
@@ -96,9 +103,30 @@ spec:
               value: ":{{ .Values.acestream.gluetun.shadowsocksProxy.port | default 8388 }}"
             {{- end }}
           ports:
-            - name: aceengine
-              containerPort: 6878
+            - name: flask
+              containerPort: 8000
               protocol: TCP
+            {{- if .Values.acestream.features.acexy.enabled }}
+            - name: acexy
+              containerPort: 8080
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.acestream.features.acestreamEngine.enabled }}
+            - name: p2p
+              containerPort: 8621
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.acestream.features.zeronet.enabled }}
+            - name: zeronet-ui
+              containerPort: 43110
+              protocol: TCP
+            - name: zeronet-peer1
+              containerPort: 43111
+              protocol: TCP
+            - name: zeronet-peer2
+              containerPort: 26552
+              protocol: TCP
+            {{- end }}
             - name: dispatcharr
               containerPort: 9191
               protocol: TCP
@@ -118,17 +146,20 @@ spec:
           resources:
             {{- toYaml .Values.acestream.gluetun.resources | nindent 12 }}
       {{- end }}
-        - name: aceengine
+        - name: acestream-scraper
           securityContext:
             {{- toYaml .Values.acestream.securityContext | nindent 12 }}
-          image: "{{ .Values.acestream.aceengine.image.repository }}:{{ .Values.acestream.aceengine.image.tag }}"
-          imagePullPolicy: {{ .Values.acestream.aceengine.image.pullPolicy }}
+          image: "{{ .Values.acestream.image.repository }}:{{ .Values.acestream.image.tag }}"
+          imagePullPolicy: {{ .Values.acestream.image.pullPolicy }}
           volumeMounts:
-            - mountPath: /srv/acestream
+            - mountPath: /app/config
               name: config
-              subPath: acestream
+              subPath: config
+            - mountPath: /app/ZeroNet/data
+              name: zeronet-data
+              subPath: zeronet
           {{- if .Values.acestream.persistence.backup.enabled }}
-            - mountPath: /srv/acestream/backups
+            - mountPath: /app/config/backups
               name: backup
           {{- end }}
           {{- if .Values.acestream.persistence.additionalMounts }}
@@ -136,16 +167,38 @@ spec:
           {{- end }}
         {{- if not .Values.acestream.gluetun.enabled }}
           ports:
-            - name: aceengine
-              containerPort: 6878
+            - name: flask
+              containerPort: 8000
               protocol: TCP
+            {{- if .Values.acestream.features.acexy.enabled }}
+            - name: acexy
+              containerPort: 8080
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.acestream.features.acestreamEngine.enabled }}
+            - name: p2p
+              containerPort: 8621
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.acestream.features.zeronet.enabled }}
+            - name: zeronet-ui
+              containerPort: 43110
+              protocol: TCP
+            - name: zeronet-peer1
+              containerPort: 43111
+              protocol: TCP
+            - name: zeronet-peer2
+              containerPort: 26552
+              protocol: TCP
+            {{- end }}
         {{- end }}
-          {{- if .Values.acestream.aceengine.env }}
           env:
-            {{- toYaml .Values.acestream.aceengine.env | nindent 12 }}
-          {{- end }}
+            {{- range $k,$v := .Values.acestream.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
           resources:
-            {{- toYaml .Values.acestream.aceengine.resources | nindent 12 }}
+            {{- toYaml .Values.acestream.resources | nindent 12 }}
         - name: dispatcharr
           securityContext:
             {{- toYaml .Values.acestream.securityContext | nindent 12 }}
