@@ -44,7 +44,7 @@ spec:
         {{- toYaml .Values.flaresolverr.initContainers | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: flaresolverr
           securityContext:
             {{- toYaml .Values.flaresolverr.securityContext | nindent 12 }}
           image: "{{ .Values.flaresolverr.image.repository }}:{{ .Values.flaresolverr.image.tag | default .Chart.AppVersion }}"

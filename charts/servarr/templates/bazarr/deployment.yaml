@@ -82,7 +82,7 @@ spec:
         {{- end }}
         {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: bazarr
           securityContext:
             {{- toYaml .Values.bazarr.securityContext | nindent 12 }}
           image: "{{ .Values.bazarr.image.repository }}:{{ .Values.bazarr.image.tag | default .Chart.AppVersion }}"

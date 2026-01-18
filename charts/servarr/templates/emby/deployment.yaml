@@ -74,7 +74,7 @@ spec:
         {{- end }}
         {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: emby
           securityContext:
             {{- toYaml .Values.emby.securityContext | nindent 12 }}
           image: "{{ .Values.emby.image.repository }}:{{ .Values.emby.image.tag | default .Chart.AppVersion }}"

@@ -67,7 +67,7 @@ spec:
         {{- end }}
         {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: plex
           securityContext:
             {{- toYaml .Values.plex.securityContext | nindent 12 }}
           image: "{{ .Values.plex.image.repository }}:{{ .Values.plex.image.tag | default .Chart.AppVersion }}"

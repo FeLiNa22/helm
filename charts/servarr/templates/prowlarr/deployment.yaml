@@ -67,7 +67,7 @@ spec:
         {{- end }}
         {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: prowlarr
           securityContext:
             {{- toYaml .Values.prowlarr.securityContext | nindent 12 }}
           image: "{{ .Values.prowlarr.image.repository }}:{{ .Values.prowlarr.image.tag | default .Chart.AppVersion }}"

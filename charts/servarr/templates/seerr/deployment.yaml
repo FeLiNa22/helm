@@ -68,7 +68,7 @@ spec:
         {{- end }}
         {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: seerr
           securityContext:
             {{- toYaml .Values.seerr.securityContext | nindent 12 }}
           image: "{{ .Values.seerr.image.repository }}:{{ .Values.seerr.image.tag | default .Chart.AppVersion }}"
