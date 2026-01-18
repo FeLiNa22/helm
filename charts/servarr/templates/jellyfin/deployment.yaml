@@ -31,7 +31,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
     {{- end }}
       containers:
-        - name: {{ .Release.Name }}
+        - name: jellyfin
           image: "{{ .Values.jellyfin.image.repository }}:{{ .Values.jellyfin.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.jellyfin.image.pullPolicy }}
         {{ if .Values.jellyfin.extraEnvVars }}
