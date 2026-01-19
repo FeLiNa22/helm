@@ -550,6 +550,28 @@ entries:
   immich:
   - apiVersion: v2
     appVersion: 2.4.1
+    created: "2026-01-19T16:01:10.370880318Z"
+    description: A Helm chart for Immich - High performance self-hosted photo and
+      video management solution
+    digest: e814ad1c778c46cc02545f568748ac882bad0c79b5dd4798707ae6cd679849d3
+    home: https://immich.app
+    keywords:
+    - immich
+    - photos
+    - videos
+    - media
+    - self-hosted
+    maintainers:
+    - name: FeLiNa22
+    name: immich
+    sources:
+    - https://github.com/immich-app/immich
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/immich-1.1.1/immich-1.1.1.tgz
+    version: 1.1.1
+  - apiVersion: v2
+    appVersion: 2.4.1
     created: "2026-01-18T15:04:30.296994966Z"
     description: A Helm chart for Immich - High performance self-hosted photo and
       video management solution
@@ -1204,6 +1226,40 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/searxng-1.0.1/searxng-1.0.1.tgz
     version: 1.0.1
   servarr:
+  - apiVersion: v2
+    appVersion: 1.2.3
+    created: "2026-01-19T16:01:10.590942597Z"
+    description: Raul Servarr Helm Chart
+    digest: ff64486c1f853bcf2663532074dfd5f274ff081f01f5a305d5a2ea02e7766f0e
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/servarr
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - bazarr
+    - lidarr
+    - sonarr
+    - radarr
+    - flaresolverr
+    - jellyfin
+    - seerr
+    - qbittorrent
+    - prowlarr
+    - cleanuparr
+    - huntarr
+    - sabnzbd
+    - frigate
+    - plex
+    - emby
+    - acestream
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: servarr
+    sources:
+    - https://github.com/Servarr
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/servarr-1.3.13/servarr-1.3.13.tgz
+    version: 1.3.13
   - apiVersion: v2
     appVersion: 1.2.3
     created: "2026-01-18T15:05:29.551291929Z"
@@ -2422,4 +2478,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-01-18T15:05:29.551741745Z"
+generated: "2026-01-19T16:01:10.591320831Z"
