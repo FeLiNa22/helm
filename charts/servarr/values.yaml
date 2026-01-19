@@ -2446,7 +2446,7 @@ acestream:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   env: {}
-    # Map format (legacy):
+    # Map format:
     #   TZ: "Europe/Madrid"
     #   MY_VAR: "value"
     # Array format:
@@ -2459,7 +2459,7 @@ acestream:
       pullPolicy: IfNotPresent
       tag: "latest"
     env: {}
-      # Map format (legacy):
+      # Map format:
       #   TZ: "Europe/Madrid"
       #   MY_VAR: "value"
       # Array format:
