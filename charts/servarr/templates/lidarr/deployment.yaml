@@ -82,7 +82,7 @@ spec:
         {{- end }}
         {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: lidarr
           securityContext:
             {{- toYaml .Values.lidarr.securityContext | nindent 12 }}
           image: "{{ .Values.lidarr.image.repository }}:{{ .Values.lidarr.image.tag | default .Chart.AppVersion }}"
