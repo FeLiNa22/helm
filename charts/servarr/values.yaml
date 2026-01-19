@@ -413,6 +413,11 @@ sonarr:
 ## @param qbittorrent.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param qbittorrent.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param qbittorrent.persistence.backup.size The size to use for backup persistence.
+## @param qbittorrent.persistence.downloads.enabled Whether to enable a separate PVC for downloads at /config/downloads/incomplete.
+## @param qbittorrent.persistence.downloads.storageClass The storage class to use for the downloads PVC (e.g., ceph-rbd for faster storage).
+## @param qbittorrent.persistence.downloads.existingClaim The name of an existing claim to use for the downloads PVC.
+## @param qbittorrent.persistence.downloads.accessMode The access mode to use for the downloads PVC.
+## @param qbittorrent.persistence.downloads.size The size to use for the downloads PVC.
 ## @param qbittorrent.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param qbittorrent.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -520,6 +525,12 @@ qbittorrent:
       existingClaim: ""
       accessMode: ReadWriteMany
       size: 5Gi
+    downloads:
+      enabled: false
+      storageClass: ""
+      existingClaim: ""
+      accessMode: ReadWriteOnce
+      size: 100Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -1918,6 +1929,11 @@ huntarr:
 ## @param sabnzbd.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param sabnzbd.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param sabnzbd.persistence.backup.size The size to use for backup persistence.
+## @param sabnzbd.persistence.downloads.enabled Whether to enable a separate PVC for downloads at /config/downloads/incomplete.
+## @param sabnzbd.persistence.downloads.storageClass The storage class to use for the downloads PVC (e.g., ceph-rbd for faster storage).
+## @param sabnzbd.persistence.downloads.existingClaim The name of an existing claim to use for the downloads PVC.
+## @param sabnzbd.persistence.downloads.accessMode The access mode to use for the downloads PVC.
+## @param sabnzbd.persistence.downloads.size The size to use for the downloads PVC.
 ## @param sabnzbd.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param sabnzbd.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -2020,6 +2036,12 @@ sabnzbd:
       existingClaim: ""
       accessMode: ReadWriteMany
       size: 5Gi
+    downloads:
+      enabled: false
+      storageClass: ""
+      existingClaim: ""
+      accessMode: ReadWriteOnce
+      size: 100Gi
     additionalVolumes: []
     additionalMounts: []
 
