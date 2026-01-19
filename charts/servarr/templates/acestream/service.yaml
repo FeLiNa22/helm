@@ -2,106 +2,23 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-acestream-flask
+  name: {{ .Release.Name }}-acestream-http
   labels:
     app.kubernetes.io/name: acestream
     app.kubernetes.io/instance: {{ .Release.Name }}-acestream
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-    app.kubernetes.io/component: flask
+    app.kubernetes.io/component: http
 spec:
-  type: {{ .Values.acestream.service.flask.type | default "ClusterIP" }}
+  type: {{ .Values.acestream.service.http.type | default "ClusterIP" }}
   ports:
-    - port: {{ .Values.acestream.service.flask.port | default 8000 }}
-      targetPort: flask
+    - port: {{ .Values.acestream.service.http.port | default 6878 }}
+      targetPort: http
       protocol: TCP
-      name: flask
-  {{- if (and (eq .Values.acestream.service.flask.type "NodePort") (not (empty .Values.acestream.service.flask.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.flask.nodePort }}
-  {{- end }}
-  selector:
-    app.kubernetes.io/name: acestream
-    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
-
-{{- if .Values.acestream.features.acexy.enabled }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Release.Name }}-acestream-acexy
-  labels:
-    app.kubernetes.io/name: acestream
-    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-    app.kubernetes.io/component: acexy
-spec:
-  type: {{ .Values.acestream.service.acexy.type | default "ClusterIP" }}
-  ports:
-    - port: {{ .Values.acestream.service.acexy.port | default 8080 }}
-      targetPort: acexy
-      protocol: TCP
-      name: acexy
-  {{- if (and (eq .Values.acestream.service.acexy.type "NodePort") (not (empty .Values.acestream.service.acexy.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.acexy.nodePort }}
-  {{- end }}
-  selector:
-    app.kubernetes.io/name: acestream
-    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
-{{- end }}
-
-{{- if .Values.acestream.features.acestreamEngine.enabled }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Release.Name }}-acestream-p2p
-  labels:
-    app.kubernetes.io/name: acestream
-    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-    app.kubernetes.io/component: p2p
-spec:
-  type: {{ .Values.acestream.service.p2p.type | default "ClusterIP" }}
-  ports:
-    - port: {{ .Values.acestream.service.p2p.port | default 8621 }}
-      targetPort: p2p
-      protocol: TCP
-      name: p2p
-  {{- if (and (eq .Values.acestream.service.p2p.type "NodePort") (not (empty .Values.acestream.service.p2p.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.p2p.nodePort }}
-  {{- end }}
-  selector:
-    app.kubernetes.io/name: acestream
-    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
-{{- end }}
-
-{{- if .Values.acestream.features.zeronet.enabled }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Release.Name }}-acestream-zeronet-ui
-  labels:
-    app.kubernetes.io/name: acestream
-    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-    app.kubernetes.io/component: zeronet-ui
-spec:
-  type: {{ .Values.acestream.service.zeronetUI.type | default "ClusterIP" }}
-  ports:
-    - port: {{ .Values.acestream.service.zeronetUI.port | default 43110 }}
-      targetPort: zeronet-ui
-      protocol: TCP
-      name: zeronet-ui
-  {{- if (and (eq .Values.acestream.service.zeronetUI.type "NodePort") (not (empty .Values.acestream.service.zeronetUI.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.zeronetUI.nodePort }}
+      name: http
+  {{- if (and (eq .Values.acestream.service.http.type "NodePort") (not (empty .Values.acestream.service.http.nodePort))) }}
+      nodePort: {{ .Values.acestream.service.http.nodePort }}
   {{- end }}
   selector:
     app.kubernetes.io/name: acestream
@@ -111,54 +28,27 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-acestream-zeronet-peer1
+  name: {{ .Release.Name }}-acestream-dispatcharr
   labels:
     app.kubernetes.io/name: acestream
     app.kubernetes.io/instance: {{ .Release.Name }}-acestream
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-    app.kubernetes.io/component: zeronet-peer1
+    app.kubernetes.io/component: dispatcharr
 spec:
-  type: {{ .Values.acestream.service.zeronetPeer1.type | default "ClusterIP" }}
+  type: {{ .Values.acestream.service.dispatcharr.type | default "ClusterIP" }}
   ports:
-    - port: {{ .Values.acestream.service.zeronetPeer1.port | default 43111 }}
-      targetPort: zeronet-peer1
+    - port: {{ .Values.acestream.service.dispatcharr.port | default 9191 }}
+      targetPort: dispatcharr
       protocol: TCP
-      name: zeronet-peer1
-  {{- if (and (eq .Values.acestream.service.zeronetPeer1.type "NodePort") (not (empty .Values.acestream.service.zeronetPeer1.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.zeronetPeer1.nodePort }}
+      name: dispatcharr
+  {{- if (and (eq .Values.acestream.service.dispatcharr.type "NodePort") (not (empty .Values.acestream.service.dispatcharr.nodePort))) }}
+      nodePort: {{ .Values.acestream.service.dispatcharr.nodePort }}
   {{- end }}
   selector:
     app.kubernetes.io/name: acestream
     app.kubernetes.io/instance: {{ .Release.Name }}-acestream
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Release.Name }}-acestream-zeronet-peer2
-  labels:
-    app.kubernetes.io/name: acestream
-    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-    app.kubernetes.io/component: zeronet-peer2
-spec:
-  type: {{ .Values.acestream.service.zeronetPeer2.type | default "ClusterIP" }}
-  ports:
-    - port: {{ .Values.acestream.service.zeronetPeer2.port | default 26552 }}
-      targetPort: zeronet-peer2
-      protocol: TCP
-      name: zeronet-peer2
-  {{- if (and (eq .Values.acestream.service.zeronetPeer2.type "NodePort") (not (empty .Values.acestream.service.zeronetPeer2.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.zeronetPeer2.nodePort }}
-  {{- end }}
-  selector:
-    app.kubernetes.io/name: acestream
-    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
-{{- end }}
 {{- end }}
 {{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled .Values.acestream.gluetun.httpProxy.enabled }}
 
@@ -210,34 +100,6 @@ spec:
       targetPort: shadowsocks-udp
       protocol: UDP
       name: shadowsocks-udp
-  selector:
-    app.kubernetes.io/name: acestream
-    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
-{{- end }}
-{{- if .Values.acestream.enabled }}
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Release.Name }}-acestream-dispatcharr
-  labels:
-    app.kubernetes.io/name: acestream
-    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-    app.kubernetes.io/component: dispatcharr
-spec:
-  type: {{ .Values.acestream.service.dispatcharr.type | default "ClusterIP" }}
-  ports:
-    - port: {{ .Values.acestream.service.dispatcharr.port | default 9191 }}
-      targetPort: dispatcharr
-      protocol: TCP
-      name: dispatcharr
-  {{- if (and (eq .Values.acestream.service.dispatcharr.type "NodePort") (not (empty .Values.acestream.service.dispatcharr.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.dispatcharr.nodePort }}
-  {{- end }}
   selector:
     app.kubernetes.io/name: acestream
     app.kubernetes.io/instance: {{ .Release.Name }}-acestream
