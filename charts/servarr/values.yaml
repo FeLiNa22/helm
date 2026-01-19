@@ -520,6 +520,12 @@ qbittorrent:
       existingClaim: ""
       accessMode: ReadWriteMany
       size: 5Gi
+    downloads:
+      enabled: false
+      storageClass: ""
+      existingClaim: ""
+      accessMode: ReadWriteOnce
+      size: 100Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -2020,6 +2026,12 @@ sabnzbd:
       existingClaim: ""
       accessMode: ReadWriteMany
       size: 5Gi
+    downloads:
+      enabled: false
+      storageClass: ""
+      existingClaim: ""
+      accessMode: ReadWriteOnce
+      size: 100Gi
     additionalVolumes: []
     additionalMounts: []
 

@@ -73,6 +73,11 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.qbittorrent.persistence.backup.existingClaim | default (printf "%s-qbittorrent-backup" .Release.Name) }}
         {{- end }}
+        {{- if .Values.qbittorrent.persistence.downloads.enabled }}
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: {{ .Values.qbittorrent.persistence.downloads.existingClaim | default (printf "%s-qbittorrent-downloads" .Release.Name) }}
+        {{- end }}
         {{- end }}
       containers:
       {{- if .Values.qbittorrent.gluetun.enabled }}
@@ -147,6 +152,10 @@ spec:
           {{- if .Values.qbittorrent.persistence.backup.enabled }}
             - mountPath: /config/backups
               name: backup
+          {{- end }}
+          {{- if .Values.qbittorrent.persistence.downloads.enabled }}
+            - mountPath: /config/downloads/incomplete
+              name: downloads
           {{- end }}
           {{- if and .Values.media.enabled .Values.qbittorrent.persistence.enabled }}
             - mountPath: "/media/{{ .Values.media.paths.downloads }}"
