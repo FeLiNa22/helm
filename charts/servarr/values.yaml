@@ -2445,18 +2445,26 @@ acestream:
     #   image: busybox
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
-  env: []
-    # - name: MY_ENV_VAR
-    #   value: my-value
+  env: {}
+    # Map format (legacy):
+    #   TZ: "Europe/Madrid"
+    #   MY_VAR: "value"
+    # Array format:
+    #   - name: MY_ENV_VAR
+    #     value: my-value
 
   dispatcharr:
     image:
       repository: ghcr.io/dispatcharr/dispatcharr
       pullPolicy: IfNotPresent
       tag: "latest"
-    env: []
-      # - name: MY_ENV_VAR
-      #   value: my-value
+    env: {}
+      # Map format (legacy):
+      #   TZ: "Europe/Madrid"
+      #   MY_VAR: "value"
+      # Array format:
+      #   - name: MY_ENV_VAR
+      #     value: my-value
     resources: {}
       # limits:
       #   cpu: 100m
