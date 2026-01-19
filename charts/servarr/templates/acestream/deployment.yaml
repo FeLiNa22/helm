@@ -131,6 +131,7 @@ spec:
               containerPort: {{ .Values.acestream.service.http.port | default 6878 }}
               protocol: TCP
         {{- end }}
+          {{- /* Backward compatibility: support both map format (old) and array format (new) for env vars */}}
           {{- if .Values.acestream.env }}
           env:
             {{- if kindIs "map" .Values.acestream.env }}
@@ -162,6 +163,7 @@ spec:
               containerPort: 9191
               protocol: TCP
         {{- end }}
+          {{- /* Backward compatibility: support both map format (old) and array format (new) for env vars */}}
           {{- if .Values.acestream.dispatcharr.env }}
           env:
             {{- if kindIs "map" .Values.acestream.dispatcharr.env }}
