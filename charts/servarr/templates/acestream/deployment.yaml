@@ -133,7 +133,14 @@ spec:
         {{- end }}
           {{- if .Values.acestream.env }}
           env:
+            {{- if kindIs "map" .Values.acestream.env }}
+            {{- range $k,$v := .Values.acestream.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            {{- else }}
             {{- toYaml .Values.acestream.env | nindent 12 }}
+            {{- end }}
           {{- end }}
           resources:
             {{- toYaml .Values.acestream.resources | nindent 12 }}
@@ -157,7 +164,14 @@ spec:
         {{- end }}
           {{- if .Values.acestream.dispatcharr.env }}
           env:
+            {{- if kindIs "map" .Values.acestream.dispatcharr.env }}
+            {{- range $k,$v := .Values.acestream.dispatcharr.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            {{- else }}
             {{- toYaml .Values.acestream.dispatcharr.env | nindent 12 }}
+            {{- end }}
           {{- end }}
           resources:
             {{- toYaml .Values.acestream.dispatcharr.resources | nindent 12 }}
