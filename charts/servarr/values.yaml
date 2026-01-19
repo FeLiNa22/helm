@@ -2362,11 +2362,11 @@ emby:
 
 ## @section Acestream parameters
 
-## @param acestream.enabled Whether to enable Acestream Scraper.
+## @param acestream.enabled Whether to enable Acestream Engine.
 ## @param acestream.replicaCount The number of replicas to deploy.
-## @param acestream.image.repository The Docker repository to pull the Acestream Scraper image from.
-## @param acestream.image.tag The image tag to use for Acestream Scraper.
-## @param acestream.image.pullPolicy The logic of image pulling for Acestream Scraper.
+## @param acestream.image.repository The Docker repository to pull the Acestream Engine image from.
+## @param acestream.image.tag The image tag to use for Acestream Engine.
+## @param acestream.image.pullPolicy The logic of image pulling for Acestream Engine.
 ## @param acestream.imagePullSecrets The image pull secrets to use.
 ## @param acestream.deployment.strategy.type The deployment strategy to use.
 ## @param acestream.serviceAccount.create Whether to create a service account.
@@ -2376,45 +2376,15 @@ emby:
 ## @param acestream.podSecurityContext The security context to use for the pod.
 ## @param acestream.securityContext The security context to use for the container.
 ## @param acestream.initContainers Additional init containers to add to the pod.
-## @param acestream.features.acexy.enabled Whether to enable Acexy proxy service and expose its port (controls service creation, not the container feature).
-## @param acestream.features.zeronet.enabled Whether to enable ZeroNet services and expose their ports (controls service creation, not the container feature).
-## @param acestream.features.acestreamEngine.enabled Whether to enable Acestream engine P2P service and expose its port (controls service creation, not the container feature).
-## @param acestream.env.TZ The timezone to use for the application.
-## @param acestream.env.ENABLE_TOR Whether to enable TOR for ZeroNet connections (string: "true" or "false").
-## @param acestream.env.ENABLE_ACEXY Whether to enable the Acexy proxy server in the container (string: "true" or "false").
-## @param acestream.env.ENABLE_ACESTREAM_ENGINE Whether to enable the internal Acestream engine in the container (string: "true" or "false").
-## @param acestream.env.ACESTREAM_HTTP_PORT The HTTP port for the Acestream engine.
-## @param acestream.env.FLASK_PORT The port for the Flask application.
-## @param acestream.env.ACEXY_LISTEN_ADDR The address on which Acexy proxy will listen.
-## @param acestream.env.ACEXY_HOST The host for Acexy to connect to the Acestream engine.
-## @param acestream.env.ACEXY_PORT The port for Acexy to connect to the Acestream engine.
-## @param acestream.env.ALLOW_REMOTE_ACCESS Whether to allow remote access to the application.
-## @param acestream.env.ACEXY_NO_RESPONSE_TIMEOUT Timeout for Acexy when no response is received.
-## @param acestream.env.ACEXY_BUFFER_SIZE Buffer size for Acexy proxy.
-## @param acestream.env.ACESTREAM_HTTP_HOST The host for Acestream HTTP connections.
-## @param acestream.service.flask.type The type of service to create for the Flask application.
-## @param acestream.service.flask.port The port on which the Flask service will run.
-## @param acestream.service.flask.nodePort The nodePort to use for the Flask service. Only used if service.type is NodePort.
-## @param acestream.service.acexy.type The type of service to create for the Acexy proxy.
-## @param acestream.service.acexy.port The port on which the Acexy proxy service will run.
-## @param acestream.service.acexy.nodePort The nodePort to use for the Acexy proxy service. Only used if service.type is NodePort.
-## @param acestream.service.p2p.type The type of service to create for Acestream P2P.
-## @param acestream.service.p2p.port The port on which the Acestream P2P service will run.
-## @param acestream.service.p2p.nodePort The nodePort to use for the Acestream P2P service. Only used if service.type is NodePort.
-## @param acestream.service.zeronetUI.type The type of service to create for ZeroNet UI.
-## @param acestream.service.zeronetUI.port The port on which the ZeroNet UI service will run.
-## @param acestream.service.zeronetUI.nodePort The nodePort to use for the ZeroNet UI service. Only used if service.type is NodePort.
-## @param acestream.service.zeronetPeer1.type The type of service to create for ZeroNet peer connections.
-## @param acestream.service.zeronetPeer1.port The port on which the ZeroNet peer service will run.
-## @param acestream.service.zeronetPeer1.nodePort The nodePort to use for the ZeroNet peer service. Only used if service.type is NodePort.
-## @param acestream.service.zeronetPeer2.type The type of service to create for ZeroNet peer connections.
-## @param acestream.service.zeronetPeer2.port The port on which the ZeroNet peer service will run.
-## @param acestream.service.zeronetPeer2.nodePort The nodePort to use for the ZeroNet peer service. Only used if service.type is NodePort.
+## @param acestream.env Additional environment variables to add to the acestream engine container.
 ## @param acestream.dispatcharr.image.repository The Docker repository to pull the Dispatcharr image from.
 ## @param acestream.dispatcharr.image.tag The image tag to use for Dispatcharr.
 ## @param acestream.dispatcharr.image.pullPolicy The logic of image pulling for Dispatcharr.
 ## @param acestream.dispatcharr.env Additional environment variables for Dispatcharr.
 ## @param acestream.dispatcharr.resources Resource limits and requests for the Dispatcharr container.
+## @param acestream.service.http.type The type of service to create for Acestream HTTP.
+## @param acestream.service.http.port The port on which the Acestream HTTP service will run.
+## @param acestream.service.http.nodePort The nodePort to use for the Acestream HTTP service. Only used if service.type is NodePort.
 ## @param acestream.service.dispatcharr.type The type of service to create for Dispatcharr.
 ## @param acestream.service.dispatcharr.port The port on which the Dispatcharr service will run.
 ## @param acestream.service.dispatcharr.nodePort The nodePort to use for the Dispatcharr service. Only used if service.type is NodePort.
@@ -2425,7 +2395,7 @@ emby:
 ## @param acestream.ingress.hosts[0].paths[0].path The path to use for the ingress.
 ## @param acestream.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param acestream.ingress.tls The TLS configuration for the ingress.
-## @param acestream.resources The resources to use for the pod.
+## @param acestream.resources The resources to use for the acestream engine container.
 ## @param acestream.runtimeClassName The runtime class to use for the pod.
 ## @param acestream.autoscaling.enabled Whether to enable autoscaling.
 ## @param acestream.autoscaling.minReplicas The minimum number of replicas to scale to.
@@ -2440,11 +2410,6 @@ emby:
 ## @param acestream.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param acestream.persistence.accessMode The access mode to use for the persistence.
 ## @param acestream.persistence.size The size to use for the persistence.
-## @param acestream.persistence.backup.enabled Whether to enable backup persistence for the config.
-## @param acestream.persistence.backup.storageClass The storage class to use for backup persistence.
-## @param acestream.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
-## @param acestream.persistence.backup.accessMode The access mode to use for backup persistence.
-## @param acestream.persistence.backup.size The size to use for backup persistence.
 ## @param acestream.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param acestream.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param acestream.gluetun.enabled Whether to enable Gluetun VPN sidecar for routing acestream traffic through a VPN.
@@ -2469,7 +2434,7 @@ acestream:
   replicaCount: 1
 
   image:
-    repository: pipepito/acestream-scraper
+    repository: smarquard/acestream
     pullPolicy: IfNotPresent
     tag: "latest"
 
@@ -2502,28 +2467,9 @@ acestream:
     #   image: busybox
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
-  features:
-    acexy:
-      enabled: true
-    zeronet:
-      enabled: false
-    acestreamEngine:
-      enabled: true
-
-  env:
-    TZ: "Europe/Madrid"
-    ENABLE_TOR: "false"
-    ENABLE_ACEXY: "true"
-    ENABLE_ACESTREAM_ENGINE: "true"
-    ACESTREAM_HTTP_PORT: "6878"
-    FLASK_PORT: "8000"
-    ACEXY_LISTEN_ADDR: ":8080"
-    ACEXY_HOST: "localhost"
-    ACEXY_PORT: "6878"
-    ALLOW_REMOTE_ACCESS: "no"
-    ACEXY_NO_RESPONSE_TIMEOUT: "15s"
-    ACEXY_BUFFER_SIZE: "5MiB"
-    ACESTREAM_HTTP_HOST: "localhost"
+  env: []
+    # - name: MY_ENV_VAR
+    #   value: my-value
 
   dispatcharr:
     image:
@@ -2542,29 +2488,9 @@ acestream:
       #   memory: 128Mi
 
   service:
-    flask:
+    http:
       type: LoadBalancer
-      port: 8000
-      nodePort: ""
-    acexy:
-      type: LoadBalancer
-      port: 8080
-      nodePort: ""
-    p2p:
-      type: LoadBalancer
-      port: 8621
-      nodePort: ""
-    zeronetUI:
-      type: LoadBalancer
-      port: 43110
-      nodePort: ""
-    zeronetPeer1:
-      type: LoadBalancer
-      port: 43111
-      nodePort: ""
-    zeronetPeer2:
-      type: LoadBalancer
-      port: 26552
+      port: 6878
       nodePort: ""
     dispatcharr:
       type: LoadBalancer
@@ -2616,12 +2542,6 @@ acestream:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 1Gi
-    backup:
-      enabled: false
-      storageClass: "cephfs"
-      existingClaim: ""
-      accessMode: ReadWriteMany
-      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
 
