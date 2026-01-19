@@ -51,7 +51,10 @@ spec:
           imagePullPolicy: {{ .Values.flaresolverr.image.pullPolicy }}
           {{- if .Values.flaresolverr.env }}
           env:
-            {{- toYaml .Values.flaresolverr.env | nindent 12 }}
+            {{- range $k,$v := .Values.flaresolverr.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
           {{- end }}
           ports:
             - name: http

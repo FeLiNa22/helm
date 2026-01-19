@@ -358,7 +358,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `flaresolverr.nodeSelector`                                  | The node selector to use for the pod.                                                                                               | `{}`                                |
 | `flaresolverr.tolerations`                                   | The tolerations to use for the pod.                                                                                                 | `[]`                                |
 | `flaresolverr.affinity`                                      | The affinity to use for the pod.                                                                                                    | `{}`                                |
-| `flaresolverr.env`                                           | Additional environment variables to add to the pod.                                                                                 | `[]`                                |
+| `flaresolverr.env`                                           | Additional environment variables to add to the pod.                                                                                 | `{}`                                |
 
 ### Seerr parameters
 

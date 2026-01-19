@@ -117,9 +117,9 @@ spec:
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: {{ .Values.config.allowedHosts | quote }}
             {{- end }}
-            {{- range .Values.env }}
-            - name: {{ .name }}
-              value: {{ .value | quote }}
+            {{- range $k,$v := .Values.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

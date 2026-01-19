@@ -131,16 +131,11 @@ spec:
               containerPort: {{ .Values.acestream.service.http.port | default 6878 }}
               protocol: TCP
         {{- end }}
-          {{- /* Backward compatibility: support both map format (old) and array format (new) for env vars */}}
           {{- if .Values.acestream.env }}
           env:
-            {{- if kindIs "map" .Values.acestream.env }}
             {{- range $k,$v := .Values.acestream.env }}
             - name: {{ $k }}
               value: {{ $v | quote }}
-            {{- end }}
-            {{- else }}
-            {{- toYaml .Values.acestream.env | nindent 12 }}
             {{- end }}
           {{- end }}
           resources:
@@ -163,16 +158,11 @@ spec:
               containerPort: 9191
               protocol: TCP
         {{- end }}
-          {{- /* Backward compatibility: support both map format (old) and array format (new) for env vars */}}
           {{- if .Values.acestream.dispatcharr.env }}
           env:
-            {{- if kindIs "map" .Values.acestream.dispatcharr.env }}
             {{- range $k,$v := .Values.acestream.dispatcharr.env }}
             - name: {{ $k }}
               value: {{ $v | quote }}
-            {{- end }}
-            {{- else }}
-            {{- toYaml .Values.acestream.dispatcharr.env | nindent 12 }}
             {{- end }}
           {{- end }}
           resources:

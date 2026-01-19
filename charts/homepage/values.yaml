@@ -127,9 +127,8 @@ tolerations: []
 
 affinity: {}
 
-env: []
-  #- name: LOG_LEVEL
-  #  value: "info"
+env: {}
+  # LOG_LEVEL: "info"
 
 persistence:
   enabled: true
