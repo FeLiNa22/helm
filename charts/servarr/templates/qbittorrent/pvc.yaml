@@ -46,3 +46,26 @@ spec:
   storageClassName: {{ .Values.qbittorrent.persistence.backup.storageClass | quote }}
   {{- end }}
 {{- end }}
+
+---
+{{- if and .Values.qbittorrent.enabled .Values.qbittorrent.persistence.downloads.enabled (not .Values.qbittorrent.persistence.downloads.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-qbittorrent-downloads
+  labels:
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.qbittorrent.persistence.downloads.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.qbittorrent.persistence.downloads.size | quote }}
+  {{- if .Values.qbittorrent.persistence.downloads.storageClass }}
+  storageClassName: {{ .Values.qbittorrent.persistence.downloads.storageClass | quote }}
+  {{- end }}
+{{- end }}

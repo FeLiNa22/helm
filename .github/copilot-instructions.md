@@ -40,6 +40,54 @@ name: myapp
 version: 1.2.3  # ← ALWAYS UPDATE THIS
 ```
 
+## Environment Variables Convention
+
+**IMPORTANT**: All environment variables in charts MUST use **map format**, not array format.
+
+### Map Format (Required)
+
+In `values.yaml`:
+```yaml
+env:
+  TZ: "Europe/London"
+  LOG_LEVEL: "info"
+  MY_VAR: "value"
+```
+
+In templates (`deployment.yaml`):
+```gotemplate
+{{- if .Values.env }}
+env:
+  {{- range $k,$v := .Values.env }}
+  - name: {{ $k }}
+    value: {{ $v | quote }}
+  {{- end }}
+{{- end }}
+```
+
+### Array Format (NOT Allowed)
+
+Do NOT use this format:
+```yaml
+# values.yaml - WRONG
+env:
+  - name: TZ
+    value: "Europe/London"
+```
+
+```gotemplate
+# deployment.yaml - WRONG
+env:
+  {{- toYaml .Values.env | nindent 12 }}
+```
+
+### Why Map Format?
+
+1. **Simpler syntax**: Easier to read and write for users
+2. **Consistent merging**: Helm value merging works predictably with maps
+3. **No patching errors**: Avoids Kubernetes strategic merge patch errors like "cannot restore slice from map"
+4. **Uniform across charts**: All services follow the same convention
+
 ## Additional Guidelines
 
 - **Test changes**: Ensure templates render correctly with `helm template`

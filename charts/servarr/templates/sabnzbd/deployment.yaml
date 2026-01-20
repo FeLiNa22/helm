@@ -68,14 +68,19 @@ spec:
           {{- end }}
         {{- if .Values.sabnzbd.persistence.additionalVolumes }}
           {{- .Values.sabnzbd.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- end }}
         {{- if .Values.sabnzbd.persistence.backup.enabled }}
         - name: backup
           persistentVolumeClaim:
             claimName: {{ .Values.sabnzbd.persistence.backup.existingClaim | default (printf "%s-sabnzbd-backup" .Release.Name) }}
         {{- end }}
+        {{- if .Values.sabnzbd.persistence.downloads.enabled }}
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: {{ .Values.sabnzbd.persistence.downloads.existingClaim | default (printf "%s-sabnzbd-downloads" .Release.Name) }}
         {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: sabnzbd
           securityContext:
             {{- toYaml .Values.sabnzbd.securityContext | nindent 12 }}
           image: "{{ .Values.sabnzbd.image.repository }}:{{ .Values.sabnzbd.image.tag | default .Chart.AppVersion }}"
@@ -86,6 +91,10 @@ spec:
           {{- if .Values.sabnzbd.persistence.backup.enabled }}
             - mountPath: /config/backups
               name: backup
+          {{- end }}
+          {{- if .Values.sabnzbd.persistence.downloads.enabled }}
+            - mountPath: /config/downloads/incomplete
+              name: downloads
           {{- end }}
           {{- if and .Values.media.enabled .Values.sabnzbd.persistence.enabled }}
             - mountPath: "/media/{{ .Values.media.paths.downloads }}"

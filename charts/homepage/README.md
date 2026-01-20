@@ -43,34 +43,71 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ## Parameters
 
-### Homepage Parameters
+### Homepage parameters
 
-| Name                     | Description                                                          | Value                                |
-| ------------------------ | -------------------------------------------------------------------- | ------------------------------------ |
-| `enabled`                | Whether to enable Homepage                                           | `true`                               |
-| `replicaCount`           | Number of Homepage replicas to deploy                                | `1`                                  |
-| `image.repository`       | Homepage image repository                                            | `ghcr.io/gethomepage/homepage`       |
-| `image.tag`              | Homepage image tag                                                   | `v0.9.15`                            |
-| `image.pullPolicy`       | Image pull policy                                                    | `IfNotPresent`                       |
-| `service.type`           | Service type                                                         | `LoadBalancer`                       |
-| `service.port`           | Service port                                                         | `3000`                               |
-| `ingress.enabled`        | Enable ingress                                                       | `true`                               |
-| `persistence.enabled`    | Enable persistence                                                   | `true`                               |
-| `persistence.size`       | Size of persistent volume                                            | `1Gi`                                |
+| Name                                            | Description                                                                                                                         | Value                          |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| `enabled`                                       | Whether to enable Homepage.                                                                                                         | `true`                         |
+| `replicaCount`                                  | The number of replicas to deploy.                                                                                                   | `1`                            |
+| `image.repository`                              | The Docker repository to pull the image from.                                                                                       | `ghcr.io/gethomepage/homepage` |
+| `image.tag`                                     | The image tag to use.                                                                                                               | `latest`                       |
+| `image.pullPolicy`                              | The logic of image pulling.                                                                                                         | `IfNotPresent`                 |
+| `imagePullSecrets`                              | The image pull secrets to use.                                                                                                      | `[]`                           |
+| `deployment.strategy.type`                      | The deployment strategy to use.                                                                                                     | `Recreate`                     |
+| `serviceAccount.create`                         | Whether to create a service account.                                                                                                | `true`                         |
+| `serviceAccount.annotations`                    | Additional annotations to add to the service account.                                                                               | `{}`                           |
+| `serviceAccount.name`                           | The name of the service account to use. If not set and create is true, a new service account will be created with a generated name. | `""`                           |
+| `podAnnotations`                                | Additional annotations to add to the pod.                                                                                           | `{}`                           |
+| `podSecurityContext`                            | The security context to use for the pod.                                                                                            | `{}`                           |
+| `securityContext`                               | The security context to use for the container.                                                                                      | `{}`                           |
+| `initContainers`                                | Additional init containers to add to the pod.                                                                                       | `[]`                           |
+| `service.type`                                  | The type of service to create.                                                                                                      | `LoadBalancer`                 |
+| `service.port`                                  | The port on which the service will run.                                                                                             | `3000`                         |
+| `service.nodePort`                              | The nodePort to use for the service. Only used if service.type is NodePort.                                                         | `""`                           |
+| `ingress.enabled`                               | Whether to create an ingress for the service.                                                                                       | `false`                        |
+| `ingress.className`                             | The ingress class name to use.                                                                                                      | `""`                           |
+| `ingress.annotations`                           | Additional annotations to add to the ingress.                                                                                       | `{}`                           |
+| `ingress.hosts[0].host`                         | The host to use for the ingress.                                                                                                    | `chart-example.local`          |
+| `ingress.hosts[0].paths[0].path`                | The path to use for the ingress.                                                                                                    | `/`                            |
+| `ingress.hosts[0].paths[0].pathType`            | The path type to use for the ingress.                                                                                               | `ImplementationSpecific`       |
+| `ingress.tls`                                   | The TLS configuration for the ingress.                                                                                              | `[]`                           |
+| `resources`                                     | The resources to use for the pod.                                                                                                   | `{}`                           |
+| `autoscaling.enabled`                           | Whether to enable autoscaling.                                                                                                      | `false`                        |
+| `autoscaling.minReplicas`                       | The minimum number of replicas to scale to.                                                                                         | `1`                            |
+| `autoscaling.maxReplicas`                       | The maximum number of replicas to scale to.                                                                                         | `100`                          |
+| `autoscaling.targetCPUUtilizationPercentage`    | The target CPU utilization percentage to use for autoscaling.                                                                       | `80`                           |
+| `autoscaling.targetMemoryUtilizationPercentage` | The target memory utilization percentage to use for autoscaling.                                                                    | `80`                           |
+| `nodeSelector`                                  | The node selector to use for the pod.                                                                                               | `{}`                           |
+| `tolerations`                                   | The tolerations to use for the pod.                                                                                                 | `[]`                           |
+| `affinity`                                      | The affinity to use for the pod.                                                                                                    | `{}`                           |
+| `env`                                           | Additional environment variables to add to the pod.                                                                                 | `{}`                           |
+| `persistence.enabled`                           | Whether to enable persistence.                                                                                                      | `true`                         |
+| `persistence.storageClass`                      | The storage class to use for the persistence.                                                                                       | `""`                           |
+| `persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                           |
+| `persistence.accessMode`                        | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`                |
+| `persistence.size`                              | The size to use for the persistence.                                                                                                | `1Gi`                          |
+| `persistence.backup.enabled`                    | Whether to enable backup persistence.                                                                                               | `false`                        |
+| `persistence.backup.storageClass`               | The storage class to use for backup persistence.                                                                                    | `cephfs`                       |
+| `persistence.backup.existingClaim`              | The name of an existing claim to use for backup persistence.                                                                        | `""`                           |
+| `persistence.backup.accessMode`                 | The access mode to use for backup persistence.                                                                                      | `ReadWriteMany`                |
+| `persistence.backup.size`                       | The size to use for backup persistence.                                                                                             | `5Gi`                          |
+| `persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                           |
+| `persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                           |
+| `env`                                           | Additional environment variables to add to the pod.                                                                                 | `{}`                           |
 
 ### Homepage Configuration
 
-| Name                              | Description                                     | Value     |
-| --------------------------------- | ----------------------------------------------- | --------- |
-| `config.enableKubernetes`         | Enable Kubernetes integration                   | `true`    |
-| `config.kubernetes.mode`          | Kubernetes mode (cluster or default)            | `cluster` |
-| `config.allowedHosts`             | Comma-separated list of allowed hosts for HOMEPAGE_ALLOWED_HOSTS environment variable | `""`      |
+| Name                      | Description                                                                                                                     | Value     |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `config.enableKubernetes` | Enable Kubernetes integration for service discovery                                                                             | `true`    |
+| `config.kubernetes.mode`  | Mode for Kubernetes integration (cluster or default)                                                                            | `cluster` |
+| `config.allowedHosts`     | Comma-separated list of allowed hosts for the HOMEPAGE_ALLOWED_HOSTS environment variable (e.g., "example.com,www.example.com") | `""`      |
 
 ### RBAC Configuration
 
-| Name          | Description                                                   | Value  |
-| ------------- | ------------------------------------------------------------- | ------ |
-| `rbac.create` | Create RBAC resources for Kubernetes service discovery        | `true` |
+| Name          | Description                                                                      | Value  |
+| ------------- | -------------------------------------------------------------------------------- | ------ |
+| `rbac.create` | Create RBAC resources (ClusterRole and ClusterRoleBinding) for service discovery | `true` |
 
 ## Service Discovery
 
