@@ -413,6 +413,11 @@ sonarr:
 ## @param qbittorrent.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param qbittorrent.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param qbittorrent.persistence.backup.size The size to use for backup persistence.
+## @param qbittorrent.persistence.downloads.enabled Whether to enable a separate PVC for downloads at /config/downloads/incomplete.
+## @param qbittorrent.persistence.downloads.storageClass The storage class to use for the downloads PVC (e.g., ceph-rbd for faster storage).
+## @param qbittorrent.persistence.downloads.existingClaim The name of an existing claim to use for the downloads PVC.
+## @param qbittorrent.persistence.downloads.accessMode The access mode to use for the downloads PVC.
+## @param qbittorrent.persistence.downloads.size The size to use for the downloads PVC.
 ## @param qbittorrent.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param qbittorrent.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -455,14 +460,14 @@ qbittorrent:
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
   service:
+    type: LoadBalancer
     web:
-      type: LoadBalancer
       port: 8080
       nodePort: ""
     bt:
-      type: LoadBalancer
       port: 6881
       nodePort: ""
+
 
   ingress:
     enabled: false
@@ -520,6 +525,12 @@ qbittorrent:
       existingClaim: ""
       accessMode: ReadWriteMany
       size: 5Gi
+    downloads:
+      enabled: false
+      storageClass: ""
+      existingClaim: ""
+      accessMode: ReadWriteOnce
+      size: 100Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -555,11 +566,9 @@ qbittorrent:
     httpProxy:
       enabled: true
       port: 8888
-      type: LoadBalancer
     shadowsocksProxy:
       enabled: true
       port: 8388
-      type: LoadBalancer
     resources: {}
     # limits:
     #   cpu: 100m
@@ -864,15 +873,11 @@ flaresolverr:
 
   affinity: {}
 
-  env: []
-    #- name: LOG_LEVEL
-    #  value: "info"
-    #- name: LOG_HTML
-    #  value: "false"
-    #- name: CAPTCHA_SOLVER
-    #  value: "none"
-    #- name: TZ
-    #  value: "Europe/London"
+  env: {}
+    # LOG_LEVEL: "info"
+    # LOG_HTML: "false"
+    # CAPTCHA_SOLVER: "none"
+    # TZ: "Europe/London"
 
 ## @section Seerr parameters
 
@@ -1918,6 +1923,11 @@ huntarr:
 ## @param sabnzbd.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param sabnzbd.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param sabnzbd.persistence.backup.size The size to use for backup persistence.
+## @param sabnzbd.persistence.downloads.enabled Whether to enable a separate PVC for downloads at /config/downloads/incomplete.
+## @param sabnzbd.persistence.downloads.storageClass The storage class to use for the downloads PVC (e.g., ceph-rbd for faster storage).
+## @param sabnzbd.persistence.downloads.existingClaim The name of an existing claim to use for the downloads PVC.
+## @param sabnzbd.persistence.downloads.accessMode The access mode to use for the downloads PVC.
+## @param sabnzbd.persistence.downloads.size The size to use for the downloads PVC.
 ## @param sabnzbd.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param sabnzbd.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -2020,6 +2030,12 @@ sabnzbd:
       existingClaim: ""
       accessMode: ReadWriteMany
       size: 5Gi
+    downloads:
+      enabled: false
+      storageClass: ""
+      existingClaim: ""
+      accessMode: ReadWriteOnce
+      size: 100Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -2340,11 +2356,11 @@ emby:
 
 ## @section Acestream parameters
 
-## @param acestream.enabled Whether to enable Acestream Scraper.
+## @param acestream.enabled Whether to enable Acestream Engine.
 ## @param acestream.replicaCount The number of replicas to deploy.
-## @param acestream.image.repository The Docker repository to pull the Acestream Scraper image from.
-## @param acestream.image.tag The image tag to use for Acestream Scraper.
-## @param acestream.image.pullPolicy The logic of image pulling for Acestream Scraper.
+## @param acestream.image.repository The Docker repository to pull the Acestream Engine image from.
+## @param acestream.image.tag The image tag to use for Acestream Engine.
+## @param acestream.image.pullPolicy The logic of image pulling for Acestream Engine.
 ## @param acestream.imagePullSecrets The image pull secrets to use.
 ## @param acestream.deployment.strategy.type The deployment strategy to use.
 ## @param acestream.serviceAccount.create Whether to create a service account.
@@ -2354,42 +2370,21 @@ emby:
 ## @param acestream.podSecurityContext The security context to use for the pod.
 ## @param acestream.securityContext The security context to use for the container.
 ## @param acestream.initContainers Additional init containers to add to the pod.
-## @param acestream.features.acexy.enabled Whether to enable Acexy proxy service and expose its port (controls service creation, not the container feature).
-## @param acestream.features.zeronet.enabled Whether to enable ZeroNet services and expose their ports (controls service creation, not the container feature).
-## @param acestream.features.acestreamEngine.enabled Whether to enable Acestream engine P2P service and expose its port (controls service creation, not the container feature).
-## @param acestream.env.TZ The timezone to use for the application.
-## @param acestream.env.ENABLE_TOR Whether to enable TOR for ZeroNet connections (string: "true" or "false").
-## @param acestream.env.ENABLE_ACEXY Whether to enable the Acexy proxy server in the container (string: "true" or "false").
-## @param acestream.env.ENABLE_ACESTREAM_ENGINE Whether to enable the internal Acestream engine in the container (string: "true" or "false").
-## @param acestream.env.ACESTREAM_HTTP_PORT The HTTP port for the Acestream engine.
-## @param acestream.env.FLASK_PORT The port for the Flask application.
-## @param acestream.env.ACEXY_LISTEN_ADDR The address on which Acexy proxy will listen.
-## @param acestream.env.ACEXY_HOST The host for Acexy to connect to the Acestream engine.
-## @param acestream.env.ACEXY_PORT The port for Acexy to connect to the Acestream engine.
-## @param acestream.env.ALLOW_REMOTE_ACCESS Whether to allow remote access to the application.
-## @param acestream.env.ACEXY_NO_RESPONSE_TIMEOUT Timeout for Acexy when no response is received.
-## @param acestream.env.ACEXY_BUFFER_SIZE Buffer size for Acexy proxy.
-## @param acestream.env.ACESTREAM_HTTP_HOST The host for Acestream HTTP connections.
-## @param acestream.service.type The type of service to create (applies to all ports).
-## @param acestream.service.flask.port The port on which the Flask service will run.
-## @param acestream.service.flask.nodePort The nodePort to use for the Flask service. Only used if service.type is NodePort.
-## @param acestream.service.acexy.port The port on which the Acexy proxy service will run.
-## @param acestream.service.acexy.nodePort The nodePort to use for the Acexy proxy service. Only used if service.type is NodePort.
-## @param acestream.service.p2p.port The port on which the Acestream P2P service will run.
-## @param acestream.service.p2p.nodePort The nodePort to use for the Acestream P2P service. Only used if service.type is NodePort.
-## @param acestream.service.zeronetUI.port The port on which the ZeroNet UI service will run.
-## @param acestream.service.zeronetUI.nodePort The nodePort to use for the ZeroNet UI service. Only used if service.type is NodePort.
-## @param acestream.service.zeronetPeer1.port The port on which the ZeroNet peer service will run.
-## @param acestream.service.zeronetPeer1.nodePort The nodePort to use for the ZeroNet peer service. Only used if service.type is NodePort.
-## @param acestream.service.zeronetPeer2.port The port on which the ZeroNet peer service will run.
-## @param acestream.service.zeronetPeer2.nodePort The nodePort to use for the ZeroNet peer service. Only used if service.type is NodePort.
-## @param acestream.service.dispatcharr.port The port on which the Dispatcharr service will run.
-## @param acestream.service.dispatcharr.nodePort The nodePort to use for the Dispatcharr service. Only used if service.type is NodePort.
+## @param acestream.env Additional environment variables to add to the acestream engine container.
 ## @param acestream.dispatcharr.image.repository The Docker repository to pull the Dispatcharr image from.
 ## @param acestream.dispatcharr.image.tag The image tag to use for Dispatcharr.
 ## @param acestream.dispatcharr.image.pullPolicy The logic of image pulling for Dispatcharr.
 ## @param acestream.dispatcharr.env Additional environment variables for Dispatcharr.
 ## @param acestream.dispatcharr.resources Resource limits and requests for the Dispatcharr container.
+## @param acestream.service.http.type The type of service to create for Acestream HTTP.
+## @param acestream.service.http.port The port on which the Acestream HTTP service will run.
+## @param acestream.service.http.nodePort The nodePort to use for the Acestream HTTP service. Only used if service.type is NodePort.
+## @param acestream.service.udp.type The type of service to create for Acestream UDP.
+## @param acestream.service.udp.port The port on which the Acestream UDP service will run.
+## @param acestream.service.udp.nodePort The nodePort to use for the Acestream UDP service. Only used if service.type is NodePort.
+## @param acestream.service.dispatcharr.type The type of service to create for Dispatcharr.
+## @param acestream.service.dispatcharr.port The port on which the Dispatcharr service will run.
+## @param acestream.service.dispatcharr.nodePort The nodePort to use for the Dispatcharr service. Only used if service.type is NodePort.
 ## @param acestream.ingress.enabled Whether to create an ingress for the service.
 ## @param acestream.ingress.className The ingress class name to use.
 ## @param acestream.ingress.annotations Additional annotations to add to the ingress.
@@ -2397,7 +2392,7 @@ emby:
 ## @param acestream.ingress.hosts[0].paths[0].path The path to use for the ingress.
 ## @param acestream.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param acestream.ingress.tls The TLS configuration for the ingress.
-## @param acestream.resources The resources to use for the pod.
+## @param acestream.resources The resources to use for the acestream engine container.
 ## @param acestream.runtimeClassName The runtime class to use for the pod.
 ## @param acestream.autoscaling.enabled Whether to enable autoscaling.
 ## @param acestream.autoscaling.minReplicas The minimum number of replicas to scale to.
@@ -2412,11 +2407,6 @@ emby:
 ## @param acestream.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param acestream.persistence.accessMode The access mode to use for the persistence.
 ## @param acestream.persistence.size The size to use for the persistence.
-## @param acestream.persistence.backup.enabled Whether to enable backup persistence for the config.
-## @param acestream.persistence.backup.storageClass The storage class to use for backup persistence.
-## @param acestream.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
-## @param acestream.persistence.backup.accessMode The access mode to use for backup persistence.
-## @param acestream.persistence.backup.size The size to use for backup persistence.
 ## @param acestream.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param acestream.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param acestream.gluetun.enabled Whether to enable Gluetun VPN sidecar for routing acestream traffic through a VPN.
@@ -2430,8 +2420,10 @@ emby:
 ## @param acestream.gluetun.env.SERVER_REGIONS Region for server selection (e.g., for VPN providers that use regions instead of countries).
 ## @param acestream.gluetun.httpProxy.enabled Whether to enable HTTP proxy server in Gluetun.
 ## @param acestream.gluetun.httpProxy.port The port on which the HTTP proxy server will listen.
+## @param acestream.gluetun.httpProxy.type The type of service to create for the HTTP proxy.
 ## @param acestream.gluetun.shadowsocksProxy.enabled Whether to enable Shadowsocks proxy server in Gluetun.
 ## @param acestream.gluetun.shadowsocksProxy.port The port on which the Shadowsocks proxy server will listen.
+## @param acestream.gluetun.shadowsocksProxy.type The type of service to create for the Shadowsocks proxy.
 ## @param acestream.gluetun.resources Resource limits and requests for the Gluetun container.
 ##
 acestream:
@@ -2439,7 +2431,7 @@ acestream:
   replicaCount: 1
 
   image:
-    repository: pipepito/acestream-scraper
+    repository: wafy80/acestream
     pullPolicy: IfNotPresent
     tag: "latest"
 
@@ -2472,37 +2464,18 @@ acestream:
     #   image: busybox
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
-  features:
-    acexy:
-      enabled: true
-    zeronet:
-      enabled: false
-    acestreamEngine:
-      enabled: true
-
-  env:
-    TZ: "Europe/Madrid"
-    ENABLE_TOR: "false"
-    ENABLE_ACEXY: "true"
-    ENABLE_ACESTREAM_ENGINE: "true"
-    ACESTREAM_HTTP_PORT: "6878"
-    FLASK_PORT: "8000"
-    ACEXY_LISTEN_ADDR: ":8080"
-    ACEXY_HOST: "localhost"
-    ACEXY_PORT: "6878"
-    ALLOW_REMOTE_ACCESS: "no"
-    ACEXY_NO_RESPONSE_TIMEOUT: "15s"
-    ACEXY_BUFFER_SIZE: "5MiB"
-    ACESTREAM_HTTP_HOST: "localhost"
+  env: {}
+    # TZ: "Europe/Madrid"
+    # MY_VAR: "value"
 
   dispatcharr:
     image:
       repository: ghcr.io/dispatcharr/dispatcharr
       pullPolicy: IfNotPresent
       tag: "latest"
-    env: []
-      # - name: MY_ENV_VAR
-      #   value: my-value
+    env: {}
+      # TZ: "Europe/Madrid"
+      # MY_VAR: "value"
     resources: {}
       # limits:
       #   cpu: 100m
@@ -2513,27 +2486,16 @@ acestream:
 
   service:
     type: LoadBalancer
-    flask:
-      port: 8000
+    http:
+      port: 6878
       nodePort: ""
-    acexy:
-      port: 8080
-      nodePort: ""
-    p2p:
+    udp:
       port: 8621
-      nodePort: ""
-    zeronetUI:
-      port: 43110
-      nodePort: ""
-    zeronetPeer1:
-      port: 43111
-      nodePort: ""
-    zeronetPeer2:
-      port: 26552
       nodePort: ""
     dispatcharr:
       port: 9191
       nodePort: ""
+
 
   ingress:
     enabled: false
@@ -2580,12 +2542,6 @@ acestream:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 1Gi
-    backup:
-      enabled: false
-      storageClass: "cephfs"
-      existingClaim: ""
-      accessMode: ReadWriteMany
-      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
 

@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-qbittorrent-web
+  name: {{ .Release.Name }}-qbittorrent
   labels:
     app.kubernetes.io/name: qbittorrent
     app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
@@ -10,101 +10,51 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
-  type: {{ .Values.qbittorrent.service.web.type | default "ClusterIP" }}
+  type: {{ .Values.qbittorrent.service.type | default "ClusterIP" }}
   ports:
+    # Web UI port (always enabled)
     - port: {{ .Values.qbittorrent.service.web.port | default 8080 }}
       targetPort: http
       protocol: TCP
       name: http
-  {{- if (and (eq .Values.qbittorrent.service.web.type "NodePort") (not (empty .Values.qbittorrent.service.web.nodePort))) }}
+      {{- if (and (eq .Values.qbittorrent.service.type "NodePort") (not (empty .Values.qbittorrent.service.web.nodePort))) }}
       nodePort: {{ .Values.qbittorrent.service.web.nodePort }}
-  {{- end }}
-  selector:
-    app.kubernetes.io/name: qbittorrent
-    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Release.Name }}-qbittorrent-bt
-  labels:
-    app.kubernetes.io/name: qbittorrent
-    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-spec:
-  type: {{ .Values.qbittorrent.service.bt.type | default "ClusterIP" }}
-  ports:
+      {{- end }}
+    # BitTorrent TCP port (always enabled)
     - port: {{ .Values.qbittorrent.service.bt.port | default 6881 }}
       targetPort: bittorrent-tcp
       protocol: TCP
       name: bittorrent-tcp
-  {{- if (and (eq .Values.qbittorrent.service.bt.type "NodePort") (not (empty .Values.qbittorrent.service.bt.nodePort))) }}
+      {{- if (and (eq .Values.qbittorrent.service.type "NodePort") (not (empty .Values.qbittorrent.service.bt.nodePort))) }}
       nodePort: {{ .Values.qbittorrent.service.bt.nodePort }}
-  {{- end }}
+      {{- end }}
+    # BitTorrent UDP port (always enabled)
     - port: {{ .Values.qbittorrent.service.bt.port | default 6881 }}
       targetPort: bittorrent-udp
       protocol: UDP
       name: bittorrent-udp
-  {{- if (and (eq .Values.qbittorrent.service.bt.type "NodePort") (not (empty .Values.qbittorrent.service.bt.nodePort))) }}
+      {{- if (and (eq .Values.qbittorrent.service.type "NodePort") (not (empty .Values.qbittorrent.service.bt.nodePort))) }}
       nodePort: {{ .Values.qbittorrent.service.bt.nodePort }}
-  {{- end }}
-  selector:
-    app.kubernetes.io/name: qbittorrent
-    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
-{{- end }}
-{{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.httpProxy.enabled }}
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Release.Name }}-gluetun-http
-  labels:
-    app.kubernetes.io/name: qbittorrent
-    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-    app.kubernetes.io/component: http-proxy
-spec:
-  type: {{ .Values.qbittorrent.gluetun.httpProxy.type | default "LoadBalancer" }}
-  ports:
+      {{- end }}
+    {{- if and .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.httpProxy.enabled }}
+    # Gluetun HTTP proxy port
     - port: {{ .Values.qbittorrent.gluetun.httpProxy.port | default 8888 }}
       targetPort: http-proxy
       protocol: TCP
       name: http-proxy
-  selector:
-    app.kubernetes.io/name: qbittorrent
-    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
-{{- end }}
-{{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.shadowsocksProxy.enabled }}
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Release.Name }}-gluetun-shadowsocks
-  labels:
-    app.kubernetes.io/name: qbittorrent
-    app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-    app.kubernetes.io/component: shadowsocks
-spec:
-  type: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.type | default "LoadBalancer" }}
-  ports:
+    {{- end }}
+    {{- if and .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.shadowsocksProxy.enabled }}
+    # Gluetun Shadowsocks TCP port
     - port: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port | default 8388 }}
       targetPort: shadowsocks-tcp
       protocol: TCP
       name: shadowsocks-tcp
+    # Gluetun Shadowsocks UDP port
     - port: {{ .Values.qbittorrent.gluetun.shadowsocksProxy.port | default 8388 }}
       targetPort: shadowsocks-udp
       protocol: UDP
       name: shadowsocks-udp
+    {{- end }}
   selector:
     app.kubernetes.io/name: qbittorrent
     app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent

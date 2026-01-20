@@ -12,60 +12,22 @@ metadata:
 spec:
   type: {{ .Values.acestream.service.type | default "ClusterIP" }}
   ports:
-    # Flask port (always enabled)
-    - port: {{ .Values.acestream.service.flask.port | default 8000 }}
-      targetPort: flask
+    # HTTP port (always enabled)
+    - port: {{ .Values.acestream.service.http.port | default 6878 }}
+      targetPort: http
       protocol: TCP
-      name: flask
-      {{- if (and (eq .Values.acestream.service.type "NodePort") (not (empty .Values.acestream.service.flask.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.flask.nodePort }}
+      name: http
+      {{- if (and (eq .Values.acestream.service.type "NodePort") (not (empty .Values.acestream.service.http.nodePort))) }}
+      nodePort: {{ .Values.acestream.service.http.nodePort }}
       {{- end }}
-    {{- if .Values.acestream.features.acexy.enabled }}
-    # Acexy proxy port
-    - port: {{ .Values.acestream.service.acexy.port | default 8080 }}
-      targetPort: acexy
-      protocol: TCP
-      name: acexy
-      {{- if (and (eq .Values.acestream.service.type "NodePort") (not (empty .Values.acestream.service.acexy.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.acexy.nodePort }}
+    # UDP port (always enabled)
+    - port: {{ .Values.acestream.service.udp.port | default 8621 }}
+      targetPort: udp
+      protocol: UDP
+      name: udp
+      {{- if (and (eq .Values.acestream.service.type "NodePort") (not (empty .Values.acestream.service.udp.nodePort))) }}
+      nodePort: {{ .Values.acestream.service.udp.nodePort }}
       {{- end }}
-    {{- end }}
-    {{- if .Values.acestream.features.acestreamEngine.enabled }}
-    # Acestream P2P port
-    - port: {{ .Values.acestream.service.p2p.port | default 8621 }}
-      targetPort: p2p
-      protocol: TCP
-      name: p2p
-      {{- if (and (eq .Values.acestream.service.type "NodePort") (not (empty .Values.acestream.service.p2p.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.p2p.nodePort }}
-      {{- end }}
-    {{- end }}
-    {{- if .Values.acestream.features.zeronet.enabled }}
-    # ZeroNet UI port
-    - port: {{ .Values.acestream.service.zeronetUI.port | default 43110 }}
-      targetPort: zeronet-ui
-      protocol: TCP
-      name: zeronet-ui
-      {{- if (and (eq .Values.acestream.service.type "NodePort") (not (empty .Values.acestream.service.zeronetUI.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.zeronetUI.nodePort }}
-      {{- end }}
-    # ZeroNet Peer1 port
-    - port: {{ .Values.acestream.service.zeronetPeer1.port | default 43111 }}
-      targetPort: zeronet-peer1
-      protocol: TCP
-      name: zeronet-peer1
-      {{- if (and (eq .Values.acestream.service.type "NodePort") (not (empty .Values.acestream.service.zeronetPeer1.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.zeronetPeer1.nodePort }}
-      {{- end }}
-    # ZeroNet Peer2 port
-    - port: {{ .Values.acestream.service.zeronetPeer2.port | default 26552 }}
-      targetPort: zeronet-peer2
-      protocol: TCP
-      name: zeronet-peer2
-      {{- if (and (eq .Values.acestream.service.type "NodePort") (not (empty .Values.acestream.service.zeronetPeer2.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.zeronetPeer2.nodePort }}
-      {{- end }}
-    {{- end }}
     # Dispatcharr port (always enabled)
     - port: {{ .Values.acestream.service.dispatcharr.port | default 9191 }}
       targetPort: dispatcharr
