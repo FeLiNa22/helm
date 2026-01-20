@@ -28,6 +28,32 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: {{ .Release.Name }}-acestream-udp
+  labels:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: udp
+spec:
+  type: {{ .Values.acestream.service.udp.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.acestream.service.udp.port | default 8621 }}
+      targetPort: udp
+      protocol: UDP
+      name: udp
+  {{- if (and (eq .Values.acestream.service.udp.type "NodePort") (not (empty .Values.acestream.service.udp.nodePort))) }}
+      nodePort: {{ .Values.acestream.service.udp.nodePort }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: {{ .Release.Name }}-acestream-dispatcharr
   labels:
     app.kubernetes.io/name: acestream

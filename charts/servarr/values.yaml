@@ -2381,6 +2381,9 @@ emby:
 ## @param acestream.service.http.type The type of service to create for Acestream HTTP.
 ## @param acestream.service.http.port The port on which the Acestream HTTP service will run.
 ## @param acestream.service.http.nodePort The nodePort to use for the Acestream HTTP service. Only used if service.type is NodePort.
+## @param acestream.service.udp.type The type of service to create for Acestream UDP.
+## @param acestream.service.udp.port The port on which the Acestream UDP service will run.
+## @param acestream.service.udp.nodePort The nodePort to use for the Acestream UDP service. Only used if service.type is NodePort.
 ## @param acestream.service.dispatcharr.type The type of service to create for Dispatcharr.
 ## @param acestream.service.dispatcharr.port The port on which the Dispatcharr service will run.
 ## @param acestream.service.dispatcharr.nodePort The nodePort to use for the Dispatcharr service. Only used if service.type is NodePort.
@@ -2430,7 +2433,7 @@ acestream:
   replicaCount: 1
 
   image:
-    repository: smarquard/acestream
+    repository: wafy80/acestream
     pullPolicy: IfNotPresent
     tag: "latest"
 
@@ -2487,6 +2490,10 @@ acestream:
     http:
       type: LoadBalancer
       port: 6878
+      nodePort: ""
+    udp:
+      type: LoadBalancer
+      port: 8621
       nodePort: ""
     dispatcharr:
       type: LoadBalancer
