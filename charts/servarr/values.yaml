@@ -2365,7 +2365,7 @@ emby:
 ## @param acestream.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param acestream.podAnnotations Additional annotations to add to the pod.
 ## @param acestream.podSecurityContext The security context to use for the pod.
-## @param acestream.securityContext The security context to use for the container.
+## @param acestream.securityContext.privileged Whether to run the acestream-engine container in privileged mode to allow multicast operations.
 ## @param acestream.initContainers Additional init containers to add to the pod.
 ## @param acestream.env Additional environment variables to add to the acestream engine container.
 ## @param acestream.dispatcharr.image.repository The Docker repository to pull the Dispatcharr image from.
@@ -2444,7 +2444,8 @@ acestream:
   podSecurityContext: {}
     # fsGroup: 2000
 
-  securityContext: {}
+  securityContext:
+    privileged: true
     # capabilities:
     #   drop:
     #   - ALL
