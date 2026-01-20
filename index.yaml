@@ -439,6 +439,28 @@ entries:
   homepage:
   - apiVersion: v2
     appVersion: v0.9.15
+    created: "2026-01-20T00:05:39.125605228Z"
+    description: Homepage Dashboard Helm Chart with Kubernetes Service Discovery
+    digest: 5ecd634f976d7c56cd6adc370d42abe941ea3211771c3ae69d8584932d1f4859
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/homepage
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - homepage
+    - dashboard
+    - service-discovery
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: homepage
+    sources:
+    - https://github.com/gethomepage/homepage
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/homepage-1.0.5/homepage-1.0.5.tgz
+    version: 1.0.5
+  - apiVersion: v2
+    appVersion: v0.9.15
     created: "2026-01-13T01:54:54.295468046Z"
     description: Homepage Dashboard Helm Chart with Kubernetes Service Discovery
     digest: 4403336e19c623aadb6ccc70f276b6337184a825451f0932317d2af25ad144cd
@@ -1183,6 +1205,28 @@ entries:
   searxng:
   - apiVersion: v2
     appVersion: 1.0.1
+    created: "2026-01-20T00:05:39.269720897Z"
+    description: Raul SearXNG Helm Chart
+    digest: 1b0d7862eeae70074304a49d0302b9e3fc24d6ff04feb2b783f32f7acec09258
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/searxng
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - searxng
+    - metasearch
+    - search
+    - privacy
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: searxng
+    sources:
+    - https://github.com/searxng/searxng
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/searxng-1.0.3/searxng-1.0.3.tgz
+    version: 1.0.3
+  - apiVersion: v2
+    appVersion: 1.0.1
     created: "2025-12-16T01:50:41.202638991Z"
     description: Raul SearXNG Helm Chart
     digest: 23532a0f7a2d67a7e2f6bd712abf5d3e8fc7aab9119b6dcc34ba3c3214b611a9
@@ -1226,6 +1270,40 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/searxng-1.0.1/searxng-1.0.1.tgz
     version: 1.0.1
   servarr:
+  - apiVersion: v2
+    appVersion: 1.2.3
+    created: "2026-01-20T00:05:39.422763808Z"
+    description: Raul Servarr Helm Chart
+    digest: 60a504215be2b5d627fca6a2c047ba17d91ad391d685bccd43dfebd4dd743dd0
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/servarr
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - bazarr
+    - lidarr
+    - sonarr
+    - radarr
+    - flaresolverr
+    - jellyfin
+    - seerr
+    - qbittorrent
+    - prowlarr
+    - cleanuparr
+    - huntarr
+    - sabnzbd
+    - frigate
+    - plex
+    - emby
+    - acestream
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: servarr
+    sources:
+    - https://github.com/Servarr
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/servarr-1.3.15/servarr-1.3.15.tgz
+    version: 1.3.15
   - apiVersion: v2
     appVersion: 1.2.3
     created: "2026-01-19T20:48:16.938157446Z"
@@ -2512,4 +2590,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-01-19T20:48:16.938451617Z"
+generated: "2026-01-20T00:05:39.423056804Z"
