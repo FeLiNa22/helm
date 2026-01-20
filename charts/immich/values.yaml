@@ -181,12 +181,20 @@ persistence:
 ## @param redis.enabled Whether to deploy the Redis subchart.
 ## @param redis.architecture Redis deployment architecture: 'standalone' or 'replication'.
 ## @param redis.auth.enabled Enable or disable authentication for Redis.
+## @param redis.external.host Hostname of external Redis (when redis.enabled=false).
+## @param redis.external.port Port of external Redis.
+## @param redis.external.existingSecret Secret name for external Redis password.
 ##
 redis:
   enabled: true
   architecture: standalone
   auth:
     enabled: false
+  # External Redis configuration (used when redis.enabled=false)
+  external:
+    host: ""
+    port: 6379
+    existingSecret: ""
 
 ## @section PostgreSQL parameters
 ## PostgreSQL with pgvector/vectorchord extension is required for Immich
@@ -204,6 +212,12 @@ redis:
 ## @param postgresql.primary.initdb.scripts Initialization scripts to run at startup.
 ## @param postgresql.primary.persistence.enabled Whether to enable persistence for PostgreSQL.
 ## @param postgresql.primary.persistence.size Size of the PostgreSQL persistence volume.
+## @param postgresql.external.host Hostname of external PostgreSQL (when postgresql.enabled=false).
+## @param postgresql.external.port Port of external PostgreSQL.
+## @param postgresql.external.database Database name of external PostgreSQL.
+## @param postgresql.external.username Username of external PostgreSQL.
+## @param postgresql.external.existingSecret Secret name for external PostgreSQL password.
+## @param postgresql.external.secretKey Key in the secret for the password.
 ##
 postgresql:
   enabled: true
@@ -214,7 +228,7 @@ postgresql:
     password: ""
     postgresPassword: ""
     existingSecret: ""
-  # Use Bitnami PostgreSQL with pgvector
+  # Use PostgreSQL with pgvecto-rs extension
   image:
     registry: docker.io
     repository: tensorchord/pgvecto-rs
@@ -229,3 +243,11 @@ postgresql:
     persistence:
       enabled: true
       size: 10Gi
+  # External PostgreSQL configuration (used when postgresql.enabled=false)
+  external:
+    host: ""
+    port: 5432
+    database: "immich"
+    username: "immich"
+    existingSecret: ""
+    secretKey: "password"
