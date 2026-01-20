@@ -377,12 +377,11 @@ sonarr:
 ## @param qbittorrent.podSecurityContext The security context to use for the pod.
 ## @param qbittorrent.securityContext The security context to use for the container.
 ## @param qbittorrent.initContainers Additional init containers to add to the pod.
-## @param qbittorrent.service.web.type The type of service to create.
+## @param qbittorrent.service.type The type of service to create (applies to all ports).
 ## @param qbittorrent.service.web.port The port on which the service will run.
-## @param qbittorrent.service.web.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
-## @param qbittorrent.service.bt.type The type of service to create.
-## @param qbittorrent.service.bt.port The port on which the service will run.
-## @param qbittorrent.service.bt.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param qbittorrent.service.web.nodePort The nodePort to use for the web service. Only used if service.type is NodePort.
+## @param qbittorrent.service.bt.port The port on which the bittorrent service will run.
+## @param qbittorrent.service.bt.nodePort The nodePort to use for the bittorrent service. Only used if service.type is NodePort.
 ## @param qbittorrent.ingress.enabled Whether to create an ingress for the service.
 ## @param qbittorrent.ingress.className The ingress class name to use.
 ## @param qbittorrent.ingress.annotations Additional annotations to add to the ingress.
@@ -545,10 +544,8 @@ qbittorrent:
   ## @param qbittorrent.gluetun.env.SERVER_REGIONS Region for server selection (e.g., for VPN providers that use regions instead of countries).
   ## @param qbittorrent.gluetun.httpProxy.enabled Whether to enable HTTP proxy server in Gluetun.
   ## @param qbittorrent.gluetun.httpProxy.port The port on which the HTTP proxy server will listen.
-  ## @param qbittorrent.gluetun.httpProxy.type The type of service to create for the HTTP proxy.
   ## @param qbittorrent.gluetun.shadowsocksProxy.enabled Whether to enable Shadowsocks proxy server in Gluetun.
   ## @param qbittorrent.gluetun.shadowsocksProxy.port The port on which the Shadowsocks proxy server will listen.
-  ## @param qbittorrent.gluetun.shadowsocksProxy.type The type of service to create for the Shadowsocks proxy.
   ## @param qbittorrent.gluetun.resources Resource limits and requests for the Gluetun container.
   gluetun:
     enabled: false
@@ -2376,13 +2373,11 @@ emby:
 ## @param acestream.dispatcharr.image.pullPolicy The logic of image pulling for Dispatcharr.
 ## @param acestream.dispatcharr.env Additional environment variables for Dispatcharr.
 ## @param acestream.dispatcharr.resources Resource limits and requests for the Dispatcharr container.
-## @param acestream.service.http.type The type of service to create for Acestream HTTP.
+## @param acestream.service.type The type of service to create (applies to all ports).
 ## @param acestream.service.http.port The port on which the Acestream HTTP service will run.
 ## @param acestream.service.http.nodePort The nodePort to use for the Acestream HTTP service. Only used if service.type is NodePort.
-## @param acestream.service.udp.type The type of service to create for Acestream UDP.
 ## @param acestream.service.udp.port The port on which the Acestream UDP service will run.
 ## @param acestream.service.udp.nodePort The nodePort to use for the Acestream UDP service. Only used if service.type is NodePort.
-## @param acestream.service.dispatcharr.type The type of service to create for Dispatcharr.
 ## @param acestream.service.dispatcharr.port The port on which the Dispatcharr service will run.
 ## @param acestream.service.dispatcharr.nodePort The nodePort to use for the Dispatcharr service. Only used if service.type is NodePort.
 ## @param acestream.ingress.enabled Whether to create an ingress for the service.
@@ -2420,10 +2415,8 @@ emby:
 ## @param acestream.gluetun.env.SERVER_REGIONS Region for server selection (e.g., for VPN providers that use regions instead of countries).
 ## @param acestream.gluetun.httpProxy.enabled Whether to enable HTTP proxy server in Gluetun.
 ## @param acestream.gluetun.httpProxy.port The port on which the HTTP proxy server will listen.
-## @param acestream.gluetun.httpProxy.type The type of service to create for the HTTP proxy.
 ## @param acestream.gluetun.shadowsocksProxy.enabled Whether to enable Shadowsocks proxy server in Gluetun.
 ## @param acestream.gluetun.shadowsocksProxy.port The port on which the Shadowsocks proxy server will listen.
-## @param acestream.gluetun.shadowsocksProxy.type The type of service to create for the Shadowsocks proxy.
 ## @param acestream.gluetun.resources Resource limits and requests for the Gluetun container.
 ##
 acestream:
