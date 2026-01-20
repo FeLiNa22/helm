@@ -32,7 +32,7 @@
 ## @param nodeSelector The node selector to use for the pod.
 ## @param tolerations The tolerations to use for the pod.
 ## @param affinity The affinity to use for the pod.
-## @param env Additional environment variables in map format (key: value).
+## @param env.TZ The timezone to use for the pod.
 ##
 replicaCount: 1
 
@@ -125,7 +125,8 @@ env:
 ## @param machineLearning.image.repository The Docker repository for machine learning image.
 ## @param machineLearning.image.pullPolicy The logic of image pulling.
 ## @param machineLearning.image.tag The image tag to use for machine learning.
-## @param machineLearning.env Additional environment variables for machine learning.
+## @param machineLearning.env.MACHINE_LEARNING_WORKERS Number of ML workers to run.
+## @param machineLearning.env.MACHINE_LEARNING_WORKER_TIMEOUT ML worker timeout in seconds.
 ## @param machineLearning.resources The resources to use for machine learning pod.
 ## @param machineLearning.persistence.enabled Whether to enable persistence for ML cache.
 ## @param machineLearning.persistence.storageClass The storage class for ML cache.
@@ -209,7 +210,7 @@ redis:
 ## @param postgresql.image.registry PostgreSQL image registry.
 ## @param postgresql.image.repository PostgreSQL image repository.
 ## @param postgresql.image.tag PostgreSQL image tag.
-## @param postgresql.primary.initdb.scripts Initialization scripts to run at startup.
+## @param postgresql.primary.initdb.scripts.init-extensions.sql SQL script to initialize PostgreSQL extensions.
 ## @param postgresql.primary.persistence.enabled Whether to enable persistence for PostgreSQL.
 ## @param postgresql.primary.persistence.size Size of the PostgreSQL persistence volume.
 ## @param postgresql.external.host Hostname of external PostgreSQL (when postgresql.enabled=false).
