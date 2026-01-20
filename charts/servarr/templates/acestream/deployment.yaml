@@ -77,7 +77,7 @@ spec:
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: 10.43.0.0/16
             - name: FIREWALL_INPUT_PORTS
-              value: "{{ .Values.acestream.service.http.port | default 6878 }},9191"
+              value: "{{ .Values.acestream.service.http.port | default 6878 }},{{ .Values.acestream.service.udp.port | default 8621 }},9191"
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: HTTPPROXY
               value: "on"
@@ -94,6 +94,9 @@ spec:
             - name: http
               containerPort: {{ .Values.acestream.service.http.port | default 6878 }}
               protocol: TCP
+            - name: udp
+              containerPort: {{ .Values.acestream.service.udp.port | default 8621 }}
+              protocol: UDP
             - name: dispatcharr
               containerPort: 9191
               protocol: TCP
@@ -130,6 +133,9 @@ spec:
             - name: http
               containerPort: {{ .Values.acestream.service.http.port | default 6878 }}
               protocol: TCP
+            - name: udp
+              containerPort: {{ .Values.acestream.service.udp.port | default 8621 }}
+              protocol: UDP
         {{- end }}
           {{- if .Values.acestream.env }}
           env:
