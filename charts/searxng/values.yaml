@@ -65,9 +65,8 @@ replicaCount: 1
 
 imagePullSecrets: []
 
-env: []
-  # - name: TZ
-  #   value: "Europe/London"
+env: {}
+  # TZ: "Europe/London"
 
 podAnnotations: {}
 podLabels: {}
