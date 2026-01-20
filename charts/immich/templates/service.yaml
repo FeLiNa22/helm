@@ -1,24 +1,21 @@
-{{- if .Values.enabled }}
+{{- $fullName := include "immich.fullname" . -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ $fullName }}-server
   labels:
-    app.kubernetes.io/name: immich
-    app.kubernetes.io/instance: {{ .Release.Name | quote }}
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: server
 spec:
-  type: {{ .Values.service.type | default "ClusterIP" }}
+  type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port | default 2283 }}
+    - port: {{ .Values.service.port }}
       targetPort: http
       protocol: TCP
       name: http
-{{ if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.nodePort))) }}
-      nodePort: {{.Values.service.nodePort}}
-{{ end }}
+      {{- if and (eq .Values.service.type "NodePort") .Values.service.nodePort }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
   selector:
-    app.kubernetes.io/name: immich
-    app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
+    {{- include "immich.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: server

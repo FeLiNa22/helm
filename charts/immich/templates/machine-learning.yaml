@@ -1,0 +1,109 @@
+{{- if .Values.machineLearning.enabled }}
+{{- $fullName := include "immich.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullName }}-machine-learning
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: machine-learning
+spec:
+  replicas: {{ .Values.machineLearning.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "immich.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: machine-learning
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "immich.labels" . | nindent 8 }}
+        app.kubernetes.io/component: machine-learning
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "immich.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: cache
+          {{- if .Values.machineLearning.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-ml-cache
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      containers:
+        - name: machine-learning
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.machineLearning.image.repository }}:{{ .Values.machineLearning.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.machineLearning.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /cache
+              name: cache
+          ports:
+            - name: http
+              containerPort: 3003
+              protocol: TCP
+          env:
+            {{- range $k, $v := .Values.machineLearning.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.machineLearning.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-machine-learning
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: machine-learning
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3003
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "immich.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: machine-learning
+{{- end }}
