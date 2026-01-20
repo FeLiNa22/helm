@@ -121,13 +121,6 @@ spec:
             {{- toYaml .Values.acestream.securityContext | nindent 12 }}
           image: "{{ .Values.acestream.image.repository }}:{{ .Values.acestream.image.tag }}"
           imagePullPolicy: {{ .Values.acestream.image.pullPolicy }}
-          volumeMounts:
-            - mountPath: /srv/acestream
-              name: config
-              subPath: acestream
-          {{- if .Values.acestream.persistence.additionalMounts }}
-            {{- .Values.acestream.persistence.additionalMounts | toYaml | nindent 12 }}
-          {{- end }}
         {{- if not .Values.acestream.gluetun.enabled }}
           ports:
             - name: http
