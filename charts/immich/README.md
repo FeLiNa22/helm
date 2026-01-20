@@ -6,19 +6,17 @@ This Helm chart deploys Immich, a high performance self-hosted photo and video m
 
 - Kubernetes 1.20+
 - Helm 3.0+
-- CloudNativePG operator must be installed in the cluster (for database management)
-
-## Installing the CloudNativePG Operator
-
-If you don't have the CloudNativePG operator installed:
-
-```bash
-kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.24/releases/cnpg-1.24.1.yaml
-```
+- PV provisioner support in the underlying infrastructure (for persistence)
 
 ## Installation
 
+Add the chart dependencies and install:
+
 ```bash
+# Update dependencies
+helm dependency update ./immich
+
+# Install the chart
 helm install immich ./immich
 ```
 
@@ -26,93 +24,151 @@ helm install immich ./immich
 
 See `values.yaml` for configuration options.
 
-### Database Configuration
+### Architecture
 
-This chart uses CloudNativePG to deploy a PostgreSQL database with the vectorchord extension required by Immich. The database is automatically configured with the necessary extensions.
+This chart deploys the following components:
 
-Key database configuration options:
-- `database.enabled`: Enable/disable the CloudNativePG database (default: true)
-- `database.instances`: Number of PostgreSQL replicas (default: 1)
-- `database.storage.size`: Storage size for the database (default: 10Gi)
-- `database.image.repository`: PostgreSQL image with vectorchord extension
+1. **Immich Server** - The main application server
+2. **Machine Learning** - ML service for face recognition and smart search (optional)
+3. **PostgreSQL** - Database with pgvector extension (via Bitnami subchart)
+4. **Redis** - Cache and job queue (via Bitnami subchart)
 
-If you want to use an external database, set `database.enabled: false` and configure the database connection via the `env` section.
+### Using External Services
+
+If you want to use external PostgreSQL or Redis instances, you can disable the subcharts:
+
+```yaml
+# values.yaml
+postgresql:
+  enabled: false
+  external:
+    host: "your-postgresql-host"
+    port: 5432
+    database: "immich"
+    username: "immich"
+    existingSecret: "your-postgresql-secret"
+    secretKey: "password"
+
+redis:
+  enabled: false
+  external:
+    host: "your-redis-host"
+    port: 6379
+```
 
 ### Storage
 
-You need to configure persistent storage for Immich's library:
-- `persistence.library.enabled`: Enable persistent storage (default: true)
-- `persistence.library.size`: Storage size (default: 10Gi)
-- `persistence.library.existingClaim`: Use an existing PVC (optional)
+Configure persistent storage for Immich's media library:
+
+```yaml
+persistence:
+  library:
+    enabled: true
+    storageClass: "your-storage-class"  # Optional
+    size: 100Gi
+    existingClaim: ""  # Use existing PVC if desired
+```
+
+### Ingress
+
+Enable ingress to expose Immich externally:
+
+```yaml
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+  hosts:
+    - host: immich.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: immich-tls
+      hosts:
+        - immich.example.com
+```
 
 ## Parameters
 
-### Immich parameters
+### Immich Server parameters
 
-| Name                                            | Description                                                                                                                         | Value                                         |
-| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| `enabled`                                       | Whether to enable Immich.                                                                                                           | `true`                                        |
-| `replicaCount`                                  | The number of replicas to deploy.                                                                                                   | `1`                                           |
-| `image.repository`                              | The Docker repository to pull the image from.                                                                                       | `ghcr.io/immich-app/immich-server`            |
-| `image.pullPolicy`                              | The logic of image pulling.                                                                                                         | `IfNotPresent`                                |
-| `image.tag`                                     | The image tag to use.                                                                                                               | `v2.4.1`                                      |
-| `imagePullSecrets`                              | The image pull secrets to use.                                                                                                      | `[]`                                          |
-| `deployment.strategy.type`                      | The deployment strategy to use.                                                                                                     | `Recreate`                                    |
-| `serviceAccount.create`                         | Whether to create a service account.                                                                                                | `true`                                        |
-| `serviceAccount.annotations`                    | Additional annotations to add to the service account.                                                                               | `{}`                                          |
-| `serviceAccount.name`                           | The name of the service account to use. If not set and create is true, a new service account will be created with a generated name. | `""`                                          |
-| `podAnnotations`                                | Additional annotations to add to the pod.                                                                                           | `{}`                                          |
-| `podSecurityContext`                            | The security context to use for the pod.                                                                                            | `{}`                                          |
-| `securityContext`                               | The security context to use for the container.                                                                                      | `{}`                                          |
-| `initContainers`                                | Additional init containers to add to the pod.                                                                                       | `[]`                                          |
-| `service.type`                                  | The type of service to create.                                                                                                      | `LoadBalancer`                                |
-| `service.port`                                  | The port on which the service will run.                                                                                             | `2283`                                        |
-| `service.nodePort`                              | The nodePort to use for the service. Only used if service.type is NodePort.                                                         | `""`                                          |
-| `ingress.enabled`                               | Whether to create an ingress for the service.                                                                                       | `true`                                        |
-| `ingress.className`                             | The ingress class name to use.                                                                                                      | `""`                                          |
-| `ingress.annotations`                           | Additional annotations to add to the ingress.                                                                                       | `{}`                                          |
-| `ingress.hosts[0].host`                         | The host to use for the ingress.                                                                                                    | `chart-example.local`                         |
-| `ingress.hosts[0].paths[0].path`                | The path to use for the ingress.                                                                                                    | `/`                                           |
-| `ingress.hosts[0].paths[0].pathType`            | The path type to use for the ingress.                                                                                               | `ImplementationSpecific`                      |
-| `ingress.tls`                                   | The TLS configuration for the ingress.                                                                                              | `[]`                                          |
-| `resources`                                     | The resources to use for the pod.                                                                                                   | `{}`                                          |
-| `autoscaling.enabled`                           | Whether to enable autoscaling.                                                                                                      | `false`                                       |
-| `autoscaling.minReplicas`                       | The minimum number of replicas to scale to.                                                                                         | `1`                                           |
-| `autoscaling.maxReplicas`                       | The maximum number of replicas to scale to.                                                                                         | `100`                                         |
-| `autoscaling.targetCPUUtilizationPercentage`    | The target CPU utilization percentage to use for autoscaling.                                                                       | `80`                                          |
-| `autoscaling.targetMemoryUtilizationPercentage` | The target memory utilization percentage to use for autoscaling.                                                                    | `80`                                          |
-| `nodeSelector`                                  | The node selector to use for the pod.                                                                                               | `{}`                                          |
-| `tolerations`                                   | The tolerations to use for the pod.                                                                                                 | `[]`                                          |
-| `affinity`                                      | The affinity to use for the pod.                                                                                                    | `{}`                                          |
-| `env.TZ`                                        | The timezone to use for the pod.                                                                                                    | `Europe/London`                               |
-| `env.REDIS_HOSTNAME`                            | The Redis hostname to connect to.                                                                                                   | `immich-redis`                                |
-| `database.enabled`                              | Whether to enable PostgreSQL database for Immich.                                                                                   | `true`                                        |
-| `database.name`                                 | Name of the database cluster (will be suffixed with release name).                                                                  | `immich-db`                                   |
-| `database.instances`                            | Number of PostgreSQL instances (replicas).                                                                                          | `1`                                           |
-| `database.image.repository`                     | PostgreSQL container image repository with vectorchord extension.                                                                   | `ghcr.io/tensorchord/cloudnative-vectorchord` |
-| `database.image.tag`                            | PostgreSQL container image tag.                                                                                                     | `16.9-0.4.3`                                  |
-| `database.database`                             | Name of the database to create.                                                                                                     | `immich`                                      |
-| `database.owner`                                | Owner of the database.                                                                                                              | `immich`                                      |
-| `database.storage.size`                         | Size of the storage for each instance.                                                                                              | `10Gi`                                        |
-| `database.storage.storageClass`                 | Storage class name for persistent volumes.                                                                                          | `ceph-rbd`                                    |
-| `database.secret.name`                          | Name of the secret containing database credentials.                                                                                 | `""`                                          |
-| `database.secret.create`                        | Whether to create the database secret.                                                                                              | `true`                                        |
-| `database.secret.username`                      | Database user username.                                                                                                             | `immich`                                      |
-| `database.secret.password`                      | Database user password (leave empty to auto-generate).                                                                              | `""`                                          |
-| `database.superuserSecret.name`                 | Name of the secret containing the superuser credentials.                                                                            | `""`                                          |
-| `database.superuserSecret.create`               | Whether to create the superuser secret.                                                                                             | `true`                                        |
-| `database.superuserSecret.username`             | Superuser username.                                                                                                                 | `postgres`                                    |
-| `database.superuserSecret.password`             | Superuser password (leave empty to auto-generate).                                                                                  | `""`                                          |
-| `persistence.library.enabled`                   | Whether to enable persistence for the library.                                                                                      | `true`                                        |
-| `persistence.library.storageClass`              | The storage class to use for the library.                                                                                           | `ceph-rbd`                                    |
-| `persistence.library.existingClaim`             | The name of an existing claim to use for the library.                                                                               | `""`                                          |
-| `persistence.library.accessMode`                | The access mode to use for the library.                                                                                             | `ReadWriteOnce`                               |
-| `persistence.library.size`                      | The size to use for the library.                                                                                                    | `10Gi`                                        |
-| `persistence.backup.enabled`                    | Whether to enable backup persistence.                                                                                               | `false`                                       |
-| `persistence.backup.storageClass`               | The storage class to use for backup persistence.                                                                                    | `cephfs`                                      |
-| `persistence.backup.existingClaim`              | The name of an existing claim to use for backup persistence.                                                                        | `""`                                          |
-| `persistence.backup.accessMode`                 | The access mode to use for backup persistence.                                                                                      | `ReadWriteMany`                               |
-| `persistence.backup.size`                       | The size to use for backup persistence.                                                                                             | `10Gi`                                        |
-| `persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                                          |
-| `persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                                          |
+| Name | Description | Value |
+|------|-------------|-------|
+| `replicaCount` | Number of replicas for the server | `1` |
+| `image.repository` | Server image repository | `ghcr.io/immich-app/immich-server` |
+| `image.pullPolicy` | Image pull policy | `IfNotPresent` |
+| `image.tag` | Server image tag | `v2.4.1` |
+| `service.type` | Service type | `ClusterIP` |
+| `service.port` | Service port | `2283` |
+| `ingress.enabled` | Enable ingress | `false` |
+| `resources` | Resource limits and requests | `{}` |
+| `env` | Additional environment variables (map format) | `{ TZ: "Europe/London" }` |
 
+### Machine Learning parameters
+
+| Name | Description | Value |
+|------|-------------|-------|
+| `machineLearning.enabled` | Enable machine learning component | `true` |
+| `machineLearning.replicaCount` | Number of ML replicas | `1` |
+| `machineLearning.image.repository` | ML image repository | `ghcr.io/immich-app/immich-machine-learning` |
+| `machineLearning.image.tag` | ML image tag | `v2.4.1` |
+| `machineLearning.persistence.enabled` | Enable ML cache persistence | `true` |
+| `machineLearning.persistence.size` | ML cache volume size | `10Gi` |
+
+### Persistence parameters
+
+| Name | Description | Value |
+|------|-------------|-------|
+| `persistence.library.enabled` | Enable library persistence | `true` |
+| `persistence.library.storageClass` | Storage class | `""` |
+| `persistence.library.existingClaim` | Use existing PVC | `""` |
+| `persistence.library.accessMode` | Access mode | `ReadWriteOnce` |
+| `persistence.library.size` | Volume size | `100Gi` |
+
+### Redis parameters
+
+| Name | Description | Value |
+|------|-------------|-------|
+| `redis.enabled` | Deploy Redis subchart | `true` |
+| `redis.architecture` | Redis architecture | `standalone` |
+| `redis.auth.enabled` | Enable Redis authentication | `false` |
+
+### PostgreSQL parameters
+
+| Name | Description | Value |
+|------|-------------|-------|
+| `postgresql.enabled` | Deploy PostgreSQL subchart | `true` |
+| `postgresql.architecture` | PostgreSQL architecture | `standalone` |
+| `postgresql.auth.database` | Database name | `immich` |
+| `postgresql.auth.username` | Database username | `immich` |
+| `postgresql.auth.password` | Database password | `""` (auto-generated) |
+| `postgresql.image.repository` | PostgreSQL image with pgvector | `tensorchord/pgvecto-rs` |
+| `postgresql.image.tag` | PostgreSQL image tag | `pg16-v0.4.0` |
+| `postgresql.primary.persistence.enabled` | Enable PostgreSQL persistence | `true` |
+| `postgresql.primary.persistence.size` | PostgreSQL volume size | `10Gi` |
+
+## Upgrading
+
+### To 2.0.0
+
+This is a complete rewrite of the chart that:
+
+- Replaces CloudNativePG with Bitnami PostgreSQL subchart
+- Adds Bitnami Redis subchart (previously required external Redis)
+- Adds Machine Learning deployment support
+- Uses standard Helm chart patterns and helpers
+- Fixes all naming consistency issues
+
+**Breaking Changes:**
+- Database configuration has changed significantly
+- Redis is now deployed as part of the chart
+- PVC naming has changed
+
+To migrate from version 1.x:
+1. Backup your data
+2. Note your current PostgreSQL credentials
+3. Uninstall the old release
+4. Install the new version with appropriate configuration
+5. Restore your data if necessary

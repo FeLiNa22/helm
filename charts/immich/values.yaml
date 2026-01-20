@@ -1,7 +1,6 @@
-## @section Immich parameters
+## @section Immich Server parameters
 
-## @param enabled Whether to enable Immich.
-## @param replicaCount The number of replicas to deploy.
+## @param replicaCount The number of replicas to deploy for the server.
 ## @param image.repository The Docker repository to pull the image from.
 ## @param image.pullPolicy The logic of image pulling.
 ## @param image.tag The image tag to use.
@@ -9,7 +8,7 @@
 ## @param deployment.strategy.type The deployment strategy to use.
 ## @param serviceAccount.create Whether to create a service account.
 ## @param serviceAccount.annotations Additional annotations to add to the service account.
-## @param serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
+## @param serviceAccount.name The name of the service account to use.
 ## @param podAnnotations Additional annotations to add to the pod.
 ## @param podSecurityContext The security context to use for the pod.
 ## @param securityContext The security context to use for the container.
@@ -34,38 +33,7 @@
 ## @param tolerations The tolerations to use for the pod.
 ## @param affinity The affinity to use for the pod.
 ## @param env.TZ The timezone to use for the pod.
-## @param env.REDIS_HOSTNAME The Redis hostname to connect to.
-## @param database.enabled Whether to enable PostgreSQL database for Immich.
-## @param database.name Name of the database cluster (will be suffixed with release name).
-## @param database.instances Number of PostgreSQL instances (replicas).
-## @param database.image.repository PostgreSQL container image repository with vectorchord extension.
-## @param database.image.tag PostgreSQL container image tag.
-## @param database.database Name of the database to create.
-## @param database.owner Owner of the database.
-## @param database.storage.size Size of the storage for each instance.
-## @param database.storage.storageClass Storage class name for persistent volumes.
-## @param database.secret.name Name of the secret containing database credentials.
-## @param database.secret.create Whether to create the database secret.
-## @param database.secret.username Database user username.
-## @param database.secret.password Database user password (leave empty to auto-generate).
-## @param database.superuserSecret.name Name of the secret containing the superuser credentials.
-## @param database.superuserSecret.create Whether to create the superuser secret.
-## @param database.superuserSecret.username Superuser username.
-## @param database.superuserSecret.password Superuser password (leave empty to auto-generate).
-## @param persistence.library.enabled Whether to enable persistence for the library.
-## @param persistence.library.storageClass The storage class to use for the library.
-## @param persistence.library.existingClaim The name of an existing claim to use for the library.
-## @param persistence.library.accessMode The access mode to use for the library.
-## @param persistence.library.size The size to use for the library.
-## @param persistence.backup.enabled Whether to enable backup persistence.
-## @param persistence.backup.storageClass The storage class to use for backup persistence.
-## @param persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
-## @param persistence.backup.accessMode The access mode to use for backup persistence.
-## @param persistence.backup.size The size to use for backup persistence.
-## @param persistence.additionalVolumes Additional volumes to add to the pod.
-## @param persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
-enabled: true
 replicaCount: 1
 
 image:
@@ -103,38 +71,38 @@ initContainers: []
   #   command: ['sh', '-c', 'echo "this is an init container"']
 
 service:
-  type: LoadBalancer
+  type: ClusterIP
   port: 2283
   nodePort: ""
 
 ingress:
-  enabled: true
+  enabled: false
   className: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chart-example.local
+    - host: immich.local
       paths:
         - path: /
-          pathType: ImplementationSpecific
+          pathType: Prefix
   tls: []
-  #  - secretName: chart-example-tls
+  #  - secretName: immich-tls
   #    hosts:
-  #      - chart-example.local
+  #      - immich.local
 
 resources: {}
   # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
+  #   cpu: 2000m
+  #   memory: 4Gi
   # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  #   cpu: 500m
+  #   memory: 1Gi
 
 autoscaling:
   enabled: false
   minReplicas: 1
-  maxReplicas: 100
+  maxReplicas: 10
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 
@@ -144,59 +112,143 @@ tolerations: []
 
 affinity: {}
 
+## Additional environment variables for the Immich server
+## Use map format: key: value
 env:
   TZ: "Europe/London"
-  REDIS_HOSTNAME: "immich-redis"
-  # Database connection will be configured via secrets when database.enabled=true
-  # Otherwise, configure these manually:
-  # DB_HOSTNAME: "immich-postgresql"
-  # DB_USERNAME: "immich"
-  # DB_PASSWORD: "immich"
-  # DB_DATABASE_NAME: "immich"
+  # IMMICH_LOG_LEVEL: "log"
 
-# Database configuration using CloudNativePG
-database:
+## @section Machine Learning parameters
+
+## @param machineLearning.enabled Whether to enable the machine learning component.
+## @param machineLearning.replicaCount The number of replicas for machine learning.
+## @param machineLearning.image.repository The Docker repository for machine learning image.
+## @param machineLearning.image.pullPolicy The logic of image pulling.
+## @param machineLearning.image.tag The image tag to use for machine learning.
+## @param machineLearning.env.MACHINE_LEARNING_WORKERS Number of ML workers to run.
+## @param machineLearning.env.MACHINE_LEARNING_WORKER_TIMEOUT ML worker timeout in seconds.
+## @param machineLearning.resources The resources to use for machine learning pod.
+## @param machineLearning.persistence.enabled Whether to enable persistence for ML cache.
+## @param machineLearning.persistence.storageClass The storage class for ML cache.
+## @param machineLearning.persistence.size The size of the ML cache volume.
+## @param machineLearning.persistence.accessMode The access mode for the ML cache volume.
+##
+machineLearning:
   enabled: true
-  # Name of the database cluster (will be suffixed with release name)
-  name: immich-db
-  # Number of PostgreSQL instances (replicas)
-  instances: 1
-  # PostgreSQL image with vectorchord extension
+  replicaCount: 1
   image:
-    repository: ghcr.io/tensorchord/cloudnative-vectorchord
-    tag: "16.9-0.4.3"
-  # Database configuration
-  database: immich
-  owner: immich
-  # Storage configuration
-  storage:
+    repository: ghcr.io/immich-app/immich-machine-learning
+    pullPolicy: IfNotPresent
+    tag: "v2.4.1"
+  env:
+    MACHINE_LEARNING_WORKERS: "1"
+    MACHINE_LEARNING_WORKER_TIMEOUT: "120"
+  resources: {}
+    # limits:
+    #   cpu: 4000m
+    #   memory: 8Gi
+    # requests:
+    #   cpu: 1000m
+    #   memory: 2Gi
+  persistence:
+    enabled: true
+    storageClass: ""
     size: 10Gi
-    storageClass: "ceph-rbd"
-  # Secret configuration
-  secret:
-    name: ""  # Leave empty to auto-generate
-    create: true
-    username: immich
-    password: ""  # Leave empty to auto-generate
-  # Superuser secret
-  superuserSecret:
-    name: ""  # Leave empty to auto-generate
-    create: true
-    username: postgres
-    password: ""  # Leave empty to auto-generate
+    accessMode: ReadWriteOnce
 
+## @section Persistence parameters
+
+## @param persistence.library.enabled Whether to enable persistence for the library.
+## @param persistence.library.storageClass The storage class to use for the library.
+## @param persistence.library.existingClaim The name of an existing claim to use for the library.
+## @param persistence.library.accessMode The access mode to use for the library.
+## @param persistence.library.size The size to use for the library.
+## @param persistence.additionalVolumes Additional volumes to add to the pod.
+## @param persistence.additionalMounts Additional volume mounts to add to the pod.
+##
 persistence:
   library:
     enabled: true
-    storageClass: "ceph-rbd"
+    storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 10Gi
-  backup:
-    enabled: false
-    storageClass: "cephfs"
-    existingClaim: ""
-    accessMode: ReadWriteMany
-    size: 10Gi
+    size: 100Gi
   additionalVolumes: []
   additionalMounts: []
+
+## @section Redis parameters
+## Redis is required for Immich's job queue and caching
+
+## @param redis.enabled Whether to deploy the Redis subchart.
+## @param redis.architecture Redis deployment architecture: 'standalone' or 'replication'.
+## @param redis.auth.enabled Enable or disable authentication for Redis.
+## @param redis.external.host Hostname of external Redis (when redis.enabled=false).
+## @param redis.external.port Port of external Redis.
+## @param redis.external.existingSecret Secret name for external Redis password.
+##
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+  # External Redis configuration (used when redis.enabled=false)
+  external:
+    host: ""
+    port: 6379
+    existingSecret: ""
+
+## @section PostgreSQL parameters
+## PostgreSQL with pgvector/vectorchord extension is required for Immich
+
+## @param postgresql.enabled Whether to deploy the PostgreSQL subchart.
+## @param postgresql.architecture PostgreSQL deployment architecture: 'standalone' or 'replication'.
+## @param postgresql.auth.database Name of the default database.
+## @param postgresql.auth.username Username for the default database.
+## @param postgresql.auth.password Password for the default database user.
+## @param postgresql.auth.postgresPassword Password for the 'postgres' administrative user.
+## @param postgresql.auth.existingSecret Reference to an existing Kubernetes secret containing the database credentials.
+## @param postgresql.image.registry PostgreSQL image registry.
+## @param postgresql.image.repository PostgreSQL image repository.
+## @param postgresql.image.tag PostgreSQL image tag.
+## @param postgresql.primary.initdb.scripts.init-extensions.sql SQL script to initialize PostgreSQL extensions.
+## @param postgresql.primary.persistence.enabled Whether to enable persistence for PostgreSQL.
+## @param postgresql.primary.persistence.size Size of the PostgreSQL persistence volume.
+## @param postgresql.external.host Hostname of external PostgreSQL (when postgresql.enabled=false).
+## @param postgresql.external.port Port of external PostgreSQL.
+## @param postgresql.external.database Database name of external PostgreSQL.
+## @param postgresql.external.username Username of external PostgreSQL.
+## @param postgresql.external.existingSecret Secret name for external PostgreSQL password.
+## @param postgresql.external.secretKey Key in the secret for the password.
+##
+postgresql:
+  enabled: true
+  architecture: standalone
+  auth:
+    database: immich
+    username: immich
+    password: ""
+    postgresPassword: ""
+    existingSecret: ""
+  # Use PostgreSQL with pgvecto-rs extension
+  image:
+    registry: docker.io
+    repository: tensorchord/pgvecto-rs
+    tag: "pg16-v0.4.0"
+  primary:
+    initdb:
+      scripts:
+        init-extensions.sql: |
+          CREATE EXTENSION IF NOT EXISTS vectors;
+          CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
+          CREATE EXTENSION IF NOT EXISTS pg_trgm;
+    persistence:
+      enabled: true
+      size: 10Gi
+  # External PostgreSQL configuration (used when postgresql.enabled=false)
+  external:
+    host: ""
+    port: 5432
+    database: "immich"
+    username: "immich"
+    existingSecret: ""
+    secretKey: "password"

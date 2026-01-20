@@ -2,8 +2,8 @@ apiVersion: v2
 name: immich
 description: A Helm chart for Immich - High performance self-hosted photo and video management solution
 type: application
-version: 1.1.1
-appVersion: "2.4.1"
+version: 1.2.0
+appVersion: "v2.4.1"
 keywords:
   - immich
   - photos
@@ -15,3 +15,13 @@ sources:
   - https://github.com/immich-app/immich
 maintainers:
   - name: FeLiNa22
+
+dependencies:
+  - condition: redis.enabled
+    name: redis
+    repository: https://charts.bitnami.com/bitnami
+    version: 18.x.x
+  - condition: postgresql.enabled
+    name: postgresql
+    repository: https://charts.bitnami.com/bitnami
+    version: 13.x.x

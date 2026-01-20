@@ -1,23 +1,21 @@
-{{- if .Values.enabled }}
+{{- $fullName := include "immich.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ $fullName }}-server
   labels:
-    app.kubernetes.io/name: immich
-    app.kubernetes.io/instance: {{ .Release.Name | quote }}
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: server
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   strategy:
-    {{- .Values.deployment.strategy | toYaml | nindent 4 }}
+    {{- toYaml .Values.deployment.strategy | nindent 4 }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: immich
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "immich.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: server
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -25,16 +23,14 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        app.kubernetes.io/name: immich
-        app.kubernetes.io/instance: {{ .Release.Name | quote }}
-        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        {{- include "immich.labels" . | nindent 8 }}
+        app.kubernetes.io/component: server
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ .Values.serviceAccount.name | default (printf "%s-immich" .Release.Name) }}
+      serviceAccountName: {{ include "immich.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if .Values.initContainers }}
@@ -45,20 +41,15 @@ spec:
         - name: library
           {{- if .Values.persistence.library.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.library.existingClaim | default (printf "%s-immich-library" .Release.Name) }}
+            claimName: {{ .Values.persistence.library.existingClaim | default (printf "%s-library" $fullName) }}
           {{- else }}
-          emptyDir: { }
+          emptyDir: {}
           {{- end }}
-        {{- if .Values.persistence.backup.enabled }}
-        - name: backup
-          persistentVolumeClaim:
-            claimName: {{ .Values.persistence.backup.existingClaim | default (printf "%s-backup" .Release.Name) }}
-        {{- end }}
         {{- if .Values.persistence.additionalVolumes }}
-          {{- .Values.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- toYaml .Values.persistence.additionalVolumes | nindent 8 }}
         {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: server
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -66,39 +57,66 @@ spec:
           volumeMounts:
             - mountPath: /usr/src/app/upload
               name: library
-          {{- if .Values.persistence.backup.enabled }}
-            - mountPath: /usr/src/app/upload/backups
-              name: backup
-          {{- end }}
-          {{- if .Values.persistence.additionalMounts }}
-            {{- .Values.persistence.additionalMounts | toYaml | nindent 12 }}
-          {{- end }}
+            {{- if .Values.persistence.additionalMounts }}
+            {{- toYaml .Values.persistence.additionalMounts | nindent 12 }}
+            {{- end }}
           ports:
             - name: http
               containerPort: 2283
               protocol: TCP
           env:
-            {{- if .Values.database.enabled }}
-            # Database connection from CloudNativePG cluster
+            # Database connection
             - name: DB_HOSTNAME
-              value: {{ .Release.Name }}-{{ .Values.database.name }}-rw
+              value: {{ include "immich.postgresql.host" . }}
+            - name: DB_PORT
+              value: {{ include "immich.postgresql.port" . | quote }}
             - name: DB_DATABASE_NAME
-              value: {{ .Values.database.database }}
+              value: {{ include "immich.postgresql.database" . }}
             - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.database.secret.name | default (printf "%s-immich-db-app" .Release.Name) }}
-                  key: username
+              value: {{ include "immich.postgresql.username" . }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.database.secret.name | default (printf "%s-immich-db-app" .Release.Name) }}
-                  key: password
+                  name: {{ include "immich.postgresql.secretName" . }}
+                  key: {{ include "immich.postgresql.secretKey" . }}
+            # Redis connection
+            - name: REDIS_HOSTNAME
+              value: {{ include "immich.redis.host" . }}
+            - name: REDIS_PORT
+              value: {{ include "immich.redis.port" . | quote }}
+            {{- if .Values.redis.auth.enabled }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "immich.redis.secretName" . }}
+                  key: redis-password
             {{- end }}
-            {{- range $k,$v := .Values.env }}
+            {{- if .Values.machineLearning.enabled }}
+            # Machine Learning connection
+            - name: IMMICH_MACHINE_LEARNING_URL
+              value: http://{{ $fullName }}-machine-learning:3003
+            {{- end }}
+            # Additional environment variables
+            {{- range $k, $v := .Values.env }}
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /api/server/ping
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /api/server/ping
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
@@ -113,4 +131,3 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-{{- end }}
