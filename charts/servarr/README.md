@@ -1102,15 +1102,14 @@ qbittorrent:
       enabled: true
       # Optional: specify a different provider for port forwarding
       # provider: "protonvpn"
-      # Optional: change the monitoring interval (default: 300 seconds)
-      # monitorInterval: 600
 ```
 
 This configuration will:
 1. Enable Gluetun VPN sidecar with your VPN provider
 2. Automatically request a forwarded port from the VPN provider
-3. Configure qBittorrent to use the forwarded port via the `TORRENTING_PORT` environment variable
-4. Monitor for port changes and trigger a pod restart if the port expires to apply the new port
+3. Configure qBittorrent to use the forwarded port via gluetun's `VPN_PORT_FORWARDING_UP_COMMAND` which calls qBittorrent's API directly
+
+**Important**: For automatic port configuration to work, you must enable "Bypass authentication for clients on localhost" in qBittorrent's Web UI settings (Settings → Web UI → Authentication). This allows gluetun to communicate with qBittorrent's API without authentication.
 
 #### Example: Enabling VPN Port Forwarding for Acestream
 
@@ -1130,6 +1129,11 @@ acestream:
     portForwarding:
       enabled: true
 ```
+
+This configuration will:
+1. Enable Gluetun VPN sidecar with your VPN provider
+2. Automatically request a forwarded port from the VPN provider
+3. Start acestream with `--port <forwarded_port>` so P2P peers can connect directly
 
 **Note**: VPN port forwarding is only supported by certain VPN providers. Check your VPN provider's documentation to confirm support. Common providers that support port forwarding include:
 - Private Internet Access (PIA)

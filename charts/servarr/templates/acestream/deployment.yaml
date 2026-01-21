@@ -55,11 +55,7 @@ spec:
           {{- .Values.acestream.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
         {{- if and .Values.acestream.gluetun.enabled .Values.acestream.gluetun.portForwarding.enabled }}
-        - name: port-forwarding-scripts
-          configMap:
-            name: {{ .Release.Name }}-acestream-port-forwarding
-            defaultMode: 0755
-        - name: gluetun-tmp
+        - name: gluetun-shared
           emptyDir: {}
         {{- end }}
       containers:
@@ -105,16 +101,14 @@ spec:
             - name: VPN_PORT_FORWARDING_PROVIDER
               value: {{ .Values.acestream.gluetun.portForwarding.provider | quote }}
             {{- end }}
-            - name: VPN_PORT_FORWARDING_STATUS_FILE
-              value: "/tmp/gluetun/forwarded_port"
+            # Write the forwarded port to a shared volume so acestream can use it with --port argument
+            - name: VPN_PORT_FORWARDING_UP_COMMAND
+              value: '/bin/sh -c "echo {{ "{{PORT}}" }} > /gluetun-shared/forwarded_port"'
             {{- end }}
-          {{- if and .Values.acestream.gluetun.enabled .Values.acestream.gluetun.portForwarding.enabled }}
+          {{- if .Values.acestream.gluetun.portForwarding.enabled }}
           volumeMounts:
-            - name: port-forwarding-scripts
-              mountPath: /gluetun/port-forwarding.sh
-              subPath: on_port_forward.sh
-            - name: gluetun-tmp
-              mountPath: /tmp
+            - name: gluetun-shared
+              mountPath: /gluetun-shared
           {{- end }}
           ports:
             - name: http
@@ -147,6 +141,30 @@ spec:
             {{- toYaml .Values.acestream.securityContext | nindent 12 }}
           image: "{{ .Values.acestream.image.repository }}:{{ .Values.acestream.image.tag }}"
           imagePullPolicy: {{ .Values.acestream.image.pullPolicy }}
+          {{- if and .Values.acestream.gluetun.enabled .Values.acestream.gluetun.portForwarding.enabled }}
+          # Override command to wait for forwarded port and start acestream with --port argument
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Waiting for VPN forwarded port (timeout: 5 minutes)..."
+              TIMEOUT=150
+              COUNT=0
+              while [ ! -f /gluetun-shared/forwarded_port ]; do
+                sleep 2
+                COUNT=$((COUNT + 1))
+                if [ $COUNT -ge $TIMEOUT ]; then
+                  echo "Error: Timeout waiting for forwarded port file"
+                  exit 1
+                fi
+              done
+              PORT=$(cat /gluetun-shared/forwarded_port)
+              echo "Starting acestream with port $PORT"
+              exec /srv/ace/start-engine --client-console --bind-all --port "$PORT"
+          volumeMounts:
+            - name: gluetun-shared
+              mountPath: /gluetun-shared
+          {{- end }}
         {{- if not .Values.acestream.gluetun.enabled }}
           ports:
             - name: http

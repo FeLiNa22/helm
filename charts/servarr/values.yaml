@@ -546,9 +546,8 @@ qbittorrent:
   ## @param qbittorrent.gluetun.httpProxy.port The port on which the HTTP proxy server will listen.
   ## @param qbittorrent.gluetun.shadowsocksProxy.enabled Whether to enable Shadowsocks proxy server in Gluetun.
   ## @param qbittorrent.gluetun.shadowsocksProxy.port The port on which the Shadowsocks proxy server will listen.
-  ## @param qbittorrent.gluetun.portForwarding.enabled Whether to enable VPN port forwarding and automatic port configuration in qBittorrent.
+  ## @param qbittorrent.gluetun.portForwarding.enabled Whether to enable VPN port forwarding and automatic port configuration in qBittorrent via its API.
   ## @param qbittorrent.gluetun.portForwarding.provider The VPN port forwarding provider (e.g., protonvpn, private internet access). Leave empty to use VPN_SERVICE_PROVIDER.
-  ## @param qbittorrent.gluetun.portForwarding.monitorInterval Interval in seconds to check if the forwarded port has changed (default: 300).
   ## @param qbittorrent.gluetun.resources Resource limits and requests for the Gluetun container.
   gluetun:
     enabled: false
@@ -572,7 +571,6 @@ qbittorrent:
     portForwarding:
       enabled: false
       provider: ""
-      monitorInterval: 300
     resources: {}
     # limits:
     #   cpu: 100m
@@ -2424,9 +2422,8 @@ emby:
 ## @param acestream.gluetun.httpProxy.port The port on which the HTTP proxy server will listen.
 ## @param acestream.gluetun.shadowsocksProxy.enabled Whether to enable Shadowsocks proxy server in Gluetun.
 ## @param acestream.gluetun.shadowsocksProxy.port The port on which the Shadowsocks proxy server will listen.
-## @param acestream.gluetun.portForwarding.enabled Whether to enable VPN port forwarding for acestream.
+## @param acestream.gluetun.portForwarding.enabled Whether to enable VPN port forwarding for acestream (starts acestream with --port set to the forwarded port).
 ## @param acestream.gluetun.portForwarding.provider The VPN port forwarding provider (e.g., protonvpn, private internet access). Leave empty to use VPN_SERVICE_PROVIDER.
-## @param acestream.gluetun.portForwarding.monitorInterval Interval in seconds to check if the forwarded port has changed (default: 300).
 ## @param acestream.gluetun.resources Resource limits and requests for the Gluetun container.
 ##
 acestream:
@@ -2572,7 +2569,6 @@ acestream:
     portForwarding:
       enabled: false
       provider: ""
-      monitorInterval: 300
     resources: {}
     # limits:
     #   cpu: 100m
