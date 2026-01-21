@@ -179,8 +179,14 @@ spec:
             - |
               # Read the forwarded port from the file if it exists
               if [ -f /tmp/gluetun_forwarded_port ]; then
-                export TORRENTING_PORT=$(cat /tmp/gluetun_forwarded_port)
-                echo "Using TORRENTING_PORT=${TORRENTING_PORT} from gluetun port forwarding"
+                PORT=$(cat /tmp/gluetun_forwarded_port)
+                # Validate that the port is a number and in valid range
+                if [ -n "$PORT" ] && [ "$PORT" -eq "$PORT" ] 2>/dev/null && [ "$PORT" -ge 1024 ] && [ "$PORT" -le 65535 ]; then
+                  export TORRENTING_PORT="$PORT"
+                  echo "Using TORRENTING_PORT=${TORRENTING_PORT} from gluetun port forwarding"
+                else
+                  echo "Warning: Invalid port value in /tmp/gluetun_forwarded_port: '$PORT'"
+                fi
               fi
               # Start the container's normal entrypoint
               exec /init
