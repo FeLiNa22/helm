@@ -147,9 +147,16 @@ spec:
             - /bin/sh
             - -c
             - |
-              echo "Waiting for VPN forwarded port..."
+              echo "Waiting for VPN forwarded port (timeout: 5 minutes)..."
+              TIMEOUT=150
+              COUNT=0
               while [ ! -f /gluetun-shared/forwarded_port ]; do
                 sleep 2
+                COUNT=$((COUNT + 1))
+                if [ $COUNT -ge $TIMEOUT ]; then
+                  echo "Error: Timeout waiting for forwarded port file"
+                  exit 1
+                fi
               done
               PORT=$(cat /gluetun-shared/forwarded_port)
               echo "Starting acestream with port $PORT"
