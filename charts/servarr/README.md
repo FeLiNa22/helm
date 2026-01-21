@@ -1133,7 +1133,7 @@ acestream:
 This configuration will:
 1. Enable Gluetun VPN sidecar with your VPN provider
 2. Automatically request a forwarded port from the VPN provider
-3. Use gluetun's `VPN_PORT_FORWARDING_LISTENING_PORT` to redirect incoming traffic from the forwarded port to acestream's UDP port 8621
+3. Start acestream with `--port <forwarded_port>` so P2P peers can connect directly
 
 **Note**: VPN port forwarding is only supported by certain VPN providers. Check your VPN provider's documentation to confirm support. Common providers that support port forwarding include:
 - Private Internet Access (PIA)
