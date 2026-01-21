@@ -21,6 +21,8 @@ data:
     echo "Port forwarded: $FORWARDED_PORT"
     
     # Wait for acestream to be ready
+    # Note: Acestream engine takes approximately 30 seconds to initialize
+    # This ensures the engine is fully started before attempting configuration
     echo "Waiting for Acestream to start..."
     sleep 30
     

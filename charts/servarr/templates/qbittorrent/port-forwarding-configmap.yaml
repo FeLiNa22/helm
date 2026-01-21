@@ -22,6 +22,7 @@ data:
     
     # Wait for qBittorrent to be ready
     echo "Waiting for qBittorrent to start..."
+    # Check every 5 seconds until qBittorrent API is responsive
     until wget -q --spider http://localhost:{{ .Values.qbittorrent.service.web.port }}/api/v2/app/webapiVersion 2>/dev/null; do
       sleep 5
     done
@@ -32,6 +33,8 @@ data:
     COOKIE=$(mktemp)
     
     # Login to qBittorrent (default credentials on first run)
+    # Note: qBittorrent uses default credentials 'admin:adminpass' or 'admin:' (empty password) on first run
+    # Users should change these credentials through the qBittorrent WebUI for security
     # Try with default admin:adminpass, then with empty password
     if ! wget --save-cookies "$COOKIE" --keep-session-cookies \
          --post-data 'username=admin&password=adminpass' \

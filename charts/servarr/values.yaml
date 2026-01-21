@@ -2428,8 +2428,6 @@ emby:
 ## @param acestream.gluetun.portForwarding.provider The VPN port forwarding provider (e.g., protonvpn, private internet access). Leave empty to use VPN_SERVICE_PROVIDER.
 ## @param acestream.gluetun.portForwarding.monitorInterval Interval in seconds to check if the forwarded port has changed (default: 300).
 ## @param acestream.gluetun.resources Resource limits and requests for the Gluetun container.
-## @param acestream.gluetun.shadowsocksProxy.port The port on which the Shadowsocks proxy server will listen.
-## @param acestream.gluetun.resources Resource limits and requests for the Gluetun container.
 ##
 acestream:
   enabled: false
