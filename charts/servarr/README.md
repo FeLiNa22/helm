@@ -181,7 +181,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `qbittorrent.enabled`                                       | Whether to enable qBittorrent.                                                                                                      | `true`                            |
 | `qbittorrent.replicaCount`                                  | The number of replicas to deploy.                                                                                                   | `1`                               |
 | `qbittorrent.image.repository`                              | The Docker repository to pull the image from.                                                                                       | `lscr.io/linuxserver/qbittorrent` |
-| `qbittorrent.image.tag`                                     | The image tag to use.                                                                                                               | `5.1.4`                           |
+| `qbittorrent.image.tag`                                     | The image tag to use.                                                                                                               | `latest`                          |
 | `qbittorrent.image.pullPolicy`                              | The logic of image pulling.                                                                                                         | `IfNotPresent`                    |
 | `qbittorrent.imagePullSecrets`                              | The image pull secrets to use.                                                                                                      | `[]`                              |
 | `qbittorrent.deployment.strategy.type`                      | The deployment strategy to use.                                                                                                     | `Recreate`                        |
@@ -1109,8 +1109,8 @@ qbittorrent:
 This configuration will:
 1. Enable Gluetun VPN sidecar with your VPN provider
 2. Automatically request a forwarded port from the VPN provider
-3. Update qBittorrent's listening port when the port is received
-4. Monitor for port changes and trigger a pod restart if the port expires
+3. Configure qBittorrent to use the forwarded port via the `TORRENTING_PORT` environment variable
+4. Monitor for port changes and trigger a pod restart if the port expires to apply the new port
 
 #### Example: Enabling VPN Port Forwarding for Acestream
 

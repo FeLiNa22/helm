@@ -172,6 +172,19 @@ spec:
             {{- toYaml .Values.qbittorrent.securityContext | nindent 12 }}
           image: "{{ .Values.qbittorrent.image.repository }}:{{ .Values.qbittorrent.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.qbittorrent.image.pullPolicy }}
+          {{- if and .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.portForwarding.enabled }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              # Read the forwarded port from the file if it exists
+              if [ -f /tmp/gluetun_forwarded_port ]; then
+                export TORRENTING_PORT=$(cat /tmp/gluetun_forwarded_port)
+                echo "Using TORRENTING_PORT=${TORRENTING_PORT} from gluetun port forwarding"
+              fi
+              # Start the container's normal entrypoint
+              exec /init
+          {{- end }}
           volumeMounts:
             - mountPath: /config
               name: config
@@ -191,6 +204,10 @@ spec:
           {{- if .Values.qbittorrent.persistence.additionalMounts }}
             {{- .Values.qbittorrent.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}
+          {{- if and .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.portForwarding.enabled }}
+            - name: gluetun-tmp
+              mountPath: /tmp
+          {{- end }}
         {{- if not .Values.qbittorrent.gluetun.enabled }}
           ports:
             - name: http
@@ -207,6 +224,10 @@ spec:
             {{- range $k,$v := .Values.qbittorrent.env }}
             - name: {{ $k }}
               value: {{ $v | quote }}
+            {{- end }}
+            {{- if .Values.qbittorrent.gluetun.enabled }}
+            - name: WEBUI_PORT
+              value: {{ .Values.qbittorrent.service.web.port | default 8080 | quote }}
             {{- end }}
           resources:
             {{- toYaml .Values.qbittorrent.resources | nindent 12 }}

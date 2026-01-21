@@ -20,41 +20,12 @@ data:
     
     echo "Port forwarded: $FORWARDED_PORT"
     
-    # Wait for qBittorrent to be ready
-    echo "Waiting for qBittorrent to start..."
-    # Check every 5 seconds until qBittorrent API is responsive
-    until wget -q --spider http://localhost:{{ .Values.qbittorrent.service.web.port }}/api/v2/app/webapiVersion 2>/dev/null; do
-      sleep 5
-    done
-    
-    echo "qBittorrent is ready, updating port configuration..."
-    
-    # Get current preferences
-    COOKIE=$(mktemp)
-    
-    # Login to qBittorrent (default credentials on first run)
-    # Note: qBittorrent uses default credentials 'admin:adminpass' or 'admin:' (empty password) on first run
-    # Users should change these credentials through the qBittorrent WebUI for security
-    # Try with default admin:adminpass, then with empty password
-    if ! wget --save-cookies "$COOKIE" --keep-session-cookies \
-         --post-data 'username=admin&password=adminpass' \
-         -qO- http://localhost:{{ .Values.qbittorrent.service.web.port }}/api/v2/auth/login 2>/dev/null; then
-      wget --save-cookies "$COOKIE" --keep-session-cookies \
-           --post-data 'username=admin&password=' \
-           -qO- http://localhost:{{ .Values.qbittorrent.service.web.port }}/api/v2/auth/login 2>/dev/null || true
-    fi
-    
-    # Update the listening port
-    wget --load-cookies "$COOKIE" --keep-session-cookies \
-         --post-data "json={\"listen_port\":$FORWARDED_PORT,\"random_port\":false,\"upnp\":false}" \
-         -qO- http://localhost:{{ .Values.qbittorrent.service.web.port }}/api/v2/app/setPreferences
-    
-    rm -f "$COOKIE"
-    
-    echo "qBittorrent port updated to $FORWARDED_PORT"
-    
-    # Store the port for monitoring
+    # Store the forwarded port
+    # The linuxserver/qbittorrent:latest image supports TORRENTING_PORT environment variable
+    # The port will be applied on next container start
     echo "$FORWARDED_PORT" > /tmp/gluetun_forwarded_port
+    
+    echo "Forwarded port $FORWARDED_PORT stored. Container will use TORRENTING_PORT=$FORWARDED_PORT on next restart."
   
   monitor_port.sh: |
     #!/bin/sh
