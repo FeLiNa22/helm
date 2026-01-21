@@ -247,6 +247,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `qbittorrent.gluetun.httpProxy.port`                        | The port on which the HTTP proxy server will listen.                                                                                | `8888`                            |
 | `qbittorrent.gluetun.shadowsocksProxy.enabled`              | Whether to enable Shadowsocks proxy server in Gluetun.                                                                              | `true`                            |
 | `qbittorrent.gluetun.shadowsocksProxy.port`                 | The port on which the Shadowsocks proxy server will listen.                                                                         | `8388`                            |
+| `qbittorrent.gluetun.portForwarding.enabled`                | Whether to enable VPN port forwarding and automatic port configuration in qBittorrent.                                              | `false`                           |
+| `qbittorrent.gluetun.portForwarding.provider`               | The VPN port forwarding provider (e.g., protonvpn, private internet access). Leave empty to use VPN_SERVICE_PROVIDER.               | `""`                              |
+| `qbittorrent.gluetun.portForwarding.monitorInterval`        | Interval in seconds to check if the forwarded port has changed (default: 300).                                                      | `300`                             |
 | `qbittorrent.gluetun.resources`                             | Resource limits and requests for the Gluetun container.                                                                             | `{}`                              |
 
 ### Prowlarr parameters
@@ -947,6 +950,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `acestream.gluetun.httpProxy.port`                        | The port on which the HTTP proxy server will listen.                                                                                | `8888`                            |
 | `acestream.gluetun.shadowsocksProxy.enabled`              | Whether to enable Shadowsocks proxy server in Gluetun.                                                                              | `true`                            |
 | `acestream.gluetun.shadowsocksProxy.port`                 | The port on which the Shadowsocks proxy server will listen.                                                                         | `8388`                            |
+| `acestream.gluetun.portForwarding.enabled`                | Whether to enable VPN port forwarding for acestream.                                                                                | `false`                           |
+| `acestream.gluetun.portForwarding.provider`               | The VPN port forwarding provider (e.g., protonvpn, private internet access). Leave empty to use VPN_SERVICE_PROVIDER.               | `""`                              |
+| `acestream.gluetun.portForwarding.monitorInterval`        | Interval in seconds to check if the forwarded port has changed (default: 300).                                                      | `300`                             |
 | `acestream.gluetun.resources`                             | Resource limits and requests for the Gluetun container.                                                                             | `{}`                              |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
@@ -1076,6 +1082,59 @@ qbittorrent:
 ```
 
 **Note**: The localStorage uses an emptyDir volume type, which provides a temporary directory that persists for the lifetime of the pod. When the pod is deleted or restarted, the data in this directory is lost. The `size` parameter sets the maximum size limit for the temporary storage.
+
+#### Example: Enabling VPN Port Forwarding for qBittorrent
+
+When using a VPN provider that supports port forwarding (e.g., ProtonVPN, Private Internet Access), you can enable automatic port forwarding to ensure qBittorrent uses the dynamically assigned port:
+
+```yaml
+qbittorrent:
+  enabled: true
+  gluetun:
+    enabled: true
+    env:
+      VPN_SERVICE_PROVIDER: "private internet access"
+      VPN_TYPE: "openvpn"
+      OPENVPN_USER: "your-username"
+      OPENVPN_PASSWORD: "your-password"
+      SERVER_REGIONS: "US East"
+    portForwarding:
+      enabled: true
+      # Optional: specify a different provider for port forwarding
+      # provider: "protonvpn"
+      # Optional: change the monitoring interval (default: 300 seconds)
+      # monitorInterval: 600
+```
+
+This configuration will:
+1. Enable Gluetun VPN sidecar with your VPN provider
+2. Automatically request a forwarded port from the VPN provider
+3. Update qBittorrent's listening port when the port is received
+4. Monitor for port changes and trigger a pod restart if the port expires
+
+#### Example: Enabling VPN Port Forwarding for Acestream
+
+Similarly, you can enable port forwarding for Acestream:
+
+```yaml
+acestream:
+  enabled: true
+  gluetun:
+    enabled: true
+    env:
+      VPN_SERVICE_PROVIDER: "private internet access"
+      VPN_TYPE: "openvpn"
+      OPENVPN_USER: "your-username"
+      OPENVPN_PASSWORD: "your-password"
+      SERVER_REGIONS: "US East"
+    portForwarding:
+      enabled: true
+```
+
+**Note**: VPN port forwarding is only supported by certain VPN providers. Check your VPN provider's documentation to confirm support. Common providers that support port forwarding include:
+- Private Internet Access (PIA)
+- ProtonVPN
+- Mullvad
 
 ### Intro Skipper plugin for Jellyfin permissions fix
 
