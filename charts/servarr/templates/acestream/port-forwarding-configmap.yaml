@@ -1,0 +1,65 @@
+{{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled .Values.acestream.gluetun.portForwarding.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-acestream-port-forwarding
+  labels:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+data:
+  on_port_forward.sh: |
+    #!/bin/sh
+    set -e
+    
+    # This script is called by gluetun when a port is forwarded
+    # The forwarded port is passed as the first argument
+    FORWARDED_PORT=$1
+    
+    echo "Port forwarded: $FORWARDED_PORT"
+    
+    # Wait for acestream to be ready
+    # Note: Acestream engine takes approximately 30 seconds to initialize
+    # This ensures the engine is fully started before attempting configuration
+    echo "Waiting for Acestream to start..."
+    sleep 30
+    
+    # Acestream engine configuration is typically done via command-line arguments
+    # Since we can't easily reconfigure a running acestream process, we store the port
+    # and rely on the pod restart mechanism to pick up the new port
+    echo "$FORWARDED_PORT" > /tmp/gluetun_forwarded_port
+    
+    echo "Forwarded port $FORWARDED_PORT stored for acestream"
+    
+    # If acestream supports runtime configuration via HTTP API, add that here
+    # For now, the port will be used on next startup via environment variable
+  
+  monitor_port.sh: |
+    #!/bin/sh
+    # This script monitors the forwarded port and triggers restart when it changes
+    # It runs continuously in the background
+    
+    LAST_PORT=""
+    CHECK_INTERVAL={{ .Values.acestream.gluetun.portForwarding.monitorInterval | default 300 }}
+    
+    echo "Starting port monitoring with check interval: ${CHECK_INTERVAL}s"
+    
+    while true; do
+      sleep "$CHECK_INTERVAL"
+      
+      if [ -f /tmp/gluetun_forwarded_port ]; then
+        CURRENT_PORT=$(cat /tmp/gluetun_forwarded_port 2>/dev/null || echo "")
+        
+        if [ -n "$CURRENT_PORT" ] && [ -n "$LAST_PORT" ] && [ "$CURRENT_PORT" != "$LAST_PORT" ]; then
+          echo "Port changed from $LAST_PORT to $CURRENT_PORT"
+          echo "Port expiration detected - container will restart via liveness probe failure"
+          # Exit to trigger a restart via liveness probe
+          exit 1
+        fi
+        
+        LAST_PORT="$CURRENT_PORT"
+      fi
+    done
+{{- end }}

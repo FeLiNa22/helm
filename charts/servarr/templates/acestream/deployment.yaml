@@ -54,6 +54,14 @@ spec:
         {{- if .Values.acestream.persistence.additionalVolumes }}
           {{- .Values.acestream.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
+        {{- if and .Values.acestream.gluetun.enabled .Values.acestream.gluetun.portForwarding.enabled }}
+        - name: port-forwarding-scripts
+          configMap:
+            name: {{ .Release.Name }}-acestream-port-forwarding
+            defaultMode: 0755
+        - name: gluetun-tmp
+          emptyDir: {}
+        {{- end }}
       containers:
       {{- if .Values.acestream.gluetun.enabled }}
         - name: gluetun
@@ -90,6 +98,24 @@ spec:
             - name: SHADOWSOCKS_LISTENING_ADDRESS
               value: ":{{ .Values.acestream.gluetun.shadowsocksProxy.port | default 8388 }}"
             {{- end }}
+            {{- if .Values.acestream.gluetun.portForwarding.enabled }}
+            - name: VPN_PORT_FORWARDING
+              value: "on"
+            {{- if .Values.acestream.gluetun.portForwarding.provider }}
+            - name: VPN_PORT_FORWARDING_PROVIDER
+              value: {{ .Values.acestream.gluetun.portForwarding.provider | quote }}
+            {{- end }}
+            - name: VPN_PORT_FORWARDING_STATUS_FILE
+              value: "/tmp/gluetun/forwarded_port"
+            {{- end }}
+          {{- if and .Values.acestream.gluetun.enabled .Values.acestream.gluetun.portForwarding.enabled }}
+          volumeMounts:
+            - name: port-forwarding-scripts
+              mountPath: /gluetun/port-forwarding.sh
+              subPath: on_port_forward.sh
+            - name: gluetun-tmp
+              mountPath: /tmp
+          {{- end }}
           ports:
             - name: http
               containerPort: 6878
