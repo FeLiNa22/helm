@@ -79,14 +79,7 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.qbittorrent.persistence.downloads.existingClaim | default (printf "%s-qbittorrent-downloads" .Release.Name) }}
         {{- end }}
-        {{- if and .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.portForwarding.enabled }}
-        - name: port-forwarding-scripts
-          configMap:
-            name: {{ .Release.Name }}-qbittorrent-port-forwarding
-            defaultMode: 0755
-        - name: gluetun-tmp
-          emptyDir: {}
-        {{- end }}
+
       containers:
       {{- if .Values.qbittorrent.gluetun.enabled }}
         - name: gluetun
@@ -130,17 +123,13 @@ spec:
             - name: VPN_PORT_FORWARDING_PROVIDER
               value: {{ .Values.qbittorrent.gluetun.portForwarding.provider | quote }}
             {{- end }}
-            - name: VPN_PORT_FORWARDING_STATUS_FILE
-              value: "/tmp/gluetun/forwarded_port"
+            # Use gluetun's built-in command to configure qBittorrent via its API
+            # This requires qBittorrent to have "Bypass authentication for clients on localhost" enabled
+            - name: VPN_PORT_FORWARDING_UP_COMMAND
+              value: '/bin/sh -c "wget -O- --retry-connrefused --post-data \"json={\\\"listen_port\\\":{{ "{{PORT}}" }},\\\"random_port\\\":false,\\\"upnp\\\":false}\" http://127.0.0.1:{{ .Values.qbittorrent.service.web.port | default 8080 }}/api/v2/app/setPreferences 2>&1"'
+            - name: VPN_PORT_FORWARDING_DOWN_COMMAND
+              value: '/bin/sh -c "wget -O- --retry-connrefused --post-data \"json={\\\"listen_port\\\":0}\" http://127.0.0.1:{{ .Values.qbittorrent.service.web.port | default 8080 }}/api/v2/app/setPreferences 2>&1"'
             {{- end }}
-          {{- if and .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.portForwarding.enabled }}
-          volumeMounts:
-            - name: port-forwarding-scripts
-              mountPath: /gluetun/port-forwarding.sh
-              subPath: on_port_forward.sh
-            - name: gluetun-tmp
-              mountPath: /tmp
-          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.qbittorrent.service.web.port | default 8080 }}
@@ -172,25 +161,6 @@ spec:
             {{- toYaml .Values.qbittorrent.securityContext | nindent 12 }}
           image: "{{ .Values.qbittorrent.image.repository }}:{{ .Values.qbittorrent.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.qbittorrent.image.pullPolicy }}
-          {{- if and .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.portForwarding.enabled }}
-          command:
-            - /bin/bash
-            - -c
-            - |
-              # Read the forwarded port from the file if it exists
-              if [ -f /tmp/gluetun_forwarded_port ]; then
-                PORT=$(cat /tmp/gluetun_forwarded_port)
-                # Validate that the port is a number and in valid range
-                if [ -n "$PORT" ] && [ "$PORT" -eq "$PORT" ] 2>/dev/null && [ "$PORT" -ge 1024 ] && [ "$PORT" -le 65535 ]; then
-                  export TORRENTING_PORT="$PORT"
-                  echo "Using TORRENTING_PORT=${TORRENTING_PORT} from gluetun port forwarding"
-                else
-                  echo "Warning: Invalid port value in /tmp/gluetun_forwarded_port: '$PORT'"
-                fi
-              fi
-              # Start the container's normal entrypoint
-              exec /init
-          {{- end }}
           volumeMounts:
             - mountPath: /config
               name: config
@@ -209,10 +179,6 @@ spec:
           {{- end }}
           {{- if .Values.qbittorrent.persistence.additionalMounts }}
             {{- .Values.qbittorrent.persistence.additionalMounts | toYaml | nindent 12 }}
-          {{- end }}
-          {{- if and .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.portForwarding.enabled }}
-            - name: gluetun-tmp
-              mountPath: /tmp
           {{- end }}
         {{- if not .Values.qbittorrent.gluetun.enabled }}
           ports:

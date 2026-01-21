@@ -54,14 +54,6 @@ spec:
         {{- if .Values.acestream.persistence.additionalVolumes }}
           {{- .Values.acestream.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
-        {{- if and .Values.acestream.gluetun.enabled .Values.acestream.gluetun.portForwarding.enabled }}
-        - name: port-forwarding-scripts
-          configMap:
-            name: {{ .Release.Name }}-acestream-port-forwarding
-            defaultMode: 0755
-        - name: gluetun-tmp
-          emptyDir: {}
-        {{- end }}
       containers:
       {{- if .Values.acestream.gluetun.enabled }}
         - name: gluetun
@@ -105,17 +97,11 @@ spec:
             - name: VPN_PORT_FORWARDING_PROVIDER
               value: {{ .Values.acestream.gluetun.portForwarding.provider | quote }}
             {{- end }}
-            - name: VPN_PORT_FORWARDING_STATUS_FILE
-              value: "/tmp/gluetun/forwarded_port"
+            # Redirect the forwarded VPN port to acestream's UDP port 8621
+            # This allows incoming P2P connections on the VPN-assigned port to reach acestream
+            - name: VPN_PORT_FORWARDING_LISTENING_PORT
+              value: "8621"
             {{- end }}
-          {{- if and .Values.acestream.gluetun.enabled .Values.acestream.gluetun.portForwarding.enabled }}
-          volumeMounts:
-            - name: port-forwarding-scripts
-              mountPath: /gluetun/port-forwarding.sh
-              subPath: on_port_forward.sh
-            - name: gluetun-tmp
-              mountPath: /tmp
-          {{- end }}
           ports:
             - name: http
               containerPort: 6878
