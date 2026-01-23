@@ -226,7 +226,7 @@ postgresql:
   auth:
     database: immich
     username: immich
-    password: ""
+    password: "immich"
     postgresPassword: ""
     existingSecret: ""
   # Use PostgreSQL with pgvecto-rs extension

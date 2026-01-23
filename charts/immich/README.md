@@ -20,6 +20,24 @@ helm dependency update ./immich
 helm install immich ./immich
 ```
 
+## Security Considerations
+
+**⚠️ IMPORTANT**: The default PostgreSQL password is set to `immich` for ease of deployment. **You should change this password in production environments** by setting a custom password in your values file:
+
+```yaml
+postgresql:
+  auth:
+    password: "your-secure-password-here"
+```
+
+Alternatively, use an existing Kubernetes secret:
+
+```yaml
+postgresql:
+  auth:
+    existingSecret: "your-postgresql-secret"
+```
+
 ## Configuration
 
 See `values.yaml` for configuration options.
@@ -143,7 +161,7 @@ ingress:
 | `postgresql.architecture` | PostgreSQL architecture | `standalone` |
 | `postgresql.auth.database` | Database name | `immich` |
 | `postgresql.auth.username` | Database username | `immich` |
-| `postgresql.auth.password` | Database password | `""` (auto-generated) |
+| `postgresql.auth.password` | Database password | `"immich"` (change in production) |
 | `postgresql.image.repository` | PostgreSQL image with pgvector | `tensorchord/pgvecto-rs` |
 | `postgresql.image.tag` | PostgreSQL image tag | `pg16-v0.4.0` |
 | `postgresql.primary.persistence.enabled` | Enable PostgreSQL persistence | `true` |
