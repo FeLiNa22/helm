@@ -176,8 +176,8 @@ ingress:
 |------|-------------|-------|
 | `database.enabled` | Deploy CloudNative-PG PostgreSQL | `true` |
 | `database.instances` | Number of PostgreSQL instances | `3` |
-| `database.image.repository` | PostgreSQL image with pgvector | `ghcr.io/cloudnative-pg/postgresql` |
-| `database.image.tag` | PostgreSQL image tag | `16.6` |
+| `database.image.repository` | PostgreSQL image with pgvector | `ghcr.io/tensorchord/cloudnative-pgvecto.rs` |
+| `database.image.tag` | PostgreSQL image tag | `16.6-v0.4.0` |
 | `database.database` | Database name | `immich` |
 | `database.owner` | Database owner | `immich` |
 | `database.storage.size` | PostgreSQL volume size | `10Gi` |

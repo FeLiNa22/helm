@@ -265,8 +265,8 @@ database:
   enabled: true
   instances: 3
   image:
-    repository: ghcr.io/cloudnative-pg/postgresql
-    tag: "16.6"
+    repository: ghcr.io/tensorchord/cloudnative-pgvecto.rs
+    tag: "16.6-v0.4.0"
   database: immich
   owner: immich
   storage:
