@@ -84,12 +84,16 @@ spec:
               value: {{ include "immich.redis.host" . }}
             - name: REDIS_PORT
               value: {{ include "immich.redis.port" . | quote }}
-            {{- if .Values.redis.auth.enabled }}
+            {{- if or (and .Values.valkey.enabled .Values.valkey.auth.enabled) (and .Values.redis.enabled .Values.redis.auth.enabled) }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "immich.redis.secretName" . }}
+                  {{- if .Values.valkey.enabled }}
+                  key: valkey-password
+                  {{- else }}
                   key: redis-password
+                  {{- end }}
             {{- end }}
             {{- if .Values.machineLearning.enabled }}
             # Machine Learning connection

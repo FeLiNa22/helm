@@ -62,10 +62,19 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
+Database cluster name
+*/}}
+{{- define "immich.database.name" -}}
+{{- printf "%s-immich-db" .Release.Name }}
+{{- end }}
+
+{{/*
 PostgreSQL host
 */}}
 {{- define "immich.postgresql.host" -}}
-{{- if .Values.postgresql.enabled }}
+{{- if .Values.database.enabled }}
+{{- printf "%s-rw" (include "immich.database.name" .) }}
+{{- else if .Values.postgresql.enabled }}
 {{- printf "%s-postgresql" .Release.Name }}
 {{- else }}
 {{- .Values.postgresql.external.host }}
@@ -87,7 +96,9 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "immich.postgresql.database" -}}
-{{- if .Values.postgresql.enabled }}
+{{- if .Values.database.enabled }}
+{{- .Values.database.database }}
+{{- else if .Values.postgresql.enabled }}
 {{- .Values.postgresql.auth.database }}
 {{- else }}
 {{- .Values.postgresql.external.database }}
@@ -98,7 +109,9 @@ PostgreSQL database name
 PostgreSQL username
 */}}
 {{- define "immich.postgresql.username" -}}
-{{- if .Values.postgresql.enabled }}
+{{- if .Values.database.enabled }}
+{{- .Values.database.owner }}
+{{- else if .Values.postgresql.enabled }}
 {{- .Values.postgresql.auth.username }}
 {{- else }}
 {{- .Values.postgresql.external.username }}
@@ -109,7 +122,13 @@ PostgreSQL username
 PostgreSQL secret name
 */}}
 {{- define "immich.postgresql.secretName" -}}
-{{- if .Values.postgresql.enabled }}
+{{- if .Values.database.enabled }}
+{{- if .Values.database.secret.name }}
+{{- .Values.database.secret.name }}
+{{- else }}
+{{- printf "%s-immich-db-app" .Release.Name }}
+{{- end }}
+{{- else if .Values.postgresql.enabled }}
 {{- if .Values.postgresql.auth.existingSecret }}
 {{- .Values.postgresql.auth.existingSecret }}
 {{- else }}
@@ -135,7 +154,9 @@ PostgreSQL secret key
 Redis host
 */}}
 {{- define "immich.redis.host" -}}
-{{- if .Values.redis.enabled }}
+{{- if .Values.valkey.enabled }}
+{{- printf "%s-valkey" (include "immich.fullname" .) }}
+{{- else if .Values.redis.enabled }}
 {{- printf "%s-redis-master" .Release.Name }}
 {{- else }}
 {{- .Values.redis.external.host }}
@@ -146,7 +167,7 @@ Redis host
 Redis port
 */}}
 {{- define "immich.redis.port" -}}
-{{- if .Values.redis.enabled }}
+{{- if or .Values.valkey.enabled .Values.redis.enabled }}
 {{- "6379" }}
 {{- else }}
 {{- .Values.redis.external.port | default "6379" }}
@@ -157,9 +178,18 @@ Redis port
 Redis secret name
 */}}
 {{- define "immich.redis.secretName" -}}
-{{- if .Values.redis.enabled }}
+{{- if .Values.valkey.enabled }}
+{{- .Values.valkey.auth.existingSecret | default (printf "%s-valkey" .Release.Name) }}
+{{- else if .Values.redis.enabled }}
 {{- printf "%s-redis" .Release.Name }}
 {{- else }}
 {{- .Values.redis.external.existingSecret }}
 {{- end }}
+{{- end }}
+
+{{/*
+Valkey secret name
+*/}}
+{{- define "immich.valkey.secretName" -}}
+{{- .Values.valkey.auth.existingSecret | default (printf "%s-valkey" .Release.Name) }}
 {{- end }}

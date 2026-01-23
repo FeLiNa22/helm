@@ -176,31 +176,119 @@ persistence:
   additionalVolumes: []
   additionalMounts: []
 
-## @section Redis parameters
+## @section Valkey parameters
+## Valkey (Redis-compatible) is required for Immich's job queue and caching
+
+## @param valkey.enabled Whether to deploy Valkey for high availability.
+## @param valkey.replicas Number of Valkey replicas for high availability.
+## @param valkey.image.repository Valkey container image repository.
+## @param valkey.image.tag Valkey container image tag.
+## @param valkey.image.pullPolicy Valkey image pull policy.
+## @param valkey.auth.enabled Enable or disable authentication for Valkey.
+## @param valkey.auth.password Valkey password (leave empty to auto-generate).
+## @param valkey.auth.existingSecret Secret name for existing Valkey password.
+## @param valkey.maxmemory Maximum memory for Valkey.
+## @param valkey.maxmemoryPolicy Memory eviction policy for Valkey.
+## @param valkey.persistence.enabled Enable persistence for Valkey.
+## @param valkey.persistence.size Size of the Valkey persistence volume.
+## @param valkey.persistence.storageClass Storage class name for Valkey persistent volumes.
+## @param valkey.resources Resource limits and requests for Valkey.
+##
+valkey:
+  enabled: true
+  replicas: 3
+  image:
+    repository: valkey/valkey
+    tag: "8.0"
+    pullPolicy: IfNotPresent
+  auth:
+    enabled: false
+    password: ""
+    existingSecret: ""
+  maxmemory: "256mb"
+  maxmemoryPolicy: "allkeys-lru"
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: ""
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 256Mi
+
+## @section Redis parameters (DEPRECATED - use Valkey instead)
 ## Redis is required for Immich's job queue and caching
 
-## @param redis.enabled Whether to deploy the Redis subchart.
+## @param redis.enabled Whether to deploy the Redis subchart (DEPRECATED - use valkey.enabled instead).
 ## @param redis.architecture Redis deployment architecture: 'standalone' or 'replication'.
 ## @param redis.auth.enabled Enable or disable authentication for Redis.
-## @param redis.external.host Hostname of external Redis (when redis.enabled=false).
+## @param redis.external.host Hostname of external Redis (when redis.enabled=false and valkey.enabled=false).
 ## @param redis.external.port Port of external Redis.
 ## @param redis.external.existingSecret Secret name for external Redis password.
 ##
 redis:
-  enabled: true
+  enabled: false
   architecture: standalone
   auth:
     enabled: false
-  # External Redis configuration (used when redis.enabled=false)
+  # External Redis configuration (used when both redis.enabled=false and valkey.enabled=false)
   external:
     host: ""
     port: 6379
     existingSecret: ""
 
-## @section PostgreSQL parameters
+## @section Database parameters
+## CloudNative-PG PostgreSQL cluster with pgvector extension is required for Immich
+
+## @param database.enabled Whether to deploy CloudNative-PG PostgreSQL cluster.
+## @param database.instances Number of PostgreSQL instances (replicas) for high availability.
+## @param database.image.repository PostgreSQL container image repository.
+## @param database.image.tag PostgreSQL container image tag.
+## @param database.database Name of the database to create.
+## @param database.owner Owner of the database.
+## @param database.storage.size Size of the storage for each PostgreSQL instance.
+## @param database.storage.storageClass Storage class name for PostgreSQL persistent volumes.
+## @param database.secret.name Name of the secret containing database credentials.
+## @param database.secret.create Whether to create the database secret.
+## @param database.secret.username Database user username.
+## @param database.secret.password Database user password (leave empty to auto-generate).
+## @param database.superuserSecret.name Name of the secret containing the superuser credentials.
+## @param database.superuserSecret.create Whether to create the superuser secret.
+## @param database.superuserSecret.username Superuser username.
+## @param database.superuserSecret.password Superuser password (leave empty to auto-generate).
+## @param database.monitoring.enablePodMonitor Enable Prometheus PodMonitor for monitoring.
+##
+database:
+  enabled: true
+  instances: 3
+  image:
+    repository: ghcr.io/cloudnative-pg/postgresql
+    tag: "16.6"
+  database: immich
+  owner: immich
+  storage:
+    size: 10Gi
+    storageClass: ""
+  secret:
+    name: ""
+    create: true
+    username: immich
+    password: ""
+  superuserSecret:
+    name: ""
+    create: true
+    username: postgres
+    password: ""
+  monitoring:
+    enablePodMonitor: false
+
+## @section PostgreSQL parameters (DEPRECATED - use database instead)
 ## PostgreSQL with pgvector/vectorchord extension is required for Immich
 
-## @param postgresql.enabled Whether to deploy the PostgreSQL subchart.
+## @param postgresql.enabled Whether to deploy the PostgreSQL subchart (DEPRECATED - use database.enabled instead).
 ## @param postgresql.architecture PostgreSQL deployment architecture: 'standalone' or 'replication'.
 ## @param postgresql.auth.database Name of the default database.
 ## @param postgresql.auth.username Username for the default database.
@@ -213,7 +301,7 @@ redis:
 ## @param postgresql.primary.initdb.scripts.init-extensions.sql SQL script to initialize PostgreSQL extensions.
 ## @param postgresql.primary.persistence.enabled Whether to enable persistence for PostgreSQL.
 ## @param postgresql.primary.persistence.size Size of the PostgreSQL persistence volume.
-## @param postgresql.external.host Hostname of external PostgreSQL (when postgresql.enabled=false).
+## @param postgresql.external.host Hostname of external PostgreSQL (when postgresql.enabled=false and database.enabled=false).
 ## @param postgresql.external.port Port of external PostgreSQL.
 ## @param postgresql.external.database Database name of external PostgreSQL.
 ## @param postgresql.external.username Username of external PostgreSQL.
@@ -221,7 +309,7 @@ redis:
 ## @param postgresql.external.secretKey Key in the secret for the password.
 ##
 postgresql:
-  enabled: true
+  enabled: false
   architecture: standalone
   auth:
     database: immich
@@ -244,7 +332,7 @@ postgresql:
     persistence:
       enabled: true
       size: 10Gi
-  # External PostgreSQL configuration (used when postgresql.enabled=false)
+  # External PostgreSQL configuration (used when both postgresql.enabled=false and database.enabled=false)
   external:
     host: ""
     port: 5432

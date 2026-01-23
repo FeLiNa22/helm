@@ -7,17 +7,26 @@ This Helm chart deploys Immich, a high performance self-hosted photo and video m
 - Kubernetes 1.20+
 - Helm 3.0+
 - PV provisioner support in the underlying infrastructure (for persistence)
+- **CloudNative-PG Operator** must be installed in the cluster for database HA (install from https://cloudnative-pg.io)
 
 ## Installation
 
-Add the chart dependencies and install:
+First, install the CloudNative-PG operator:
 
 ```bash
-# Update dependencies
-helm dependency update ./immich
+# Add the CloudNative-PG Helm repository
+helm repo add cnpg https://cloudnative-pg.github.io/charts
+helm repo update
 
+# Install the operator
+helm install cnpg cnpg/cloudnative-pg --create-namespace --namespace cnpg-system
+```
+
+Then install Immich:
+
+```bash
 # Install the chart
-helm install immich ./immich
+helm install immich ./charts/immich
 ```
 
 ## Configuration
@@ -30,17 +39,28 @@ This chart deploys the following components:
 
 1. **Immich Server** - The main application server
 2. **Machine Learning** - ML service for face recognition and smart search (optional)
-3. **PostgreSQL** - Database with pgvector extension (via Bitnami subchart)
-4. **Redis** - Cache and job queue (via Bitnami subchart)
+3. **CloudNative-PG PostgreSQL Cluster** - Highly available database with pgvector extension (3 instances by default)
+4. **Valkey** - Highly available Redis-compatible cache and job queue (3 replicas by default)
+
+### High Availability
+
+This chart is designed for high availability with:
+
+- **CloudNative-PG PostgreSQL**: Provides automatic failover, point-in-time recovery, and streaming replication. Default configuration runs 3 instances.
+- **Valkey StatefulSet**: Runs multiple Valkey replicas for redundancy. Default configuration runs 3 replicas.
+
+Both components support horizontal scaling and automatic failover when a node goes down.
 
 ### Using External Services
 
-If you want to use external PostgreSQL or Redis instances, you can disable the subcharts:
+If you want to use external PostgreSQL or Redis/Valkey instances, you can disable the built-in services:
 
 ```yaml
 # values.yaml
-postgresql:
+database:
   enabled: false
+
+postgresql:
   external:
     host: "your-postgresql-host"
     port: 5432
@@ -49,8 +69,10 @@ postgresql:
     existingSecret: "your-postgresql-secret"
     secretKey: "password"
 
-redis:
+valkey:
   enabled: false
+
+redis:
   external:
     host: "your-redis-host"
     port: 6379
@@ -127,19 +149,45 @@ ingress:
 | `persistence.library.accessMode` | Access mode | `ReadWriteOnce` |
 | `persistence.library.size` | Volume size | `100Gi` |
 
-### Redis parameters
+### Valkey parameters
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `redis.enabled` | Deploy Redis subchart | `true` |
+| `valkey.enabled` | Deploy Valkey for high availability | `true` |
+| `valkey.replicas` | Number of Valkey replicas | `3` |
+| `valkey.image.repository` | Valkey image repository | `valkey/valkey` |
+| `valkey.image.tag` | Valkey image tag | `8.0` |
+| `valkey.auth.enabled` | Enable Valkey authentication | `false` |
+| `valkey.persistence.enabled` | Enable Valkey persistence | `true` |
+| `valkey.persistence.size` | Valkey volume size | `1Gi` |
+| `valkey.maxmemory` | Maximum memory for Valkey | `256mb` |
+
+### Redis parameters (DEPRECATED)
+
+| Name | Description | Value |
+|------|-------------|-------|
+| `redis.enabled` | Deploy Redis subchart (use valkey instead) | `false` |
 | `redis.architecture` | Redis architecture | `standalone` |
 | `redis.auth.enabled` | Enable Redis authentication | `false` |
 
-### PostgreSQL parameters
+### Database parameters
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `postgresql.enabled` | Deploy PostgreSQL subchart | `true` |
+| `database.enabled` | Deploy CloudNative-PG PostgreSQL | `true` |
+| `database.instances` | Number of PostgreSQL instances | `3` |
+| `database.image.repository` | PostgreSQL image with pgvector | `ghcr.io/cloudnative-pg/postgresql` |
+| `database.image.tag` | PostgreSQL image tag | `16.6` |
+| `database.database` | Database name | `immich` |
+| `database.owner` | Database owner | `immich` |
+| `database.storage.size` | PostgreSQL volume size | `10Gi` |
+| `database.monitoring.enablePodMonitor` | Enable Prometheus monitoring | `false` |
+
+### PostgreSQL parameters (DEPRECATED)
+
+| Name | Description | Value |
+|------|-------------|-------|
+| `postgresql.enabled` | Deploy PostgreSQL subchart (use database instead) | `false` |
 | `postgresql.architecture` | PostgreSQL architecture | `standalone` |
 | `postgresql.auth.database` | Database name | `immich` |
 | `postgresql.auth.username` | Database username | `immich` |
@@ -150,6 +198,32 @@ ingress:
 | `postgresql.primary.persistence.size` | PostgreSQL volume size | `10Gi` |
 
 ## Upgrading
+
+### To 1.3.0
+
+This version introduces high availability support by switching from Bitnami subcharts to CloudNative-PG and Valkey:
+
+- **Database**: Replaces Bitnami PostgreSQL subchart with CloudNative-PG cluster (3 instances by default)
+- **Cache/Queue**: Replaces Bitnami Redis subchart with Valkey StatefulSet (3 replicas by default)
+- **High Availability**: Both components now support automatic failover and horizontal scaling
+- **Prerequisite**: CloudNative-PG operator must be installed before upgrading
+
+**Breaking Changes:**
+- Database and Redis configuration has changed significantly
+- Chart dependencies removed (no longer uses Helm subcharts)
+- Service names have changed:
+  - PostgreSQL: `<release>-postgresql` → `<release>-immich-db-rw` (read-write) and `<release>-immich-db-r` (read-only)
+  - Redis: `<release>-redis-master` → `<release>-immich-valkey`
+
+To migrate from version 1.2.x:
+1. Install CloudNative-PG operator (see Installation section above)
+2. Backup your data using Immich's backup tools
+3. Note your current PostgreSQL credentials
+4. Uninstall the old release: `helm uninstall <release>`
+5. Install the new version with appropriate configuration
+6. Restore your data if necessary
+
+For backwards compatibility, the old `postgresql` and `redis` configuration sections are still supported but deprecated. Set `database.enabled=false` and `postgresql.enabled=true` to use the old Bitnami PostgreSQL, or `valkey.enabled=false` and `redis.enabled=true` to use the old Bitnami Redis.
 
 ### To 2.0.0
 

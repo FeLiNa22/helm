@@ -1,0 +1,157 @@
+{{- if .Values.valkey.enabled }}
+{{- $fullName := include "immich.fullname" . -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $fullName }}-valkey
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: valkey
+spec:
+  serviceName: {{ $fullName }}-valkey-headless
+  replicas: {{ .Values.valkey.replicas }}
+  selector:
+    matchLabels:
+      {{- include "immich.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: valkey
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "immich.labels" . | nindent 8 }}
+        app.kubernetes.io/component: valkey
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "immich.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: valkey
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.valkey.image.repository }}:{{ .Values.valkey.image.tag }}"
+          imagePullPolicy: {{ .Values.valkey.image.pullPolicy }}
+          ports:
+            - name: valkey
+              containerPort: 6379
+              protocol: TCP
+          {{- if .Values.valkey.auth.enabled }}
+          env:
+            - name: VALKEY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "immich.valkey.secretName" . }}
+                  key: valkey-password
+          {{- end }}
+          command:
+            - valkey-server
+          args:
+            {{- if .Values.valkey.auth.enabled }}
+            - --requirepass $(VALKEY_PASSWORD)
+            {{- end }}
+            - --appendonly yes
+            - --appendfsync everysec
+            - --maxmemory {{ .Values.valkey.maxmemory }}
+            - --maxmemory-policy {{ .Values.valkey.maxmemoryPolicy }}
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                {{- if .Values.valkey.auth.enabled }}
+                - valkey-cli -a "$VALKEY_PASSWORD" ping | grep PONG
+                {{- else }}
+                - valkey-cli ping | grep PONG
+                {{- end }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                {{- if .Values.valkey.auth.enabled }}
+                - valkey-cli -a "$VALKEY_PASSWORD" ping | grep PONG
+                {{- else }}
+                - valkey-cli ping | grep PONG
+                {{- end }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            {{- toYaml .Values.valkey.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        {{- if .Values.valkey.persistence.storageClass }}
+        storageClassName: {{ .Values.valkey.persistence.storageClass | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.valkey.persistence.size }}
+---
+# Headless service for StatefulSet DNS
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-valkey-headless
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: valkey
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 6379
+      targetPort: valkey
+      protocol: TCP
+      name: valkey
+  selector:
+    {{- include "immich.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: valkey
+---
+# Client service for connections
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-valkey
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: valkey
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: valkey
+      protocol: TCP
+      name: valkey
+  selector:
+    {{- include "immich.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: valkey
+{{- end }}
