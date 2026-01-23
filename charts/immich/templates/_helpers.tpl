@@ -85,7 +85,7 @@ PostgreSQL host
 PostgreSQL port
 */}}
 {{- define "immich.postgresql.port" -}}
-{{- if .Values.postgresql.enabled }}
+{{- if or .Values.database.enabled .Values.postgresql.enabled }}
 {{- "5432" }}
 {{- else }}
 {{- .Values.postgresql.external.port | default "5432" }}
@@ -143,7 +143,9 @@ PostgreSQL secret name
 PostgreSQL secret key
 */}}
 {{- define "immich.postgresql.secretKey" -}}
-{{- if .Values.postgresql.enabled }}
+{{- if .Values.database.enabled }}
+{{- "password" }}
+{{- else if .Values.postgresql.enabled }}
 {{- "password" }}
 {{- else }}
 {{- .Values.postgresql.external.secretKey | default "password" }}
