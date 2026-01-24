@@ -39,17 +39,46 @@ spec:
       serviceAccountName: {{ .Values.lidarr.serviceAccount.name | default (printf "%s-lidarr" .Release.Name) }}
       securityContext:
         {{- toYaml .Values.lidarr.podSecurityContext | nindent 8 }}
-      {{- if and .Values.media.enabled .Values.lidarr.persistence.enabled }}
+      {{- if or (and .Values.media.enabled .Values.lidarr.persistence.enabled) (eq .Values.lidarr.database.mode "external") .Values.lidarr.initContainers }}
       initContainers:
+        {{- if and .Values.media.enabled .Values.lidarr.persistence.enabled }}
         - name: init-directories
           image: busybox
           command: ['sh', '-c', 'mkdir -p /media/{{ .Values.media.paths.music }} /media/{{ .Values.media.paths.downloads }} && chown -R 1000:1000 /media/{{ .Values.media.paths.music }} /media/{{ .Values.media.paths.downloads }}']
           volumeMounts:
             - name: media
               mountPath: /media
-      {{- if .Values.lidarr.initContainers }}
+        {{- end }}
+        {{- if eq .Values.lidarr.database.mode "external" }}
+        - name: init-config
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              cp /config-template/config.xml /config/config.xml
+              sed -i "s/__DB_PASSWORD__/${DB_PASSWORD}/g" /config/config.xml
+              chown 1000:1000 /config/config.xml
+          env:
+            {{- if .Values.lidarr.database.existingSecret }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.lidarr.database.existingSecret }}
+                  key: password
+            {{- else }}
+            - name: DB_PASSWORD
+              value: {{ .Values.lidarr.database.password | quote }}
+            {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: config-template
+              mountPath: /config-template
+        {{- end }}
+        {{- if .Values.lidarr.initContainers }}
         {{- toYaml .Values.lidarr.initContainers | nindent 8 }}
-      {{- end }}
+        {{- end }}
       {{- end }}
       volumes:
         - name: config
@@ -59,6 +88,11 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if eq .Values.lidarr.database.mode "external" }}
+        - name: config-template
+          configMap:
+            name: {{ .Release.Name }}-lidarr-config
+        {{- end }}
         {{- if .Values.lidarr.persistence.cache.enabled }}
         - name: cache
           emptyDir:

@@ -39,17 +39,46 @@ spec:
       serviceAccountName: {{ .Values.sonarr.serviceAccount.name | default (printf "%s-sonarr" .Release.Name) }}
       securityContext:
         {{- toYaml .Values.sonarr.podSecurityContext | nindent 8 }}
-      {{- if and .Values.media.enabled .Values.sonarr.persistence.enabled }}
+      {{- if or (and .Values.media.enabled .Values.sonarr.persistence.enabled) (eq .Values.sonarr.database.mode "external") .Values.sonarr.initContainers }}
       initContainers:
+        {{- if and .Values.media.enabled .Values.sonarr.persistence.enabled }}
         - name: init-directories
           image: busybox
           command: ['sh', '-c', 'mkdir -p /media/{{ .Values.media.paths.tv }} /media/{{ .Values.media.paths.downloads }} && chown -R 1000:1000 /media/{{ .Values.media.paths.tv }} /media/{{ .Values.media.paths.downloads }}']
           volumeMounts:
             - name: media
               mountPath: /media
-      {{- if .Values.sonarr.initContainers }}
+        {{- end }}
+        {{- if eq .Values.sonarr.database.mode "external" }}
+        - name: init-config
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              cp /config-template/config.xml /config/config.xml
+              sed -i "s/__DB_PASSWORD__/${DB_PASSWORD}/g" /config/config.xml
+              chown 1000:1000 /config/config.xml
+          env:
+            {{- if .Values.sonarr.database.existingSecret }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.sonarr.database.existingSecret }}
+                  key: password
+            {{- else }}
+            - name: DB_PASSWORD
+              value: {{ .Values.sonarr.database.password | quote }}
+            {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: config-template
+              mountPath: /config-template
+        {{- end }}
+        {{- if .Values.sonarr.initContainers }}
         {{- toYaml .Values.sonarr.initContainers | nindent 8 }}
-      {{- end }}
+        {{- end }}
       {{- end }}
       volumes:
         - name: config
@@ -59,6 +88,11 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if eq .Values.sonarr.database.mode "external" }}
+        - name: config-template
+          configMap:
+            name: {{ .Release.Name }}-sonarr-config
+        {{- end }}
         {{- if .Values.sonarr.persistence.cache.enabled }}
         - name: cache
           emptyDir:

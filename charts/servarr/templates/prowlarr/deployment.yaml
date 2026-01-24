@@ -39,9 +39,38 @@ spec:
       serviceAccountName: {{ .Values.prowlarr.serviceAccount.name | default (printf "%s-prowlarr" .Release.Name) }}
       securityContext:
         {{- toYaml .Values.prowlarr.podSecurityContext | nindent 8 }}
-      {{- if .Values.prowlarr.initContainers }}
+      {{- if or (eq .Values.prowlarr.database.mode "external") .Values.prowlarr.initContainers }}
       initContainers:
+        {{- if eq .Values.prowlarr.database.mode "external" }}
+        - name: init-config
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              cp /config-template/config.xml /config/config.xml
+              sed -i "s/__DB_PASSWORD__/${DB_PASSWORD}/g" /config/config.xml
+              chown 1000:1000 /config/config.xml
+          env:
+            {{- if .Values.prowlarr.database.existingSecret }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.prowlarr.database.existingSecret }}
+                  key: password
+            {{- else }}
+            - name: DB_PASSWORD
+              value: {{ .Values.prowlarr.database.password | quote }}
+            {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: config-template
+              mountPath: /config-template
+        {{- end }}
+        {{- if .Values.prowlarr.initContainers }}
         {{- toYaml .Values.prowlarr.initContainers | nindent 8 }}
+        {{- end }}
       {{- end }}
       volumes:
         - name: config
@@ -51,6 +80,11 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if eq .Values.prowlarr.database.mode "external" }}
+        - name: config-template
+          configMap:
+            name: {{ .Release.Name }}-prowlarr-config
+        {{- end }}
         {{- if .Values.prowlarr.persistence.cache.enabled }}
         - name: cache
           emptyDir:

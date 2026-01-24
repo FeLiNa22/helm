@@ -1,0 +1,36 @@
+{{- if and .Values.lidarr.enabled (eq .Values.lidarr.database.mode "external") }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-lidarr-config
+  labels:
+    app.kubernetes.io/name: lidarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-lidarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+data:
+  config.xml: |
+    <Config>
+      <BindAddress>*</BindAddress>
+      <Port>8686</Port>
+      <SslPort>6868</SslPort>
+      <EnableSsl>False</EnableSsl>
+      <LaunchBrowser>True</LaunchBrowser>
+      <AuthenticationMethod>External</AuthenticationMethod>
+      <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
+      <Branch>master</Branch>
+      <LogLevel>info</LogLevel>
+      <SslCertPath></SslCertPath>
+      <SslCertPassword></SslCertPassword>
+      <UrlBase></UrlBase>
+      <InstanceName>Lidarr</InstanceName>
+      <UpdateMechanism>Docker</UpdateMechanism>
+      <PostgresUser>{{ .Values.lidarr.database.username }}</PostgresUser>
+      <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
+      <PostgresHost>{{ .Values.lidarr.database.host }}</PostgresHost>
+      <PostgresPort>{{ .Values.lidarr.database.port }}</PostgresPort>
+      <PostgresMainDb>{{ .Values.lidarr.database.mainDatabase }}</PostgresMainDb>
+      <PostgresLogDb>{{ .Values.lidarr.database.logDatabase }}</PostgresLogDb>
+    </Config>
+{{- end }}

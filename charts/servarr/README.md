@@ -173,6 +173,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sonarr.persistence.cache.size`                        | Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.                              | `""`                         |
 | `sonarr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                         |
 | `sonarr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                         |
+| `sonarr.database.mode`                                 | Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database.                                 | `standalone`                 |
+| `sonarr.database.host`                                 | Hostname of the external PostgreSQL database (required when mode is 'external').                                                    | `""`                         |
+| `sonarr.database.port`                                 | Port of the external PostgreSQL database.                                                                                           | `5432`                       |
+| `sonarr.database.username`                             | Username for the external PostgreSQL database.                                                                                      | `""`                         |
+| `sonarr.database.password`                             | Password for the external PostgreSQL database (ignored if existingSecret is set).                                                   | `""`                         |
+| `sonarr.database.existingSecret`                       | Name of an existing secret containing the database password (key: 'password').                                                      | `""`                         |
+| `sonarr.database.mainDatabase`                         | Name of the main database for Sonarr.                                                                                               | `sonarr-main`                |
+| `sonarr.database.logDatabase`                          | Name of the log database for Sonarr.                                                                                                | `sonarr-log`                 |
 
 ### qBittorrent parameters
 
@@ -308,6 +316,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | `prowlarr.persistence.cache.size`                        | Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.                              | `""`                           |
 | `prowlarr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                           |
 | `prowlarr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                           |
+| `prowlarr.database.mode`                                 | Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database.                                 | `standalone`                   |
+| `prowlarr.database.host`                                 | Hostname of the external PostgreSQL database (required when mode is 'external').                                                    | `""`                           |
+| `prowlarr.database.port`                                 | Port of the external PostgreSQL database.                                                                                           | `5432`                         |
+| `prowlarr.database.username`                             | Username for the external PostgreSQL database.                                                                                      | `""`                           |
+| `prowlarr.database.password`                             | Password for the external PostgreSQL database (ignored if existingSecret is set).                                                   | `""`                           |
+| `prowlarr.database.existingSecret`                       | Name of an existing secret containing the database password (key: 'password').                                                      | `""`                           |
+| `prowlarr.database.mainDatabase`                         | Name of the main database for Prowlarr.                                                                                             | `prowlarr-main`                |
+| `prowlarr.database.logDatabase`                          | Name of the log database for Prowlarr.                                                                                              | `prowlarr-log`                 |
 
 ### FlareSolverr parameters
 
@@ -548,6 +564,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | `radarr.persistence.cache.size`                        | Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.                              | `""`                         |
 | `radarr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                         |
 | `radarr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                         |
+| `radarr.database.mode`                                 | Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database.                                 | `standalone`                 |
+| `radarr.database.host`                                 | Hostname of the external PostgreSQL database (required when mode is 'external').                                                    | `""`                         |
+| `radarr.database.port`                                 | Port of the external PostgreSQL database.                                                                                           | `5432`                       |
+| `radarr.database.username`                             | Username for the external PostgreSQL database.                                                                                      | `""`                         |
+| `radarr.database.password`                             | Password for the external PostgreSQL database (ignored if existingSecret is set).                                                   | `""`                         |
+| `radarr.database.existingSecret`                       | Name of an existing secret containing the database password (key: 'password').                                                      | `""`                         |
+| `radarr.database.mainDatabase`                         | Name of the main database for Radarr.                                                                                               | `radarr-main`                |
+| `radarr.database.logDatabase`                          | Name of the log database for Radarr.                                                                                                | `radarr-log`                 |
 
 ### Lidarr parameters
 
@@ -605,6 +629,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | `lidarr.persistence.cache.size`                        | Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.                              | `""`                         |
 | `lidarr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                         |
 | `lidarr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                         |
+| `lidarr.database.mode`                                 | Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database.                                 | `standalone`                 |
+| `lidarr.database.host`                                 | Hostname of the external PostgreSQL database (required when mode is 'external').                                                    | `""`                         |
+| `lidarr.database.port`                                 | Port of the external PostgreSQL database.                                                                                           | `5432`                       |
+| `lidarr.database.username`                             | Username for the external PostgreSQL database.                                                                                      | `""`                         |
+| `lidarr.database.password`                             | Password for the external PostgreSQL database (ignored if existingSecret is set).                                                   | `""`                         |
+| `lidarr.database.existingSecret`                       | Name of an existing secret containing the database password (key: 'password').                                                      | `""`                         |
+| `lidarr.database.mainDatabase`                         | Name of the main database for Lidarr.                                                                                               | `lidarr-main`                |
+| `lidarr.database.logDatabase`                          | Name of the log database for Lidarr.                                                                                                | `lidarr-log`                 |
 
 ### Cleanuparr parameters
 
