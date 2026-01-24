@@ -173,7 +173,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sonarr.persistence.cache.size`                        | Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.                              | `""`                         |
 | `sonarr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                         |
 | `sonarr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                         |
-| `sonarr.database.mode`                                 | Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database.                                 | `standalone`                 |
+| `sonarr.database.mode`                                 | Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster. | `standalone`                 |
 | `sonarr.database.host`                                 | Hostname of the external PostgreSQL database (required when mode is 'external').                                                    | `""`                         |
 | `sonarr.database.port`                                 | Port of the external PostgreSQL database.                                                                                           | `5432`                       |
 | `sonarr.database.username`                             | Username for the external PostgreSQL database.                                                                                      | `""`                         |
@@ -181,6 +181,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sonarr.database.existingSecret`                       | Name of an existing secret containing the database password (key: 'password').                                                      | `""`                         |
 | `sonarr.database.mainDatabase`                         | Name of the main database for Sonarr.                                                                                               | `sonarr-main`                |
 | `sonarr.database.logDatabase`                          | Name of the log database for Sonarr.                                                                                                | `sonarr-log`                 |
+| `sonarr.database.cluster.instances`                    | Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').                                     | `1`                          |
+| `sonarr.database.cluster.storageClass`                 | Storage class for the CloudNativePG cluster (only used when mode is 'cluster').                                                     | `""`                         |
+| `sonarr.database.cluster.storageSize`                  | Storage size for the CloudNativePG cluster (only used when mode is 'cluster').                                                      | `5Gi`                        |
 
 ### qBittorrent parameters
 
@@ -316,7 +319,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `prowlarr.persistence.cache.size`                        | Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.                              | `""`                           |
 | `prowlarr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                           |
 | `prowlarr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                           |
-| `prowlarr.database.mode`                                 | Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database.                                 | `standalone`                   |
+| `prowlarr.database.mode`                                 | Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster. | `standalone`                   |
 | `prowlarr.database.host`                                 | Hostname of the external PostgreSQL database (required when mode is 'external').                                                    | `""`                           |
 | `prowlarr.database.port`                                 | Port of the external PostgreSQL database.                                                                                           | `5432`                         |
 | `prowlarr.database.username`                             | Username for the external PostgreSQL database.                                                                                      | `""`                           |
@@ -324,6 +327,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `prowlarr.database.existingSecret`                       | Name of an existing secret containing the database password (key: 'password').                                                      | `""`                           |
 | `prowlarr.database.mainDatabase`                         | Name of the main database for Prowlarr.                                                                                             | `prowlarr-main`                |
 | `prowlarr.database.logDatabase`                          | Name of the log database for Prowlarr.                                                                                              | `prowlarr-log`                 |
+| `prowlarr.database.cluster.instances`                    | Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').                                     | `1`                            |
+| `prowlarr.database.cluster.storageClass`                 | Storage class for the CloudNativePG cluster (only used when mode is 'cluster').                                                     | `""`                           |
+| `prowlarr.database.cluster.storageSize`                  | Storage size for the CloudNativePG cluster (only used when mode is 'cluster').                                                      | `5Gi`                          |
 
 ### FlareSolverr parameters
 
@@ -564,7 +570,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `radarr.persistence.cache.size`                        | Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.                              | `""`                         |
 | `radarr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                         |
 | `radarr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                         |
-| `radarr.database.mode`                                 | Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database.                                 | `standalone`                 |
+| `radarr.database.mode`                                 | Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster. | `standalone`                 |
 | `radarr.database.host`                                 | Hostname of the external PostgreSQL database (required when mode is 'external').                                                    | `""`                         |
 | `radarr.database.port`                                 | Port of the external PostgreSQL database.                                                                                           | `5432`                       |
 | `radarr.database.username`                             | Username for the external PostgreSQL database.                                                                                      | `""`                         |
@@ -572,6 +578,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `radarr.database.existingSecret`                       | Name of an existing secret containing the database password (key: 'password').                                                      | `""`                         |
 | `radarr.database.mainDatabase`                         | Name of the main database for Radarr.                                                                                               | `radarr-main`                |
 | `radarr.database.logDatabase`                          | Name of the log database for Radarr.                                                                                                | `radarr-log`                 |
+| `radarr.database.cluster.instances`                    | Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').                                     | `1`                          |
+| `radarr.database.cluster.storageClass`                 | Storage class for the CloudNativePG cluster (only used when mode is 'cluster').                                                     | `""`                         |
+| `radarr.database.cluster.storageSize`                  | Storage size for the CloudNativePG cluster (only used when mode is 'cluster').                                                      | `5Gi`                        |
 
 ### Lidarr parameters
 
@@ -629,7 +638,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `lidarr.persistence.cache.size`                        | Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.                              | `""`                         |
 | `lidarr.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                         |
 | `lidarr.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                         |
-| `lidarr.database.mode`                                 | Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database.                                 | `standalone`                 |
+| `lidarr.database.mode`                                 | Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster. | `standalone`                 |
 | `lidarr.database.host`                                 | Hostname of the external PostgreSQL database (required when mode is 'external').                                                    | `""`                         |
 | `lidarr.database.port`                                 | Port of the external PostgreSQL database.                                                                                           | `5432`                       |
 | `lidarr.database.username`                             | Username for the external PostgreSQL database.                                                                                      | `""`                         |
@@ -637,6 +646,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `lidarr.database.existingSecret`                       | Name of an existing secret containing the database password (key: 'password').                                                      | `""`                         |
 | `lidarr.database.mainDatabase`                         | Name of the main database for Lidarr.                                                                                               | `lidarr-main`                |
 | `lidarr.database.logDatabase`                          | Name of the log database for Lidarr.                                                                                                | `lidarr-log`                 |
+| `lidarr.database.cluster.instances`                    | Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').                                     | `1`                          |
+| `lidarr.database.cluster.storageClass`                 | Storage class for the CloudNativePG cluster (only used when mode is 'cluster').                                                     | `""`                         |
+| `lidarr.database.cluster.storageSize`                  | Storage size for the CloudNativePG cluster (only used when mode is 'cluster').                                                      | `5Gi`                        |
 
 ### Cleanuparr parameters
 

@@ -1,4 +1,4 @@
-{{- if and .Values.radarr.enabled (eq .Values.radarr.database.mode "external") }}
+{{- if and .Values.radarr.enabled (or (eq .Values.radarr.database.mode "external") (eq .Values.radarr.database.mode "cluster")) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -26,10 +26,17 @@ data:
       <UrlBase></UrlBase>
       <InstanceName>Radarr</InstanceName>
       <UpdateMechanism>Docker</UpdateMechanism>
+      {{- if eq .Values.radarr.database.mode "cluster" }}
+      <PostgresUser>radarr</PostgresUser>
+      <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
+      <PostgresHost>{{ .Release.Name }}-radarr-db-rw</PostgresHost>
+      <PostgresPort>5432</PostgresPort>
+      {{- else }}
       <PostgresUser>{{ .Values.radarr.database.username }}</PostgresUser>
       <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
       <PostgresHost>{{ .Values.radarr.database.host }}</PostgresHost>
       <PostgresPort>{{ .Values.radarr.database.port }}</PostgresPort>
+      {{- end }}
       <PostgresMainDb>{{ .Values.radarr.database.mainDatabase }}</PostgresMainDb>
       <PostgresLogDb>{{ .Values.radarr.database.logDatabase }}</PostgresLogDb>
     </Config>

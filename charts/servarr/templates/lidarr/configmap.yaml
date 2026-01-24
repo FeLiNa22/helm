@@ -1,4 +1,4 @@
-{{- if and .Values.lidarr.enabled (eq .Values.lidarr.database.mode "external") }}
+{{- if and .Values.lidarr.enabled (or (eq .Values.lidarr.database.mode "external") (eq .Values.lidarr.database.mode "cluster")) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -26,10 +26,17 @@ data:
       <UrlBase></UrlBase>
       <InstanceName>Lidarr</InstanceName>
       <UpdateMechanism>Docker</UpdateMechanism>
+      {{- if eq .Values.lidarr.database.mode "cluster" }}
+      <PostgresUser>lidarr</PostgresUser>
+      <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
+      <PostgresHost>{{ .Release.Name }}-lidarr-db-rw</PostgresHost>
+      <PostgresPort>5432</PostgresPort>
+      {{- else }}
       <PostgresUser>{{ .Values.lidarr.database.username }}</PostgresUser>
       <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
       <PostgresHost>{{ .Values.lidarr.database.host }}</PostgresHost>
       <PostgresPort>{{ .Values.lidarr.database.port }}</PostgresPort>
+      {{- end }}
       <PostgresMainDb>{{ .Values.lidarr.database.mainDatabase }}</PostgresMainDb>
       <PostgresLogDb>{{ .Values.lidarr.database.logDatabase }}</PostgresLogDb>
     </Config>

@@ -1,0 +1,27 @@
+{{- if and .Values.lidarr.enabled (eq .Values.lidarr.database.mode "cluster") }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Release.Name }}-lidarr-db
+  labels:
+    app.kubernetes.io/name: lidarr-db
+    app.kubernetes.io/instance: {{ .Release.Name }}-lidarr-db
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  instances: {{ .Values.lidarr.database.cluster.instances }}
+  
+  bootstrap:
+    initdb:
+      database: {{ .Values.lidarr.database.mainDatabase }}
+      owner: lidarr
+      postInitSQL:
+        - CREATE DATABASE "{{ .Values.lidarr.database.logDatabase }}" OWNER lidarr;
+  
+  storage:
+    {{- if .Values.lidarr.database.cluster.storageClass }}
+    storageClass: {{ .Values.lidarr.database.cluster.storageClass }}
+    {{- end }}
+    size: {{ .Values.lidarr.database.cluster.storageSize }}
+{{- end }}

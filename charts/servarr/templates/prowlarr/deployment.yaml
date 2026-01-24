@@ -39,9 +39,9 @@ spec:
       serviceAccountName: {{ .Values.prowlarr.serviceAccount.name | default (printf "%s-prowlarr" .Release.Name) }}
       securityContext:
         {{- toYaml .Values.prowlarr.podSecurityContext | nindent 8 }}
-      {{- if or (eq .Values.prowlarr.database.mode "external") .Values.prowlarr.initContainers }}
+      {{- if or (eq .Values.prowlarr.database.mode "external") (eq .Values.prowlarr.database.mode "cluster") .Values.prowlarr.initContainers }}
       initContainers:
-        {{- if eq .Values.prowlarr.database.mode "external" }}
+        {{- if or (eq .Values.prowlarr.database.mode "external") (eq .Values.prowlarr.database.mode "cluster") }}
         - name: init-config
           image: busybox
           command:
@@ -52,7 +52,13 @@ spec:
               sed -i "s/__DB_PASSWORD__/${DB_PASSWORD}/g" /config/config.xml
               chown 1000:1000 /config/config.xml
           env:
-            {{- if .Values.prowlarr.database.existingSecret }}
+            {{- if eq .Values.prowlarr.database.mode "cluster" }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-prowlarr-db-app
+                  key: password
+            {{- else if .Values.prowlarr.database.existingSecret }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -80,7 +86,7 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        {{- if eq .Values.prowlarr.database.mode "external" }}
+        {{- if or (eq .Values.prowlarr.database.mode "external") (eq .Values.prowlarr.database.mode "cluster") }}
         - name: config-template
           configMap:
             name: {{ .Release.Name }}-prowlarr-config

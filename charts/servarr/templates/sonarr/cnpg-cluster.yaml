@@ -1,0 +1,27 @@
+{{- if and .Values.sonarr.enabled (eq .Values.sonarr.database.mode "cluster") }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Release.Name }}-sonarr-db
+  labels:
+    app.kubernetes.io/name: sonarr-db
+    app.kubernetes.io/instance: {{ .Release.Name }}-sonarr-db
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  instances: {{ .Values.sonarr.database.cluster.instances }}
+  
+  bootstrap:
+    initdb:
+      database: {{ .Values.sonarr.database.mainDatabase }}
+      owner: sonarr
+      postInitSQL:
+        - CREATE DATABASE "{{ .Values.sonarr.database.logDatabase }}" OWNER sonarr;
+  
+  storage:
+    {{- if .Values.sonarr.database.cluster.storageClass }}
+    storageClass: {{ .Values.sonarr.database.cluster.storageClass }}
+    {{- end }}
+    size: {{ .Values.sonarr.database.cluster.storageSize }}
+{{- end }}

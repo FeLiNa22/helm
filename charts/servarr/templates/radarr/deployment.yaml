@@ -39,7 +39,7 @@ spec:
       serviceAccountName: {{ .Values.radarr.serviceAccount.name | default (printf "%s-radarr" .Release.Name) }}
       securityContext:
         {{- toYaml .Values.radarr.podSecurityContext | nindent 8 }}
-      {{- if or (and .Values.media.enabled .Values.radarr.persistence.enabled) (eq .Values.radarr.database.mode "external") .Values.radarr.initContainers }}
+      {{- if or (and .Values.media.enabled .Values.radarr.persistence.enabled) (eq .Values.radarr.database.mode "external") (eq .Values.radarr.database.mode "cluster") .Values.radarr.initContainers }}
       initContainers:
         {{- if and .Values.media.enabled .Values.radarr.persistence.enabled }}
         - name: init-directories
@@ -49,7 +49,7 @@ spec:
             - name: media
               mountPath: /media
         {{- end }}
-        {{- if eq .Values.radarr.database.mode "external" }}
+        {{- if or (eq .Values.radarr.database.mode "external") (eq .Values.radarr.database.mode "cluster") }}
         - name: init-config
           image: busybox
           command:
@@ -60,7 +60,13 @@ spec:
               sed -i "s/__DB_PASSWORD__/${DB_PASSWORD}/g" /config/config.xml
               chown 1000:1000 /config/config.xml
           env:
-            {{- if .Values.radarr.database.existingSecret }}
+            {{- if eq .Values.radarr.database.mode "cluster" }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-radarr-db-app
+                  key: password
+            {{- else if .Values.radarr.database.existingSecret }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -88,7 +94,7 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        {{- if eq .Values.radarr.database.mode "external" }}
+        {{- if or (eq .Values.radarr.database.mode "external") (eq .Values.radarr.database.mode "cluster") }}
         - name: config-template
           configMap:
             name: {{ .Release.Name }}-radarr-config
