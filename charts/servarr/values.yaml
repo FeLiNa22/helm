@@ -2578,3 +2578,17 @@ acestream:
     #   memory: 64Mi
 
 
+## @section ArgoCD Image Updater parameters
+
+## @param imageUpdater.enabled Enable ArgoCD Image Updater integration. Creates a ConfigMap with annotations for automatic image updates for all enabled services.
+## @param imageUpdater.updateStrategy Strategy for image updates (semver, latest, name, digest). Applies to all services.
+## @param imageUpdater.allowTags Regular expression to allow specific image tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" for semver only).
+## @param imageUpdater.ignoreTags Regular expression to ignore specific image tags (e.g., "regexp:^.*-beta$" to ignore beta tags).
+## @param imageUpdater.extraAnnotations Additional custom annotations for ArgoCD Image Updater.
+##
+imageUpdater:
+  enabled: false
+  updateStrategy: semver
+  allowTags: ""
+  ignoreTags: ""
+  extraAnnotations: {}

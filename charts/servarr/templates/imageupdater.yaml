@@ -1,0 +1,69 @@
+{{- if .Values.imageUpdater.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-imageupdater
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+    release: {{ .Release.Name }}
+  annotations:
+    # ArgoCD Image Updater annotations for all Servarr services
+    # Apply these annotations to your ArgoCD Application resource to enable automatic image updates
+    {{- $services := list "jellyfin" "emby" "plex" "sonarr" "radarr" "lidarr" "prowlarr" "bazarr" "qbittorrent" "sabnzbd" "seerr" "huntarr" "cleanuparr" "flaresolverr" "acestream" }}
+    {{- $imageList := list }}
+    {{- range $service := $services }}
+      {{- if (index $.Values $service).enabled }}
+        {{- $imageRepo := (index $.Values $service).image.repository }}
+        {{- $imageList = append $imageList $imageRepo }}
+      {{- end }}
+    {{- end }}
+    {{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled }}
+      {{- $imageList = append $imageList .Values.qbittorrent.gluetun.image.repository }}
+    {{- end }}
+    {{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled }}
+      {{- $imageList = append $imageList .Values.acestream.gluetun.image.repository }}
+    {{- end }}
+    {{- if gt (len $imageList) 0 }}
+    argocd-image-updater.argoproj.io/image-list: {{ join ", " $imageList }}
+    {{- range $service := $services }}
+      {{- if (index $.Values $service).enabled }}
+        {{- $imageRepo := (index $.Values $service).image.repository }}
+        {{- $imageName := $imageRepo | replace "/" "_" | replace "." "_" | replace "-" "_" }}
+    argocd-image-updater.argoproj.io/{{ $imageName }}.update-strategy: {{ $.Values.imageUpdater.updateStrategy }}
+        {{- if $.Values.imageUpdater.allowTags }}
+    argocd-image-updater.argoproj.io/{{ $imageName }}.allow-tags: {{ $.Values.imageUpdater.allowTags }}
+        {{- end }}
+        {{- if $.Values.imageUpdater.ignoreTags }}
+    argocd-image-updater.argoproj.io/{{ $imageName }}.ignore-tags: {{ $.Values.imageUpdater.ignoreTags }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled }}
+    argocd-image-updater.argoproj.io/{{ .Values.qbittorrent.gluetun.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.update-strategy: {{ .Values.imageUpdater.updateStrategy }}
+    {{- end }}
+    {{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled }}
+    argocd-image-updater.argoproj.io/{{ .Values.acestream.gluetun.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.update-strategy: {{ .Values.imageUpdater.updateStrategy }}
+    {{- end }}
+    {{- end }}
+    {{- with .Values.imageUpdater.extraAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+data:
+  update-strategy: {{ .Values.imageUpdater.updateStrategy }}
+  enabled-services: |
+    {{- range $service := $services }}
+      {{- if (index $.Values $service).enabled }}
+    - {{ $service }}: {{ (index $.Values $service).image.repository }}:{{ (index $.Values $service).image.tag }}
+      {{- end }}
+    {{- end }}
+    {{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled }}
+    - qbittorrent-gluetun: {{ .Values.qbittorrent.gluetun.image.repository }}:{{ .Values.qbittorrent.gluetun.image.tag }}
+    {{- end }}
+    {{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled }}
+    - acestream-gluetun: {{ .Values.acestream.gluetun.image.repository }}:{{ .Values.acestream.gluetun.image.tag }}
+    {{- end }}
+  instructions: |
+    To enable ArgoCD Image Updater for this application, add the annotations from this ConfigMap's metadata 
+    to your ArgoCD Application resource. This will enable automatic updates for all enabled Servarr services.
+{{- end }}
