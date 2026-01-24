@@ -1,46 +1,59 @@
 {{- if .Values.imageUpdater.enabled }}
-apiVersion: v1
-kind: ConfigMap
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
 metadata:
-  name: {{ .Release.Name }}-imageupdater
-  namespace: {{ .Release.Namespace }}
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.imageUpdater.namespace | default "argocd" }}
   labels:
     app: {{ .Release.Name }}
     release: {{ .Release.Name }}
-  annotations:
-    # ArgoCD Image Updater annotations
-    # Apply these annotations to your ArgoCD Application resource to enable automatic image updates
-    argocd-image-updater.argoproj.io/image-list: {{ .Values.image.repository }}
-    argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.update-strategy: {{ .Values.imageUpdater.updateStrategy }}
-    {{- if .Values.imageUpdater.allowTags }}
-    argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.allow-tags: {{ .Values.imageUpdater.allowTags }}
-    {{- end }}
-    {{- if .Values.imageUpdater.ignoreTags }}
-    argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.ignore-tags: {{ .Values.imageUpdater.ignoreTags }}
-    {{- end }}
-    {{- if .Values.imageUpdater.pullSecret }}
-    argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.pull-secret: {{ .Values.imageUpdater.pullSecret }}
-    {{- end }}
-    {{- with .Values.imageUpdater.extraAnnotations }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
-data:
-  image-list: {{ .Values.image.repository }}
-  current-tag: {{ .Values.image.tag | quote }}
-  update-strategy: {{ .Values.imageUpdater.updateStrategy }}
-  instructions: |
-    To enable ArgoCD Image Updater for this application, add these annotations to your ArgoCD Application resource:
-    
-    annotations:
-      argocd-image-updater.argoproj.io/image-list: {{ .Values.image.repository }}
-      argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.update-strategy: {{ .Values.imageUpdater.updateStrategy }}
-      {{- if .Values.imageUpdater.allowTags }}
-      argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.allow-tags: {{ .Values.imageUpdater.allowTags }}
-      {{- end }}
-      {{- if .Values.imageUpdater.ignoreTags }}
-      argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.ignore-tags: {{ .Values.imageUpdater.ignoreTags }}
-      {{- end }}
-      {{- if .Values.imageUpdater.pullSecret }}
-      argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.pull-secret: {{ .Values.imageUpdater.pullSecret }}
-      {{- end }}
+spec:
+  namespace: {{ .Values.imageUpdater.argocdNamespace | default "argocd" }}
+  applicationRefs:
+    - namePattern: {{ .Values.imageUpdater.applicationName | default .Release.Name | quote }}
+      images:
+        - alias: {{ .Values.imageUpdater.imageAlias | default .Release.Name | quote }}
+          imageName: {{ .Values.image.repository }}{{ if .Values.image.tag }}:{{ .Values.image.tag }}{{ end }}
+          {{- if or .Values.imageUpdater.updateStrategy .Values.imageUpdater.allowTags .Values.imageUpdater.ignoreTags .Values.imageUpdater.pullSecret .Values.imageUpdater.forceUpdate .Values.imageUpdater.platforms }}
+          commonUpdateSettings:
+            {{- if .Values.imageUpdater.updateStrategy }}
+            updateStrategy: {{ .Values.imageUpdater.updateStrategy }}
+            {{- end }}
+            {{- if .Values.imageUpdater.forceUpdate }}
+            forceUpdate: {{ .Values.imageUpdater.forceUpdate }}
+            {{- end }}
+            {{- if .Values.imageUpdater.allowTags }}
+            allowTags: {{ .Values.imageUpdater.allowTags | quote }}
+            {{- end }}
+            {{- if .Values.imageUpdater.ignoreTags }}
+            ignoreTags:
+              {{- if kindIs "string" .Values.imageUpdater.ignoreTags }}
+              - {{ .Values.imageUpdater.ignoreTags | quote }}
+              {{- else }}
+              {{- toYaml .Values.imageUpdater.ignoreTags | nindent 14 }}
+              {{- end }}
+            {{- end }}
+            {{- if .Values.imageUpdater.pullSecret }}
+            pullSecret: {{ .Values.imageUpdater.pullSecret | quote }}
+            {{- end }}
+            {{- if .Values.imageUpdater.platforms }}
+            platforms:
+              {{- toYaml .Values.imageUpdater.platforms | nindent 14 }}
+            {{- end }}
+          {{- end }}
+          {{- if or .Values.imageUpdater.helm .Values.imageUpdater.kustomize }}
+          manifestTargets:
+            {{- if .Values.imageUpdater.helm }}
+            helm:
+              {{- toYaml .Values.imageUpdater.helm | nindent 14 }}
+            {{- end }}
+            {{- if .Values.imageUpdater.kustomize }}
+            kustomize:
+              {{- toYaml .Values.imageUpdater.kustomize | nindent 14 }}
+            {{- end }}
+          {{- end }}
+  {{- if .Values.imageUpdater.writeBackConfig }}
+  writeBackConfig:
+    {{- toYaml .Values.imageUpdater.writeBackConfig | nindent 4 }}
+  {{- end }}
 {{- end }}

@@ -202,19 +202,36 @@ persistence:
   additionalVolumes: []
   additionalMounts: []
 
+
 ## @section ArgoCD Image Updater parameters
 
-## @param imageUpdater.enabled Enable ArgoCD Image Updater integration. Creates a ConfigMap with annotations for automatic image updates.
-## @param imageUpdater.updateStrategy Strategy for image updates (semver, latest, name, digest).
-## @param imageUpdater.allowTags Regular expression to allow specific image tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" for semver only).
-## @param imageUpdater.ignoreTags Regular expression to ignore specific image tags (e.g., "regexp:^.*-beta$" to ignore beta tags).
-## @param imageUpdater.pullSecret Name of the secret containing credentials for pulling images from private registries.
-## @param imageUpdater.extraAnnotations Additional custom annotations for ArgoCD Image Updater.
+## @param imageUpdater.enabled Enable ArgoCD Image Updater integration. Creates an ImageUpdater CRD for automatic image updates.
+## @param imageUpdater.namespace Namespace where the ImageUpdater CRD will be created.
+## @param imageUpdater.argocdNamespace Namespace where ArgoCD Applications are located.
+## @param imageUpdater.applicationName Name or pattern of the ArgoCD Application to update. Defaults to Release name.
+## @param imageUpdater.imageAlias Alias for the image in the ImageUpdater CRD. Defaults to Release name.
+## @param imageUpdater.updateStrategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param imageUpdater.forceUpdate Force update even if image is not currently deployed.
+## @param imageUpdater.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param imageUpdater.ignoreTags List of glob patterns to ignore specific tags.
+## @param imageUpdater.pullSecret Reference to secret for private registry authentication.
+## @param imageUpdater.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
+## @param imageUpdater.helm Helm-specific configuration for parameter names (e.g., {name: "image.repository", tag: "image.tag"}).
+## @param imageUpdater.kustomize Kustomize-specific configuration (e.g., {name: "original/image"}).
+## @param imageUpdater.writeBackConfig Write-back configuration for GitOps.
 ##
 imageUpdater:
   enabled: false
+  namespace: argocd
+  argocdNamespace: argocd
+  applicationName: ""
+  imageAlias: ""
   updateStrategy: semver
+  forceUpdate: false
   allowTags: ""
-  ignoreTags: ""
+  ignoreTags: []
   pullSecret: ""
-  extraAnnotations: {}
+  platforms: []
+  helm: {}
+  kustomize: {}
+  writeBackConfig: {}

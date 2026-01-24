@@ -4,7 +4,7 @@ maintainers:
     url: https://raulpatel.com
 apiVersion: v2
 appVersion: 2.12.1
-version: 1.1.0
+version: 1.2.0
 description: Raul Penpot Helm Chart
 home: https://github.com/FeLiNa22/homeserver/tree/main/charts/penpot
 icon: https://raulpatel.com/images/raul.svg
