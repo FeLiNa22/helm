@@ -11,14 +11,12 @@ metadata:
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   instances: {{ .Values.prowlarr.database.cluster.instances }}
-  
   bootstrap:
     initdb:
       database: {{ .Values.prowlarr.database.mainDatabase }}
       owner: prowlarr
       postInitSQL:
         - CREATE DATABASE "{{ .Values.prowlarr.database.logDatabase }}" OWNER prowlarr;
-  
   storage:
     {{- if .Values.prowlarr.database.cluster.storageClass }}
     storageClass: {{ .Values.prowlarr.database.cluster.storageClass }}

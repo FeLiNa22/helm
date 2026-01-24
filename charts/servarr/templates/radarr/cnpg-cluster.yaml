@@ -11,14 +11,12 @@ metadata:
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   instances: {{ .Values.radarr.database.cluster.instances }}
-  
   bootstrap:
     initdb:
       database: {{ .Values.radarr.database.mainDatabase }}
       owner: radarr
       postInitSQL:
         - CREATE DATABASE "{{ .Values.radarr.database.logDatabase }}" OWNER radarr;
-  
   storage:
     {{- if .Values.radarr.database.cluster.storageClass }}
     storageClass: {{ .Values.radarr.database.cluster.storageClass }}

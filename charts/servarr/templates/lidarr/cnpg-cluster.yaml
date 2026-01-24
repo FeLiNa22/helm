@@ -11,14 +11,12 @@ metadata:
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   instances: {{ .Values.lidarr.database.cluster.instances }}
-  
   bootstrap:
     initdb:
       database: {{ .Values.lidarr.database.mainDatabase }}
       owner: lidarr
       postInitSQL:
         - CREATE DATABASE "{{ .Values.lidarr.database.logDatabase }}" OWNER lidarr;
-  
   storage:
     {{- if .Values.lidarr.database.cluster.storageClass }}
     storageClass: {{ .Values.lidarr.database.cluster.storageClass }}

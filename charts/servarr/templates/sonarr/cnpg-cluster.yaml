@@ -11,14 +11,12 @@ metadata:
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   instances: {{ .Values.sonarr.database.cluster.instances }}
-  
   bootstrap:
     initdb:
       database: {{ .Values.sonarr.database.mainDatabase }}
       owner: sonarr
       postInitSQL:
         - CREATE DATABASE "{{ .Values.sonarr.database.logDatabase }}" OWNER sonarr;
-  
   storage:
     {{- if .Values.sonarr.database.cluster.storageClass }}
     storageClass: {{ .Values.sonarr.database.cluster.storageClass }}
