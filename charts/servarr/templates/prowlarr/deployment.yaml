@@ -48,9 +48,11 @@ spec:
             - sh
             - -c
             - |
-              cp /config-template/config.xml /config/config.xml
-              sed -i "s/__DB_PASSWORD__/${DB_PASSWORD}/g" /config/config.xml
-              chown 1000:1000 /config/config.xml
+              if [ ! -f /config/config.xml ]; then
+                cp /config-template/config.xml /config/config.xml
+                sed -i "s|__DB_PASSWORD__|${DB_PASSWORD}|g" /config/config.xml
+                chown 1000:1000 /config/config.xml
+              fi
           env:
             {{- if eq .Values.prowlarr.database.mode "cluster" }}
             - name: DB_PASSWORD
@@ -64,9 +66,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.prowlarr.database.existingSecret }}
                   key: password
-            {{- else }}
+            {{- else if .Values.prowlarr.database.password }}
             - name: DB_PASSWORD
               value: {{ .Values.prowlarr.database.password | quote }}
+            {{- else }}
+            {{- fail "prowlarr.database.mode is 'external' but neither prowlarr.database.existingSecret nor prowlarr.database.password is provided. Please configure one of them." }}
             {{- end }}
           volumeMounts:
             - name: config

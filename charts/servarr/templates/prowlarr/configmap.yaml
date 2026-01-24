@@ -32,9 +32,9 @@ data:
       <PostgresHost>{{ .Release.Name }}-prowlarr-db-rw</PostgresHost>
       <PostgresPort>5432</PostgresPort>
       {{- else }}
-      <PostgresUser>{{ .Values.prowlarr.database.username }}</PostgresUser>
+      <PostgresUser>{{ required "prowlarr.database.username is required when prowlarr.database.mode is 'external'" .Values.prowlarr.database.username }}</PostgresUser>
       <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
-      <PostgresHost>{{ .Values.prowlarr.database.host }}</PostgresHost>
+      <PostgresHost>{{ required "prowlarr.database.host is required when prowlarr.database.mode is 'external'" .Values.prowlarr.database.host }}</PostgresHost>
       <PostgresPort>{{ .Values.prowlarr.database.port }}</PostgresPort>
       {{- end }}
       <PostgresMainDb>{{ .Values.prowlarr.database.mainDatabase }}</PostgresMainDb>

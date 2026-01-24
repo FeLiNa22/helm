@@ -257,8 +257,8 @@ jellyfin:
 ## @param sonarr.database.host Hostname of the external PostgreSQL database (required when mode is 'external').
 ## @param sonarr.database.port Port of the external PostgreSQL database.
 ## @param sonarr.database.username Username for the external PostgreSQL database.
-## @param sonarr.database.password Password for the external PostgreSQL database (ignored if existingSecret is set).
-## @param sonarr.database.existingSecret Name of an existing secret containing the database password (key: 'password').
+## @param sonarr.database.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
+## @param sonarr.database.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
 ## @param sonarr.database.mainDatabase Name of the main database for Sonarr.
 ## @param sonarr.database.logDatabase Name of the log database for Sonarr.
 ## @param sonarr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
@@ -662,8 +662,8 @@ qbittorrent:
 ## @param prowlarr.database.host Hostname of the external PostgreSQL database (required when mode is 'external').
 ## @param prowlarr.database.port Port of the external PostgreSQL database.
 ## @param prowlarr.database.username Username for the external PostgreSQL database.
-## @param prowlarr.database.password Password for the external PostgreSQL database (ignored if existingSecret is set).
-## @param prowlarr.database.existingSecret Name of an existing secret containing the database password (key: 'password').
+## @param prowlarr.database.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
+## @param prowlarr.database.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
 ## @param prowlarr.database.mainDatabase Name of the main database for Prowlarr.
 ## @param prowlarr.database.logDatabase Name of the log database for Prowlarr.
 ## @param prowlarr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
@@ -1359,8 +1359,8 @@ bazarr:
 ## @param radarr.database.host Hostname of the external PostgreSQL database (required when mode is 'external').
 ## @param radarr.database.port Port of the external PostgreSQL database.
 ## @param radarr.database.username Username for the external PostgreSQL database.
-## @param radarr.database.password Password for the external PostgreSQL database (ignored if existingSecret is set).
-## @param radarr.database.existingSecret Name of an existing secret containing the database password (key: 'password').
+## @param radarr.database.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
+## @param radarr.database.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
 ## @param radarr.database.mainDatabase Name of the main database for Radarr.
 ## @param radarr.database.logDatabase Name of the log database for Radarr.
 ## @param radarr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
@@ -1545,8 +1545,8 @@ radarr:
 ## @param lidarr.database.host Hostname of the external PostgreSQL database (required when mode is 'external').
 ## @param lidarr.database.port Port of the external PostgreSQL database.
 ## @param lidarr.database.username Username for the external PostgreSQL database.
-## @param lidarr.database.password Password for the external PostgreSQL database (ignored if existingSecret is set).
-## @param lidarr.database.existingSecret Name of an existing secret containing the database password (key: 'password').
+## @param lidarr.database.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
+## @param lidarr.database.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
 ## @param lidarr.database.mainDatabase Name of the main database for Lidarr.
 ## @param lidarr.database.logDatabase Name of the log database for Lidarr.
 ## @param lidarr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').

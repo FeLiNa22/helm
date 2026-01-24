@@ -56,9 +56,11 @@ spec:
             - sh
             - -c
             - |
-              cp /config-template/config.xml /config/config.xml
-              sed -i "s/__DB_PASSWORD__/${DB_PASSWORD}/g" /config/config.xml
-              chown 1000:1000 /config/config.xml
+              if [ ! -f /config/config.xml ]; then
+                cp /config-template/config.xml /config/config.xml
+                sed -i "s|__DB_PASSWORD__|${DB_PASSWORD}|g" /config/config.xml
+                chown 1000:1000 /config/config.xml
+              fi
           env:
             {{- if eq .Values.lidarr.database.mode "cluster" }}
             - name: DB_PASSWORD
@@ -72,9 +74,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.lidarr.database.existingSecret }}
                   key: password
-            {{- else }}
+            {{- else if .Values.lidarr.database.password }}
             - name: DB_PASSWORD
               value: {{ .Values.lidarr.database.password | quote }}
+            {{- else }}
+            {{- fail "lidarr.database.mode is 'external' but neither lidarr.database.existingSecret nor lidarr.database.password is provided. Please configure one of them." }}
             {{- end }}
           volumeMounts:
             - name: config

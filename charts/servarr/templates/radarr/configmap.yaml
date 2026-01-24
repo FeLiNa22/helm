@@ -32,9 +32,9 @@ data:
       <PostgresHost>{{ .Release.Name }}-radarr-db-rw</PostgresHost>
       <PostgresPort>5432</PostgresPort>
       {{- else }}
-      <PostgresUser>{{ .Values.radarr.database.username }}</PostgresUser>
+      <PostgresUser>{{ required "radarr.database.username is required when radarr.database.mode is 'external'" .Values.radarr.database.username }}</PostgresUser>
       <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
-      <PostgresHost>{{ .Values.radarr.database.host }}</PostgresHost>
+      <PostgresHost>{{ required "radarr.database.host is required when radarr.database.mode is 'external'" .Values.radarr.database.host }}</PostgresHost>
       <PostgresPort>{{ .Values.radarr.database.port }}</PostgresPort>
       {{- end }}
       <PostgresMainDb>{{ .Values.radarr.database.mainDatabase }}</PostgresMainDb>

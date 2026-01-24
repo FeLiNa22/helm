@@ -17,6 +17,7 @@ This chart helps you create a media server stack for your home media library, in
 
 - Kubernetes 1.12+
 - Helm 3.2.0+
+- **CloudNativePG Operator** (required only when using `database.mode=cluster`): The CloudNativePG operator must be installed in the cluster before deploying services with `database.mode=cluster`. See [CloudNativePG documentation](https://cloudnative-pg.io/documentation/) for installation instructions.
 
 ## Installing the Chart
 
