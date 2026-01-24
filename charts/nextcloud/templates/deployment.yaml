@@ -111,17 +111,43 @@ spec:
                   name: {{ .Release.Name }}-postgresql-standalone
                   {{- end }}
                   key: password
+            {{- else if eq .Values.database.mode "external" }}
+            # External PostgreSQL mode
+            - name: POSTGRES_HOST
+              value: {{ .Values.database.external.host }}:{{ .Values.database.external.port | default 5432 }}
+            - name: POSTGRES_DB
+              value: {{ .Values.database.external.database }}
+            - name: POSTGRES_USER
+              value: {{ .Values.database.external.username }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.external.existingSecret }}
+                  key: {{ .Values.database.external.secretKey | default "password" }}
             {{- end }}
-            {{- if ne .Values.dragonfly.mode "disabled" }}
+            {{- if and (ne .Values.dragonfly.mode "disabled") (ne .Values.dragonfly.mode "") }}
             # DragonflyDB/Redis connection for caching
             - name: REDIS_HOST
               {{- if eq .Values.dragonfly.mode "standalone" }}
               value: {{ .Release.Name }}-dragonfly
               {{- else if eq .Values.dragonfly.mode "cluster" }}
               value: {{ .Release.Name }}-dragonfly-cluster
+              {{- else if eq .Values.dragonfly.mode "external" }}
+              value: {{ .Values.dragonfly.external.host }}
               {{- end }}
             - name: REDIS_HOST_PORT
+              {{- if eq .Values.dragonfly.mode "external" }}
+              value: {{ .Values.dragonfly.external.port | default "6379" | quote }}
+              {{- else }}
               value: "6379"
+              {{- end }}
+            {{- if and (eq .Values.dragonfly.mode "external") .Values.dragonfly.external.existingSecret }}
+            - name: REDIS_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.dragonfly.external.existingSecret }}
+                  key: {{ .Values.dragonfly.external.passwordKey | default "password" }}
+            {{- end }}
             {{- end }}
             {{- range $k,$v := .Values.env }}
             - name: {{ $k }}

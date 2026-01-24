@@ -179,7 +179,7 @@ persistence:
 ## @section DragonflyDB parameters
 ## DragonflyDB is a Redis-compatible in-memory data store used for Immich's job queue and caching
 
-## @param dragonfly.mode The mode of DragonflyDB deployment: 'standalone', 'cluster', or 'disabled'.
+## @param dragonfly.mode The mode of DragonflyDB deployment: 'standalone', 'cluster', 'external', or 'disabled'.
 ## @param dragonfly.standalone.enabled Whether to deploy a standalone Dragonfly instance.
 ## @param dragonfly.standalone.image.repository The Docker repository for Dragonfly image.
 ## @param dragonfly.standalone.image.tag The image tag for Dragonfly.
@@ -195,13 +195,13 @@ persistence:
 ## @param dragonfly.cluster.persistence.enabled Whether to enable persistence for Dragonfly cluster.
 ## @param dragonfly.cluster.persistence.size Size of the persistence volume for Dragonfly cluster.
 ## @param dragonfly.cluster.persistence.storageClass Storage class for Dragonfly cluster persistence.
-## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'disabled').
+## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
 ## @param dragonfly.external.passwordKey Key in the secret for the password.
 ##
 dragonfly:
-  # Mode options: 'standalone', 'cluster', or 'disabled'
+  # Mode options: 'standalone', 'cluster', 'external', or 'disabled'
   mode: standalone
 
   # Standalone Dragonfly deployment (simple single-instance)
@@ -241,7 +241,7 @@ dragonfly:
       size: 5Gi
       storageClass: ""
 
-  # External DragonflyDB/Redis configuration (used when mode is 'disabled')
+  # External DragonflyDB/Redis configuration (used when mode is 'external')
   external:
     host: ""
     port: 6379

@@ -149,7 +149,7 @@ DragonflyDB/Redis host
 {{- printf "%s-dragonfly" (include "immich.fullname" .) }}
 {{- else if eq .Values.dragonfly.mode "cluster" }}
 {{- printf "%s-dragonfly-cluster" (include "immich.fullname" .) }}
-{{- else }}
+{{- else if eq .Values.dragonfly.mode "external" }}
 {{- .Values.dragonfly.external.host }}
 {{- end }}
 {{- end }}
@@ -158,7 +158,7 @@ DragonflyDB/Redis host
 DragonflyDB/Redis port
 */}}
 {{- define "immich.dragonfly.port" -}}
-{{- if eq .Values.dragonfly.mode "disabled" }}
+{{- if eq .Values.dragonfly.mode "external" }}
 {{- .Values.dragonfly.external.port | default "6379" }}
 {{- else }}
 {{- "6379" }}
@@ -169,7 +169,7 @@ DragonflyDB/Redis port
 DragonflyDB/Redis secret name (for password if enabled)
 */}}
 {{- define "immich.dragonfly.secretName" -}}
-{{- if eq .Values.dragonfly.mode "disabled" }}
+{{- if eq .Values.dragonfly.mode "external" }}
 {{- .Values.dragonfly.external.existingSecret }}
 {{- else }}
 {{- "" }}
@@ -180,7 +180,7 @@ DragonflyDB/Redis secret name (for password if enabled)
 DragonflyDB/Redis password key
 */}}
 {{- define "immich.dragonfly.passwordKey" -}}
-{{- if eq .Values.dragonfly.mode "disabled" }}
+{{- if eq .Values.dragonfly.mode "external" }}
 {{- .Values.dragonfly.external.passwordKey | default "password" }}
 {{- else }}
 {{- "password" }}

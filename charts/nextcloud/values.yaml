@@ -155,7 +155,7 @@ env:
 ## @section DragonflyDB parameters
 ## DragonflyDB provides Redis-compatible caching for Nextcloud
 
-## @param dragonfly.mode The mode of DragonflyDB deployment: 'standalone', 'cluster', or 'disabled'.
+## @param dragonfly.mode The mode of DragonflyDB deployment: 'standalone', 'cluster', 'external', or 'disabled'.
 ## @param dragonfly.standalone.enabled Whether to deploy a standalone Dragonfly instance.
 ## @param dragonfly.standalone.image.repository The Docker repository for Dragonfly image.
 ## @param dragonfly.standalone.image.tag The image tag for Dragonfly.
@@ -171,13 +171,13 @@ env:
 ## @param dragonfly.cluster.persistence.enabled Whether to enable persistence for Dragonfly cluster.
 ## @param dragonfly.cluster.persistence.size Size of the persistence volume for Dragonfly cluster.
 ## @param dragonfly.cluster.persistence.storageClass Storage class for Dragonfly cluster persistence.
-## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'disabled').
+## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
 ## @param dragonfly.external.passwordKey Key in the secret for the password.
 ##
 dragonfly:
-  # Mode options: 'standalone', 'cluster', or 'disabled'
+  # Mode options: 'standalone', 'cluster', 'external', or 'disabled'
   # Set to 'disabled' if you don't need Redis caching for Nextcloud
   mode: disabled
 
@@ -218,7 +218,7 @@ dragonfly:
       size: 5Gi
       storageClass: ""
 
-  # External DragonflyDB/Redis configuration (used when mode is 'disabled')
+  # External DragonflyDB/Redis configuration (used when mode is 'external')
   external:
     host: ""
     port: 6379
@@ -226,7 +226,7 @@ dragonfly:
     passwordKey: "password"
 
 # Database configuration
-## @param database.mode The mode of PostgreSQL deployment: 'standalone' or 'cluster'.
+## @param database.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param database.standalone.enabled Whether to deploy standalone PostgreSQL using Bitnami subchart.
 ## @param database.standalone.auth.database Name of the default database.
 ## @param database.standalone.auth.username Username for the default database.
@@ -256,8 +256,14 @@ dragonfly:
 ## @param database.cluster.superuserSecret.create Whether to create the superuser secret.
 ## @param database.cluster.superuserSecret.username Superuser username.
 ## @param database.cluster.superuserSecret.password Superuser password (leave empty to auto-generate).
+## @param database.external.host Hostname of external PostgreSQL (when mode is 'external').
+## @param database.external.port Port of external PostgreSQL.
+## @param database.external.database Database name of external PostgreSQL.
+## @param database.external.username Username of external PostgreSQL.
+## @param database.external.existingSecret Secret name for external PostgreSQL password.
+## @param database.external.secretKey Key in the secret for the password.
 database:
-  # Mode options: 'standalone' or 'cluster'
+  # Mode options: 'standalone', 'cluster', or 'external'
   mode: cluster
 
   # Standalone PostgreSQL deployment (using Bitnami subchart)
@@ -302,6 +308,15 @@ database:
       create: true
       username: postgres
       password: ""  # Leave empty to auto-generate
+
+  # External PostgreSQL configuration (used when mode is 'external')
+  external:
+    host: ""
+    port: 5432
+    database: "nextcloud"
+    username: "nextcloud"
+    existingSecret: ""
+    secretKey: "password"
 
 persistence:
   enabled: true

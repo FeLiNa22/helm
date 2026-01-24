@@ -36,10 +36,11 @@ This chart deploys the following components:
 
 #### PostgreSQL Options
 
-The chart supports two PostgreSQL deployment modes:
+The chart supports three PostgreSQL deployment modes:
 
 1. **Cluster** (default): Uses CloudNativePG operator for high-availability PostgreSQL cluster
 2. **Standalone**: Uses Bitnami PostgreSQL subchart for simple deployments
+3. **External**: Connect to an existing PostgreSQL instance
 
 ```yaml
 # Cluster mode (default) - uses CloudNativePG operator
@@ -65,15 +66,27 @@ database:
       password: "your-password"
   cluster:
     enabled: false
+
+# External mode - connect to existing PostgreSQL
+database:
+  mode: external
+  external:
+    host: "your-postgresql-host"
+    port: 5432
+    database: "nextcloud"
+    username: "nextcloud"
+    existingSecret: "your-postgresql-secret"
+    secretKey: "password"
 ```
 
 ### DragonflyDB Options (Optional Caching)
 
-The chart supports three DragonflyDB deployment modes for Redis-compatible caching:
+The chart supports four DragonflyDB deployment modes for Redis-compatible caching:
 
 1. **Disabled** (default): No cache deployed
 2. **Standalone**: Simple single-instance DragonflyDB deployment
 3. **Cluster**: Uses DragonflyDB operator for clustered deployment
+4. **External**: Connect to an external Redis/DragonflyDB instance
 
 ```yaml
 # Disabled mode (default) - no cache
@@ -98,6 +111,15 @@ dragonfly:
     persistence:
       enabled: true
       size: 5Gi
+
+# External mode - use external Redis/DragonflyDB
+dragonfly:
+  mode: external
+  external:
+    host: "your-redis-host"
+    port: 6379
+    existingSecret: "your-redis-secret"  # optional
+    passwordKey: "password"
 ```
 
 ### Storage
@@ -149,7 +171,7 @@ ingress:
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `database.mode` | Deployment mode: `cluster` or `standalone` | `cluster` |
+| `database.mode` | Deployment mode: `cluster`, `standalone`, or `external` | `cluster` |
 | `database.cluster.enabled` | Deploy CloudNativePG cluster | `true` |
 | `database.cluster.instances` | Number of PostgreSQL instances | `1` |
 | `database.cluster.database` | Database name | `nextcloud` |
@@ -157,12 +179,16 @@ ingress:
 | `database.standalone.enabled` | Deploy Bitnami PostgreSQL | `false` |
 | `database.standalone.auth.database` | Database name | `nextcloud` |
 | `database.standalone.auth.username` | Database username | `nextcloud` |
+| `database.external.host` | External PostgreSQL host | `""` |
+| `database.external.port` | External PostgreSQL port | `5432` |
+| `database.external.database` | External database name | `nextcloud` |
+| `database.external.username` | External database username | `nextcloud` |
 
 ### DragonflyDB parameters
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `dragonfly.mode` | Deployment mode: `disabled`, `standalone`, or `cluster` | `disabled` |
+| `dragonfly.mode` | Deployment mode: `disabled`, `standalone`, `cluster`, or `external` | `disabled` |
 | `dragonfly.standalone.enabled` | Deploy standalone DragonflyDB | `false` |
 | `dragonfly.standalone.image.repository` | DragonflyDB image | `docker.dragonflydb.io/dragonflydb/dragonfly` |
 | `dragonfly.standalone.image.tag` | DragonflyDB image tag | `v1.25.2` |
@@ -170,6 +196,8 @@ ingress:
 | `dragonfly.standalone.persistence.size` | Persistence volume size | `5Gi` |
 | `dragonfly.cluster.enabled` | Deploy DragonflyDB cluster | `false` |
 | `dragonfly.cluster.replicas` | Number of cluster replicas | `2` |
+| `dragonfly.external.host` | External Redis/DragonflyDB host | `""` |
+| `dragonfly.external.port` | External Redis/DragonflyDB port | `6379` |
 
 ### Persistence parameters
 
