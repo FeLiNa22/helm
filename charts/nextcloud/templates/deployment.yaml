@@ -78,21 +78,50 @@ spec:
               containerPort: 80
               protocol: TCP
           env:
-            {{- if .Values.database.enabled }}
+            {{- if eq .Values.database.mode "cluster" }}
+            # CloudNativePG cluster mode
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-{{ .Values.database.name }}-rw
+              value: {{ .Release.Name }}-{{ .Values.database.cluster.name }}-rw
             - name: POSTGRES_DB
-              value: {{ .Values.database.database }}
+              value: {{ .Values.database.cluster.database }}
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.database.secret.name | default (printf "%s-nextcloud-db-app" .Release.Name) }}
+                  name: {{ .Values.database.cluster.secret.name | default (printf "%s-nextcloud-db-app" .Release.Name) }}
                   key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.database.secret.name | default (printf "%s-nextcloud-db-app" .Release.Name) }}
+                  name: {{ .Values.database.cluster.secret.name | default (printf "%s-nextcloud-db-app" .Release.Name) }}
                   key: password
+            {{- else if eq .Values.database.mode "standalone" }}
+            # Standalone PostgreSQL mode (Bitnami subchart)
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-postgresql-standalone
+            - name: POSTGRES_DB
+              value: {{ .Values.database.standalone.auth.database }}
+            - name: POSTGRES_USER
+              value: {{ .Values.database.standalone.auth.username }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.database.standalone.auth.existingSecret }}
+                  name: {{ .Values.database.standalone.auth.existingSecret }}
+                  {{- else }}
+                  name: {{ .Release.Name }}-postgresql-standalone
+                  {{- end }}
+                  key: password
+            {{- end }}
+            {{- if ne .Values.dragonfly.mode "disabled" }}
+            # DragonflyDB/Redis connection for caching
+            - name: REDIS_HOST
+              {{- if eq .Values.dragonfly.mode "standalone" }}
+              value: {{ .Release.Name }}-dragonfly
+              {{- else if eq .Values.dragonfly.mode "cluster" }}
+              value: {{ .Release.Name }}-dragonfly-cluster
+              {{- end }}
+            - name: REDIS_HOST_PORT
+              value: "6379"
             {{- end }}
             {{- range $k,$v := .Values.env }}
             - name: {{ $k }}

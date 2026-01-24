@@ -7,6 +7,8 @@ This Helm chart deploys Immich, a high performance self-hosted photo and video m
 - Kubernetes 1.20+
 - Helm 3.0+
 - PV provisioner support in the underlying infrastructure (for persistence)
+- CloudNativePG operator (if using `postgresql.mode: cluster`)
+- DragonflyDB operator (if using `dragonfly.mode: cluster`)
 
 ## Installation
 
@@ -30,17 +32,48 @@ This chart deploys the following components:
 
 1. **Immich Server** - The main application server
 2. **Machine Learning** - ML service for face recognition and smart search (optional)
-3. **PostgreSQL** - Database with pgvector extension (via Bitnami subchart)
-4. **Redis** - Cache and job queue (via Bitnami subchart)
+3. **PostgreSQL** - Database with pgvector/vectorchord extension (standalone via Bitnami subchart or CloudNativePG cluster)
+4. **DragonflyDB** - High-performance Redis-compatible cache and job queue (standalone or cluster via DragonflyDB operator)
 
-### Using External Services
+### Database Modes
 
-If you want to use external PostgreSQL or Redis instances, you can disable the subcharts:
+#### PostgreSQL Options
+
+The chart supports three PostgreSQL deployment modes:
+
+1. **Standalone** (default): Uses Bitnami PostgreSQL subchart with pgvecto-rs extension
+2. **Cluster**: Uses CloudNativePG operator for high-availability PostgreSQL cluster (requires operator installed)
+3. **External**: Connect to an existing PostgreSQL instance
 
 ```yaml
-# values.yaml
+# Standalone mode (default) - uses Bitnami subchart
 postgresql:
-  enabled: false
+  mode: standalone
+  standalone:
+    enabled: true
+    auth:
+      database: immich
+      username: immich
+      password: "your-password"
+
+# Cluster mode - uses CloudNativePG operator
+postgresql:
+  mode: cluster
+  standalone:
+    enabled: false
+  cluster:
+    enabled: true
+    instances: 2
+    database: immich
+    owner: immich
+    storage:
+      size: 20Gi
+
+# External mode - connect to existing PostgreSQL
+postgresql:
+  mode: external
+  standalone:
+    enabled: false
   external:
     host: "your-postgresql-host"
     port: 5432
@@ -48,12 +81,44 @@ postgresql:
     username: "immich"
     existingSecret: "your-postgresql-secret"
     secretKey: "password"
+```
 
-redis:
-  enabled: false
+#### DragonflyDB Options
+
+The chart supports three DragonflyDB deployment modes:
+
+1. **Standalone** (default): Simple single-instance DragonflyDB deployment
+2. **Cluster**: Uses DragonflyDB operator for clustered deployment (requires operator installed)
+3. **Disabled**: Connect to an external Redis/DragonflyDB instance
+
+```yaml
+# Standalone mode (default)
+dragonfly:
+  mode: standalone
+  standalone:
+    enabled: true
+    persistence:
+      enabled: true
+      size: 5Gi
+
+# Cluster mode - uses DragonflyDB operator
+dragonfly:
+  mode: cluster
+  cluster:
+    enabled: true
+    replicas: 2
+    persistence:
+      enabled: true
+      size: 5Gi
+
+# Disabled mode - use external Redis/DragonflyDB
+dragonfly:
+  mode: disabled
   external:
     host: "your-redis-host"
     port: 6379
+    existingSecret: "your-redis-secret"  # optional
+    passwordKey: "password"
 ```
 
 ### Storage
@@ -127,29 +192,64 @@ ingress:
 | `persistence.library.accessMode` | Access mode | `ReadWriteOnce` |
 | `persistence.library.size` | Volume size | `100Gi` |
 
-### Redis parameters
+### DragonflyDB parameters
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `redis.enabled` | Deploy Redis subchart | `true` |
-| `redis.architecture` | Redis architecture | `standalone` |
-| `redis.auth.enabled` | Enable Redis authentication | `false` |
+| `dragonfly.mode` | Deployment mode: `standalone`, `cluster`, or `disabled` | `standalone` |
+| `dragonfly.standalone.enabled` | Deploy standalone DragonflyDB | `true` |
+| `dragonfly.standalone.image.repository` | DragonflyDB image repository | `docker.dragonflydb.io/dragonflydb/dragonfly` |
+| `dragonfly.standalone.image.tag` | DragonflyDB image tag | `v1.25.2` |
+| `dragonfly.standalone.persistence.enabled` | Enable persistence | `true` |
+| `dragonfly.standalone.persistence.size` | Persistence volume size | `5Gi` |
+| `dragonfly.cluster.enabled` | Deploy DragonflyDB cluster (requires operator) | `false` |
+| `dragonfly.cluster.replicas` | Number of cluster replicas | `2` |
+| `dragonfly.external.host` | External Redis/DragonflyDB host | `""` |
+| `dragonfly.external.port` | External Redis/DragonflyDB port | `6379` |
 
 ### PostgreSQL parameters
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `postgresql.enabled` | Deploy PostgreSQL subchart | `true` |
-| `postgresql.architecture` | PostgreSQL architecture | `standalone` |
-| `postgresql.auth.database` | Database name | `immich` |
-| `postgresql.auth.username` | Database username | `immich` |
-| `postgresql.auth.password` | Database password | `""` (auto-generated) |
-| `postgresql.image.repository` | PostgreSQL image with pgvector | `tensorchord/pgvecto-rs` |
-| `postgresql.image.tag` | PostgreSQL image tag | `pg16-v0.4.0` |
-| `postgresql.primary.persistence.enabled` | Enable PostgreSQL persistence | `true` |
-| `postgresql.primary.persistence.size` | PostgreSQL volume size | `10Gi` |
+| `postgresql.mode` | Deployment mode: `standalone`, `cluster`, or `external` | `standalone` |
+| `postgresql.standalone.enabled` | Deploy standalone PostgreSQL (Bitnami) | `true` |
+| `postgresql.standalone.auth.database` | Database name | `immich` |
+| `postgresql.standalone.auth.username` | Database username | `immich` |
+| `postgresql.standalone.auth.password` | Database password | `""` (auto-generated) |
+| `postgresql.standalone.image.repository` | PostgreSQL image with pgvecto-rs | `tensorchord/pgvecto-rs` |
+| `postgresql.standalone.image.tag` | PostgreSQL image tag | `pg16-v0.4.0` |
+| `postgresql.standalone.primary.persistence.enabled` | Enable PostgreSQL persistence | `true` |
+| `postgresql.standalone.primary.persistence.size` | PostgreSQL volume size | `10Gi` |
+| `postgresql.cluster.enabled` | Deploy CloudNativePG cluster (requires operator) | `false` |
+| `postgresql.cluster.instances` | Number of PostgreSQL instances | `2` |
+| `postgresql.cluster.image.repository` | PostgreSQL image with vectorchord | `ghcr.io/tensorchord/cloudnative-pgvecto.rs` |
+| `postgresql.cluster.image.tag` | PostgreSQL image tag | `16-v0.4.0` |
+| `postgresql.cluster.storage.size` | Storage size per instance | `10Gi` |
+| `postgresql.external.host` | External PostgreSQL host | `""` |
+| `postgresql.external.port` | External PostgreSQL port | `5432` |
+| `postgresql.external.database` | External database name | `immich` |
+| `postgresql.external.username` | External database username | `immich` |
 
 ## Upgrading
+
+### To 1.3.0
+
+This version adds support for:
+
+- CloudNativePG operator for PostgreSQL cluster deployments
+- DragonflyDB for Redis-compatible caching (standalone and cluster modes)
+- Removed Bitnami Redis subchart dependency
+
+**Breaking Changes:**
+- `redis.*` configuration has been replaced with `dragonfly.*`
+- `postgresql.enabled` has been replaced with `postgresql.mode` and nested configuration
+- Subchart alias changed from `postgresql` to `postgresqlStandalone`
+
+To migrate from version 1.2.x:
+1. Backup your data
+2. Note your current PostgreSQL credentials
+3. Update your values to use the new configuration structure
+4. Install the new version
 
 ### To 2.0.0
 

@@ -79,17 +79,17 @@ spec:
                 secretKeyRef:
                   name: {{ include "immich.postgresql.secretName" . }}
                   key: {{ include "immich.postgresql.secretKey" . }}
-            # Redis connection
+            # DragonflyDB/Redis connection
             - name: REDIS_HOSTNAME
-              value: {{ include "immich.redis.host" . }}
+              value: {{ include "immich.dragonfly.host" . }}
             - name: REDIS_PORT
-              value: {{ include "immich.redis.port" . | quote }}
-            {{- if .Values.redis.auth.enabled }}
+              value: {{ include "immich.dragonfly.port" . | quote }}
+            {{- if and (eq .Values.dragonfly.mode "disabled") .Values.dragonfly.external.existingSecret }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "immich.redis.secretName" . }}
-                  key: redis-password
+                  name: {{ include "immich.dragonfly.secretName" . }}
+                  key: {{ include "immich.dragonfly.passwordKey" . }}
             {{- end }}
             {{- if .Values.machineLearning.enabled }}
             # Machine Learning connection
