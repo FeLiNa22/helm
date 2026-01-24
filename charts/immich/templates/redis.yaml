@@ -50,12 +50,6 @@ spec:
                   name: {{ include "immich.redis.secretName" . }}
                   key: redis-password
             {{- end }}
-            {{- if gt (int .Values.redis.replicas) 1 }}
-            - name: POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-            {{- end }}
           {{- end }}
           command:
             - redis-server
@@ -67,9 +61,6 @@ spec:
             - --appendfsync everysec
             - --maxmemory {{ .Values.redis.maxmemory }}
             - --maxmemory-policy {{ .Values.redis.maxmemoryPolicy }}
-            {{- if gt (int .Values.redis.replicas) 1 }}
-            - --replica-announce-ip $(POD_IP)
-            {{- end }}
           livenessProbe:
             exec:
               command:
