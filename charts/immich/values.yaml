@@ -342,11 +342,12 @@ postgresql:
       create: true
       username: postgres
       password: ""  # Leave empty to auto-generate
-    # SQL to initialize extensions (vectorchord for Immich)
-    initSQL: |
-      CREATE EXTENSION IF NOT EXISTS vectors;
-      CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
-      CREATE EXTENSION IF NOT EXISTS pg_trgm;
+    # SQL commands to initialize extensions (vectorchord for Immich)
+    # Each line should be a complete SQL statement
+    initSQL:
+      - "CREATE EXTENSION IF NOT EXISTS vectors;"
+      - "CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;"
+      - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
 
   # External PostgreSQL configuration (used when mode is 'external')
   external:

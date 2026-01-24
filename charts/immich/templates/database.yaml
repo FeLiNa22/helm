@@ -29,7 +29,7 @@ spec:
       {{- end }}
       {{- if .Values.postgresql.cluster.initSQL }}
       postInitSQL:
-        {{- .Values.postgresql.cluster.initSQL | nindent 8 }}
+        {{- toYaml .Values.postgresql.cluster.initSQL | nindent 8 }}
       {{- end }}
 
   storage:
