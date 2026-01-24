@@ -41,13 +41,21 @@ spec:
             - name: redis
               containerPort: 6379
               protocol: TCP
-          {{- if .Values.redis.auth.enabled }}
+          {{- if or .Values.redis.auth.enabled (gt (int .Values.redis.replicas) 1) }}
           env:
+            {{- if .Values.redis.auth.enabled }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "immich.redis.secretName" . }}
                   key: redis-password
+            {{- end }}
+            {{- if gt (int .Values.redis.replicas) 1 }}
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            {{- end }}
           {{- end }}
           command:
             - redis-server
@@ -62,20 +70,6 @@ spec:
             {{- if gt (int .Values.redis.replicas) 1 }}
             - --replica-announce-ip $(POD_IP)
             {{- end }}
-          {{- if gt (int .Values.redis.replicas) 1 }}
-          env:
-            {{- if .Values.redis.auth.enabled }}
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "immich.redis.secretName" . }}
-                  key: redis-password
-            {{- end }}
-            - name: POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-          {{- end }}
           livenessProbe:
             exec:
               command:
