@@ -4,7 +4,7 @@ maintainers:
     url: https://raulpatel.com
 apiVersion: v2
 appVersion: 1.2.3
-version: 1.7.0
+version: 1.3.22
 description: Raul Servarr Helm Chart
 home: https://github.com/FeLiNa22/homeserver/tree/main/charts/servarr
 icon: https://raulpatel.com/images/raul.svg
