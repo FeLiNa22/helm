@@ -11,15 +11,15 @@ metadata:
     # ArgoCD Image Updater annotations
     # Apply these annotations to your ArgoCD Application resource to enable automatic image updates
     argocd-image-updater.argoproj.io/image-list: {{ .Values.image.repository }}
-    argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" }}.update-strategy: {{ .Values.imageUpdater.updateStrategy }}
+    argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.update-strategy: {{ .Values.imageUpdater.updateStrategy }}
     {{- if .Values.imageUpdater.allowTags }}
-    argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" }}.allow-tags: {{ .Values.imageUpdater.allowTags }}
+    argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.allow-tags: {{ .Values.imageUpdater.allowTags }}
     {{- end }}
     {{- if .Values.imageUpdater.ignoreTags }}
-    argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" }}.ignore-tags: {{ .Values.imageUpdater.ignoreTags }}
+    argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.ignore-tags: {{ .Values.imageUpdater.ignoreTags }}
     {{- end }}
     {{- if .Values.imageUpdater.pullSecret }}
-    argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" }}.pull-secret: {{ .Values.imageUpdater.pullSecret }}
+    argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.pull-secret: {{ .Values.imageUpdater.pullSecret }}
     {{- end }}
     {{- with .Values.imageUpdater.extraAnnotations }}
     {{- toYaml . | nindent 4 }}
@@ -33,14 +33,14 @@ data:
     
     annotations:
       argocd-image-updater.argoproj.io/image-list: {{ .Values.image.repository }}
-      argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" }}.update-strategy: {{ .Values.imageUpdater.updateStrategy }}
+      argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.update-strategy: {{ .Values.imageUpdater.updateStrategy }}
       {{- if .Values.imageUpdater.allowTags }}
-      argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" }}.allow-tags: {{ .Values.imageUpdater.allowTags }}
+      argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.allow-tags: {{ .Values.imageUpdater.allowTags }}
       {{- end }}
       {{- if .Values.imageUpdater.ignoreTags }}
-      argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" }}.ignore-tags: {{ .Values.imageUpdater.ignoreTags }}
+      argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.ignore-tags: {{ .Values.imageUpdater.ignoreTags }}
       {{- end }}
       {{- if .Values.imageUpdater.pullSecret }}
-      argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" }}.pull-secret: {{ .Values.imageUpdater.pullSecret }}
+      argocd-image-updater.argoproj.io/{{ .Values.image.repository | replace "/" "_" | replace "." "_" | replace "-" "_" }}.pull-secret: {{ .Values.imageUpdater.pullSecret }}
       {{- end }}
 {{- end }}
