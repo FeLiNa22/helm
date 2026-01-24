@@ -176,30 +176,33 @@ persistence:
   additionalVolumes: []
   additionalMounts: []
 
-## @section Valkey parameters
-## Valkey (Redis-compatible) is required for Immich's job queue and caching
+## @section Redis parameters
+## Redis is required for Immich's job queue and caching
 
-## @param valkey.enabled Whether to deploy Valkey for high availability.
-## @param valkey.replicas Number of Valkey replicas for high availability.
-## @param valkey.image.repository Valkey container image repository.
-## @param valkey.image.tag Valkey container image tag.
-## @param valkey.image.pullPolicy Valkey image pull policy.
-## @param valkey.auth.enabled Enable or disable authentication for Valkey.
-## @param valkey.auth.password Valkey password (leave empty to auto-generate).
-## @param valkey.auth.existingSecret Secret name for existing Valkey password.
-## @param valkey.maxmemory Maximum memory for Valkey.
-## @param valkey.maxmemoryPolicy Memory eviction policy for Valkey.
-## @param valkey.persistence.enabled Enable persistence for Valkey.
-## @param valkey.persistence.size Size of the Valkey persistence volume.
-## @param valkey.persistence.storageClass Storage class name for Valkey persistent volumes.
-## @param valkey.resources Resource limits and requests for Valkey.
+## @param redis.enabled Whether to deploy Redis for high availability.
+## @param redis.replicas Number of Redis replicas for high availability.
+## @param redis.image.repository Redis container image repository.
+## @param redis.image.tag Redis container image tag.
+## @param redis.image.pullPolicy Redis image pull policy.
+## @param redis.auth.enabled Enable or disable authentication for Redis.
+## @param redis.auth.password Redis password (leave empty to auto-generate).
+## @param redis.auth.existingSecret Secret name for existing Redis password.
+## @param redis.maxmemory Maximum memory for Redis.
+## @param redis.maxmemoryPolicy Memory eviction policy for Redis.
+## @param redis.persistence.enabled Enable persistence for Redis.
+## @param redis.persistence.size Size of the Redis persistence volume.
+## @param redis.persistence.storageClass Storage class name for Redis persistent volumes.
+## @param redis.resources Resource limits and requests for Redis.
+## @param redis.external.host Hostname of external Redis (when redis.enabled=false).
+## @param redis.external.port Port of external Redis.
+## @param redis.external.existingSecret Secret name for external Redis password.
 ##
-valkey:
+redis:
   enabled: true
   replicas: 3
   image:
-    repository: valkey/valkey
-    tag: "8.0"
+    repository: redis
+    tag: "7.2-alpine"
     pullPolicy: IfNotPresent
   auth:
     enabled: false
@@ -218,23 +221,7 @@ valkey:
     # requests:
     #   cpu: 100m
     #   memory: 256Mi
-
-## @section Redis parameters (DEPRECATED - use Valkey instead)
-## Redis is required for Immich's job queue and caching
-
-## @param redis.enabled Whether to deploy the Redis subchart (DEPRECATED - use valkey.enabled instead).
-## @param redis.architecture Redis deployment architecture: 'standalone' or 'replication'.
-## @param redis.auth.enabled Enable or disable authentication for Redis.
-## @param redis.external.host Hostname of external Redis (when redis.enabled=false and valkey.enabled=false).
-## @param redis.external.port Port of external Redis.
-## @param redis.external.existingSecret Secret name for external Redis password.
-##
-redis:
-  enabled: false
-  architecture: standalone
-  auth:
-    enabled: false
-  # External Redis configuration (used when both redis.enabled=false and valkey.enabled=false)
+  # External Redis configuration (used when redis.enabled=false)
   external:
     host: ""
     port: 6379

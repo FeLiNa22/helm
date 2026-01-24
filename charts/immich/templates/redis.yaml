@@ -1,19 +1,19 @@
-{{- if .Values.valkey.enabled }}
+{{- if .Values.redis.enabled }}
 {{- $fullName := include "immich.fullname" . -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ $fullName }}-valkey
+  name: {{ $fullName }}-redis
   labels:
     {{- include "immich.labels" . | nindent 4 }}
-    app.kubernetes.io/component: valkey
+    app.kubernetes.io/component: redis
 spec:
-  serviceName: {{ $fullName }}-valkey-headless
-  replicas: {{ .Values.valkey.replicas }}
+  serviceName: {{ $fullName }}-redis-headless
+  replicas: {{ .Values.redis.replicas }}
   selector:
     matchLabels:
       {{- include "immich.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: valkey
+      app.kubernetes.io/component: redis
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -22,7 +22,7 @@ spec:
       {{- end }}
       labels:
         {{- include "immich.labels" . | nindent 8 }}
-        app.kubernetes.io/component: valkey
+        app.kubernetes.io/component: redis
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -32,42 +32,59 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: valkey
+        - name: redis
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.valkey.image.repository }}:{{ .Values.valkey.image.tag }}"
-          imagePullPolicy: {{ .Values.valkey.image.pullPolicy }}
+          image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+          imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
           ports:
-            - name: valkey
+            - name: redis
               containerPort: 6379
               protocol: TCP
-          {{- if .Values.valkey.auth.enabled }}
+          {{- if .Values.redis.auth.enabled }}
           env:
-            - name: VALKEY_PASSWORD
+            - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "immich.valkey.secretName" . }}
-                  key: valkey-password
+                  name: {{ include "immich.redis.secretName" . }}
+                  key: redis-password
           {{- end }}
           command:
-            - valkey-server
+            - redis-server
           args:
-            {{- if .Values.valkey.auth.enabled }}
-            - --requirepass $(VALKEY_PASSWORD)
+            {{- if .Values.redis.auth.enabled }}
+            - --requirepass $(REDIS_PASSWORD)
             {{- end }}
             - --appendonly yes
             - --appendfsync everysec
-            - --maxmemory {{ .Values.valkey.maxmemory }}
-            - --maxmemory-policy {{ .Values.valkey.maxmemoryPolicy }}
+            - --maxmemory {{ .Values.redis.maxmemory }}
+            - --maxmemory-policy {{ .Values.redis.maxmemoryPolicy }}
+            {{- if gt (int .Values.redis.replicas) 1 }}
+            - --replica-announce-ip $(POD_IP)
+            {{- end }}
+          {{- if gt (int .Values.redis.replicas) 1 }}
+          env:
+            {{- if .Values.redis.auth.enabled }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "immich.redis.secretName" . }}
+                  key: redis-password
+            {{- end }}
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          {{- end }}
           livenessProbe:
             exec:
               command:
                 - sh
                 - -c
-                {{- if .Values.valkey.auth.enabled }}
-                - valkey-cli -a "$VALKEY_PASSWORD" ping | grep PONG
+                {{- if .Values.redis.auth.enabled }}
+                - redis-cli -a "$REDIS_PASSWORD" ping | grep PONG
                 {{- else }}
-                - valkey-cli ping | grep PONG
+                - redis-cli ping | grep PONG
                 {{- end }}
             initialDelaySeconds: 30
             periodSeconds: 10
@@ -78,10 +95,10 @@ spec:
               command:
                 - sh
                 - -c
-                {{- if .Values.valkey.auth.enabled }}
-                - valkey-cli -a "$VALKEY_PASSWORD" ping | grep PONG
+                {{- if .Values.redis.auth.enabled }}
+                - redis-cli -a "$REDIS_PASSWORD" ping | grep PONG
                 {{- else }}
-                - valkey-cli ping | grep PONG
+                - redis-cli ping | grep PONG
                 {{- end }}
             initialDelaySeconds: 5
             periodSeconds: 5
@@ -91,8 +108,8 @@ spec:
             - name: data
               mountPath: /data
           resources:
-            {{- toYaml .Values.valkey.resources | nindent 12 }}
-      {{- if not .Values.valkey.persistence.enabled }}
+            {{- toYaml .Values.redis.resources | nindent 12 }}
+      {{- if not .Values.redis.persistence.enabled }}
       volumes:
         - name: data
           emptyDir: {}
@@ -109,56 +126,56 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-  {{- if .Values.valkey.persistence.enabled }}
+  {{- if .Values.redis.persistence.enabled }}
   volumeClaimTemplates:
     - metadata:
         name: data
       spec:
         accessModes: [ "ReadWriteOnce" ]
-        {{- if .Values.valkey.persistence.storageClass }}
-        storageClassName: {{ .Values.valkey.persistence.storageClass | quote }}
+        {{- if .Values.redis.persistence.storageClass }}
+        storageClassName: {{ .Values.redis.persistence.storageClass | quote }}
         {{- end }}
         resources:
           requests:
-            storage: {{ .Values.valkey.persistence.size }}
+            storage: {{ .Values.redis.persistence.size }}
   {{- end }}
 ---
 # Headless service for StatefulSet DNS
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $fullName }}-valkey-headless
+  name: {{ $fullName }}-redis-headless
   labels:
     {{- include "immich.labels" . | nindent 4 }}
-    app.kubernetes.io/component: valkey
+    app.kubernetes.io/component: redis
 spec:
   type: ClusterIP
   clusterIP: None
   ports:
     - port: 6379
-      targetPort: valkey
+      targetPort: redis
       protocol: TCP
-      name: valkey
+      name: redis
   selector:
     {{- include "immich.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: valkey
+    app.kubernetes.io/component: redis
 ---
 # Client service for connections
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $fullName }}-valkey
+  name: {{ $fullName }}-redis
   labels:
     {{- include "immich.labels" . | nindent 4 }}
-    app.kubernetes.io/component: valkey
+    app.kubernetes.io/component: redis
 spec:
   type: ClusterIP
   ports:
     - port: 6379
-      targetPort: valkey
+      targetPort: redis
       protocol: TCP
-      name: valkey
+      name: redis
   selector:
     {{- include "immich.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: valkey
+    app.kubernetes.io/component: redis
 {{- end }}

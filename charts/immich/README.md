@@ -40,20 +40,20 @@ This chart deploys the following components:
 1. **Immich Server** - The main application server
 2. **Machine Learning** - ML service for face recognition and smart search (optional)
 3. **CloudNative-PG PostgreSQL Cluster** - Highly available database with pgvector extension (3 instances by default)
-4. **Valkey** - Highly available Redis-compatible cache and job queue (3 replicas by default)
+4. **Redis** - Highly available Redis cache and job queue (3 replicas by default)
 
 ### High Availability
 
 This chart is designed for high availability with:
 
 - **CloudNative-PG PostgreSQL**: Provides automatic failover, point-in-time recovery, and streaming replication. Default configuration runs 3 instances.
-- **Valkey StatefulSet**: Runs multiple Valkey replicas for redundancy. Default configuration runs 3 replicas.
+- **Redis StatefulSet**: Runs multiple Redis replicas for redundancy. Default configuration runs 3 replicas.
 
 Both components support horizontal scaling and automatic failover when a node goes down.
 
 ### Using External Services
 
-If you want to use external PostgreSQL or Redis/Valkey instances, you can disable the built-in services:
+If you want to use external PostgreSQL or Redis instances, you can disable the built-in services:
 
 ```yaml
 # values.yaml
@@ -69,10 +69,8 @@ postgresql:
     existingSecret: "your-postgresql-secret"
     secretKey: "password"
 
-valkey:
-  enabled: false
-
 redis:
+  enabled: false
   external:
     host: "your-redis-host"
     port: 6379
@@ -149,26 +147,18 @@ ingress:
 | `persistence.library.accessMode` | Access mode | `ReadWriteOnce` |
 | `persistence.library.size` | Volume size | `100Gi` |
 
-### Valkey parameters
+### Redis parameters
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `valkey.enabled` | Deploy Valkey for high availability | `true` |
-| `valkey.replicas` | Number of Valkey replicas | `3` |
-| `valkey.image.repository` | Valkey image repository | `valkey/valkey` |
-| `valkey.image.tag` | Valkey image tag | `8.0` |
-| `valkey.auth.enabled` | Enable Valkey authentication | `false` |
-| `valkey.persistence.enabled` | Enable Valkey persistence | `true` |
-| `valkey.persistence.size` | Valkey volume size | `1Gi` |
-| `valkey.maxmemory` | Maximum memory for Valkey | `256mb` |
-
-### Redis parameters (DEPRECATED)
-
-| Name | Description | Value |
-|------|-------------|-------|
-| `redis.enabled` | Deploy Redis subchart (use valkey instead) | `false` |
-| `redis.architecture` | Redis architecture | `standalone` |
+| `redis.enabled` | Deploy Redis for high availability | `true` |
+| `redis.replicas` | Number of Redis replicas | `3` |
+| `redis.image.repository` | Redis image repository | `redis` |
+| `redis.image.tag` | Redis image tag | `7.2-alpine` |
 | `redis.auth.enabled` | Enable Redis authentication | `false` |
+| `redis.persistence.enabled` | Enable Redis persistence | `true` |
+| `redis.persistence.size` | Redis volume size | `1Gi` |
+| `redis.maxmemory` | Maximum memory for Redis | `256mb` |
 
 ### Database parameters
 
@@ -201,10 +191,10 @@ ingress:
 
 ### To 1.3.0
 
-This version introduces high availability support by switching from Bitnami subcharts to CloudNative-PG and Valkey:
+This version introduces high availability support by switching from Bitnami subcharts to CloudNative-PG and Redis StatefulSet:
 
 - **Database**: Replaces Bitnami PostgreSQL subchart with CloudNative-PG cluster (3 instances by default)
-- **Cache/Queue**: Replaces Bitnami Redis subchart with Valkey StatefulSet (3 replicas by default)
+- **Cache/Queue**: Replaces Bitnami Redis subchart with Redis StatefulSet (3 replicas by default)
 - **High Availability**: Both components now support automatic failover and horizontal scaling
 - **Prerequisite**: CloudNative-PG operator must be installed before upgrading
 
@@ -213,7 +203,7 @@ This version introduces high availability support by switching from Bitnami subc
 - Chart dependencies removed (no longer uses Helm subcharts)
 - Service names have changed:
   - PostgreSQL: `<release>-postgresql` → `<release>-immich-db-rw` (read-write) and `<release>-immich-db-r` (read-only)
-  - Redis: `<release>-redis-master` → `<release>-immich-valkey`
+  - Redis: `<release>-redis-master` → `<release>-immich-redis`
 
 To migrate from version 1.2.x:
 1. Install CloudNative-PG operator (see Installation section above)
@@ -223,7 +213,7 @@ To migrate from version 1.2.x:
 5. Install the new version with appropriate configuration
 6. Restore your data if necessary
 
-For backwards compatibility, the old `postgresql` and `redis` configuration sections are still supported but deprecated. Set `database.enabled=false` and `postgresql.enabled=true` to use the old Bitnami PostgreSQL, or `valkey.enabled=false` and `redis.enabled=true` to use the old Bitnami Redis.
+For backwards compatibility, the old `postgresql` configuration section is still supported. Set `database.enabled=false` and `postgresql.enabled=true` to use the old Bitnami PostgreSQL subchart.
 
 ### To 2.0.0
 
