@@ -1,0 +1,43 @@
+{{- if and .Values.prowlarr.enabled (or (eq .Values.prowlarr.database.mode "external") (eq .Values.prowlarr.database.mode "cluster")) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-prowlarr-config
+  labels:
+    app.kubernetes.io/name: prowlarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-prowlarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+data:
+  config.xml: |
+    <Config>
+      <BindAddress>*</BindAddress>
+      <Port>9696</Port>
+      <SslPort>6969</SslPort>
+      <EnableSsl>False</EnableSsl>
+      <LaunchBrowser>True</LaunchBrowser>
+      <AuthenticationMethod>External</AuthenticationMethod>
+      <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
+      <Branch>master</Branch>
+      <LogLevel>info</LogLevel>
+      <SslCertPath></SslCertPath>
+      <SslCertPassword></SslCertPassword>
+      <UrlBase></UrlBase>
+      <InstanceName>Prowlarr</InstanceName>
+      <UpdateMechanism>Docker</UpdateMechanism>
+      {{- if eq .Values.prowlarr.database.mode "cluster" }}
+      <PostgresUser>prowlarr</PostgresUser>
+      <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
+      <PostgresHost>{{ .Release.Name }}-prowlarr-db-rw</PostgresHost>
+      <PostgresPort>5432</PostgresPort>
+      {{- else }}
+      <PostgresUser>{{ required "prowlarr.database.username is required when prowlarr.database.mode is 'external'" .Values.prowlarr.database.username }}</PostgresUser>
+      <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
+      <PostgresHost>{{ required "prowlarr.database.host is required when prowlarr.database.mode is 'external'" .Values.prowlarr.database.host }}</PostgresHost>
+      <PostgresPort>{{ .Values.prowlarr.database.port }}</PostgresPort>
+      {{- end }}
+      <PostgresMainDb>{{ .Values.prowlarr.database.mainDatabase }}</PostgresMainDb>
+      <PostgresLogDb>{{ .Values.prowlarr.database.logDatabase }}</PostgresLogDb>
+    </Config>
+{{- end }}
