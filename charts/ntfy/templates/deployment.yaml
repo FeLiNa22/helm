@@ -1,10 +1,9 @@
-{{- if .Values.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}
   labels:
-    app.kubernetes.io/name: frigate
+    app.kubernetes.io/name: ntfy
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
@@ -16,7 +15,7 @@ spec:
     {{- .Values.deployment.strategy | toYaml | nindent 4 }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: frigate
+      app.kubernetes.io/name: ntfy
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
@@ -25,7 +24,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        app.kubernetes.io/name: frigate
+        app.kubernetes.io/name: ntfy
         app.kubernetes.io/instance: {{ .Release.Name | quote }}
         app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
         app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
@@ -34,7 +33,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ .Values.serviceAccount.name | default (printf "%s" .Release.Name) }}
+      serviceAccountName: {{ .Values.serviceAccount.name | default .Release.Name }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if .Values.initContainers }}
@@ -42,30 +41,17 @@ spec:
         {{- toYaml .Values.initContainers | nindent 8 }}
       {{- end }}
       volumes:
-        - name: config
-          {{- if .Values.persistence.config.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.persistence.config.existingClaim | default (printf "%s-config" .Release.Name) }}
-          {{- else }}
-          emptyDir: { }
-          {{- end }}
-        - name: media
-          {{- if .Values.persistence.media.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.persistence.media.existingClaim | default (printf "%s-media" .Release.Name) }}
-          {{- else }}
-          emptyDir: { }
-          {{- end }}
-        {{- if .Values.tmpfs.enabled }}
         - name: cache
-          emptyDir:
-            medium: Memory
-            sizeLimit: {{ .Values.tmpfs.size | default "1Gi" }}
-        {{- end }}
-        {{- if .Values.persistence.backup.enabled }}
-        - name: backup
+          {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.backup.existingClaim | default (printf "%s-backup" .Release.Name) }}
+            claimName: {{ .Values.persistence.existingClaim | default (printf "%s" .Release.Name) }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
+        {{- if .Values.config.enabled }}
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}-config
         {{- end }}
         {{- if .Values.persistence.additionalVolumes }}
           {{- .Values.persistence.additionalVolumes | toYaml | nindent 8}}
@@ -76,44 +62,29 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["ntfy", "serve"]
           volumeMounts:
-            - mountPath: /config
-              name: config
-            - mountPath: /media/frigate
-              name: media
-            {{- if .Values.tmpfs.enabled }}
-            - mountPath: /tmp/cache
+            - mountPath: /var/cache/ntfy
               name: cache
-            {{- end }}
-            {{- if .Values.persistence.backup.enabled }}
-            - mountPath: /media/frigate/backups
-              name: backup
-            {{- end }}
+          {{- if .Values.config.enabled }}
+            - mountPath: /etc/ntfy
+              name: config
+              readOnly: true
+          {{- end }}
           {{- if .Values.persistence.additionalMounts }}
             {{- .Values.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}
           ports:
             - name: http
-              containerPort: 5000
+              containerPort: 80
               protocol: TCP
-            - name: rtsp
-              containerPort: 8554
-              protocol: TCP
-            - name: webrtc
-              containerPort: 8555
-              protocol: TCP
+          {{- if .Values.env }}
           env:
-            {{- if .Values.database.enabled }}
-            - name: FRIGATE_DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.database.secret.name | default (printf "%s-frigate-db-app" .Release.Name) }}
-                  key: database-url
-            {{- end }}
             {{- range $k,$v := .Values.env }}
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
@@ -128,4 +99,3 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-{{- end }}

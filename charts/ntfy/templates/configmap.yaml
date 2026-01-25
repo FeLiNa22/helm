@@ -1,0 +1,88 @@
+{{- if .Values.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  labels:
+    app.kubernetes.io/name: ntfy
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+data:
+  server.yml: |
+    {{- if .Values.config.baseUrl }}
+    base-url: {{ .Values.config.baseUrl | quote }}
+    {{- end }}
+    {{- if .Values.config.cacheFile }}
+    cache-file: {{ .Values.config.cacheFile | quote }}
+    {{- end }}
+    {{- if .Values.config.cacheDuration }}
+    cache-duration: {{ .Values.config.cacheDuration | quote }}
+    {{- end }}
+    {{- if .Values.config.authFile }}
+    auth-file: {{ .Values.config.authFile | quote }}
+    {{- end }}
+    {{- if .Values.config.authDefaultAccess }}
+    auth-default-access: {{ .Values.config.authDefaultAccess | quote }}
+    {{- end }}
+    {{- if .Values.config.authUsers }}
+    auth-users:
+      {{- range .Values.config.authUsers }}
+      - {{ . | quote }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.config.authAccess }}
+    auth-access:
+      {{- range .Values.config.authAccess }}
+      - {{ . | quote }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.config.authTokens }}
+    auth-tokens:
+      {{- range .Values.config.authTokens }}
+      - {{ . | quote }}
+      {{- end }}
+    {{- end }}
+    {{- if hasKey .Values.config "behindProxy" }}
+    behind-proxy: {{ .Values.config.behindProxy }}
+    {{- end }}
+    {{- if .Values.config.attachmentCacheDir }}
+    attachment-cache-dir: {{ .Values.config.attachmentCacheDir | quote }}
+    {{- end }}
+    {{- if .Values.config.attachmentTotalSizeLimit }}
+    attachment-total-size-limit: {{ .Values.config.attachmentTotalSizeLimit | quote }}
+    {{- end }}
+    {{- if .Values.config.attachmentFileSizeLimit }}
+    attachment-file-size-limit: {{ .Values.config.attachmentFileSizeLimit | quote }}
+    {{- end }}
+    {{- if .Values.config.attachmentExpiryDuration }}
+    attachment-expiry-duration: {{ .Values.config.attachmentExpiryDuration | quote }}
+    {{- end }}
+    {{- if hasKey .Values.config "enableLogin" }}
+    enable-login: {{ .Values.config.enableLogin }}
+    {{- end }}
+    {{- if hasKey .Values.config "enableSignup" }}
+    enable-signup: {{ .Values.config.enableSignup }}
+    {{- end }}
+    {{- if hasKey .Values.config "enableReservations" }}
+    enable-reservations: {{ .Values.config.enableReservations }}
+    {{- end }}
+    {{- if .Values.config.upstreamBaseUrl }}
+    upstream-base-url: {{ .Values.config.upstreamBaseUrl | quote }}
+    {{- end }}
+    {{- if .Values.config.webPushPublicKey }}
+    web-push-public-key: {{ .Values.config.webPushPublicKey | quote }}
+    {{- end }}
+    {{- if .Values.config.webPushPrivateKey }}
+    web-push-private-key: {{ .Values.config.webPushPrivateKey | quote }}
+    {{- end }}
+    {{- if .Values.config.webPushFile }}
+    web-push-file: {{ .Values.config.webPushFile | quote }}
+    {{- end }}
+    {{- if .Values.config.webPushEmailAddress }}
+    web-push-email-address: {{ .Values.config.webPushEmailAddress | quote }}
+    {{- end }}
+    {{- if .Values.config.extraConfig }}
+    {{- .Values.config.extraConfig | nindent 4 }}
+    {{- end }}
+{{- end }}

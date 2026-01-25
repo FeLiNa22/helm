@@ -1,4 +1,4 @@
-{{- if .Values.image.autoupdate.enabled }}
+{{- if .Values.imageUpdater.enabled }}
 apiVersion: argocd-image-updater.argoproj.io/v1alpha1
 kind: ImageUpdater
 metadata:
@@ -14,31 +14,31 @@ spec:
       images:
         - alias: {{ .Values.imageUpdater.imageAlias | default .Release.Name | quote }}
           imageName: {{ .Values.image.repository }}{{ if .Values.image.tag }}:{{ .Values.image.tag }}{{ end }}
-          {{- if or .Values.image.autoupdate.strategy .Values.image.autoupdate.allowTags .Values.image.autoupdate.ignoreTags .Values.image.autoupdate.pullSecret .Values.imageUpdater.forceUpdate .Values.image.autoupdate.platforms }}
+          {{- if or .Values.imageUpdater.updateStrategy .Values.imageUpdater.allowTags .Values.imageUpdater.ignoreTags .Values.imageUpdater.pullSecret .Values.imageUpdater.forceUpdate .Values.imageUpdater.platforms }}
           commonUpdateSettings:
-            {{- if .Values.image.autoupdate.strategy }}
-            updateStrategy: {{ .Values.image.autoupdate.strategy }}
+            {{- if .Values.imageUpdater.updateStrategy }}
+            updateStrategy: {{ .Values.imageUpdater.updateStrategy }}
             {{- end }}
             {{- if .Values.imageUpdater.forceUpdate }}
             forceUpdate: {{ .Values.imageUpdater.forceUpdate }}
             {{- end }}
-            {{- if .Values.image.autoupdate.allowTags }}
-            allowTags: {{ .Values.image.autoupdate.allowTags | quote }}
+            {{- if .Values.imageUpdater.allowTags }}
+            allowTags: {{ .Values.imageUpdater.allowTags | quote }}
             {{- end }}
-            {{- if .Values.image.autoupdate.ignoreTags }}
+            {{- if .Values.imageUpdater.ignoreTags }}
             ignoreTags:
-              {{- if kindIs "string" .Values.image.autoupdate.ignoreTags }}
-              - {{ .Values.image.autoupdate.ignoreTags | quote }}
+              {{- if kindIs "string" .Values.imageUpdater.ignoreTags }}
+              - {{ .Values.imageUpdater.ignoreTags | quote }}
               {{- else }}
-              {{- toYaml .Values.image.autoupdate.ignoreTags | nindent 14 }}
+              {{- toYaml .Values.imageUpdater.ignoreTags | nindent 14 }}
               {{- end }}
             {{- end }}
-            {{- if .Values.image.autoupdate.pullSecret }}
-            pullSecret: {{ .Values.image.autoupdate.pullSecret | quote }}
+            {{- if .Values.imageUpdater.pullSecret }}
+            pullSecret: {{ .Values.imageUpdater.pullSecret | quote }}
             {{- end }}
-            {{- if .Values.image.autoupdate.platforms }}
+            {{- if .Values.imageUpdater.platforms }}
             platforms:
-              {{- toYaml .Values.image.autoupdate.platforms | nindent 14 }}
+              {{- toYaml .Values.imageUpdater.platforms | nindent 14 }}
             {{- end }}
           {{- end }}
           {{- if or .Values.imageUpdater.helm .Values.imageUpdater.kustomize }}

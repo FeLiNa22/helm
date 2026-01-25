@@ -1,16 +1,9 @@
-## @section Homepage parameters
+## @section ntfy parameters
 
-## @param enabled Whether to enable Homepage.
 ## @param replicaCount The number of replicas to deploy.
 ## @param image.repository The Docker repository to pull the image from.
 ## @param image.tag The image tag to use.
 ## @param image.pullPolicy The logic of image pulling.
-## @param image.autoupdate.enabled Enable automatic image updates via ArgoCD Image Updater.
-## @param image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
-## @param image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
-## @param image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
-## @param image.autoupdate.pullSecret Reference to secret for private registry authentication.
-## @param image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param imagePullSecrets The image pull secrets to use.
 ## @param deployment.strategy.type The deployment strategy to use.
 ## @param serviceAccount.create Whether to create a service account.
@@ -39,35 +32,44 @@
 ## @param nodeSelector The node selector to use for the pod.
 ## @param tolerations The tolerations to use for the pod.
 ## @param affinity The affinity to use for the pod.
-## @param env Additional environment variables to add to the pod.
-## @param persistence.enabled Whether to enable persistence.
+## @param env Environment variables to set for the container (map format).
+## @param persistence.enabled Whether to enable persistence for the cache.
 ## @param persistence.storageClass The storage class to use for the persistence.
 ## @param persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param persistence.accessMode The access mode to use for the persistence.
 ## @param persistence.size The size to use for the persistence.
-## @param persistence.backup.enabled Whether to enable backup persistence.
-## @param persistence.backup.storageClass The storage class to use for backup persistence.
-## @param persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
-## @param persistence.backup.accessMode The access mode to use for backup persistence.
-## @param persistence.backup.size The size to use for backup persistence.
 ## @param persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param persistence.additionalMounts Additional volume mounts to add to the pod.
-## @param env Additional environment variables to add to the pod.
+## @param config.enabled Whether to enable server.yml configuration via ConfigMap.
+## @param config.baseUrl Base URL for the ntfy server (required for attachments, emails, iOS push).
+## @param config.cacheFile Path to the cache database file.
+## @param config.cacheDuration Duration for which messages are cached.
+## @param config.authFile Path to the authentication database file.
+## @param config.authDefaultAccess Default access level (read-write, read-only, write-only, deny-all).
+## @param config.authUsers List of users to provision in format "<username>:<password-hash>:<role>".
+## @param config.authAccess List of access control entries in format "<username>:<topic-pattern>:<access>".
+## @param config.authTokens List of access tokens in format "<username>:<token>[:<label>]".
+## @param config.behindProxy Whether ntfy is behind a proxy.
+## @param config.attachmentCacheDir Directory for attachment cache.
+## @param config.attachmentTotalSizeLimit Total size limit for attachments.
+## @param config.attachmentFileSizeLimit Per-file size limit for attachments.
+## @param config.attachmentExpiryDuration Duration after which attachments expire.
+## @param config.enableLogin Whether to enable the login page.
+## @param config.enableSignup Whether to enable user signup.
+## @param config.enableReservations Whether to enable topic reservations.
+## @param config.upstreamBaseUrl Upstream base URL for web push.
+## @param config.webPushPublicKey Web push VAPID public key.
+## @param config.webPushPrivateKey Web push VAPID private key.
+## @param config.webPushFile Path to web push database file.
+## @param config.webPushEmailAddress Email address for web push.
+## @param config.extraConfig Additional configuration in YAML format.
 ##
-enabled: true
 replicaCount: 1
 
 image:
-  repository: ghcr.io/gethomepage/homepage
+  repository: binwiederhier/ntfy
   pullPolicy: IfNotPresent
-  tag: "latest"
-  autoupdate:
-    enabled: false
-    strategy: semver
-    allowTags: ""
-    ignoreTags: []
-    pullSecret: ""
-    platforms: []
+  tag: "v2.16.0"
 
 imagePullSecrets: []
 
@@ -93,6 +95,7 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+# -- Init Containers
 initContainers: []
   # - name: init-container
   #   image: busybox
@@ -100,7 +103,7 @@ initContainers: []
 
 service:
   type: LoadBalancer
-  port: 3000
+  port: 80
   nodePort: ""
 
 ingress:
@@ -140,8 +143,12 @@ tolerations: []
 
 affinity: {}
 
+# Environment variables for ntfy configuration
+# See https://docs.ntfy.sh/config/ for more options
 env: {}
-  # LOG_LEVEL: "info"
+  # TZ: "UTC"
+  # NTFY_BASE_URL: "https://ntfy.example.com"
+  # NTFY_CACHE_FILE: "/var/cache/ntfy/cache.db"
 
 persistence:
   enabled: true
@@ -149,56 +156,89 @@ persistence:
   existingClaim: ""
   accessMode: ReadWriteOnce
   size: 1Gi
-  backup:
-    enabled: false
-    storageClass: "cephfs"
-    existingClaim: ""
-    accessMode: ReadWriteMany
-    size: 5Gi
   additionalVolumes: []
   additionalMounts: []
 
-## @section Homepage Configuration
-
-## @param config.enableKubernetes Enable Kubernetes integration for service discovery
-## @param config.kubernetes.mode Mode for Kubernetes integration (cluster or default)
-## @param config.allowedHosts Comma-separated list of allowed hosts for the HOMEPAGE_ALLOWED_HOSTS environment variable (e.g., "example.com,www.example.com")
-##
+# ntfy server.yml configuration
+# This allows you to configure ntfy server settings via a ConfigMap
+# including authentication, topics, and access control
+# See https://docs.ntfy.sh/config/ for all available options
 config:
-  # Enable Kubernetes integration for automatic service discovery
-  enableKubernetes: true
-  kubernetes:
-    mode: cluster
-  # Allowed hosts for Homepage (HOMEPAGE_ALLOWED_HOSTS environment variable)
-  # Leave empty to allow all hosts
-  allowedHosts: ""
-
-## @section RBAC Configuration
-## RBAC is required for Kubernetes service discovery
-
-## @param rbac.create Create RBAC resources (ClusterRole and ClusterRoleBinding) for service discovery
-##
-rbac:
-  create: true
+  enabled: false
+  # Base URL for the ntfy server (required for attachments, emails, iOS push, etc.)
+  baseUrl: ""
+  # Cache configuration
+  cacheFile: "/var/cache/ntfy/cache.db"
+  cacheDuration: "12h"
+  # Authentication configuration
+  authFile: "/var/cache/ntfy/auth.db"
+  authDefaultAccess: "read-write"  # Options: read-write, read-only, write-only, deny-all
+  # Provision users in format: "<username>:<password-hash>:<role>"
+  # Use 'ntfy user hash' to generate password hash (never use online generators with real passwords)
+  # Example: "username:[bcrypt-hash]:admin"
+  authUsers: []
+    # - "admin:[bcrypt-hash-for-admin]:admin"
+    # - "user1:[bcrypt-hash-for-user1]:user"
+  # Provision access control entries in format: "<username>:<topic-pattern>:<access>"
+  # Access types: read-write (rw), read-only (ro), write-only (wo), deny (none)
+  # Example: "phil:mytopic:rw" or "*:announcements:ro" for anonymous read-only
+  authAccess: []
+    # - "phil:mytopic:rw"
+    # - "*:announcements:ro"
+  # Provision access tokens in format: "<username>:<token>[:<label>]"
+  # Use 'ntfy token generate' to generate tokens
+  authTokens: []
+    # - "phil:tk_3gd7d2yftt4b8ixyfe9mnmro88o76:My Token"
+  # Set to true if ntfy is behind a proxy
+  behindProxy: false
+  # Attachment configuration
+  attachmentCacheDir: ""
+  attachmentTotalSizeLimit: "5G"
+  attachmentFileSizeLimit: "15M"
+  attachmentExpiryDuration: "3h"
+  # Login and signup settings
+  enableLogin: true
+  enableSignup: false
+  enableReservations: false
+  # Web Push configuration (for browser notifications)
+  upstreamBaseUrl: ""
+  webPushPublicKey: ""
+  webPushPrivateKey: ""
+  webPushFile: ""
+  webPushEmailAddress: ""
+  # Extra configuration to append to server.yml (in YAML format)
+  extraConfig: ""
 
 
 ## @section ArgoCD Image Updater parameters
 
+## @param imageUpdater.enabled Enable ArgoCD Image Updater integration. Creates an ImageUpdater CRD for automatic image updates.
 ## @param imageUpdater.namespace Namespace where the ImageUpdater CRD will be created.
 ## @param imageUpdater.argocdNamespace Namespace where ArgoCD Applications are located.
 ## @param imageUpdater.applicationName Name or pattern of the ArgoCD Application to update. Defaults to Release name.
 ## @param imageUpdater.imageAlias Alias for the image in the ImageUpdater CRD. Defaults to Release name.
+## @param imageUpdater.updateStrategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
 ## @param imageUpdater.forceUpdate Force update even if image is not currently deployed.
+## @param imageUpdater.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param imageUpdater.ignoreTags List of glob patterns to ignore specific tags.
+## @param imageUpdater.pullSecret Reference to secret for private registry authentication.
+## @param imageUpdater.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param imageUpdater.helm Helm-specific configuration for parameter names (e.g., {name: "image.repository", tag: "image.tag"}).
 ## @param imageUpdater.kustomize Kustomize-specific configuration (e.g., {name: "original/image"}).
 ## @param imageUpdater.writeBackConfig Write-back configuration for GitOps.
 ##
 imageUpdater:
+  enabled: false
   namespace: argocd
   argocdNamespace: argocd
   applicationName: ""
   imageAlias: ""
+  updateStrategy: semver
   forceUpdate: false
+  allowTags: ""
+  ignoreTags: []
+  pullSecret: ""
+  platforms: []
   helm: {}
   kustomize: {}
   writeBackConfig: {}

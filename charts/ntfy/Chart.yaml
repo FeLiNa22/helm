@@ -1,0 +1,18 @@
+name: ntfy
+maintainers:
+  - name: raulpatel
+    url: https://raulpatel.com
+apiVersion: v2
+appVersion: v2.16.0
+version: 1.0.1
+description: ntfy Helm Chart - Simple HTTP-based pub-sub notification service
+home: https://github.com/FeLiNa22/homeserver/tree/main/charts/ntfy
+icon: https://raulpatel.com/images/raul.svg
+keywords:
+  - kubernetes
+  - ntfy
+  - notifications
+  - push-notifications
+  - pub-sub
+sources:
+  - https://github.com/binwiederhier/ntfy
