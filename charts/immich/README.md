@@ -7,7 +7,7 @@ This Helm chart deploys Immich, a high performance self-hosted photo and video m
 - Kubernetes 1.20+
 - Helm 3.0+
 - PV provisioner support in the underlying infrastructure (for persistence)
-- CloudNativePG operator (if using `postgresql.mode: cluster`)
+- CloudNativePG operator (if using `database.mode: cluster`)
 - DragonflyDB operator (if using `dragonfly.mode: cluster`)
 
 ## Installation
@@ -47,17 +47,19 @@ The chart supports three PostgreSQL deployment modes:
 
 ```yaml
 # Standalone mode (default) - uses Bitnami subchart
-postgresql:
+database:
   mode: standalone
   standalone:
     enabled: true
-    auth:
-      database: immich
-      username: immich
-      password: "your-password"
+
+postgresql:
+  auth:
+    database: immich
+    username: immich
+    password: "your-password"
 
 # Cluster mode - uses CloudNativePG operator
-postgresql:
+database:
   mode: cluster
   standalone:
     enabled: false
@@ -70,7 +72,7 @@ postgresql:
       size: 20Gi
 
 # External mode - connect to existing PostgreSQL
-postgresql:
+database:
   mode: external
   standalone:
     enabled: false
@@ -212,30 +214,69 @@ ingress:
 | `dragonfly.external.host` | External Redis/DragonflyDB host | `""` |
 | `dragonfly.external.port` | External Redis/DragonflyDB port | `6379` |
 
-### PostgreSQL parameters
+### Database parameters
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `postgresql.mode` | Deployment mode: `standalone`, `cluster`, or `external` | `standalone` |
-| `postgresql.standalone.enabled` | Deploy standalone PostgreSQL (Bitnami) | `true` |
-| `postgresql.standalone.auth.database` | Database name | `immich` |
-| `postgresql.standalone.auth.username` | Database username | `immich` |
-| `postgresql.standalone.auth.password` | Database password | `""` (auto-generated) |
-| `postgresql.standalone.image.repository` | PostgreSQL image with pgvecto-rs | `tensorchord/pgvecto-rs` |
-| `postgresql.standalone.image.tag` | PostgreSQL image tag | `pg16-v0.4.0` |
-| `postgresql.standalone.primary.persistence.enabled` | Enable PostgreSQL persistence | `true` |
-| `postgresql.standalone.primary.persistence.size` | PostgreSQL volume size | `10Gi` |
-| `postgresql.cluster.enabled` | Deploy CloudNativePG cluster (requires operator) | `false` |
-| `postgresql.cluster.instances` | Number of PostgreSQL instances | `2` |
-| `postgresql.cluster.image.repository` | PostgreSQL image with vectorchord | `ghcr.io/tensorchord/cloudnative-pgvecto.rs` |
-| `postgresql.cluster.image.tag` | PostgreSQL image tag | `16-v0.4.0` |
-| `postgresql.cluster.storage.size` | Storage size per instance | `10Gi` |
-| `postgresql.external.host` | External PostgreSQL host | `""` |
-| `postgresql.external.port` | External PostgreSQL port | `5432` |
-| `postgresql.external.database` | External database name | `immich` |
-| `postgresql.external.username` | External database username | `immich` |
+| `database.mode` | Deployment mode: `standalone`, `cluster`, or `external` | `standalone` |
+| `database.standalone.enabled` | Deploy standalone PostgreSQL (Bitnami) | `true` |
+| `database.cluster.enabled` | Deploy CloudNativePG cluster (requires operator) | `false` |
+| `database.cluster.instances` | Number of PostgreSQL instances | `2` |
+| `database.cluster.image.repository` | PostgreSQL image with vectorchord | `ghcr.io/tensorchord/cloudnative-pgvecto.rs` |
+| `database.cluster.image.tag` | PostgreSQL image tag | `16-v0.4.0` |
+| `database.cluster.storage.size` | Storage size per instance | `10Gi` |
+| `database.external.host` | External PostgreSQL host | `""` |
+| `database.external.port` | External PostgreSQL port | `5432` |
+| `database.external.database` | External database name | `immich` |
+| `database.external.username` | External database username | `immich` |
+
+### PostgreSQL Subchart parameters (Bitnami)
+
+| Name | Description | Value |
+|------|-------------|-------|
+| `postgresql.auth.database` | Database name (for Bitnami subchart) | `immich` |
+| `postgresql.auth.username` | Database username (for Bitnami subchart) | `immich` |
+| `postgresql.auth.password` | Database password (for Bitnami subchart) | `""` (auto-generated) |
+| `postgresql.image.repository` | PostgreSQL image with pgvecto-rs | `tensorchord/pgvecto-rs` |
+| `postgresql.image.tag` | PostgreSQL image tag | `pg16-v0.4.0` |
+| `postgresql.primary.persistence.enabled` | Enable PostgreSQL persistence | `true` |
+| `postgresql.primary.persistence.size` | PostgreSQL volume size | `10Gi` |
 
 ## Upgrading
+
+### To 1.5.0
+
+This version standardizes the database configuration structure to match other charts in this repository.
+
+**Breaking Changes:**
+- `postgresql.*` database mode and configuration has been moved to `database.*`
+- Bitnami PostgreSQL subchart configuration remains under `postgresql.*` (separate from database mode config)
+- `postgresql.mode` → `database.mode`
+- `postgresql.standalone.enabled` → `database.standalone.enabled`
+- `postgresql.cluster.*` → `database.cluster.*`
+- `postgresql.external.*` → `database.external.*`
+
+To migrate from version 1.4.x:
+1. Update your values.yaml to use the new structure:
+   ```yaml
+   # Old (1.4.x)
+   postgresql:
+     mode: standalone
+     standalone:
+       enabled: true
+     auth:
+       database: immich
+   
+   # New (1.5.0)
+   database:
+     mode: standalone
+     standalone:
+       enabled: true
+   postgresql:
+     auth:
+       database: immich
+   ```
+2. The migration is non-destructive; existing deployments will continue to work once values are updated
 
 ### To 1.4.0
 
