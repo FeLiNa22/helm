@@ -4,7 +4,7 @@ maintainers:
     url: https://raulpatel.com
 apiVersion: v2
 appVersion: 1.0.1
-version: 1.2.0
+version: 1.1.0
 description: Raul Kubernetes Cloudflare DDNS Helm Chart
 home: https://github.com/FeLiNa22/homeserver/tree/main/charts/kubernetes-cloudflare-ddns
 icon: https://raulpatel.com/images/raul.svg
