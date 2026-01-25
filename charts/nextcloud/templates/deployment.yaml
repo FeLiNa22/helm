@@ -97,18 +97,18 @@ spec:
             {{- else if eq .Values.database.mode "standalone" }}
             # Standalone PostgreSQL mode (Bitnami subchart)
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-postgresql-standalone
+              value: {{ .Release.Name }}-postgresql
             - name: POSTGRES_DB
-              value: {{ .Values.database.standalone.auth.database }}
+              value: {{ .Values.postgresql.auth.database }}
             - name: POSTGRES_USER
-              value: {{ .Values.database.standalone.auth.username }}
+              value: {{ .Values.postgresql.auth.username }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  {{- if .Values.database.standalone.auth.existingSecret }}
-                  name: {{ .Values.database.standalone.auth.existingSecret }}
+                  {{- if .Values.postgresql.auth.existingSecret }}
+                  name: {{ .Values.postgresql.auth.existingSecret }}
                   {{- else }}
-                  name: {{ .Release.Name }}-postgresql-standalone
+                  name: {{ .Release.Name }}-postgresql
                   {{- end }}
                   key: password
             {{- else if eq .Values.database.mode "external" }}

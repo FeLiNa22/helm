@@ -249,18 +249,18 @@ dragonfly:
 
 ## @param postgresql.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param postgresql.standalone.enabled Whether to deploy standalone PostgreSQL using Bitnami subchart.
-## @param postgresql.standalone.architecture PostgreSQL architecture (`standalone` or `replication`).
-## @param postgresql.standalone.auth.database Name of the default database.
-## @param postgresql.standalone.auth.username Username for the default database.
-## @param postgresql.standalone.auth.password Password for the default database user.
-## @param postgresql.standalone.auth.postgresPassword Password for the 'postgres' administrative user.
-## @param postgresql.standalone.auth.existingSecret Reference to an existing Kubernetes secret containing the database credentials.
-## @param postgresql.standalone.image.registry PostgreSQL image registry.
-## @param postgresql.standalone.image.repository PostgreSQL image repository.
-## @param postgresql.standalone.image.tag PostgreSQL image tag.
-## @param postgresql.standalone.primary.initdb.scripts.init-extensions.sql SQL script to initialize PostgreSQL extensions.
-## @param postgresql.standalone.primary.persistence.enabled Whether to enable persistence for PostgreSQL.
-## @param postgresql.standalone.primary.persistence.size Size of the PostgreSQL persistence volume.
+## @param postgresql.architecture PostgreSQL architecture for Bitnami subchart (`standalone` or `replication`).
+## @param postgresql.auth.database Name of the default database for Bitnami subchart.
+## @param postgresql.auth.username Username for the default database for Bitnami subchart.
+## @param postgresql.auth.password Password for the default database user for Bitnami subchart.
+## @param postgresql.auth.postgresPassword Password for the 'postgres' administrative user for Bitnami subchart.
+## @param postgresql.auth.existingSecret Reference to an existing Kubernetes secret for Bitnami subchart.
+## @param postgresql.image.registry PostgreSQL image registry for Bitnami subchart.
+## @param postgresql.image.repository PostgreSQL image repository for Bitnami subchart.
+## @param postgresql.image.tag PostgreSQL image tag for Bitnami subchart.
+## @param postgresql.primary.initdb.scripts SQL scripts to initialize PostgreSQL extensions for Bitnami subchart.
+## @param postgresql.primary.persistence.enabled Whether to enable persistence for Bitnami subchart.
+## @param postgresql.primary.persistence.size Size of the PostgreSQL persistence volume for Bitnami subchart.
 ## @param postgresql.cluster.enabled Whether to deploy PostgreSQL using CloudNativePG operator.
 ## @param postgresql.cluster.name Name of the database cluster.
 ## @param postgresql.cluster.instances Number of PostgreSQL instances (replicas).
@@ -290,31 +290,34 @@ postgresql:
   # Mode options: 'standalone', 'cluster', or 'external'
   mode: standalone
 
-  # Standalone PostgreSQL deployment (using Bitnami subchart)
+  # Condition to enable the Bitnami PostgreSQL subchart
   standalone:
     enabled: true
-    architecture: standalone
-    auth:
-      database: immich
-      username: immich
-      password: ""
-      postgresPassword: ""
-      existingSecret: ""
-    # Use PostgreSQL with pgvecto-rs extension for vector search
-    image:
-      registry: docker.io
-      repository: tensorchord/pgvecto-rs
-      tag: "pg16-v0.4.0"
-    primary:
-      initdb:
-        scripts:
-          init-extensions.sql: |
-            CREATE EXTENSION IF NOT EXISTS vectors;
-            CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
-            CREATE EXTENSION IF NOT EXISTS pg_trgm;
-      persistence:
-        enabled: true
-        size: 10Gi
+
+  # Bitnami PostgreSQL subchart configuration (used when mode is 'standalone')
+  # These values are passed directly to the subchart
+  architecture: standalone
+  auth:
+    database: immich
+    username: immich
+    password: ""
+    postgresPassword: ""
+    existingSecret: ""
+  # Use PostgreSQL with pgvecto-rs extension for vector search
+  image:
+    registry: docker.io
+    repository: tensorchord/pgvecto-rs
+    tag: "pg16-v0.4.0"
+  primary:
+    initdb:
+      scripts:
+        init-extensions.sql: |
+          CREATE EXTENSION IF NOT EXISTS vectors;
+          CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
+          CREATE EXTENSION IF NOT EXISTS pg_trgm;
+    persistence:
+      enabled: true
+      size: 10Gi
 
   # CloudNativePG Cluster deployment (using CNPG operator)
   cluster:
@@ -389,33 +392,3 @@ imageUpdater:
   helm: {}
   kustomize: {}
   writeBackConfig: {}
-
-## @section PostgreSQL Subchart Configuration (Bitnami)
-## These values are passed to the postgresql-standalone subchart when postgresql.mode is 'standalone'
-## See https://github.com/bitnami/charts/tree/main/bitnami/postgresql for all options
-##
-postgresql-standalone:
-  # Values here are passed directly to the Bitnami PostgreSQL subchart
-  # when postgresql.standalone.enabled is true
-  architecture: standalone
-  auth:
-    database: immich
-    username: immich
-    password: ""
-    postgresPassword: ""
-    existingSecret: ""
-  # Use PostgreSQL with pgvecto-rs extension for vector search
-  image:
-    registry: docker.io
-    repository: tensorchord/pgvecto-rs
-    tag: "pg16-v0.4.0"
-  primary:
-    initdb:
-      scripts:
-        init-extensions.sql: |
-          CREATE EXTENSION IF NOT EXISTS vectors;
-          CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
-          CREATE EXTENSION IF NOT EXISTS pg_trgm;
-    persistence:
-      enabled: true
-      size: 10Gi

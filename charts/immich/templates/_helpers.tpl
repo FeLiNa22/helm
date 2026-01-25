@@ -66,7 +66,7 @@ PostgreSQL host
 */}}
 {{- define "immich.postgresql.host" -}}
 {{- if eq .Values.postgresql.mode "standalone" }}
-{{- printf "%s-postgresql-standalone" .Release.Name }}
+{{- printf "%s-postgresql" .Release.Name }}
 {{- else if eq .Values.postgresql.mode "cluster" }}
 {{- printf "%s-%s-rw" .Release.Name .Values.postgresql.cluster.name }}
 {{- else }}
@@ -90,7 +90,7 @@ PostgreSQL database name
 */}}
 {{- define "immich.postgresql.database" -}}
 {{- if eq .Values.postgresql.mode "standalone" }}
-{{- .Values.postgresql.standalone.auth.database }}
+{{- .Values.postgresql.auth.database }}
 {{- else if eq .Values.postgresql.mode "cluster" }}
 {{- .Values.postgresql.cluster.database }}
 {{- else }}
@@ -103,7 +103,7 @@ PostgreSQL username
 */}}
 {{- define "immich.postgresql.username" -}}
 {{- if eq .Values.postgresql.mode "standalone" }}
-{{- .Values.postgresql.standalone.auth.username }}
+{{- .Values.postgresql.auth.username }}
 {{- else if eq .Values.postgresql.mode "cluster" }}
 {{- .Values.postgresql.cluster.secret.username }}
 {{- else }}
@@ -116,10 +116,10 @@ PostgreSQL secret name
 */}}
 {{- define "immich.postgresql.secretName" -}}
 {{- if eq .Values.postgresql.mode "standalone" }}
-{{- if .Values.postgresql.standalone.auth.existingSecret }}
-{{- .Values.postgresql.standalone.auth.existingSecret }}
+{{- if .Values.postgresql.auth.existingSecret }}
+{{- .Values.postgresql.auth.existingSecret }}
 {{- else }}
-{{- printf "%s-postgresql-standalone" .Release.Name }}
+{{- printf "%s-postgresql" .Release.Name }}
 {{- end }}
 {{- else if eq .Values.postgresql.mode "cluster" }}
 {{- .Values.postgresql.cluster.secret.name | default (printf "%s-immich-db-app" .Release.Name) }}
