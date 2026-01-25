@@ -79,7 +79,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `nodeSelector`                                  | The node selector to use for the pod.                                                                                               | `{}`                     |
 | `tolerations`                                   | The tolerations to use for the pod.                                                                                                 | `[]`                     |
 | `affinity`                                      | The affinity to use for the pod.                                                                                                    | `{}`                     |
-| `env`                                           | Environment variables for ntfy configuration (map format).                                                                          | `{}`                     |
+| `env`                                           | Environment variables to set for the container (map format).                                                                        | `{}`                     |
 | `persistence.enabled`                           | Whether to enable persistence for the cache.                                                                                        | `true`                   |
 | `persistence.storageClass`                      | The storage class to use for the persistence.                                                                                       | `ceph-rbd`               |
 | `persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                     |
@@ -90,22 +90,22 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### ArgoCD Image Updater parameters
 
-| Name                                | Description                                                                                                            | Value     |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------- |
-| `imageUpdater.enabled`              | Enable ArgoCD Image Updater integration. Creates an ImageUpdater CRD for automatic image updates.                     | `false`   |
-| `imageUpdater.namespace`            | Namespace where the ImageUpdater CRD will be created.                                                                  | `argocd`  |
-| `imageUpdater.argocdNamespace`      | Namespace where ArgoCD Applications are located.                                                                       | `argocd`  |
-| `imageUpdater.applicationName`      | Name or pattern of the ArgoCD Application to update. Defaults to Release name.                                        | `""`      |
-| `imageUpdater.imageAlias`           | Alias for the image in the ImageUpdater CRD. Defaults to Release name.                                                | `""`      |
-| `imageUpdater.updateStrategy`       | Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).                                | `semver`  |
-| `imageUpdater.forceUpdate`          | Force update even if image is not currently deployed.                                                                  | `false`   |
-| `imageUpdater.allowTags`            | Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").                                  | `""`      |
-| `imageUpdater.ignoreTags`           | List of glob patterns to ignore specific tags.                                                                         | `[]`      |
-| `imageUpdater.pullSecret`           | Reference to secret for private registry authentication.                                                               | `""`      |
-| `imageUpdater.platforms`            | List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).                                                       | `[]`      |
-| `imageUpdater.helm`                 | Helm-specific configuration for parameter names (e.g., {name: "image.repository", tag: "image.tag"}).                  | `{}`      |
-| `imageUpdater.kustomize`            | Kustomize-specific configuration (e.g., {name: "original/image"}).                                                     | `{}`      |
-| `imageUpdater.writeBackConfig`      | Write-back configuration for GitOps.                                                                                   | `{}`      |
+| Name                           | Description                                                                                           | Value    |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------- | -------- |
+| `imageUpdater.enabled`         | Enable ArgoCD Image Updater integration. Creates an ImageUpdater CRD for automatic image updates.     | `false`  |
+| `imageUpdater.namespace`       | Namespace where the ImageUpdater CRD will be created.                                                 | `argocd` |
+| `imageUpdater.argocdNamespace` | Namespace where ArgoCD Applications are located.                                                      | `argocd` |
+| `imageUpdater.applicationName` | Name or pattern of the ArgoCD Application to update. Defaults to Release name.                        | `""`     |
+| `imageUpdater.imageAlias`      | Alias for the image in the ImageUpdater CRD. Defaults to Release name.                                | `""`     |
+| `imageUpdater.updateStrategy`  | Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).                | `semver` |
+| `imageUpdater.forceUpdate`     | Force update even if image is not currently deployed.                                                 | `false`  |
+| `imageUpdater.allowTags`       | Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").                 | `""`     |
+| `imageUpdater.ignoreTags`      | List of glob patterns to ignore specific tags.                                                        | `[]`     |
+| `imageUpdater.pullSecret`      | Reference to secret for private registry authentication.                                              | `""`     |
+| `imageUpdater.platforms`       | List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).                                      | `[]`     |
+| `imageUpdater.helm`            | Helm-specific configuration for parameter names (e.g., {name: "image.repository", tag: "image.tag"}). | `{}`     |
+| `imageUpdater.kustomize`       | Kustomize-specific configuration (e.g., {name: "original/image"}).                                    | `{}`     |
+| `imageUpdater.writeBackConfig` | Write-back configuration for GitOps.                                                                  | `{}`     |
 
 ## Configuration and Environment Variables
 
