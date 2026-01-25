@@ -57,7 +57,8 @@ image:
 imagePullSecrets: []
 
 deployment:
-  strategy: "": Recreate
+  strategy:
+    type: Recreate
 
 serviceAccount:
   create: true
