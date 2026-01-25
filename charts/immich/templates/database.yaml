@@ -138,6 +138,10 @@ spec:
         configMap:
           name: {{ $fullName }}-postgresql-init
           defaultMode: 0755
+      {{- if not .Values.database.standalone.persistence.enabled }}
+      - name: data
+        emptyDir: {}
+      {{- end }}
   {{- if .Values.database.standalone.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:
@@ -154,9 +158,6 @@ spec:
       resources:
         requests:
           storage: {{ .Values.database.standalone.persistence.size }}
-  {{- else }}
-      - name: data
-        emptyDir: {}
   {{- end }}
 {{- else if eq .Values.database.mode "cluster" }}
 {{- $fullName := include "immich.fullname" . -}}
