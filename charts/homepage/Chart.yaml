@@ -4,7 +4,7 @@ maintainers:
     url: https://raulpatel.com
 apiVersion: v2
 appVersion: v0.9.15
-version: 1.1.0
+version: 1.1.1
 description: Homepage Dashboard Helm Chart with Kubernetes Service Discovery
 type: application
 home: https://github.com/FeLiNa22/homeserver/tree/main/charts/homepage

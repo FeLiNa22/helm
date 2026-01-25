@@ -61,6 +61,7 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: {{ .Values.tmpfs.size | default "1Gi" }}
+        {{- end }}
         {{- if .Values.persistence.backup.enabled }}
         - name: backup
           persistentVolumeClaim:
