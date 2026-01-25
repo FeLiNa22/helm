@@ -157,14 +157,22 @@ For advanced features like authentication and topic access control, enable the `
 #### Example: Private Instance with Authentication
 
 This example sets up a private ntfy instance with:
-- Admin user `admin` with password `adminpass`
-- Regular user `user1` with password `userpass`
+- Admin user `admin` with a secure password
+- Regular user `user1` with a secure password
 - Topic `alerts` accessible by everyone (read-only)
 - Topic `private` only accessible by `user1`
 
-First, generate password hashes (use an [online bcrypt generator](https://bcrypt-generator.com/) or `ntfy user hash`):
-- `admin` / `adminpass` → `$2a$10$YLiO8U21sX1uhZamTLJXHuxgVC0Z/GKISibrKCLohPgtG7yIxSk4C`
-- `user1` / `userpass` → `$2a$10$NKbrNb7HPMjtQXWJ0f1pouw03LDLT/WzlO9VAv44x84bRCkh19h6m`
+**Important**: Always use strong, unique passwords. Generate password hashes using the `ntfy user hash` command:
+
+```bash
+# Generate hash for admin user
+ntfy user hash
+# Enter your secure password when prompted
+
+# Generate hash for user1
+ntfy user hash
+# Enter your secure password when prompted
+```
 
 Then configure your values:
 
@@ -175,8 +183,8 @@ config:
   authFile: "/var/cache/ntfy/auth.db"
   authDefaultAccess: "deny-all"  # Deny all by default
   authUsers:
-    - "admin:$2a$10$YLiO8U21sX1uhZamTLJXHuxgVC0Z/GKISibrKCLohPgtG7yIxSk4C:admin"
-    - "user1:$2a$10$NKbrNb7HPMjtQXWJ0f1pouw03LDLT/WzlO9VAv44x84bRCkh19h6m:user"
+    - "admin:[bcrypt-hash-for-admin]:admin"   # Replace [bcrypt-hash-for-admin] with your generated hash
+    - "user1:[bcrypt-hash-for-user1]:user"    # Replace [bcrypt-hash-for-user1] with your generated hash
   authAccess:
     - "user1:private:rw"        # user1 can read/write to 'private' topic
     - "user1:alerts:rw"         # user1 can read/write to 'alerts' topic
@@ -196,7 +204,7 @@ config:
   authFile: "/var/cache/ntfy/auth.db"
   authDefaultAccess: "read-write"  # Allow anonymous read-write by default
   authUsers:
-    - "admin:$2a$10$YLiO8U21sX1uhZamTLJXHuxgVC0Z/GKISibrKCLohPgtG7yIxSk4C:admin"
+    - "admin:[bcrypt-hash-for-admin]:admin"  # Replace with your generated hash
   authAccess:
     - "*:admin-*:deny"          # Deny anonymous access to topics starting with 'admin-'
   enableLogin: true
@@ -219,7 +227,7 @@ config:
 
 #### Example: Using Access Tokens
 
-Generate tokens and configure them:
+Generate tokens using `ntfy token generate` and configure them:
 
 ```yaml
 config:
@@ -228,11 +236,11 @@ config:
   authFile: "/var/cache/ntfy/auth.db"
   authDefaultAccess: "deny-all"
   authUsers:
-    - "backupservice:$2a$10$NKbrNb7HPMjtQXWJ0f1pouw03LDLT/WzlO9VAv44x84bRCkh19h6m:user"
+    - "backupservice:[bcrypt-hash-for-backupservice]:user"  # Replace with your generated hash
   authAccess:
     - "backupservice:backups:rw"
   authTokens:
-    - "backupservice:tk_f099we8uzj7xi5qshzajwp6jffvkz:Backup Script"
+    - "backupservice:[generated-token]:Backup Script"  # Replace with token from 'ntfy token generate'
 ```
 
 For more configuration options, refer to the [ntfy server configuration documentation](https://docs.ntfy.sh/config/).

@@ -174,10 +174,11 @@ config:
   authFile: "/var/cache/ntfy/auth.db"
   authDefaultAccess: "read-write"  # Options: read-write, read-only, write-only, deny-all
   # Provision users in format: "<username>:<password-hash>:<role>"
-  # Use 'ntfy user hash' to generate password hash
-  # Example: "phil:$2a$10$YLiO8U21sX1uhZamTLJXHuxgVC0Z/GKISibrKCLohPgtG7yIxSk4C:admin"
+  # Use 'ntfy user hash' to generate password hash (never use online generators with real passwords)
+  # Example: "username:[bcrypt-hash]:admin"
   authUsers: []
-    # - "admin:$2a$10$YLiO8U21sX1uhZamTLJXHuxgVC0Z/GKISibrKCLohPgtG7yIxSk4C:admin"
+    # - "admin:[bcrypt-hash-for-admin]:admin"
+    # - "user1:[bcrypt-hash-for-user1]:user"
   # Provision access control entries in format: "<username>:<topic-pattern>:<access>"
   # Access types: read-write (rw), read-only (ro), write-only (wo), deny (none)
   # Example: "phil:mytopic:rw" or "*:announcements:ro" for anonymous read-only
