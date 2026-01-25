@@ -1,0 +1,25 @@
+{{- if and .Values.radarr.enabled (eq .Values.radarr.database.mode "cluster") }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Release.Name }}-radarr-db
+  labels:
+    app.kubernetes.io/name: radarr-db
+    app.kubernetes.io/instance: {{ .Release.Name }}-radarr-db
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  instances: {{ .Values.radarr.database.cluster.instances }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.radarr.database.mainDatabase }}
+      owner: radarr
+      postInitSQL:
+        - CREATE DATABASE "{{ .Values.radarr.database.logDatabase }}" OWNER radarr;
+  storage:
+    {{- if .Values.radarr.database.cluster.storageClass }}
+    storageClass: {{ .Values.radarr.database.cluster.storageClass }}
+    {{- end }}
+    size: {{ .Values.radarr.database.cluster.storageSize }}
+{{- end }}
