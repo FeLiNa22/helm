@@ -19,6 +19,11 @@ jobs:
       - name: Run Helm lint
         uses: helm/chart-testing-action@v2.8.0
 
+      - name: Add Helm repositories
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo update
+
       - name: Set up Node.js (required for readme-generator)
         uses: actions/setup-node@v3
         with:
