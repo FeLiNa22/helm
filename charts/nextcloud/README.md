@@ -173,7 +173,7 @@ ingress:
 |------|-------------|-------|
 | `database.mode` | Deployment mode: `cluster`, `standalone`, or `external` | `cluster` |
 | `database.cluster.enabled` | Deploy CloudNativePG cluster | `true` |
-| `database.cluster.instances` | Number of PostgreSQL instances | `1` |
+| `database.cluster.instances` | Number of PostgreSQL instances | `2` |
 | `database.cluster.database` | Database name | `nextcloud` |
 | `database.cluster.storage.size` | Storage size per instance | `10Gi` |
 | `database.standalone.enabled` | Deploy Bitnami PostgreSQL | `false` |

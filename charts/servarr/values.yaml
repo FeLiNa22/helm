@@ -408,7 +408,7 @@ sonarr:
     mainDatabase: sonarr-main
     logDatabase: sonarr-log
     cluster:
-      instances: 1
+      instances: 2
       storageClass: ""
       storageSize: 5Gi
 
@@ -852,7 +852,7 @@ prowlarr:
     mainDatabase: prowlarr-main
     logDatabase: prowlarr-log
     cluster:
-      instances: 1
+      instances: 2
       storageClass: ""
       storageSize: 5Gi
 
@@ -1600,7 +1600,7 @@ radarr:
     mainDatabase: radarr-main
     logDatabase: radarr-log
     cluster:
-      instances: 1
+      instances: 2
       storageClass: ""
       storageSize: 5Gi
 
@@ -1799,7 +1799,7 @@ lidarr:
     mainDatabase: lidarr-main
     logDatabase: lidarr-log
     cluster:
-      instances: 1
+      instances: 2
       storageClass: ""
       storageSize: 5Gi
 

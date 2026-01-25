@@ -182,7 +182,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sonarr.database.existingSecret`                       | Name of an existing secret containing the database password (key: 'password').                                                      | `""`                         |
 | `sonarr.database.mainDatabase`                         | Name of the main database for Sonarr.                                                                                               | `sonarr-main`                |
 | `sonarr.database.logDatabase`                          | Name of the log database for Sonarr.                                                                                                | `sonarr-log`                 |
-| `sonarr.database.cluster.instances`                    | Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').                                     | `1`                          |
+| `sonarr.database.cluster.instances`                    | Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').                                     | `2`                          |
 | `sonarr.database.cluster.storageClass`                 | Storage class for the CloudNativePG cluster (only used when mode is 'cluster').                                                     | `""`                         |
 | `sonarr.database.cluster.storageSize`                  | Storage size for the CloudNativePG cluster (only used when mode is 'cluster').                                                      | `5Gi`                        |
 
@@ -328,7 +328,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `prowlarr.database.existingSecret`                       | Name of an existing secret containing the database password (key: 'password').                                                      | `""`                           |
 | `prowlarr.database.mainDatabase`                         | Name of the main database for Prowlarr.                                                                                             | `prowlarr-main`                |
 | `prowlarr.database.logDatabase`                          | Name of the log database for Prowlarr.                                                                                              | `prowlarr-log`                 |
-| `prowlarr.database.cluster.instances`                    | Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').                                     | `1`                            |
+| `prowlarr.database.cluster.instances`                    | Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').                                     | `2`                            |
 | `prowlarr.database.cluster.storageClass`                 | Storage class for the CloudNativePG cluster (only used when mode is 'cluster').                                                     | `""`                           |
 | `prowlarr.database.cluster.storageSize`                  | Storage size for the CloudNativePG cluster (only used when mode is 'cluster').                                                      | `5Gi`                          |
 
@@ -579,7 +579,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `radarr.database.existingSecret`                       | Name of an existing secret containing the database password (key: 'password').                                                      | `""`                         |
 | `radarr.database.mainDatabase`                         | Name of the main database for Radarr.                                                                                               | `radarr-main`                |
 | `radarr.database.logDatabase`                          | Name of the log database for Radarr.                                                                                                | `radarr-log`                 |
-| `radarr.database.cluster.instances`                    | Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').                                     | `1`                          |
+| `radarr.database.cluster.instances`                    | Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').                                     | `2`                          |
 | `radarr.database.cluster.storageClass`                 | Storage class for the CloudNativePG cluster (only used when mode is 'cluster').                                                     | `""`                         |
 | `radarr.database.cluster.storageSize`                  | Storage size for the CloudNativePG cluster (only used when mode is 'cluster').                                                      | `5Gi`                        |
 
@@ -647,7 +647,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `lidarr.database.existingSecret`                       | Name of an existing secret containing the database password (key: 'password').                                                      | `""`                         |
 | `lidarr.database.mainDatabase`                         | Name of the main database for Lidarr.                                                                                               | `lidarr-main`                |
 | `lidarr.database.logDatabase`                          | Name of the log database for Lidarr.                                                                                                | `lidarr-log`                 |
-| `lidarr.database.cluster.instances`                    | Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').                                     | `1`                          |
+| `lidarr.database.cluster.instances`                    | Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').                                     | `2`                          |
 | `lidarr.database.cluster.storageClass`                 | Storage class for the CloudNativePG cluster (only used when mode is 'cluster').                                                     | `""`                         |
 | `lidarr.database.cluster.storageSize`                  | Storage size for the CloudNativePG cluster (only used when mode is 'cluster').                                                      | `5Gi`                        |
 
