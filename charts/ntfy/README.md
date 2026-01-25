@@ -87,6 +87,29 @@ The command removes all the Kubernetes components associated with the chart and 
 | `persistence.size`                              | The size to use for the persistence.                                                                                                | `1Gi`                    |
 | `persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                     |
 | `persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                     |
+| `config.enabled`                                | Whether to enable server.yml configuration via ConfigMap.                                                                          | `false`                  |
+| `config.baseUrl`                                | Base URL for the ntfy server (required for attachments, emails, iOS push).                                                          | `""`                     |
+| `config.cacheFile`                              | Path to the cache database file.                                                                                                    | `/var/cache/ntfy/cache.db` |
+| `config.cacheDuration`                          | Duration for which messages are cached.                                                                                             | `12h`                    |
+| `config.authFile`                               | Path to the authentication database file.                                                                                           | `/var/cache/ntfy/auth.db` |
+| `config.authDefaultAccess`                      | Default access level (read-write, read-only, write-only, deny-all).                                                                 | `read-write`             |
+| `config.authUsers`                              | List of users to provision in format "&lt;username&gt;:&lt;password-hash&gt;:&lt;role&gt;".                                        | `[]`                     |
+| `config.authAccess`                             | List of access control entries in format "&lt;username&gt;:&lt;topic-pattern&gt;:&lt;access&gt;".                                  | `[]`                     |
+| `config.authTokens`                             | List of access tokens in format "&lt;username&gt;:&lt;token&gt;[:&lt;label&gt;]".                                                  | `[]`                     |
+| `config.behindProxy`                            | Whether ntfy is behind a proxy.                                                                                                     | `false`                  |
+| `config.attachmentCacheDir`                     | Directory for attachment cache.                                                                                                     | `""`                     |
+| `config.attachmentTotalSizeLimit`               | Total size limit for attachments.                                                                                                   | `5G`                     |
+| `config.attachmentFileSizeLimit`                | Per-file size limit for attachments.                                                                                                | `15M`                    |
+| `config.attachmentExpiryDuration`               | Duration after which attachments expire.                                                                                            | `3h`                     |
+| `config.enableLogin`                            | Whether to enable the login page.                                                                                                   | `true`                   |
+| `config.enableSignup`                           | Whether to enable user signup.                                                                                                      | `false`                  |
+| `config.enableReservations`                     | Whether to enable topic reservations.                                                                                               | `false`                  |
+| `config.upstreamBaseUrl`                        | Upstream base URL for web push.                                                                                                     | `""`                     |
+| `config.webPushPublicKey`                       | Web push VAPID public key.                                                                                                          | `""`                     |
+| `config.webPushPrivateKey`                      | Web push VAPID private key.                                                                                                         | `""`                     |
+| `config.webPushFile`                            | Path to web push database file.                                                                                                     | `""`                     |
+| `config.webPushEmailAddress`                    | Email address for web push.                                                                                                         | `""`                     |
+| `config.extraConfig`                            | Additional configuration in YAML format.                                                                                            | `""`                     |
 
 ### ArgoCD Image Updater parameters
 
@@ -109,7 +132,14 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ## Configuration and Environment Variables
 
-The ntfy server can be configured using environment variables. See the [ntfy configuration documentation](https://docs.ntfy.sh/config/) for all available options.
+The ntfy server can be configured in two ways:
+
+1. **Environment variables** (for basic configuration)
+2. **server.yml ConfigMap** (recommended for authentication and advanced features)
+
+### Environment Variable Configuration
+
+For basic configuration, you can use environment variables. See the [ntfy configuration documentation](https://docs.ntfy.sh/config/) for all available options.
 
 Example values to set environment variables:
 
@@ -119,6 +149,103 @@ env:
   NTFY_BASE_URL: "https://ntfy.example.com"
   NTFY_CACHE_FILE: "/var/cache/ntfy/cache.db"
 ```
+
+### server.yml Configuration (Recommended)
+
+For advanced features like authentication and topic access control, enable the `config` section. This creates a ConfigMap with a `server.yml` file.
+
+#### Example: Private Instance with Authentication
+
+This example sets up a private ntfy instance with:
+- Admin user `admin` with a secure password
+- Regular user `user1` with a secure password
+- Topic `alerts` accessible by everyone (read-only)
+- Topic `private` only accessible by `user1`
+
+**Important**: Always use strong, unique passwords. Generate password hashes using the `ntfy user hash` command:
+
+```bash
+# Generate hash for admin user
+ntfy user hash
+# Enter your secure password when prompted
+
+# Generate hash for user1
+ntfy user hash
+# Enter your secure password when prompted
+```
+
+Then configure your values:
+
+```yaml
+config:
+  enabled: true
+  baseUrl: "https://ntfy.example.com"
+  authFile: "/var/cache/ntfy/auth.db"
+  authDefaultAccess: "deny-all"  # Deny all by default
+  authUsers:
+    - "admin:[bcrypt-hash-for-admin]:admin"   # Replace [bcrypt-hash-for-admin] with your generated hash
+    - "user1:[bcrypt-hash-for-user1]:user"    # Replace [bcrypt-hash-for-user1] with your generated hash
+  authAccess:
+    - "user1:private:rw"        # user1 can read/write to 'private' topic
+    - "user1:alerts:rw"         # user1 can read/write to 'alerts' topic
+    - "*:alerts:ro"             # anonymous users can read 'alerts' topic
+  enableLogin: true
+  enableSignup: false
+```
+
+#### Example: Public Instance with Some Restricted Topics
+
+This example allows anonymous access to most topics, but restricts some:
+
+```yaml
+config:
+  enabled: true
+  baseUrl: "https://ntfy.example.com"
+  authFile: "/var/cache/ntfy/auth.db"
+  authDefaultAccess: "read-write"  # Allow anonymous read-write by default
+  authUsers:
+    - "admin:[bcrypt-hash-for-admin]:admin"  # Replace with your generated hash
+  authAccess:
+    - "*:admin-*:deny"          # Deny anonymous access to topics starting with 'admin-'
+  enableLogin: true
+  enableSignup: true
+```
+
+#### Example: With Attachments
+
+Enable file attachments:
+
+```yaml
+config:
+  enabled: true
+  baseUrl: "https://ntfy.example.com"
+  attachmentCacheDir: "/var/cache/ntfy/attachments"
+  attachmentTotalSizeLimit: "5G"
+  attachmentFileSizeLimit: "15M"
+  attachmentExpiryDuration: "3h"
+```
+
+#### Example: Using Access Tokens
+
+Generate tokens using `ntfy token generate` and configure them:
+
+```yaml
+config:
+  enabled: true
+  baseUrl: "https://ntfy.example.com"
+  authFile: "/var/cache/ntfy/auth.db"
+  authDefaultAccess: "deny-all"
+  authUsers:
+    - "backupservice:[bcrypt-hash-for-backupservice]:user"  # Replace with your generated hash
+  authAccess:
+    - "backupservice:backups:rw"
+  authTokens:
+    - "backupservice:[generated-token]:Backup Script"  # Replace with token from 'ntfy token generate'
+```
+
+For more configuration options, refer to the [ntfy server configuration documentation](https://docs.ntfy.sh/config/).
+
+## Installation Examples
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
