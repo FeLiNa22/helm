@@ -65,8 +65,10 @@ Create the name of the service account to use
 PostgreSQL host
 */}}
 {{- define "immich.postgresql.host" -}}
-{{- if .Values.postgresql.enabled }}
+{{- if eq .Values.postgresql.mode "standalone" }}
 {{- printf "%s-postgresql" .Release.Name }}
+{{- else if eq .Values.postgresql.mode "cluster" }}
+{{- printf "%s-%s-rw" .Release.Name .Values.postgresql.cluster.name }}
 {{- else }}
 {{- .Values.postgresql.external.host }}
 {{- end }}
@@ -76,10 +78,10 @@ PostgreSQL host
 PostgreSQL port
 */}}
 {{- define "immich.postgresql.port" -}}
-{{- if .Values.postgresql.enabled }}
-{{- "5432" }}
-{{- else }}
+{{- if eq .Values.postgresql.mode "external" }}
 {{- .Values.postgresql.external.port | default "5432" }}
+{{- else }}
+{{- "5432" }}
 {{- end }}
 {{- end }}
 
@@ -87,8 +89,10 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "immich.postgresql.database" -}}
-{{- if .Values.postgresql.enabled }}
+{{- if eq .Values.postgresql.mode "standalone" }}
 {{- .Values.postgresql.auth.database }}
+{{- else if eq .Values.postgresql.mode "cluster" }}
+{{- .Values.postgresql.cluster.database }}
 {{- else }}
 {{- .Values.postgresql.external.database }}
 {{- end }}
@@ -98,8 +102,10 @@ PostgreSQL database name
 PostgreSQL username
 */}}
 {{- define "immich.postgresql.username" -}}
-{{- if .Values.postgresql.enabled }}
+{{- if eq .Values.postgresql.mode "standalone" }}
 {{- .Values.postgresql.auth.username }}
+{{- else if eq .Values.postgresql.mode "cluster" }}
+{{- .Values.postgresql.cluster.secret.username }}
 {{- else }}
 {{- .Values.postgresql.external.username }}
 {{- end }}
@@ -109,12 +115,14 @@ PostgreSQL username
 PostgreSQL secret name
 */}}
 {{- define "immich.postgresql.secretName" -}}
-{{- if .Values.postgresql.enabled }}
+{{- if eq .Values.postgresql.mode "standalone" }}
 {{- if .Values.postgresql.auth.existingSecret }}
 {{- .Values.postgresql.auth.existingSecret }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
 {{- end }}
+{{- else if eq .Values.postgresql.mode "cluster" }}
+{{- .Values.postgresql.cluster.secret.name | default (printf "%s-immich-db-app" .Release.Name) }}
 {{- else }}
 {{- .Values.postgresql.external.existingSecret }}
 {{- end }}
@@ -124,7 +132,9 @@ PostgreSQL secret name
 PostgreSQL secret key
 */}}
 {{- define "immich.postgresql.secretKey" -}}
-{{- if .Values.postgresql.enabled }}
+{{- if eq .Values.postgresql.mode "standalone" }}
+{{- "password" }}
+{{- else if eq .Values.postgresql.mode "cluster" }}
 {{- "password" }}
 {{- else }}
 {{- .Values.postgresql.external.secretKey | default "password" }}
@@ -132,34 +142,47 @@ PostgreSQL secret key
 {{- end }}
 
 {{/*
-Redis host
+DragonflyDB/Redis host
 */}}
-{{- define "immich.redis.host" -}}
-{{- if .Values.redis.enabled }}
-{{- printf "%s-redis-master" .Release.Name }}
-{{- else }}
-{{- .Values.redis.external.host }}
+{{- define "immich.dragonfly.host" -}}
+{{- if eq .Values.dragonfly.mode "standalone" }}
+{{- printf "%s-dragonfly" (include "immich.fullname" .) }}
+{{- else if eq .Values.dragonfly.mode "cluster" }}
+{{- printf "%s-dragonfly-cluster" (include "immich.fullname" .) }}
+{{- else if eq .Values.dragonfly.mode "external" }}
+{{- .Values.dragonfly.external.host }}
 {{- end }}
 {{- end }}
 
 {{/*
-Redis port
+DragonflyDB/Redis port
 */}}
-{{- define "immich.redis.port" -}}
-{{- if .Values.redis.enabled }}
+{{- define "immich.dragonfly.port" -}}
+{{- if eq .Values.dragonfly.mode "external" }}
+{{- .Values.dragonfly.external.port | default "6379" }}
+{{- else }}
 {{- "6379" }}
-{{- else }}
-{{- .Values.redis.external.port | default "6379" }}
 {{- end }}
 {{- end }}
 
 {{/*
-Redis secret name
+DragonflyDB/Redis secret name (for password if enabled)
 */}}
-{{- define "immich.redis.secretName" -}}
-{{- if .Values.redis.enabled }}
-{{- printf "%s-redis" .Release.Name }}
+{{- define "immich.dragonfly.secretName" -}}
+{{- if eq .Values.dragonfly.mode "external" }}
+{{- .Values.dragonfly.external.existingSecret }}
 {{- else }}
-{{- .Values.redis.external.existingSecret }}
+{{- "" }}
+{{- end }}
+{{- end }}
+
+{{/*
+DragonflyDB/Redis password key
+*/}}
+{{- define "immich.dragonfly.passwordKey" -}}
+{{- if eq .Values.dragonfly.mode "external" }}
+{{- .Values.dragonfly.external.passwordKey | default "password" }}
+{{- else }}
+{{- "password" }}
 {{- end }}
 {{- end }}

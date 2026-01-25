@@ -189,44 +189,110 @@ persistence:
   additionalVolumes: []
   additionalMounts: []
 
-## @section Redis parameters
-## Redis is required for Immich's job queue and caching
+## @section DragonflyDB parameters
+## DragonflyDB is a Redis-compatible in-memory data store used for Immich's job queue and caching
 
-## @param redis.enabled Whether to deploy the Redis subchart.
-## @param redis.architecture Redis deployment architecture: 'standalone' or 'replication'.
-## @param redis.auth.enabled Enable or disable authentication for Redis.
-## @param redis.external.host Hostname of external Redis (when redis.enabled=false).
-## @param redis.external.port Port of external Redis.
-## @param redis.external.existingSecret Secret name for external Redis password.
+## @param dragonfly.mode The mode of DragonflyDB deployment: 'standalone', 'cluster', 'external', or 'disabled'.
+## @param dragonfly.standalone.image.repository The Docker repository for Dragonfly image.
+## @param dragonfly.standalone.image.tag The image tag for Dragonfly.
+## @param dragonfly.standalone.resources Resource limits and requests for standalone Dragonfly.
+## @param dragonfly.standalone.persistence.enabled Whether to enable persistence for standalone Dragonfly.
+## @param dragonfly.standalone.persistence.size Size of the persistence volume for standalone Dragonfly.
+## @param dragonfly.standalone.persistence.storageClass Storage class for standalone Dragonfly persistence.
+## @param dragonfly.cluster.replicas Number of Dragonfly replicas in the cluster.
+## @param dragonfly.cluster.image.repository The Docker repository for Dragonfly cluster image.
+## @param dragonfly.cluster.image.tag The image tag for Dragonfly cluster.
+## @param dragonfly.cluster.resources Resource limits and requests for Dragonfly cluster.
+## @param dragonfly.cluster.persistence.enabled Whether to enable persistence for Dragonfly cluster.
+## @param dragonfly.cluster.persistence.size Size of the persistence volume for Dragonfly cluster.
+## @param dragonfly.cluster.persistence.storageClass Storage class for Dragonfly cluster persistence.
+## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
+## @param dragonfly.external.port Port of external DragonflyDB/Redis.
+## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
+## @param dragonfly.external.passwordKey Key in the secret for the password.
 ##
-redis:
-  enabled: true
-  architecture: standalone
-  auth:
-    enabled: false
-  # External Redis configuration (used when redis.enabled=false)
+dragonfly:
+  # Mode options: 'standalone', 'cluster', 'external', or 'disabled'
+  mode: standalone
+
+  # Standalone Dragonfly deployment (simple single-instance)
+  standalone:
+    image:
+      repository: docker.dragonflydb.io/dragonflydb/dragonfly
+      tag: "v1.25.2"
+    resources: {}
+      # limits:
+      #   cpu: 1000m
+      #   memory: 2Gi
+      # requests:
+      #   cpu: 100m
+      #   memory: 256Mi
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: ""
+
+  # Dragonfly Cluster deployment (using DragonflyDB operator)
+  cluster:
+    replicas: 2
+    image:
+      repository: docker.dragonflydb.io/dragonflydb/dragonfly
+      tag: "v1.25.2"
+    resources: {}
+      # limits:
+      #   cpu: 2000m
+      #   memory: 4Gi
+      # requests:
+      #   cpu: 500m
+      #   memory: 512Mi
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: ""
+
+  # External DragonflyDB/Redis configuration (used when mode is 'external')
   external:
     host: ""
     port: 6379
     existingSecret: ""
+    passwordKey: "password"
 
 ## @section PostgreSQL parameters
 ## PostgreSQL with pgvector/vectorchord extension is required for Immich
 
-## @param postgresql.enabled Whether to deploy the PostgreSQL subchart.
-## @param postgresql.architecture PostgreSQL deployment architecture: 'standalone' or 'replication'.
-## @param postgresql.auth.database Name of the default database.
-## @param postgresql.auth.username Username for the default database.
-## @param postgresql.auth.password Password for the default database user.
-## @param postgresql.auth.postgresPassword Password for the 'postgres' administrative user.
-## @param postgresql.auth.existingSecret Reference to an existing Kubernetes secret containing the database credentials.
-## @param postgresql.image.registry PostgreSQL image registry.
-## @param postgresql.image.repository PostgreSQL image repository.
-## @param postgresql.image.tag PostgreSQL image tag.
-## @param postgresql.primary.initdb.scripts.init-extensions.sql SQL script to initialize PostgreSQL extensions.
-## @param postgresql.primary.persistence.enabled Whether to enable persistence for PostgreSQL.
-## @param postgresql.primary.persistence.size Size of the PostgreSQL persistence volume.
-## @param postgresql.external.host Hostname of external PostgreSQL (when postgresql.enabled=false).
+## @param postgresql.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
+## @param postgresql.standalone.enabled Whether to deploy standalone PostgreSQL using Bitnami subchart.
+## @param postgresql.architecture PostgreSQL architecture for Bitnami subchart (`standalone` or `replication`).
+## @param postgresql.auth.database Name of the default database for Bitnami subchart.
+## @param postgresql.auth.username Username for the default database for Bitnami subchart.
+## @param postgresql.auth.password Password for the default database user for Bitnami subchart.
+## @param postgresql.auth.postgresPassword Password for the 'postgres' administrative user for Bitnami subchart.
+## @param postgresql.auth.existingSecret Reference to an existing Kubernetes secret for Bitnami subchart.
+## @param postgresql.image.registry PostgreSQL image registry for Bitnami subchart.
+## @param postgresql.image.repository PostgreSQL image repository for Bitnami subchart.
+## @param postgresql.image.tag PostgreSQL image tag for Bitnami subchart.
+## @param postgresql.primary.initdb.scripts.init-extensions.sql SQL script to initialize PostgreSQL extensions for Bitnami subchart.
+## @param postgresql.primary.persistence.enabled Whether to enable persistence for Bitnami subchart.
+## @param postgresql.primary.persistence.size Size of the PostgreSQL persistence volume for Bitnami subchart.
+## @param postgresql.cluster.enabled Whether to deploy PostgreSQL using CloudNativePG operator.
+## @param postgresql.cluster.name Name of the database cluster.
+## @param postgresql.cluster.instances Number of PostgreSQL instances (replicas).
+## @param postgresql.cluster.image.repository PostgreSQL container image repository (with vectorchord extension).
+## @param postgresql.cluster.image.tag PostgreSQL container image tag.
+## @param postgresql.cluster.database Name of the database to create.
+## @param postgresql.cluster.owner Owner of the database.
+## @param postgresql.cluster.storage.size Size of the storage for each instance.
+## @param postgresql.cluster.storage.storageClass Storage class name for persistent volumes.
+## @param postgresql.cluster.secret.name Name of the secret containing database credentials.
+## @param postgresql.cluster.secret.create Whether to create the database secret.
+## @param postgresql.cluster.secret.username Database user username.
+## @param postgresql.cluster.secret.password Database user password (leave empty to auto-generate).
+## @param postgresql.cluster.superuserSecret.name Name of the secret containing the superuser credentials.
+## @param postgresql.cluster.superuserSecret.create Whether to create the superuser secret.
+## @param postgresql.cluster.superuserSecret.username Superuser username.
+## @param postgresql.cluster.superuserSecret.password Superuser password (leave empty to auto-generate).
+## @param postgresql.cluster.initSQL SQL commands to run on database initialization (for extensions).
+## @param postgresql.external.host Hostname of external PostgreSQL (when mode is 'external').
 ## @param postgresql.external.port Port of external PostgreSQL.
 ## @param postgresql.external.database Database name of external PostgreSQL.
 ## @param postgresql.external.username Username of external PostgreSQL.
@@ -234,7 +300,15 @@ redis:
 ## @param postgresql.external.secretKey Key in the secret for the password.
 ##
 postgresql:
-  enabled: true
+  # Mode options: 'standalone', 'cluster', or 'external'
+  mode: standalone
+
+  # Condition to enable the Bitnami PostgreSQL subchart
+  standalone:
+    enabled: true
+
+  # Bitnami PostgreSQL subchart configuration (used when mode is 'standalone')
+  # These values are passed directly to the subchart
   architecture: standalone
   auth:
     database: immich
@@ -242,7 +316,7 @@ postgresql:
     password: ""
     postgresPassword: ""
     existingSecret: ""
-  # Use PostgreSQL with pgvecto-rs extension
+  # Use PostgreSQL with pgvecto-rs extension for vector search
   image:
     registry: docker.io
     repository: tensorchord/pgvecto-rs
@@ -257,7 +331,39 @@ postgresql:
     persistence:
       enabled: true
       size: 10Gi
-  # External PostgreSQL configuration (used when postgresql.enabled=false)
+
+  # CloudNativePG Cluster deployment (using CNPG operator)
+  cluster:
+    enabled: false
+    name: immich-db
+    instances: 2
+    # Use PostgreSQL image with pgvecto-rs extension for Immich
+    image:
+      repository: ghcr.io/tensorchord/cloudnative-pgvecto.rs
+      tag: "16-v0.4.0"
+    database: immich
+    owner: immich
+    storage:
+      size: 10Gi
+      storageClass: ""
+    secret:
+      name: ""  # Leave empty to auto-generate
+      create: true
+      username: immich
+      password: ""  # Leave empty to auto-generate
+    superuserSecret:
+      name: ""  # Leave empty to auto-generate
+      create: true
+      username: postgres
+      password: ""  # Leave empty to auto-generate
+    # SQL commands to initialize extensions (pgvecto-rs for Immich)
+    # Each line should be a complete SQL statement
+    initSQL:
+      - "CREATE EXTENSION IF NOT EXISTS vectors;"
+      - "CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;"
+      - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+
+  # External PostgreSQL configuration (used when mode is 'external')
   external:
     host: ""
     port: 5432
