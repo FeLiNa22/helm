@@ -70,8 +70,10 @@ spec:
                 awk -v db_config="$DB_CONFIG" '{
                   if ($0 ~ /<\/Config>/) {
                     print db_config
+                    print $0
+                  } else {
+                    print $0
                   }
-                  print $0
                 }' /config/config.xml > /config/config.xml.tmp
                 mv /config/config.xml.tmp /config/config.xml
               else
