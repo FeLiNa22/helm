@@ -39,7 +39,7 @@ spec:
       serviceAccountName: {{ .Values.radarr.serviceAccount.name | default (printf "%s-radarr" .Release.Name) }}
       securityContext:
         {{- toYaml .Values.radarr.podSecurityContext | nindent 8 }}
-      {{- if or (and .Values.media.enabled .Values.radarr.persistence.enabled) .Values.radarr.database.mode .Values.radarr.initContainers }}
+      {{- if or (and .Values.media.enabled .Values.radarr.persistence.enabled) (ne .Values.radarr.database.mode "") .Values.radarr.initContainers }}
       initContainers:
         {{- if and .Values.media.enabled .Values.radarr.persistence.enabled }}
         - name: init-directories
@@ -76,11 +76,7 @@ spec:
                 mv /config/config.xml.tmp /config/config.xml
               else
                 # Create a new config.xml with database fields
-                cat > /config/config.xml <<EOF
-              <Config>
-              ${DB_CONFIG}
-              </Config>
-              EOF
+                printf '<Config>\n%s\n</Config>\n' "${DB_CONFIG}" > /config/config.xml
               fi
               
               chown 1000:1000 /config/config.xml
