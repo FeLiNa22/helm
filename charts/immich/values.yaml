@@ -258,7 +258,7 @@ dragonfly:
 ## @param postgresql.image.registry PostgreSQL image registry for Bitnami subchart.
 ## @param postgresql.image.repository PostgreSQL image repository for Bitnami subchart.
 ## @param postgresql.image.tag PostgreSQL image tag for Bitnami subchart.
-## @param postgresql.primary.initdb.scripts SQL scripts to initialize PostgreSQL extensions for Bitnami subchart.
+## @param postgresql.primary.initdb.scripts.init-extensions.sql SQL script to initialize PostgreSQL extensions for Bitnami subchart.
 ## @param postgresql.primary.persistence.enabled Whether to enable persistence for Bitnami subchart.
 ## @param postgresql.primary.persistence.size Size of the PostgreSQL persistence volume for Bitnami subchart.
 ## @param postgresql.cluster.enabled Whether to deploy PostgreSQL using CloudNativePG operator.
