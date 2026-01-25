@@ -74,7 +74,7 @@ image:
   tag: "0.121.1"
   autoupdate:
     enabled: false
-    strategy: semver
+    strategy: ""
     allowTags: ""
     ignoreTags: []
     pullSecret: ""

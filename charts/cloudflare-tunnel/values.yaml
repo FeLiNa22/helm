@@ -18,7 +18,7 @@ image:
   imagePullPolicy: IfNotPresent
   autoupdate:
     enabled: false
-    strategy: semver
+    strategy: ""
     allowTags: ""
     ignoreTags: []
     pullSecret: ""

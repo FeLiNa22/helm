@@ -233,7 +233,7 @@ imageUpdater:
   argocdNamespace: argocd
   applicationName: ""
   imageAlias: ""
-  updateStrategy: semver
+  updateStrategy: ""
   forceUpdate: false
   allowTags: ""
   ignoreTags: []
