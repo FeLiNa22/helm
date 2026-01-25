@@ -47,7 +47,6 @@ The chart supports three PostgreSQL deployment modes:
 database:
   mode: standalone
   standalone:
-    enabled: true
     auth:
       database: immich
       username: immich
@@ -56,10 +55,7 @@ database:
 # Cluster mode - uses CloudNativePG operator
 database:
   mode: cluster
-  standalone:
-    enabled: false
   cluster:
-    enabled: true
     instances: 2
     database: immich
     owner: immich
@@ -69,8 +65,6 @@ database:
 # External mode - connect to existing PostgreSQL
 database:
   mode: external
-  standalone:
-    enabled: false
   external:
     host: "your-postgresql-host"
     port: 5432
@@ -214,7 +208,6 @@ ingress:
 | Name | Description | Value |
 |------|-------------|-------|
 | `database.mode` | Deployment mode: `standalone`, `cluster`, or `external` | `standalone` |
-| `database.standalone.enabled` | Deploy standalone PostgreSQL (StatefulSet) | `true` |
 | `database.standalone.image.repository` | PostgreSQL image with pgvecto-rs | `docker.io/tensorchord/pgvecto-rs` |
 | `database.standalone.image.tag` | PostgreSQL image tag | `pg16-v0.4.0` |
 | `database.standalone.auth.database` | Database name | `immich` |
@@ -224,7 +217,6 @@ ingress:
 | `database.standalone.persistence.enabled` | Enable PostgreSQL persistence | `true` |
 | `database.standalone.persistence.size` | PostgreSQL volume size | `10Gi` |
 | `database.standalone.persistence.storageClass` | Storage class for PostgreSQL | `""` |
-| `database.cluster.enabled` | Deploy CloudNativePG cluster (requires operator) | `false` |
 | `database.cluster.instances` | Number of PostgreSQL instances | `2` |
 | `database.cluster.image.repository` | PostgreSQL image with vectorchord | `ghcr.io/tensorchord/cloudnative-pgvecto.rs` |
 | `database.cluster.image.tag` | PostgreSQL image tag | `16-v0.4.0` |
@@ -265,7 +257,6 @@ To migrate from version 1.4.x:
    database:
      mode: standalone
      standalone:
-       enabled: true
        auth:
          database: immich
          username: immich

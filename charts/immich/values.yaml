@@ -261,7 +261,6 @@ dragonfly:
 ## PostgreSQL with pgvector/vectorchord extension is required for Immich
 
 ## @param database.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
-## @param database.standalone.enabled Whether to deploy standalone PostgreSQL.
 ## @param database.standalone.image.repository PostgreSQL image repository (with pgvecto-rs extension).
 ## @param database.standalone.image.tag PostgreSQL image tag.
 ## @param database.standalone.auth.database Name of the database to create.
@@ -273,7 +272,6 @@ dragonfly:
 ## @param database.standalone.persistence.size Size of the persistence volume.
 ## @param database.standalone.persistence.storageClass Storage class for persistence.
 ## @param database.standalone.resources Resource limits and requests for standalone PostgreSQL.
-## @param database.cluster.enabled Whether to deploy PostgreSQL using CloudNativePG operator.
 ## @param database.cluster.name Name of the database cluster.
 ## @param database.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param database.cluster.image.repository PostgreSQL container image repository (with vectorchord extension).
@@ -304,7 +302,6 @@ database:
 
   # Standalone PostgreSQL deployment (using StatefulSet)
   standalone:
-    enabled: true
     # Use PostgreSQL with pgvecto-rs extension for vector search
     image:
       repository: docker.io/tensorchord/pgvecto-rs
@@ -329,7 +326,6 @@ database:
 
   # CloudNativePG Cluster deployment (using CNPG operator)
   cluster:
-    enabled: false
     name: immich-db
     instances: 2
     # Use PostgreSQL image with pgvecto-rs extension for Immich

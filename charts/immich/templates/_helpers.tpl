@@ -66,7 +66,7 @@ PostgreSQL host
 */}}
 {{- define "immich.postgresql.host" -}}
 {{- if eq .Values.database.mode "standalone" }}
-{{- printf "%s-postgresql" .Release.Name }}
+{{- printf "%s-postgresql" (include "immich.fullname" .) }}
 {{- else if eq .Values.database.mode "cluster" }}
 {{- printf "%s-%s-rw" .Release.Name .Values.database.cluster.name }}
 {{- else }}

@@ -2677,12 +2677,6 @@ emby:
 ## @param acestream.dispatcharr.image.repository The Docker repository to pull the Dispatcharr image from.
 ## @param acestream.dispatcharr.image.tag The image tag to use for Dispatcharr.
 ## @param acestream.dispatcharr.image.pullPolicy The logic of image pulling for Dispatcharr.
-## @param acestream.dispatcharr.image.autoupdate.enabled Whether to enable autoupdate for the Dispatcharr image.
-## @param acestream.dispatcharr.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
-## @param acestream.dispatcharr.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
-## @param acestream.dispatcharr.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
-## @param acestream.dispatcharr.image.autoupdate.pullSecret Pull secret name for private registries.
-## @param acestream.dispatcharr.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param acestream.dispatcharr.env Additional environment variables for Dispatcharr.
 ## @param acestream.dispatcharr.resources Resource limits and requests for the Dispatcharr container.
 ## @param acestream.service.type The type of service to create (applies to all ports).
@@ -2794,13 +2788,6 @@ acestream:
       repository: ghcr.io/dispatcharr/dispatcharr
       pullPolicy: IfNotPresent
       tag: "latest"
-      autoupdate:
-        enabled: false
-        strategy: semver
-        allowTags: ""
-        ignoreTags: []
-        pullSecret: ""
-        platforms: []
     env: {}
       # TZ: "Europe/Madrid"
       # MY_VAR: "value"
