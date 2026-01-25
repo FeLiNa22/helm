@@ -1,0 +1,108 @@
+{{- if .Values.imageUpdater.enabled }}
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.imageUpdater.namespace | default "argocd" }}
+  labels:
+    app: {{ .Release.Name }}
+    release: {{ .Release.Name }}
+spec:
+  namespace: {{ .Values.imageUpdater.argocdNamespace | default "argocd" }}
+  applicationRefs:
+    - namePattern: {{ .Values.imageUpdater.applicationName | default .Release.Name | quote }}
+      images:
+        {{- $services := list "jellyfin" "emby" "plex" "sonarr" "radarr" "lidarr" "prowlarr" "bazarr" "qbittorrent" "sabnzbd" "seerr" "huntarr" "cleanuparr" "flaresolverr" "acestream" }}
+        {{- range $service := $services }}
+          {{- if (index $.Values $service).enabled }}
+            {{- $imageRepo := (index $.Values $service).image.repository }}
+            {{- $imageTag := (index $.Values $service).image.tag }}
+        - alias: {{ $service | quote }}
+          imageName: {{ $imageRepo }}{{ if $imageTag }}:{{ $imageTag }}{{ end }}
+          {{- if or $.Values.imageUpdater.updateStrategy $.Values.imageUpdater.allowTags $.Values.imageUpdater.ignoreTags $.Values.imageUpdater.forceUpdate $.Values.imageUpdater.platforms }}
+          commonUpdateSettings:
+            {{- if $.Values.imageUpdater.updateStrategy }}
+            updateStrategy: {{ $.Values.imageUpdater.updateStrategy }}
+            {{- end }}
+            {{- if $.Values.imageUpdater.forceUpdate }}
+            forceUpdate: {{ $.Values.imageUpdater.forceUpdate }}
+            {{- end }}
+            {{- if $.Values.imageUpdater.allowTags }}
+            allowTags: {{ $.Values.imageUpdater.allowTags | quote }}
+            {{- end }}
+            {{- if $.Values.imageUpdater.ignoreTags }}
+            ignoreTags:
+              {{- if kindIs "string" $.Values.imageUpdater.ignoreTags }}
+              - {{ $.Values.imageUpdater.ignoreTags | quote }}
+              {{- else }}
+              {{- toYaml $.Values.imageUpdater.ignoreTags | nindent 14 }}
+              {{- end }}
+            {{- end }}
+            {{- if $.Values.imageUpdater.platforms }}
+            platforms:
+              {{- toYaml $.Values.imageUpdater.platforms | nindent 14 }}
+            {{- end }}
+          {{- end }}
+          {{- end }}
+        {{- end }}
+        {{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled }}
+        - alias: "qbittorrent-gluetun"
+          imageName: {{ .Values.qbittorrent.gluetun.image.repository }}{{ if .Values.qbittorrent.gluetun.image.tag }}:{{ .Values.qbittorrent.gluetun.image.tag }}{{ end }}
+          {{- if or .Values.imageUpdater.updateStrategy .Values.imageUpdater.allowTags .Values.imageUpdater.ignoreTags .Values.imageUpdater.forceUpdate .Values.imageUpdater.platforms }}
+          commonUpdateSettings:
+            {{- if .Values.imageUpdater.updateStrategy }}
+            updateStrategy: {{ .Values.imageUpdater.updateStrategy }}
+            {{- end }}
+            {{- if .Values.imageUpdater.forceUpdate }}
+            forceUpdate: {{ .Values.imageUpdater.forceUpdate }}
+            {{- end }}
+            {{- if .Values.imageUpdater.allowTags }}
+            allowTags: {{ .Values.imageUpdater.allowTags | quote }}
+            {{- end }}
+            {{- if .Values.imageUpdater.ignoreTags }}
+            ignoreTags:
+              {{- if kindIs "string" .Values.imageUpdater.ignoreTags }}
+              - {{ .Values.imageUpdater.ignoreTags | quote }}
+              {{- else }}
+              {{- toYaml .Values.imageUpdater.ignoreTags | nindent 14 }}
+              {{- end }}
+            {{- end }}
+            {{- if .Values.imageUpdater.platforms }}
+            platforms:
+              {{- toYaml .Values.imageUpdater.platforms | nindent 14 }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+        {{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled }}
+        - alias: "acestream-gluetun"
+          imageName: {{ .Values.acestream.gluetun.image.repository }}{{ if .Values.acestream.gluetun.image.tag }}:{{ .Values.acestream.gluetun.image.tag }}{{ end }}
+          {{- if or .Values.imageUpdater.updateStrategy .Values.imageUpdater.allowTags .Values.imageUpdater.ignoreTags .Values.imageUpdater.forceUpdate .Values.imageUpdater.platforms }}
+          commonUpdateSettings:
+            {{- if .Values.imageUpdater.updateStrategy }}
+            updateStrategy: {{ .Values.imageUpdater.updateStrategy }}
+            {{- end }}
+            {{- if .Values.imageUpdater.forceUpdate }}
+            forceUpdate: {{ .Values.imageUpdater.forceUpdate }}
+            {{- end }}
+            {{- if .Values.imageUpdater.allowTags }}
+            allowTags: {{ .Values.imageUpdater.allowTags | quote }}
+            {{- end }}
+            {{- if .Values.imageUpdater.ignoreTags }}
+            ignoreTags:
+              {{- if kindIs "string" .Values.imageUpdater.ignoreTags }}
+              - {{ .Values.imageUpdater.ignoreTags | quote }}
+              {{- else }}
+              {{- toYaml .Values.imageUpdater.ignoreTags | nindent 14 }}
+              {{- end }}
+            {{- end }}
+            {{- if .Values.imageUpdater.platforms }}
+            platforms:
+              {{- toYaml .Values.imageUpdater.platforms | nindent 14 }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+  {{- if .Values.imageUpdater.writeBackConfig }}
+  writeBackConfig:
+    {{- toYaml .Values.imageUpdater.writeBackConfig | nindent 4 }}
+  {{- end }}
+{{- end }}

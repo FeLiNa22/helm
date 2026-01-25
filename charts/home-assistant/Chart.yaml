@@ -4,7 +4,7 @@ maintainers:
     url: https://raulpatel.com
 apiVersion: v2
 appVersion: 2024.11.3
-version: 1.0.4
+version: 1.1.0
 description: Home Assistant Helm Chart
 home: https://github.com/FeLiNa22/homeserver/tree/main/charts/home-assistant
 icon: https://raulpatel.com/images/raul.svg

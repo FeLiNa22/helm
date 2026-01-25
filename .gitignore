@@ -4,3 +4,6 @@
 .DS_Store
 .aider*
 .env
+charts/**/charts/
+charts/**/*.tgz
+charts/**/*.lock
