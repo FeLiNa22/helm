@@ -56,11 +56,9 @@ spec:
             - sh
             - -c
             - |
-              if [ ! -f /config/config.xml ]; then
-                cp /config-template/config.xml /config/config.xml
-                sed -i "s|__DB_PASSWORD__|${DB_PASSWORD}|g" /config/config.xml
-                chown 1000:1000 /config/config.xml
-              fi
+              cp /config-template/config.xml /config/config.xml
+              sed -i "s|__DB_PASSWORD__|${DB_PASSWORD}|g" /config/config.xml
+              chown 1000:1000 /config/config.xml
           env:
             {{- if eq .Values.sonarr.database.mode "cluster" }}
             - name: DB_PASSWORD
