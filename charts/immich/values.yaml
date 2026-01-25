@@ -312,8 +312,8 @@ database:
     auth:
       database: immich
       username: immich
-      password: ""  # Leave empty to auto-generate
-      postgresPassword: ""  # Leave empty to auto-generate
+      password: ""  # Leave empty to auto-generate (persists across upgrades via secret lookup)
+      postgresPassword: ""  # Leave empty to auto-generate (persists across upgrades via secret lookup)
       existingSecret: ""
     persistence:
       enabled: true
