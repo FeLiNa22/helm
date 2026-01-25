@@ -90,7 +90,7 @@ PostgreSQL database name
 */}}
 {{- define "immich.postgresql.database" -}}
 {{- if eq .Values.database.mode "standalone" }}
-{{- .Values.postgresql.auth.database }}
+{{- .Values.database.standalone.auth.database }}
 {{- else if eq .Values.database.mode "cluster" }}
 {{- .Values.database.cluster.database }}
 {{- else }}
@@ -103,7 +103,7 @@ PostgreSQL username
 */}}
 {{- define "immich.postgresql.username" -}}
 {{- if eq .Values.database.mode "standalone" }}
-{{- .Values.postgresql.auth.username }}
+{{- .Values.database.standalone.auth.username }}
 {{- else if eq .Values.database.mode "cluster" }}
 {{- .Values.database.cluster.secret.username }}
 {{- else }}
@@ -116,8 +116,8 @@ PostgreSQL secret name
 */}}
 {{- define "immich.postgresql.secretName" -}}
 {{- if eq .Values.database.mode "standalone" }}
-{{- if .Values.postgresql.auth.existingSecret }}
-{{- .Values.postgresql.auth.existingSecret }}
+{{- if .Values.database.standalone.auth.existingSecret }}
+{{- .Values.database.standalone.auth.existingSecret }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
 {{- end }}

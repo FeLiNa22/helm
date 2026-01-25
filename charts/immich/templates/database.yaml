@@ -1,4 +1,164 @@
-{{- if eq .Values.database.mode "cluster" }}
+{{- if eq .Values.database.mode "standalone" }}
+{{- $fullName := include "immich.fullname" . -}}
+{{- $secretName := include "immich.postgresql.secretName" . -}}
+{{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
+{{- $userPassword := "" }}
+{{- $postgresPassword := "" }}
+{{- if $existingSecret }}
+{{- $userPassword = index $existingSecret.data "password" | b64dec }}
+{{- $postgresPassword = index $existingSecret.data "postgres-password" | b64dec }}
+{{- else }}
+{{- $userPassword = .Values.database.standalone.auth.password | default (randAlphaNum 32) }}
+{{- $postgresPassword = .Values.database.standalone.auth.postgresPassword | default (randAlphaNum 32) }}
+{{- end }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+type: Opaque
+stringData:
+  password: {{ $userPassword }}
+  postgres-password: {{ $postgresPassword }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullName }}-postgresql-init
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+data:
+  init-extensions.sh: |
+    #!/bin/bash
+    set -e
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+      CREATE EXTENSION IF NOT EXISTS vectors;
+      CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
+      CREATE EXTENSION IF NOT EXISTS pg_trgm;
+    EOSQL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-postgresql
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: postgresql
+      protocol: TCP
+  selector:
+    {{- include "immich.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $fullName }}-postgresql
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  serviceName: {{ $fullName }}-postgresql
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "immich.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: database
+  template:
+    metadata:
+      labels:
+        {{- include "immich.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: database
+    spec:
+      containers:
+      - name: postgresql
+        image: "{{ .Values.database.standalone.image.repository }}:{{ .Values.database.standalone.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: postgresql
+          containerPort: 5432
+          protocol: TCP
+        env:
+        - name: POSTGRES_USER
+          value: {{ .Values.database.standalone.auth.username | quote }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secretName }}
+              key: password
+        - name: POSTGRES_DB
+          value: {{ .Values.database.standalone.auth.database | quote }}
+        - name: POSTGRES_POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secretName }}
+              key: postgres-password
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d
+        {{- if .Values.database.standalone.resources }}
+        resources:
+          {{- toYaml .Values.database.standalone.resources | nindent 10 }}
+        {{- end }}
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U {{ .Values.database.standalone.auth.username | quote }} -d {{ .Values.database.standalone.auth.database | quote }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U {{ .Values.database.standalone.auth.username | quote }} -d {{ .Values.database.standalone.auth.database | quote }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+      volumes:
+      - name: init-scripts
+        configMap:
+          name: {{ $fullName }}-postgresql-init
+          defaultMode: 0755
+  {{- if .Values.database.standalone.persistence.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        {{- include "immich.labels" . | nindent 8 }}
+        app.kubernetes.io/component: database
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      {{- if .Values.database.standalone.persistence.storageClass }}
+      storageClassName: {{ .Values.database.standalone.persistence.storageClass }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.database.standalone.persistence.size }}
+  {{- else }}
+      - name: data
+        emptyDir: {}
+  {{- end }}
+{{- else if eq .Values.database.mode "cluster" }}
 {{- $fullName := include "immich.fullname" . -}}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster

@@ -2,7 +2,7 @@ apiVersion: v2
 name: immich
 description: A Helm chart for Immich - High performance self-hosted photo and video management solution
 type: application
-version: 1.5.0
+version: 1.6.0
 appVersion: "v2.4.1"
 keywords:
   - immich
@@ -15,11 +15,3 @@ sources:
   - https://github.com/immich-app/immich
 maintainers:
   - name: FeLiNa22
-
-dependencies:
-  # PostgreSQL subchart (only used when database.mode is 'standalone')
-  - condition: database.standalone.enabled
-    name: postgresql
-    repository: https://charts.bitnami.com/bitnami
-    version: 13.x.x
-    alias: postgresql
