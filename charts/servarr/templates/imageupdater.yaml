@@ -1,4 +1,18 @@
-{{- if .Values.imageUpdater.enabled }}
+{{- $anyAutoupdate := false }}
+{{- $services := list "jellyfin" "emby" "plex" "sonarr" "radarr" "lidarr" "prowlarr" "bazarr" "qbittorrent" "sabnzbd" "seerr" "huntarr" "cleanuparr" "flaresolverr" "acestream" }}
+{{- range $service := $services }}
+  {{- $serviceConfig := index $.Values $service }}
+  {{- if and $serviceConfig.enabled $serviceConfig.image.autoupdate.enabled }}
+    {{- $anyAutoupdate = true }}
+  {{- end }}
+{{- end }}
+{{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.image.autoupdate.enabled }}
+  {{- $anyAutoupdate = true }}
+{{- end }}
+{{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled .Values.acestream.gluetun.image.autoupdate.enabled }}
+  {{- $anyAutoupdate = true }}
+{{- end }}
+{{- if $anyAutoupdate }}
 apiVersion: argocd-image-updater.argoproj.io/v1alpha1
 kind: ImageUpdater
 metadata:
@@ -12,92 +26,92 @@ spec:
   applicationRefs:
     - namePattern: {{ .Values.imageUpdater.applicationName | default .Release.Name | quote }}
       images:
-        {{- $services := list "jellyfin" "emby" "plex" "sonarr" "radarr" "lidarr" "prowlarr" "bazarr" "qbittorrent" "sabnzbd" "seerr" "huntarr" "cleanuparr" "flaresolverr" "acestream" }}
         {{- range $service := $services }}
-          {{- if (index $.Values $service).enabled }}
-            {{- $imageRepo := (index $.Values $service).image.repository }}
-            {{- $imageTag := (index $.Values $service).image.tag }}
+          {{- $serviceConfig := index $.Values $service }}
+          {{- if and $serviceConfig.enabled $serviceConfig.image.autoupdate.enabled }}
+            {{- $imageRepo := $serviceConfig.image.repository }}
+            {{- $imageTag := $serviceConfig.image.tag }}
         - alias: {{ $service | quote }}
           imageName: {{ $imageRepo }}{{ if $imageTag }}:{{ $imageTag }}{{ end }}
-          {{- if or $.Values.imageUpdater.updateStrategy $.Values.imageUpdater.allowTags $.Values.imageUpdater.ignoreTags $.Values.imageUpdater.forceUpdate $.Values.imageUpdater.platforms }}
+          {{- if or $serviceConfig.image.autoupdate.strategy $serviceConfig.image.autoupdate.allowTags $serviceConfig.image.autoupdate.ignoreTags $serviceConfig.image.autoupdate.pullSecret $serviceConfig.image.autoupdate.platforms }}
           commonUpdateSettings:
-            {{- if $.Values.imageUpdater.updateStrategy }}
-            updateStrategy: {{ $.Values.imageUpdater.updateStrategy }}
+            {{- if $serviceConfig.image.autoupdate.strategy }}
+            updateStrategy: {{ $serviceConfig.image.autoupdate.strategy }}
             {{- end }}
-            {{- if $.Values.imageUpdater.forceUpdate }}
-            forceUpdate: {{ $.Values.imageUpdater.forceUpdate }}
+            {{- if $serviceConfig.image.autoupdate.allowTags }}
+            allowTags: {{ $serviceConfig.image.autoupdate.allowTags | quote }}
             {{- end }}
-            {{- if $.Values.imageUpdater.allowTags }}
-            allowTags: {{ $.Values.imageUpdater.allowTags | quote }}
-            {{- end }}
-            {{- if $.Values.imageUpdater.ignoreTags }}
+            {{- if $serviceConfig.image.autoupdate.ignoreTags }}
             ignoreTags:
-              {{- if kindIs "string" $.Values.imageUpdater.ignoreTags }}
-              - {{ $.Values.imageUpdater.ignoreTags | quote }}
+              {{- if kindIs "string" $serviceConfig.image.autoupdate.ignoreTags }}
+              - {{ $serviceConfig.image.autoupdate.ignoreTags | quote }}
               {{- else }}
-              {{- toYaml $.Values.imageUpdater.ignoreTags | nindent 14 }}
+              {{- toYaml $serviceConfig.image.autoupdate.ignoreTags | nindent 14 }}
               {{- end }}
             {{- end }}
-            {{- if $.Values.imageUpdater.platforms }}
+            {{- if $serviceConfig.image.autoupdate.pullSecret }}
+            pullSecret: {{ $serviceConfig.image.autoupdate.pullSecret | quote }}
+            {{- end }}
+            {{- if $serviceConfig.image.autoupdate.platforms }}
             platforms:
-              {{- toYaml $.Values.imageUpdater.platforms | nindent 14 }}
+              {{- toYaml $serviceConfig.image.autoupdate.platforms | nindent 14 }}
             {{- end }}
           {{- end }}
           {{- end }}
         {{- end }}
-        {{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled }}
+        {{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.image.autoupdate.enabled }}
         - alias: "qbittorrent-gluetun"
           imageName: {{ .Values.qbittorrent.gluetun.image.repository }}{{ if .Values.qbittorrent.gluetun.image.tag }}:{{ .Values.qbittorrent.gluetun.image.tag }}{{ end }}
-          {{- if or .Values.imageUpdater.updateStrategy .Values.imageUpdater.allowTags .Values.imageUpdater.ignoreTags .Values.imageUpdater.forceUpdate .Values.imageUpdater.platforms }}
+          {{- if or .Values.qbittorrent.gluetun.image.autoupdate.strategy .Values.qbittorrent.gluetun.image.autoupdate.allowTags .Values.qbittorrent.gluetun.image.autoupdate.ignoreTags .Values.qbittorrent.gluetun.image.autoupdate.pullSecret .Values.qbittorrent.gluetun.image.autoupdate.platforms }}
           commonUpdateSettings:
-            {{- if .Values.imageUpdater.updateStrategy }}
-            updateStrategy: {{ .Values.imageUpdater.updateStrategy }}
+            {{- if .Values.qbittorrent.gluetun.image.autoupdate.strategy }}
+            updateStrategy: {{ .Values.qbittorrent.gluetun.image.autoupdate.strategy }}
             {{- end }}
-            {{- if .Values.imageUpdater.forceUpdate }}
-            forceUpdate: {{ .Values.imageUpdater.forceUpdate }}
+            {{- if .Values.qbittorrent.gluetun.image.autoupdate.allowTags }}
+            allowTags: {{ .Values.qbittorrent.gluetun.image.autoupdate.allowTags | quote }}
             {{- end }}
-            {{- if .Values.imageUpdater.allowTags }}
-            allowTags: {{ .Values.imageUpdater.allowTags | quote }}
-            {{- end }}
-            {{- if .Values.imageUpdater.ignoreTags }}
+            {{- if .Values.qbittorrent.gluetun.image.autoupdate.ignoreTags }}
             ignoreTags:
-              {{- if kindIs "string" .Values.imageUpdater.ignoreTags }}
-              - {{ .Values.imageUpdater.ignoreTags | quote }}
+              {{- if kindIs "string" .Values.qbittorrent.gluetun.image.autoupdate.ignoreTags }}
+              - {{ .Values.qbittorrent.gluetun.image.autoupdate.ignoreTags | quote }}
               {{- else }}
-              {{- toYaml .Values.imageUpdater.ignoreTags | nindent 14 }}
+              {{- toYaml .Values.qbittorrent.gluetun.image.autoupdate.ignoreTags | nindent 14 }}
               {{- end }}
             {{- end }}
-            {{- if .Values.imageUpdater.platforms }}
+            {{- if .Values.qbittorrent.gluetun.image.autoupdate.pullSecret }}
+            pullSecret: {{ .Values.qbittorrent.gluetun.image.autoupdate.pullSecret | quote }}
+            {{- end }}
+            {{- if .Values.qbittorrent.gluetun.image.autoupdate.platforms }}
             platforms:
-              {{- toYaml .Values.imageUpdater.platforms | nindent 14 }}
+              {{- toYaml .Values.qbittorrent.gluetun.image.autoupdate.platforms | nindent 14 }}
             {{- end }}
           {{- end }}
         {{- end }}
-        {{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled }}
+        {{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled .Values.acestream.gluetun.image.autoupdate.enabled }}
         - alias: "acestream-gluetun"
           imageName: {{ .Values.acestream.gluetun.image.repository }}{{ if .Values.acestream.gluetun.image.tag }}:{{ .Values.acestream.gluetun.image.tag }}{{ end }}
-          {{- if or .Values.imageUpdater.updateStrategy .Values.imageUpdater.allowTags .Values.imageUpdater.ignoreTags .Values.imageUpdater.forceUpdate .Values.imageUpdater.platforms }}
+          {{- if or .Values.acestream.gluetun.image.autoupdate.strategy .Values.acestream.gluetun.image.autoupdate.allowTags .Values.acestream.gluetun.image.autoupdate.ignoreTags .Values.acestream.gluetun.image.autoupdate.pullSecret .Values.acestream.gluetun.image.autoupdate.platforms }}
           commonUpdateSettings:
-            {{- if .Values.imageUpdater.updateStrategy }}
-            updateStrategy: {{ .Values.imageUpdater.updateStrategy }}
+            {{- if .Values.acestream.gluetun.image.autoupdate.strategy }}
+            updateStrategy: {{ .Values.acestream.gluetun.image.autoupdate.strategy }}
             {{- end }}
-            {{- if .Values.imageUpdater.forceUpdate }}
-            forceUpdate: {{ .Values.imageUpdater.forceUpdate }}
+            {{- if .Values.acestream.gluetun.image.autoupdate.allowTags }}
+            allowTags: {{ .Values.acestream.gluetun.image.autoupdate.allowTags | quote }}
             {{- end }}
-            {{- if .Values.imageUpdater.allowTags }}
-            allowTags: {{ .Values.imageUpdater.allowTags | quote }}
-            {{- end }}
-            {{- if .Values.imageUpdater.ignoreTags }}
+            {{- if .Values.acestream.gluetun.image.autoupdate.ignoreTags }}
             ignoreTags:
-              {{- if kindIs "string" .Values.imageUpdater.ignoreTags }}
-              - {{ .Values.imageUpdater.ignoreTags | quote }}
+              {{- if kindIs "string" .Values.acestream.gluetun.image.autoupdate.ignoreTags }}
+              - {{ .Values.acestream.gluetun.image.autoupdate.ignoreTags | quote }}
               {{- else }}
-              {{- toYaml .Values.imageUpdater.ignoreTags | nindent 14 }}
+              {{- toYaml .Values.acestream.gluetun.image.autoupdate.ignoreTags | nindent 14 }}
               {{- end }}
             {{- end }}
-            {{- if .Values.imageUpdater.platforms }}
+            {{- if .Values.acestream.gluetun.image.autoupdate.pullSecret }}
+            pullSecret: {{ .Values.acestream.gluetun.image.autoupdate.pullSecret | quote }}
+            {{- end }}
+            {{- if .Values.acestream.gluetun.image.autoupdate.platforms }}
             platforms:
-              {{- toYaml .Values.imageUpdater.platforms | nindent 14 }}
+              {{- toYaml .Values.acestream.gluetun.image.autoupdate.platforms | nindent 14 }}
             {{- end }}
           {{- end }}
         {{- end }}

@@ -32,6 +32,12 @@ media:
 ## @param jellyfin.image.repository The Docker repository to pull the image from.
 ## @param jellyfin.image.tag The image tag to use.
 ## @param jellyfin.image.pullPolicy The logic of image pulling.
+## @param jellyfin.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param jellyfin.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param jellyfin.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param jellyfin.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param jellyfin.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param jellyfin.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param jellyfin.enableDLNA Whether to enable DLNA which requires the pod to be attached to the host network in order to be useful - this can break things like ingress to the service https://jellyfin.org/docs/general/networking/dlna.html.
 ## @param jellyfin.service.type The type of service to create.
 ## @param jellyfin.service.port The port on which the service will run.
@@ -90,6 +96,13 @@ jellyfin:
     repository: lscr.io/linuxserver/jellyfin
     tag: "10.11.5"
     pullPolicy: IfNotPresent
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   enableDLNA: false
 
@@ -206,6 +219,12 @@ jellyfin:
 ## @param sonarr.image.repository The Docker repository to pull the image from.
 ## @param sonarr.image.tag The image tag to use.
 ## @param sonarr.image.pullPolicy The logic of image pulling.
+## @param sonarr.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param sonarr.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param sonarr.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param sonarr.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param sonarr.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param sonarr.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param sonarr.imagePullSecrets The image pull secrets to use.
 ## @param sonarr.deployment.strategy.type The deployment strategy to use.
 ## @param sonarr.serviceAccount.create Whether to create a service account.
@@ -273,6 +292,13 @@ sonarr:
     repository: lscr.io/linuxserver/sonarr
     pullPolicy: IfNotPresent
     tag: "4.0.16"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -393,6 +419,12 @@ sonarr:
 ## @param qbittorrent.image.repository The Docker repository to pull the image from.
 ## @param qbittorrent.image.tag The image tag to use.
 ## @param qbittorrent.image.pullPolicy The logic of image pulling.
+## @param qbittorrent.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param qbittorrent.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param qbittorrent.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param qbittorrent.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param qbittorrent.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param qbittorrent.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param qbittorrent.imagePullSecrets The image pull secrets to use.
 ## @param qbittorrent.deployment.strategy.type The deployment strategy to use.
 ## @param qbittorrent.serviceAccount.create Whether to create a service account.
@@ -453,6 +485,13 @@ qbittorrent:
     repository: lscr.io/linuxserver/qbittorrent
     pullPolicy: IfNotPresent
     tag: "latest"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -562,6 +601,12 @@ qbittorrent:
   ## @param qbittorrent.gluetun.image.repository The Docker repository to pull the Gluetun image from.
   ## @param qbittorrent.gluetun.image.tag The image tag to use for Gluetun.
   ## @param qbittorrent.gluetun.image.pullPolicy The logic of image pulling for Gluetun.
+  ## @param qbittorrent.gluetun.image.autoupdate.enabled Whether to enable autoupdate for the Gluetun image.
+  ## @param qbittorrent.gluetun.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+  ## @param qbittorrent.gluetun.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+  ## @param qbittorrent.gluetun.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+  ## @param qbittorrent.gluetun.image.autoupdate.pullSecret Pull secret name for private registries.
+  ## @param qbittorrent.gluetun.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
   ## @param qbittorrent.gluetun.env.VPN_SERVICE_PROVIDER The VPN service provider (e.g., nordvpn, expressvpn, mullvad, etc.).
   ## @param qbittorrent.gluetun.env.VPN_TYPE The type of VPN protocol to use (openvpn or wireguard).
   ## @param qbittorrent.gluetun.env.OPENVPN_USER Username for OpenVPN authentication (if using OpenVPN).
@@ -580,6 +625,13 @@ qbittorrent:
       repository: qmcgaw/gluetun
       tag: "v3.39.2"
       pullPolicy: IfNotPresent
+      autoupdate:
+        enabled: false
+        strategy: semver
+        allowTags: ""
+        ignoreTags: []
+        pullSecret: ""
+        platforms: []
 
     env:
       VPN_SERVICE_PROVIDER: ""
@@ -611,6 +663,12 @@ qbittorrent:
 ## @param prowlarr.image.repository The Docker repository to pull the image from.
 ## @param prowlarr.image.tag The image tag to use.
 ## @param prowlarr.image.pullPolicy The logic of image pulling.
+## @param prowlarr.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param prowlarr.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param prowlarr.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param prowlarr.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param prowlarr.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param prowlarr.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param prowlarr.imagePullSecrets The image pull secrets to use.
 ## @param prowlarr.deployment.strategy.type The deployment strategy to use.
 ## @param prowlarr.serviceAccount.create Whether to create a service account.
@@ -678,6 +736,13 @@ prowlarr:
     repository: lscr.io/linuxserver/prowlarr
     pullPolicy: IfNotPresent
     tag: "2.3.0"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -798,6 +863,12 @@ prowlarr:
 ## @param flaresolverr.image.repository The Docker repository to pull the image from.
 ## @param flaresolverr.image.tag The image tag to use.
 ## @param flaresolverr.image.pullPolicy The logic of image pulling.
+## @param flaresolverr.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param flaresolverr.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param flaresolverr.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param flaresolverr.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param flaresolverr.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param flaresolverr.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param flaresolverr.imagePullSecrets The image pull secrets to use.
 ## @param flaresolverr.deployment.strategy.type The deployment strategy to use.
 ## @param flaresolverr.serviceAccount.create Whether to create a service account.
@@ -845,6 +916,13 @@ flaresolverr:
     repository: ghcr.io/flaresolverr/flaresolverr
     pullPolicy: IfNotPresent
     tag: "v3.3.21"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -938,6 +1016,12 @@ flaresolverr:
 ## @param seerr.image.repository The Docker repository to pull the image from.
 ## @param seerr.image.tag The image tag to use.
 ## @param seerr.image.pullPolicy The logic of image pulling.
+## @param seerr.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param seerr.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param seerr.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param seerr.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param seerr.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param seerr.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param seerr.imagePullSecrets The image pull secrets to use.
 ## @param seerr.serviceAccount.create Whether to create a service account.
 ## @param seerr.serviceAccount.automount Automatically mount a ServiceAccount's API credentials.
@@ -1016,6 +1100,13 @@ seerr:
     repository: ghcr.io/seerr-team/seerr
     pullPolicy: IfNotPresent
     tag: "3.0.0"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -1149,6 +1240,12 @@ seerr:
 ## @param bazarr.image.repository The Docker repository to pull the image from.
 ## @param bazarr.image.tag The image tag to use.
 ## @param bazarr.image.pullPolicy The logic of image pulling.
+## @param bazarr.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param bazarr.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param bazarr.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param bazarr.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param bazarr.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param bazarr.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param bazarr.imagePullSecrets The image pull secrets to use.
 ## @param bazarr.deployment.strategy.type The deployment strategy to use.
 ## @param bazarr.serviceAccount.create Whether to create a service account.
@@ -1204,6 +1301,13 @@ bazarr:
     repository: lscr.io/linuxserver/bazarr
     pullPolicy: IfNotPresent
     tag: "1.5.3"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -1308,6 +1412,12 @@ bazarr:
 ## @param radarr.image.repository The Docker repository to pull the image from.
 ## @param radarr.image.tag The image tag to use.
 ## @param radarr.image.pullPolicy The logic of image pulling.
+## @param radarr.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param radarr.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param radarr.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param radarr.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param radarr.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param radarr.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param radarr.imagePullSecrets The image pull secrets to use.
 ## @param radarr.deployment.strategy.type The deployment strategy to use.
 ## @param radarr.serviceAccount.create Whether to create a service account.
@@ -1375,6 +1485,13 @@ radarr:
     repository: lscr.io/linuxserver/radarr
     pullPolicy: IfNotPresent
     tag: "6.0.4"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -1494,6 +1611,12 @@ radarr:
 ## @param lidarr.image.repository The Docker repository to pull the image from.
 ## @param lidarr.image.tag The image tag to use.
 ## @param lidarr.image.pullPolicy The logic of image pulling.
+## @param lidarr.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param lidarr.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param lidarr.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param lidarr.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param lidarr.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param lidarr.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param lidarr.imagePullSecrets The image pull secrets to use.
 ## @param lidarr.deployment.strategy.type The deployment strategy to use.
 ## @param lidarr.serviceAccount.create Whether to create a service account.
@@ -1561,6 +1684,13 @@ lidarr:
     repository: lscr.io/linuxserver/lidarr
     pullPolicy: IfNotPresent
     tag: "3.1.0"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -1680,6 +1810,12 @@ lidarr:
 ## @param cleanuparr.image.repository The Docker repository to pull the image from.
 ## @param cleanuparr.image.tag The image tag to use.
 ## @param cleanuparr.image.pullPolicy The logic of image pulling.
+## @param cleanuparr.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param cleanuparr.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param cleanuparr.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param cleanuparr.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param cleanuparr.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param cleanuparr.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param cleanuparr.imagePullSecrets The image pull secrets to use.
 ## @param cleanuparr.deployment.strategy.type The deployment strategy to use.
 ## @param cleanuparr.serviceAccount.create Whether to create a service account.
@@ -1730,6 +1866,13 @@ cleanuparr:
     repository: ghcr.io/cleanuparr/cleanuparr
     pullPolicy: IfNotPresent
     tag: "latest"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -1827,6 +1970,12 @@ cleanuparr:
 ## @param huntarr.image.repository The Docker repository to pull the image from.
 ## @param huntarr.image.tag The image tag to use.
 ## @param huntarr.image.pullPolicy The logic of image pulling.
+## @param huntarr.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param huntarr.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param huntarr.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param huntarr.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param huntarr.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param huntarr.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param huntarr.imagePullSecrets The image pull secrets to use.
 ## @param huntarr.deployment.strategy.type The deployment strategy to use.
 ## @param huntarr.serviceAccount.create Whether to create a service account.
@@ -1881,6 +2030,13 @@ huntarr:
     repository: ghcr.io/plexguide/huntarr
     pullPolicy: IfNotPresent
     tag: "latest"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -1983,6 +2139,12 @@ huntarr:
 ## @param sabnzbd.image.repository The Docker repository to pull the image from.
 ## @param sabnzbd.image.tag The image tag to use.
 ## @param sabnzbd.image.pullPolicy The logic of image pulling.
+## @param sabnzbd.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param sabnzbd.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param sabnzbd.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param sabnzbd.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param sabnzbd.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param sabnzbd.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param sabnzbd.imagePullSecrets The image pull secrets to use.
 ## @param sabnzbd.deployment.strategy.type The deployment strategy to use.
 ## @param sabnzbd.serviceAccount.create Whether to create a service account.
@@ -2041,6 +2203,13 @@ sabnzbd:
     repository: lscr.io/linuxserver/sabnzbd
     pullPolicy: IfNotPresent
     tag: "4.5.5"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -2148,6 +2317,12 @@ sabnzbd:
 ## @param plex.image.repository The Docker repository to pull the image from.
 ## @param plex.image.tag The image tag to use.
 ## @param plex.image.pullPolicy The logic of image pulling.
+## @param plex.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param plex.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param plex.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param plex.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param plex.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param plex.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param plex.imagePullSecrets The image pull secrets to use.
 ## @param plex.deployment.strategy.type The deployment strategy to use.
 ## @param plex.serviceAccount.create Whether to create a service account.
@@ -2202,6 +2377,13 @@ plex:
     repository: lscr.io/linuxserver/plex
     pullPolicy: IfNotPresent
     tag: "1.42.2"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -2304,6 +2486,12 @@ plex:
 ## @param emby.image.repository The Docker repository to pull the image from.
 ## @param emby.image.tag The image tag to use.
 ## @param emby.image.pullPolicy The logic of image pulling.
+## @param emby.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param emby.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param emby.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param emby.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param emby.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param emby.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param emby.imagePullSecrets The image pull secrets to use.
 ## @param emby.deployment.strategy.type The deployment strategy to use.
 ## @param emby.serviceAccount.create Whether to create a service account.
@@ -2359,6 +2547,13 @@ emby:
     repository: lscr.io/linuxserver/emby
     pullPolicy: IfNotPresent
     tag: "4.9.1"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -2463,6 +2658,12 @@ emby:
 ## @param acestream.image.repository The Docker repository to pull the Acestream Engine image from.
 ## @param acestream.image.tag The image tag to use for Acestream Engine.
 ## @param acestream.image.pullPolicy The logic of image pulling for Acestream Engine.
+## @param acestream.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param acestream.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param acestream.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param acestream.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param acestream.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param acestream.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param acestream.imagePullSecrets The image pull secrets to use.
 ## @param acestream.deployment.strategy.type The deployment strategy to use.
 ## @param acestream.serviceAccount.create Whether to create a service account.
@@ -2513,6 +2714,12 @@ emby:
 ## @param acestream.gluetun.image.repository The Docker repository to pull the Gluetun image from.
 ## @param acestream.gluetun.image.tag The image tag to use for Gluetun.
 ## @param acestream.gluetun.image.pullPolicy The logic of image pulling for Gluetun.
+## @param acestream.gluetun.image.autoupdate.enabled Whether to enable autoupdate for the Gluetun image.
+## @param acestream.gluetun.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param acestream.gluetun.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param acestream.gluetun.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param acestream.gluetun.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param acestream.gluetun.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param acestream.gluetun.env.VPN_SERVICE_PROVIDER The VPN service provider (e.g., nordvpn, expressvpn, mullvad, etc.).
 ## @param acestream.gluetun.env.VPN_TYPE The type of VPN protocol to use (openvpn or wireguard).
 ## @param acestream.gluetun.env.OPENVPN_USER Username for OpenVPN authentication (if using OpenVPN).
@@ -2534,6 +2741,13 @@ acestream:
     repository: wafy80/acestream
     pullPolicy: IfNotPresent
     tag: "latest"
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   imagePullSecrets: []
 
@@ -2653,6 +2867,13 @@ acestream:
       repository: qmcgaw/gluetun
       tag: "v3.39.2"
       pullPolicy: IfNotPresent
+      autoupdate:
+        enabled: false
+        strategy: semver
+        allowTags: ""
+        ignoreTags: []
+        pullSecret: ""
+        platforms: []
 
     env:
       VPN_SERVICE_PROVIDER: ""
@@ -2681,25 +2902,13 @@ acestream:
 
 ## @section ArgoCD Image Updater parameters
 
-## @param imageUpdater.enabled Enable ArgoCD Image Updater integration. Creates an ImageUpdater CRD for automatic image updates of all enabled services.
 ## @param imageUpdater.namespace Namespace where the ImageUpdater CRD will be created.
 ## @param imageUpdater.argocdNamespace Namespace where ArgoCD Applications are located.
 ## @param imageUpdater.applicationName Name or pattern of the ArgoCD Application to update. Defaults to Release name.
-## @param imageUpdater.updateStrategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest). Applies to all services.
-## @param imageUpdater.forceUpdate Force update even if images are not currently deployed.
-## @param imageUpdater.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
-## @param imageUpdater.ignoreTags List of glob patterns to ignore specific tags.
-## @param imageUpdater.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param imageUpdater.writeBackConfig Write-back configuration for GitOps.
 ##
 imageUpdater:
-  enabled: false
   namespace: argocd
   argocdNamespace: argocd
   applicationName: ""
-  updateStrategy: semver
-  forceUpdate: false
-  allowTags: ""
-  ignoreTags: []
-  platforms: []
   writeBackConfig: {}
