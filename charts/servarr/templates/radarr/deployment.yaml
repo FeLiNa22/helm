@@ -66,7 +66,14 @@ spec:
                 sed -i '/<PostgresUser>/d; /<PostgresPassword>/d; /<PostgresHost>/d; /<PostgresPort>/d; /<PostgresMainDb>/d; /<PostgresLogDb>/d' /config/config.xml
                 
                 # Inject database fields before the closing </Config> tag
-                sed -i "s|</Config>|${DB_CONFIG}\n</Config>|" /config/config.xml
+                # Create a temporary file with the injected content
+                awk -v db_config="$DB_CONFIG" '{
+                  if ($0 ~ /<\/Config>/) {
+                    print db_config
+                  }
+                  print $0
+                }' /config/config.xml > /config/config.xml.tmp
+                mv /config/config.xml.tmp /config/config.xml
               else
                 # Create a new config.xml with database fields
                 cat > /config/config.xml <<EOF
