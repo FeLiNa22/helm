@@ -256,7 +256,7 @@ database:
   cluster:
     enabled: true
     name: nextcloud-db
-    instances: 1
+    instances: 2
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: "16.6"
