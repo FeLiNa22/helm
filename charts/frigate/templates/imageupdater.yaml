@@ -1,10 +1,12 @@
 {{- if .Values.image.autoupdate.enabled }}
 {{- $imageTag := .Values.image.tag | toString }}
+{{- $imageTag = regexReplaceAll "@[a-z0-9]+:[a-f0-9]+" $imageTag "" }}
 {{- $updateStrategy := .Values.image.autoupdate.strategy }}
 {{- $imageName := .Values.image.repository }}
 {{- if not $updateStrategy }}
   {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
     {{- $updateStrategy = "digest" }}
+    {{- $imageName = printf "%s:%s" .Values.image.repository $imageTag }}
   {{- else if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
     {{- $updateStrategy = "semver" }}
     {{- $parts := regexSplit "\\." $imageTag -1 }}
