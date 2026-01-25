@@ -1,0 +1,43 @@
+{{- if and .Values.radarr.enabled (or (eq .Values.radarr.database.mode "external") (eq .Values.radarr.database.mode "cluster")) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-radarr-config
+  labels:
+    app.kubernetes.io/name: radarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-radarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+data:
+  config.xml: |
+    <Config>
+      <BindAddress>*</BindAddress>
+      <Port>7878</Port>
+      <SslPort>9898</SslPort>
+      <EnableSsl>False</EnableSsl>
+      <LaunchBrowser>True</LaunchBrowser>
+      <AuthenticationMethod>External</AuthenticationMethod>
+      <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
+      <Branch>master</Branch>
+      <LogLevel>info</LogLevel>
+      <SslCertPath></SslCertPath>
+      <SslCertPassword></SslCertPassword>
+      <UrlBase></UrlBase>
+      <InstanceName>Radarr</InstanceName>
+      <UpdateMechanism>Docker</UpdateMechanism>
+      {{- if eq .Values.radarr.database.mode "cluster" }}
+      <PostgresUser>radarr</PostgresUser>
+      <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
+      <PostgresHost>{{ .Release.Name }}-radarr-db-rw</PostgresHost>
+      <PostgresPort>5432</PostgresPort>
+      {{- else }}
+      <PostgresUser>{{ required "radarr.database.username is required when radarr.database.mode is 'external'" .Values.radarr.database.username }}</PostgresUser>
+      <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
+      <PostgresHost>{{ required "radarr.database.host is required when radarr.database.mode is 'external'" .Values.radarr.database.host }}</PostgresHost>
+      <PostgresPort>{{ .Values.radarr.database.port }}</PostgresPort>
+      {{- end }}
+      <PostgresMainDb>{{ .Values.radarr.database.mainDatabase }}</PostgresMainDb>
+      <PostgresLogDb>{{ .Values.radarr.database.logDatabase }}</PostgresLogDb>
+    </Config>
+{{- end }}

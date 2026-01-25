@@ -1,0 +1,25 @@
+{{- if and .Values.prowlarr.enabled (eq .Values.prowlarr.database.mode "cluster") }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Release.Name }}-prowlarr-db
+  labels:
+    app.kubernetes.io/name: prowlarr-db
+    app.kubernetes.io/instance: {{ .Release.Name }}-prowlarr-db
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  instances: {{ .Values.prowlarr.database.cluster.instances }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.prowlarr.database.mainDatabase }}
+      owner: prowlarr
+      postInitSQL:
+        - CREATE DATABASE "{{ .Values.prowlarr.database.logDatabase }}" OWNER prowlarr;
+  storage:
+    {{- if .Values.prowlarr.database.cluster.storageClass }}
+    storageClass: {{ .Values.prowlarr.database.cluster.storageClass }}
+    {{- end }}
+    size: {{ .Values.prowlarr.database.cluster.storageSize }}
+{{- end }}

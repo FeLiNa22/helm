@@ -39,17 +39,56 @@ spec:
       serviceAccountName: {{ .Values.radarr.serviceAccount.name | default (printf "%s-radarr" .Release.Name) }}
       securityContext:
         {{- toYaml .Values.radarr.podSecurityContext | nindent 8 }}
-      {{- if and .Values.media.enabled .Values.radarr.persistence.enabled }}
+      {{- if or (and .Values.media.enabled .Values.radarr.persistence.enabled) (eq .Values.radarr.database.mode "external") (eq .Values.radarr.database.mode "cluster") .Values.radarr.initContainers }}
       initContainers:
+        {{- if and .Values.media.enabled .Values.radarr.persistence.enabled }}
         - name: init-directories
           image: busybox
           command: ['sh', '-c', 'mkdir -p /media/{{ .Values.media.paths.movies }} /media/{{ .Values.media.paths.downloads }} && chown -R 1000:1000 /media/{{ .Values.media.paths.movies }} /media/{{ .Values.media.paths.downloads }}']
           volumeMounts:
             - name: media
               mountPath: /media
-      {{- if .Values.radarr.initContainers }}
+        {{- end }}
+        {{- if or (eq .Values.radarr.database.mode "external") (eq .Values.radarr.database.mode "cluster") }}
+        - name: init-config
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              if [ ! -f /config/config.xml ]; then
+                cp /config-template/config.xml /config/config.xml
+                sed -i "s|__DB_PASSWORD__|${DB_PASSWORD}|g" /config/config.xml
+                chown 1000:1000 /config/config.xml
+              fi
+          env:
+            {{- if eq .Values.radarr.database.mode "cluster" }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-radarr-db-app
+                  key: password
+            {{- else if .Values.radarr.database.existingSecret }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.radarr.database.existingSecret }}
+                  key: password
+            {{- else if .Values.radarr.database.password }}
+            - name: DB_PASSWORD
+              value: {{ .Values.radarr.database.password | quote }}
+            {{- else }}
+            {{- fail "radarr.database.mode is 'external' but neither radarr.database.existingSecret nor radarr.database.password is provided. Please configure one of them." }}
+            {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: config-template
+              mountPath: /config-template
+        {{- end }}
+        {{- if .Values.radarr.initContainers }}
         {{- toYaml .Values.radarr.initContainers | nindent 8 }}
-      {{- end }}
+        {{- end }}
       {{- end }}
       volumes:
         - name: config
@@ -59,6 +98,11 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if or (eq .Values.radarr.database.mode "external") (eq .Values.radarr.database.mode "cluster") }}
+        - name: config-template
+          configMap:
+            name: {{ .Release.Name }}-radarr-config
+        {{- end }}
         {{- if .Values.radarr.persistence.cache.enabled }}
         - name: cache
           emptyDir:

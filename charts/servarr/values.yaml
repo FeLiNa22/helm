@@ -253,6 +253,17 @@ jellyfin:
 ## @param sonarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param sonarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param sonarr.persistence.additionalMounts Additional volume mounts to add to the pod.
+## @param sonarr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
+## @param sonarr.database.host Hostname of the external PostgreSQL database (required when mode is 'external').
+## @param sonarr.database.port Port of the external PostgreSQL database.
+## @param sonarr.database.username Username for the external PostgreSQL database.
+## @param sonarr.database.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
+## @param sonarr.database.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
+## @param sonarr.database.mainDatabase Name of the main database for Sonarr.
+## @param sonarr.database.logDatabase Name of the log database for Sonarr.
+## @param sonarr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
+## @param sonarr.database.cluster.storageClass Storage class for the CloudNativePG cluster (only used when mode is 'cluster').
+## @param sonarr.database.cluster.storageSize Storage size for the CloudNativePG cluster (only used when mode is 'cluster').
 ##
 sonarr:
   enabled: true
@@ -360,6 +371,20 @@ sonarr:
       size: ""
     additionalVolumes: []
     additionalMounts: []
+
+  database:
+    mode: standalone
+    host: ""
+    port: 5432
+    username: ""
+    password: ""
+    existingSecret: ""
+    mainDatabase: sonarr-main
+    logDatabase: sonarr-log
+    cluster:
+      instances: 1
+      storageClass: ""
+      storageSize: 5Gi
 
 ## @section qBittorrent parameters
 
@@ -633,6 +658,17 @@ qbittorrent:
 ## @param prowlarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param prowlarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param prowlarr.persistence.additionalMounts Additional volume mounts to add to the pod.
+## @param prowlarr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
+## @param prowlarr.database.host Hostname of the external PostgreSQL database (required when mode is 'external').
+## @param prowlarr.database.port Port of the external PostgreSQL database.
+## @param prowlarr.database.username Username for the external PostgreSQL database.
+## @param prowlarr.database.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
+## @param prowlarr.database.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
+## @param prowlarr.database.mainDatabase Name of the main database for Prowlarr.
+## @param prowlarr.database.logDatabase Name of the log database for Prowlarr.
+## @param prowlarr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
+## @param prowlarr.database.cluster.storageClass Storage class for the CloudNativePG cluster (only used when mode is 'cluster').
+## @param prowlarr.database.cluster.storageSize Storage size for the CloudNativePG cluster (only used when mode is 'cluster').
 ##
 prowlarr:
   enabled: true
@@ -740,6 +776,20 @@ prowlarr:
       size: ""
     additionalVolumes: []
     additionalMounts: []
+
+  database:
+    mode: standalone
+    host: ""
+    port: 5432
+    username: ""
+    password: ""
+    existingSecret: ""
+    mainDatabase: prowlarr-main
+    logDatabase: prowlarr-log
+    cluster:
+      instances: 1
+      storageClass: ""
+      storageSize: 5Gi
 
 ## @section FlareSolverr parameters
 
@@ -1305,6 +1355,17 @@ bazarr:
 ## @param radarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param radarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param radarr.persistence.additionalMounts Additional volume mounts to add to the pod.
+## @param radarr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
+## @param radarr.database.host Hostname of the external PostgreSQL database (required when mode is 'external').
+## @param radarr.database.port Port of the external PostgreSQL database.
+## @param radarr.database.username Username for the external PostgreSQL database.
+## @param radarr.database.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
+## @param radarr.database.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
+## @param radarr.database.mainDatabase Name of the main database for Radarr.
+## @param radarr.database.logDatabase Name of the log database for Radarr.
+## @param radarr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
+## @param radarr.database.cluster.storageClass Storage class for the CloudNativePG cluster (only used when mode is 'cluster').
+## @param radarr.database.cluster.storageSize Storage size for the CloudNativePG cluster (only used when mode is 'cluster').
 ##
 radarr:
   enabled: true
@@ -1412,6 +1473,20 @@ radarr:
     additionalVolumes: []
     additionalMounts: []
 
+  database:
+    mode: standalone
+    host: ""
+    port: 5432
+    username: ""
+    password: ""
+    existingSecret: ""
+    mainDatabase: radarr-main
+    logDatabase: radarr-log
+    cluster:
+      instances: 1
+      storageClass: ""
+      storageSize: 5Gi
+
 ## @section Lidarr parameters
 
 ## @param lidarr.enabled Whether to enable Lidarr.
@@ -1466,6 +1541,17 @@ radarr:
 ## @param lidarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param lidarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param lidarr.persistence.additionalMounts Additional volume mounts to add to the pod.
+## @param lidarr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
+## @param lidarr.database.host Hostname of the external PostgreSQL database (required when mode is 'external').
+## @param lidarr.database.port Port of the external PostgreSQL database.
+## @param lidarr.database.username Username for the external PostgreSQL database.
+## @param lidarr.database.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
+## @param lidarr.database.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
+## @param lidarr.database.mainDatabase Name of the main database for Lidarr.
+## @param lidarr.database.logDatabase Name of the log database for Lidarr.
+## @param lidarr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
+## @param lidarr.database.cluster.storageClass Storage class for the CloudNativePG cluster (only used when mode is 'cluster').
+## @param lidarr.database.cluster.storageSize Storage size for the CloudNativePG cluster (only used when mode is 'cluster').
 ##
 lidarr:
   enabled: true
@@ -1572,6 +1658,20 @@ lidarr:
       size: ""
     additionalVolumes: []
     additionalMounts: []
+
+  database:
+    mode: standalone
+    host: ""
+    port: 5432
+    username: ""
+    password: ""
+    existingSecret: ""
+    mainDatabase: lidarr-main
+    logDatabase: lidarr-log
+    cluster:
+      instances: 1
+      storageClass: ""
+      storageSize: 5Gi
 
 ## @section Cleanuparr parameters
 
@@ -2578,3 +2678,28 @@ acestream:
     #   memory: 64Mi
 
 
+
+## @section ArgoCD Image Updater parameters
+
+## @param imageUpdater.enabled Enable ArgoCD Image Updater integration. Creates an ImageUpdater CRD for automatic image updates of all enabled services.
+## @param imageUpdater.namespace Namespace where the ImageUpdater CRD will be created.
+## @param imageUpdater.argocdNamespace Namespace where ArgoCD Applications are located.
+## @param imageUpdater.applicationName Name or pattern of the ArgoCD Application to update. Defaults to Release name.
+## @param imageUpdater.updateStrategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest). Applies to all services.
+## @param imageUpdater.forceUpdate Force update even if images are not currently deployed.
+## @param imageUpdater.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param imageUpdater.ignoreTags List of glob patterns to ignore specific tags.
+## @param imageUpdater.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
+## @param imageUpdater.writeBackConfig Write-back configuration for GitOps.
+##
+imageUpdater:
+  enabled: false
+  namespace: argocd
+  argocdNamespace: argocd
+  applicationName: ""
+  updateStrategy: semver
+  forceUpdate: false
+  allowTags: ""
+  ignoreTags: []
+  platforms: []
+  writeBackConfig: {}
