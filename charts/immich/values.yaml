@@ -257,84 +257,75 @@ dragonfly:
     existingSecret: ""
     passwordKey: "password"
 
-## @section PostgreSQL parameters
+## @section Database parameters
 ## PostgreSQL with pgvector/vectorchord extension is required for Immich
 
-## @param postgresql.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
-## @param postgresql.standalone.enabled Whether to deploy standalone PostgreSQL using Bitnami subchart.
-## @param postgresql.architecture PostgreSQL architecture for Bitnami subchart (`standalone` or `replication`).
-## @param postgresql.auth.database Name of the default database for Bitnami subchart.
-## @param postgresql.auth.username Username for the default database for Bitnami subchart.
-## @param postgresql.auth.password Password for the default database user for Bitnami subchart.
-## @param postgresql.auth.postgresPassword Password for the 'postgres' administrative user for Bitnami subchart.
-## @param postgresql.auth.existingSecret Reference to an existing Kubernetes secret for Bitnami subchart.
-## @param postgresql.image.registry PostgreSQL image registry for Bitnami subchart.
-## @param postgresql.image.repository PostgreSQL image repository for Bitnami subchart.
-## @param postgresql.image.tag PostgreSQL image tag for Bitnami subchart.
-## @param postgresql.primary.initdb.scripts.init-extensions.sql SQL script to initialize PostgreSQL extensions for Bitnami subchart.
-## @param postgresql.primary.persistence.enabled Whether to enable persistence for Bitnami subchart.
-## @param postgresql.primary.persistence.size Size of the PostgreSQL persistence volume for Bitnami subchart.
-## @param postgresql.cluster.enabled Whether to deploy PostgreSQL using CloudNativePG operator.
-## @param postgresql.cluster.name Name of the database cluster.
-## @param postgresql.cluster.instances Number of PostgreSQL instances (replicas).
-## @param postgresql.cluster.image.repository PostgreSQL container image repository (with vectorchord extension).
-## @param postgresql.cluster.image.tag PostgreSQL container image tag.
-## @param postgresql.cluster.database Name of the database to create.
-## @param postgresql.cluster.owner Owner of the database.
-## @param postgresql.cluster.storage.size Size of the storage for each instance.
-## @param postgresql.cluster.storage.storageClass Storage class name for persistent volumes.
-## @param postgresql.cluster.secret.name Name of the secret containing database credentials.
-## @param postgresql.cluster.secret.create Whether to create the database secret.
-## @param postgresql.cluster.secret.username Database user username.
-## @param postgresql.cluster.secret.password Database user password (leave empty to auto-generate).
-## @param postgresql.cluster.superuserSecret.name Name of the secret containing the superuser credentials.
-## @param postgresql.cluster.superuserSecret.create Whether to create the superuser secret.
-## @param postgresql.cluster.superuserSecret.username Superuser username.
-## @param postgresql.cluster.superuserSecret.password Superuser password (leave empty to auto-generate).
-## @param postgresql.cluster.initSQL SQL commands to run on database initialization (for extensions).
-## @param postgresql.external.host Hostname of external PostgreSQL (when mode is 'external').
-## @param postgresql.external.port Port of external PostgreSQL.
-## @param postgresql.external.database Database name of external PostgreSQL.
-## @param postgresql.external.username Username of external PostgreSQL.
-## @param postgresql.external.existingSecret Secret name for external PostgreSQL password.
-## @param postgresql.external.secretKey Key in the secret for the password.
+## @param database.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
+## @param database.standalone.image.repository PostgreSQL image repository (with pgvecto-rs extension).
+## @param database.standalone.image.tag PostgreSQL image tag.
+## @param database.standalone.auth.database Name of the database to create.
+## @param database.standalone.auth.username Username for the database.
+## @param database.standalone.auth.password Password for the database user (leave empty to auto-generate).
+## @param database.standalone.auth.postgresPassword Password for the postgres superuser (leave empty to auto-generate).
+## @param database.standalone.auth.existingSecret Reference to an existing Kubernetes secret for auth.
+## @param database.standalone.persistence.enabled Whether to enable persistence for standalone PostgreSQL.
+## @param database.standalone.persistence.size Size of the persistence volume.
+## @param database.standalone.persistence.storageClass Storage class for persistence.
+## @param database.standalone.resources Resource limits and requests for standalone PostgreSQL.
+## @param database.cluster.name Name of the database cluster.
+## @param database.cluster.instances Number of PostgreSQL instances (replicas).
+## @param database.cluster.image.repository PostgreSQL container image repository (with vectorchord extension).
+## @param database.cluster.image.tag PostgreSQL container image tag.
+## @param database.cluster.database Name of the database to create.
+## @param database.cluster.owner Owner of the database.
+## @param database.cluster.storage.size Size of the storage for each instance.
+## @param database.cluster.storage.storageClass Storage class name for persistent volumes.
+## @param database.cluster.secret.name Name of the secret containing database credentials.
+## @param database.cluster.secret.create Whether to create the database secret.
+## @param database.cluster.secret.username Database user username.
+## @param database.cluster.secret.password Database user password (leave empty to auto-generate).
+## @param database.cluster.superuserSecret.name Name of the secret containing the superuser credentials.
+## @param database.cluster.superuserSecret.create Whether to create the superuser secret.
+## @param database.cluster.superuserSecret.username Superuser username.
+## @param database.cluster.superuserSecret.password Superuser password (leave empty to auto-generate).
+## @param database.cluster.initSQL SQL commands to run on database initialization (for extensions).
+## @param database.external.host Hostname of external PostgreSQL (when mode is 'external').
+## @param database.external.port Port of external PostgreSQL.
+## @param database.external.database Database name of external PostgreSQL.
+## @param database.external.username Username of external PostgreSQL.
+## @param database.external.existingSecret Secret name for external PostgreSQL password.
+## @param database.external.secretKey Key in the secret for the password.
 ##
-postgresql:
+database:
   # Mode options: 'standalone', 'cluster', or 'external'
   mode: standalone
 
-  # Condition to enable the Bitnami PostgreSQL subchart
+  # Standalone PostgreSQL deployment (using StatefulSet)
   standalone:
-    enabled: true
-
-  # Bitnami PostgreSQL subchart configuration (used when mode is 'standalone')
-  # These values are passed directly to the subchart
-  architecture: standalone
-  auth:
-    database: immich
-    username: immich
-    password: ""
-    postgresPassword: ""
-    existingSecret: ""
-  # Use PostgreSQL with pgvecto-rs extension for vector search
-  image:
-    registry: docker.io
-    repository: tensorchord/pgvecto-rs
-    tag: "pg16-v0.4.0"
-  primary:
-    initdb:
-      scripts:
-        init-extensions.sql: |
-          CREATE EXTENSION IF NOT EXISTS vectors;
-          CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
-          CREATE EXTENSION IF NOT EXISTS pg_trgm;
+    # Use PostgreSQL with pgvecto-rs extension for vector search
+    image:
+      repository: docker.io/tensorchord/pgvecto-rs
+      tag: "pg16-v0.4.0"
+    auth:
+      database: immich
+      username: immich
+      password: ""  # Leave empty to auto-generate (persists across upgrades via secret lookup)
+      postgresPassword: ""  # Leave empty to auto-generate (persists across upgrades via secret lookup)
+      existingSecret: ""
     persistence:
       enabled: true
       size: 10Gi
+      storageClass: ""
+    resources: {}
+      # limits:
+      #   cpu: 1000m
+      #   memory: 2Gi
+      # requests:
+      #   cpu: 100m
+      #   memory: 256Mi
 
   # CloudNativePG Cluster deployment (using CNPG operator)
   cluster:
-    enabled: false
     name: immich-db
     instances: 2
     # Use PostgreSQL image with pgvecto-rs extension for Immich
