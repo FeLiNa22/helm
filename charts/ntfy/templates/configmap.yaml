@@ -43,7 +43,7 @@ data:
       - {{ . | quote }}
       {{- end }}
     {{- end }}
-    {{- if .Values.config.behindProxy }}
+    {{- if hasKey .Values.config "behindProxy" }}
     behind-proxy: {{ .Values.config.behindProxy }}
     {{- end }}
     {{- if .Values.config.attachmentCacheDir }}
@@ -58,13 +58,13 @@ data:
     {{- if .Values.config.attachmentExpiryDuration }}
     attachment-expiry-duration: {{ .Values.config.attachmentExpiryDuration | quote }}
     {{- end }}
-    {{- if .Values.config.enableLogin }}
+    {{- if hasKey .Values.config "enableLogin" }}
     enable-login: {{ .Values.config.enableLogin }}
     {{- end }}
-    {{- if .Values.config.enableSignup }}
+    {{- if hasKey .Values.config "enableSignup" }}
     enable-signup: {{ .Values.config.enableSignup }}
     {{- end }}
-    {{- if .Values.config.enableReservations }}
+    {{- if hasKey .Values.config "enableReservations" }}
     enable-reservations: {{ .Values.config.enableReservations }}
     {{- end }}
     {{- if .Values.config.upstreamBaseUrl }}
