@@ -237,7 +237,7 @@ ingress:
 
 ## Upgrading
 
-### To 1.3.0
+### To 1.4.0
 
 This version adds support for:
 
@@ -248,9 +248,9 @@ This version adds support for:
 **Breaking Changes:**
 - `redis.*` configuration has been replaced with `dragonfly.*`
 - `postgresql.enabled` has been replaced with `postgresql.mode` and nested configuration
-- Subchart alias changed from `postgresql` to `postgresqlStandalone`
+- Subchart alias changed from `postgresql` to `postgresql-standalone`
 
-To migrate from version 1.2.x:
+To migrate from version 1.3.x:
 1. Backup your data
 2. Note your current PostgreSQL credentials
 3. Update your values to use the new configuration structure

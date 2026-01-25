@@ -156,14 +156,12 @@ env:
 ## DragonflyDB provides Redis-compatible caching for Nextcloud
 
 ## @param dragonfly.mode The mode of DragonflyDB deployment: 'standalone', 'cluster', 'external', or 'disabled'.
-## @param dragonfly.standalone.enabled Whether to deploy a standalone Dragonfly instance.
 ## @param dragonfly.standalone.image.repository The Docker repository for Dragonfly image.
 ## @param dragonfly.standalone.image.tag The image tag for Dragonfly.
 ## @param dragonfly.standalone.resources Resource limits and requests for standalone Dragonfly.
 ## @param dragonfly.standalone.persistence.enabled Whether to enable persistence for standalone Dragonfly.
 ## @param dragonfly.standalone.persistence.size Size of the persistence volume for standalone Dragonfly.
 ## @param dragonfly.standalone.persistence.storageClass Storage class for standalone Dragonfly persistence.
-## @param dragonfly.cluster.enabled Whether to deploy a Dragonfly cluster using the DragonflyDB operator.
 ## @param dragonfly.cluster.replicas Number of Dragonfly replicas in the cluster.
 ## @param dragonfly.cluster.image.repository The Docker repository for Dragonfly cluster image.
 ## @param dragonfly.cluster.image.tag The image tag for Dragonfly cluster.
@@ -183,7 +181,6 @@ dragonfly:
 
   # Standalone Dragonfly deployment (simple single-instance)
   standalone:
-    enabled: false
     image:
       repository: docker.dragonflydb.io/dragonflydb/dragonfly
       tag: "v1.25.2"
@@ -201,7 +198,6 @@ dragonfly:
 
   # Dragonfly Cluster deployment (using DragonflyDB operator)
   cluster:
-    enabled: false
     replicas: 2
     image:
       repository: docker.dragonflydb.io/dragonflydb/dragonfly
@@ -267,6 +263,7 @@ database:
   mode: cluster
 
   # Standalone PostgreSQL deployment (using Bitnami subchart)
+  # Note: Values here are for reference only. Actual subchart values are under 'postgresql-standalone:' below
   standalone:
     enabled: false
     auth:
@@ -275,10 +272,6 @@ database:
       password: ""
       postgresPassword: ""
       existingSecret: ""
-    image:
-      registry: docker.io
-      repository: postgres
-      tag: "16"
     primary:
       persistence:
         enabled: true
@@ -366,3 +359,23 @@ imageUpdater:
   helm: {}
   kustomize: {}
   writeBackConfig: {}
+
+## @section PostgreSQL Subchart Configuration (Bitnami)
+## These values are passed to the postgresql-standalone subchart when database.mode is 'standalone'
+## See https://github.com/bitnami/charts/tree/main/bitnami/postgresql for all options
+##
+postgresql-standalone:
+  # Values here are passed directly to the Bitnami PostgreSQL subchart
+  # when database.standalone.enabled is true
+  architecture: standalone
+  auth:
+    database: nextcloud
+    username: nextcloud
+    password: ""
+    postgresPassword: ""
+    existingSecret: ""
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: "ceph-rbd"

@@ -180,14 +180,12 @@ persistence:
 ## DragonflyDB is a Redis-compatible in-memory data store used for Immich's job queue and caching
 
 ## @param dragonfly.mode The mode of DragonflyDB deployment: 'standalone', 'cluster', 'external', or 'disabled'.
-## @param dragonfly.standalone.enabled Whether to deploy a standalone Dragonfly instance.
 ## @param dragonfly.standalone.image.repository The Docker repository for Dragonfly image.
 ## @param dragonfly.standalone.image.tag The image tag for Dragonfly.
 ## @param dragonfly.standalone.resources Resource limits and requests for standalone Dragonfly.
 ## @param dragonfly.standalone.persistence.enabled Whether to enable persistence for standalone Dragonfly.
 ## @param dragonfly.standalone.persistence.size Size of the persistence volume for standalone Dragonfly.
 ## @param dragonfly.standalone.persistence.storageClass Storage class for standalone Dragonfly persistence.
-## @param dragonfly.cluster.enabled Whether to deploy a Dragonfly cluster using the DragonflyDB operator.
 ## @param dragonfly.cluster.replicas Number of Dragonfly replicas in the cluster.
 ## @param dragonfly.cluster.image.repository The Docker repository for Dragonfly cluster image.
 ## @param dragonfly.cluster.image.tag The image tag for Dragonfly cluster.
@@ -206,7 +204,6 @@ dragonfly:
 
   # Standalone Dragonfly deployment (simple single-instance)
   standalone:
-    enabled: true
     image:
       repository: docker.dragonflydb.io/dragonflydb/dragonfly
       tag: "v1.25.2"
@@ -224,7 +221,6 @@ dragonfly:
 
   # Dragonfly Cluster deployment (using DragonflyDB operator)
   cluster:
-    enabled: false
     replicas: 2
     image:
       repository: docker.dragonflydb.io/dragonflydb/dragonfly
@@ -323,7 +319,7 @@ postgresql:
     enabled: false
     name: immich-db
     instances: 2
-    # Use PostgreSQL image with vectorchord extension for Immich
+    # Use PostgreSQL image with pgvecto-rs extension for Immich
     image:
       repository: ghcr.io/tensorchord/cloudnative-pgvecto.rs
       tag: "16-v0.4.0"
@@ -342,7 +338,7 @@ postgresql:
       create: true
       username: postgres
       password: ""  # Leave empty to auto-generate
-    # SQL commands to initialize extensions (vectorchord for Immich)
+    # SQL commands to initialize extensions (pgvecto-rs for Immich)
     # Each line should be a complete SQL statement
     initSQL:
       - "CREATE EXTENSION IF NOT EXISTS vectors;"
@@ -391,3 +387,33 @@ imageUpdater:
   helm: {}
   kustomize: {}
   writeBackConfig: {}
+
+## @section PostgreSQL Subchart Configuration (Bitnami)
+## These values are passed to the postgresql-standalone subchart when postgresql.mode is 'standalone'
+## See https://github.com/bitnami/charts/tree/main/bitnami/postgresql for all options
+##
+postgresql-standalone:
+  # Values here are passed directly to the Bitnami PostgreSQL subchart
+  # when postgresql.standalone.enabled is true
+  architecture: standalone
+  auth:
+    database: immich
+    username: immich
+    password: ""
+    postgresPassword: ""
+    existingSecret: ""
+  # Use PostgreSQL with pgvecto-rs extension for vector search
+  image:
+    registry: docker.io
+    repository: tensorchord/pgvecto-rs
+    tag: "pg16-v0.4.0"
+  primary:
+    initdb:
+      scripts:
+        init-extensions.sql: |
+          CREATE EXTENSION IF NOT EXISTS vectors;
+          CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
+          CREATE EXTENSION IF NOT EXISTS pg_trgm;
+    persistence:
+      enabled: true
+      size: 10Gi

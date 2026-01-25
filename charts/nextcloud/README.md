@@ -209,19 +209,21 @@ ingress:
 
 ## Upgrading
 
-### To 1.1.0
+### To 1.2.0
 
 This version adds support for:
 
 - Optional DragonflyDB for Redis-compatible caching (standalone and cluster modes)
 - Bitnami PostgreSQL subchart as an alternative to CloudNativePG
 - Database mode selection via `database.mode`
+- External PostgreSQL and Redis/DragonflyDB support
 
 **Breaking Changes:**
 - `database.enabled` has been replaced with `database.mode` and nested configuration
 - Original database settings moved to `database.cluster.*`
+- PostgreSQL subchart alias is `postgresql-standalone`
 
-To migrate from version 1.0.x:
+To migrate from version 1.1.x:
 1. Backup your data
 2. Update your values to use the new configuration structure
 3. Install the new version
