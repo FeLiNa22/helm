@@ -30,6 +30,12 @@ serviceAccount:
 ## @param backend.image.repository The Docker repository to pull the image from.
 ## @param backend.image.tag The image tag to use.
 ## @param backend.image.imagePullPolicy The image pull policy to use.
+## @param backend.image.autoupdate.enabled Enable automatic image updates for backend.
+## @param backend.image.autoupdate.strategy Update strategy for backend image (semver, latest, newest-build, name, alphabetical, digest).
+## @param backend.image.autoupdate.allowTags Match function for allowed tags for backend image.
+## @param backend.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags for backend image.
+## @param backend.image.autoupdate.pullSecret Reference to secret for private registry authentication for backend image.
+## @param backend.image.autoupdate.platforms List of target platforms for backend image.
 ## @param backend.replicaCount The number of replicas to deploy.
 ## @param backend.service.type The service type to create.
 ## @param backend.service.port The service port to use.
@@ -52,6 +58,13 @@ backend:
     repository: penpotapp/backend
     tag: 2.12.1
     imagePullPolicy: IfNotPresent
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   replicaCount: 1
 
@@ -86,6 +99,12 @@ backend:
 ## @param frontend.image.repository The Docker repository to pull the image from.
 ## @param frontend.image.tag The image tag to use.
 ## @param frontend.image.imagePullPolicy The image pull policy to use.
+## @param frontend.image.autoupdate.enabled Enable automatic image updates for frontend.
+## @param frontend.image.autoupdate.strategy Update strategy for frontend image (semver, latest, newest-build, name, alphabetical, digest).
+## @param frontend.image.autoupdate.allowTags Match function for allowed tags for frontend image.
+## @param frontend.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags for frontend image.
+## @param frontend.image.autoupdate.pullSecret Reference to secret for private registry authentication for frontend image.
+## @param frontend.image.autoupdate.platforms List of target platforms for frontend image.
 ## @param frontend.replicaCount The number of replicas to deploy.
 ## @param frontend.service.type The service type to create.
 ## @param frontend.service.port The service port to use. Don't change unless you plan to configure NGINX yourself.
@@ -104,6 +123,13 @@ frontend:
     repository: penpotapp/frontend
     tag: 2.12.1
     imagePullPolicy: IfNotPresent
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   replicaCount: 1
 
@@ -143,6 +169,12 @@ frontend:
 ## @param exporter.image.repository The Docker repository to pull the image from.
 ## @param exporter.image.tag The image tag to use.
 ## @param exporter.image.imagePullPolicy The image pull policy to use.
+## @param exporter.image.autoupdate.enabled Enable automatic image updates for exporter.
+## @param exporter.image.autoupdate.strategy Update strategy for exporter image (semver, latest, newest-build, name, alphabetical, digest).
+## @param exporter.image.autoupdate.allowTags Match function for allowed tags for exporter image.
+## @param exporter.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags for exporter image.
+## @param exporter.image.autoupdate.pullSecret Reference to secret for private registry authentication for exporter image.
+## @param exporter.image.autoupdate.platforms List of target platforms for exporter image.
 ## @param exporter.replicaCount The number of replicas to deploy.
 ## @param exporter.service.type The service type to create.
 ## @param exporter.service.port The service port to use.
@@ -165,6 +197,13 @@ exporter:
     repository: penpotapp/exporter
     tag: 2.12.1
     imagePullPolicy: IfNotPresent
+    autoupdate:
+      enabled: false
+      strategy: semver
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
   replicaCount: 1
 
@@ -445,33 +484,11 @@ redis:
 
 ## @section ArgoCD Image Updater parameters
 
-## @param imageUpdater.enabled Enable ArgoCD Image Updater integration. Creates an ImageUpdater CRD for automatic image updates.
 ## @param imageUpdater.namespace Namespace where the ImageUpdater CRD will be created.
 ## @param imageUpdater.argocdNamespace Namespace where ArgoCD Applications are located.
 ## @param imageUpdater.applicationName Name or pattern of the ArgoCD Application to update. Defaults to Release name.
-## @param imageUpdater.imageAlias Alias for the image in the ImageUpdater CRD. Defaults to Release name.
-## @param imageUpdater.updateStrategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
-## @param imageUpdater.forceUpdate Force update even if image is not currently deployed.
-## @param imageUpdater.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
-## @param imageUpdater.ignoreTags List of glob patterns to ignore specific tags.
-## @param imageUpdater.pullSecret Reference to secret for private registry authentication.
-## @param imageUpdater.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
-## @param imageUpdater.helm Helm-specific configuration for parameter names (e.g., {name: "image.repository", tag: "image.tag"}).
-## @param imageUpdater.kustomize Kustomize-specific configuration (e.g., {name: "original/image"}).
-## @param imageUpdater.writeBackConfig Write-back configuration for GitOps.
 ##
 imageUpdater:
-  enabled: false
   namespace: argocd
   argocdNamespace: argocd
   applicationName: ""
-  imageAlias: ""
-  updateStrategy: semver
-  forceUpdate: false
-  allowTags: ""
-  ignoreTags: []
-  pullSecret: ""
-  platforms: []
-  helm: {}
-  kustomize: {}
-  writeBackConfig: {}
