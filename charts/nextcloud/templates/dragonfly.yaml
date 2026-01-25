@@ -1,5 +1,5 @@
 {{- if .Values.enabled }}
-{{- if eq .Values.dragonfly.mode "standalone" }}
+{{- if and (eq .Values.dragonfly.mode "standalone") .Values.dragonfly.standalone.enabled }}
 ---
 apiVersion: apps/v1
 kind: Deployment
