@@ -29,14 +29,37 @@ spec:
         {{- range $service := $services }}
           {{- $serviceConfig := index $.Values $service }}
           {{- if and $serviceConfig.enabled $serviceConfig.image.autoupdate.enabled }}
-            {{- $imageRepo := $serviceConfig.image.repository }}
-            {{- $imageTag := $serviceConfig.image.tag }}
+            {{- $imageTag := $serviceConfig.image.tag | toString }}
+            {{- $updateStrategy := $serviceConfig.image.autoupdate.strategy }}
+            {{- $imageName := $serviceConfig.image.repository }}
+            {{- if not $updateStrategy }}
+              {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
+                {{- $updateStrategy = "digest" }}
+              {{- else if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+                {{- $updateStrategy = "semver" }}
+                {{- $parts := regexSplit "\\." $imageTag -1 }}
+                {{- $major := index $parts 0 }}
+                {{- $minor := index $parts 1 }}
+                {{- $imageName = printf "%s:%s.%s.x" $serviceConfig.image.repository $major $minor }}
+              {{- end }}
+            {{- else if and (eq $updateStrategy "semver") $serviceConfig.image.tag }}
+              {{- if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+                {{- $parts := regexSplit "\\." $imageTag -1 }}
+                {{- $major := index $parts 0 }}
+                {{- $minor := index $parts 1 }}
+                {{- $imageName = printf "%s:%s.%s.x" $serviceConfig.image.repository $major $minor }}
+              {{- else }}
+                {{- $imageName = printf "%s:%s" $serviceConfig.image.repository $imageTag }}
+              {{- end }}
+            {{- else if $serviceConfig.image.tag }}
+              {{- $imageName = printf "%s:%s" $serviceConfig.image.repository $imageTag }}
+            {{- end }}
         - alias: {{ $service | quote }}
-          imageName: {{ $imageRepo }}{{ if $imageTag }}:{{ $imageTag }}{{ end }}
-          {{- if or $serviceConfig.image.autoupdate.strategy $serviceConfig.image.autoupdate.allowTags $serviceConfig.image.autoupdate.ignoreTags $serviceConfig.image.autoupdate.pullSecret $serviceConfig.image.autoupdate.platforms }}
+          imageName: {{ $imageName }}
+          {{- if or $updateStrategy $serviceConfig.image.autoupdate.allowTags $serviceConfig.image.autoupdate.ignoreTags $serviceConfig.image.autoupdate.pullSecret $serviceConfig.image.autoupdate.platforms }}
           commonUpdateSettings:
-            {{- if $serviceConfig.image.autoupdate.strategy }}
-            updateStrategy: {{ $serviceConfig.image.autoupdate.strategy }}
+            {{- if $updateStrategy }}
+            updateStrategy: {{ $updateStrategy }}
             {{- end }}
             {{- if $serviceConfig.image.autoupdate.allowTags }}
             allowTags: {{ $serviceConfig.image.autoupdate.allowTags | quote }}
@@ -57,15 +80,54 @@ spec:
               {{- toYaml $serviceConfig.image.autoupdate.platforms | nindent 14 }}
             {{- end }}
           {{- end }}
+          manifestTargets:
+            helm:
+              name: {{ printf "%s.image.repository" $service | quote }}
+              tag: {{ printf "%s.image.tag" $service | quote }}
           {{- end }}
         {{- end }}
         {{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.image.autoupdate.enabled }}
+        {{- $imageTag := .Values.qbittorrent.gluetun.image.tag | toString }}
+        {{- $updateStrategy := .Values.qbittorrent.gluetun.image.autoupdate.strategy }}
+        {{- $imageName := .Values.qbittorrent.gluetun.image.repository }}
+        {{- if not $updateStrategy }}
+          {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
+            {{- $updateStrategy = "digest" }}
+          {{- else if regexMatch "^v?[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+            {{- $updateStrategy = "semver" }}
+            {{- $cleanTag := regexReplaceAll "^v" $imageTag "" }}
+            {{- $parts := regexSplit "\\." $cleanTag -1 }}
+            {{- $major := index $parts 0 }}
+            {{- $minor := index $parts 1 }}
+            {{- if hasPrefix "v" $imageTag }}
+              {{- $imageName = printf "%s:v%s.%s.x" .Values.qbittorrent.gluetun.image.repository $major $minor }}
+            {{- else }}
+              {{- $imageName = printf "%s:%s.%s.x" .Values.qbittorrent.gluetun.image.repository $major $minor }}
+            {{- end }}
+          {{- end }}
+        {{- else if and (eq $updateStrategy "semver") .Values.qbittorrent.gluetun.image.tag }}
+          {{- if regexMatch "^v?[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+            {{- $cleanTag := regexReplaceAll "^v" $imageTag "" }}
+            {{- $parts := regexSplit "\\." $cleanTag -1 }}
+            {{- $major := index $parts 0 }}
+            {{- $minor := index $parts 1 }}
+            {{- if hasPrefix "v" $imageTag }}
+              {{- $imageName = printf "%s:v%s.%s.x" .Values.qbittorrent.gluetun.image.repository $major $minor }}
+            {{- else }}
+              {{- $imageName = printf "%s:%s.%s.x" .Values.qbittorrent.gluetun.image.repository $major $minor }}
+            {{- end }}
+          {{- else }}
+            {{- $imageName = printf "%s:%s" .Values.qbittorrent.gluetun.image.repository $imageTag }}
+          {{- end }}
+        {{- else if .Values.qbittorrent.gluetun.image.tag }}
+          {{- $imageName = printf "%s:%s" .Values.qbittorrent.gluetun.image.repository $imageTag }}
+        {{- end }}
         - alias: "qbittorrent-gluetun"
-          imageName: {{ .Values.qbittorrent.gluetun.image.repository }}{{ if .Values.qbittorrent.gluetun.image.tag }}:{{ .Values.qbittorrent.gluetun.image.tag }}{{ end }}
-          {{- if or .Values.qbittorrent.gluetun.image.autoupdate.strategy .Values.qbittorrent.gluetun.image.autoupdate.allowTags .Values.qbittorrent.gluetun.image.autoupdate.ignoreTags .Values.qbittorrent.gluetun.image.autoupdate.pullSecret .Values.qbittorrent.gluetun.image.autoupdate.platforms }}
+          imageName: {{ $imageName }}
+          {{- if or $updateStrategy .Values.qbittorrent.gluetun.image.autoupdate.allowTags .Values.qbittorrent.gluetun.image.autoupdate.ignoreTags .Values.qbittorrent.gluetun.image.autoupdate.pullSecret .Values.qbittorrent.gluetun.image.autoupdate.platforms }}
           commonUpdateSettings:
-            {{- if .Values.qbittorrent.gluetun.image.autoupdate.strategy }}
-            updateStrategy: {{ .Values.qbittorrent.gluetun.image.autoupdate.strategy }}
+            {{- if $updateStrategy }}
+            updateStrategy: {{ $updateStrategy }}
             {{- end }}
             {{- if .Values.qbittorrent.gluetun.image.autoupdate.allowTags }}
             allowTags: {{ .Values.qbittorrent.gluetun.image.autoupdate.allowTags | quote }}
@@ -86,14 +148,53 @@ spec:
               {{- toYaml .Values.qbittorrent.gluetun.image.autoupdate.platforms | nindent 14 }}
             {{- end }}
           {{- end }}
+          manifestTargets:
+            helm:
+              name: "qbittorrent.gluetun.image.repository"
+              tag: "qbittorrent.gluetun.image.tag"
         {{- end }}
         {{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled .Values.acestream.gluetun.image.autoupdate.enabled }}
+        {{- $imageTag := .Values.acestream.gluetun.image.tag | toString }}
+        {{- $updateStrategy := .Values.acestream.gluetun.image.autoupdate.strategy }}
+        {{- $imageName := .Values.acestream.gluetun.image.repository }}
+        {{- if not $updateStrategy }}
+          {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
+            {{- $updateStrategy = "digest" }}
+          {{- else if regexMatch "^v?[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+            {{- $updateStrategy = "semver" }}
+            {{- $cleanTag := regexReplaceAll "^v" $imageTag "" }}
+            {{- $parts := regexSplit "\\." $cleanTag -1 }}
+            {{- $major := index $parts 0 }}
+            {{- $minor := index $parts 1 }}
+            {{- if hasPrefix "v" $imageTag }}
+              {{- $imageName = printf "%s:v%s.%s.x" .Values.acestream.gluetun.image.repository $major $minor }}
+            {{- else }}
+              {{- $imageName = printf "%s:%s.%s.x" .Values.acestream.gluetun.image.repository $major $minor }}
+            {{- end }}
+          {{- end }}
+        {{- else if and (eq $updateStrategy "semver") .Values.acestream.gluetun.image.tag }}
+          {{- if regexMatch "^v?[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+            {{- $cleanTag := regexReplaceAll "^v" $imageTag "" }}
+            {{- $parts := regexSplit "\\." $cleanTag -1 }}
+            {{- $major := index $parts 0 }}
+            {{- $minor := index $parts 1 }}
+            {{- if hasPrefix "v" $imageTag }}
+              {{- $imageName = printf "%s:v%s.%s.x" .Values.acestream.gluetun.image.repository $major $minor }}
+            {{- else }}
+              {{- $imageName = printf "%s:%s.%s.x" .Values.acestream.gluetun.image.repository $major $minor }}
+            {{- end }}
+          {{- else }}
+            {{- $imageName = printf "%s:%s" .Values.acestream.gluetun.image.repository $imageTag }}
+          {{- end }}
+        {{- else if .Values.acestream.gluetun.image.tag }}
+          {{- $imageName = printf "%s:%s" .Values.acestream.gluetun.image.repository $imageTag }}
+        {{- end }}
         - alias: "acestream-gluetun"
-          imageName: {{ .Values.acestream.gluetun.image.repository }}{{ if .Values.acestream.gluetun.image.tag }}:{{ .Values.acestream.gluetun.image.tag }}{{ end }}
-          {{- if or .Values.acestream.gluetun.image.autoupdate.strategy .Values.acestream.gluetun.image.autoupdate.allowTags .Values.acestream.gluetun.image.autoupdate.ignoreTags .Values.acestream.gluetun.image.autoupdate.pullSecret .Values.acestream.gluetun.image.autoupdate.platforms }}
+          imageName: {{ $imageName }}
+          {{- if or $updateStrategy .Values.acestream.gluetun.image.autoupdate.allowTags .Values.acestream.gluetun.image.autoupdate.ignoreTags .Values.acestream.gluetun.image.autoupdate.pullSecret .Values.acestream.gluetun.image.autoupdate.platforms }}
           commonUpdateSettings:
-            {{- if .Values.acestream.gluetun.image.autoupdate.strategy }}
-            updateStrategy: {{ .Values.acestream.gluetun.image.autoupdate.strategy }}
+            {{- if $updateStrategy }}
+            updateStrategy: {{ $updateStrategy }}
             {{- end }}
             {{- if .Values.acestream.gluetun.image.autoupdate.allowTags }}
             allowTags: {{ .Values.acestream.gluetun.image.autoupdate.allowTags | quote }}
@@ -114,9 +215,14 @@ spec:
               {{- toYaml .Values.acestream.gluetun.image.autoupdate.platforms | nindent 14 }}
             {{- end }}
           {{- end }}
+          manifestTargets:
+            helm:
+              name: "acestream.gluetun.image.repository"
+              tag: "acestream.gluetun.image.tag"
         {{- end }}
   {{- if .Values.imageUpdater.writeBackConfig }}
   writeBackConfig:
     {{- toYaml .Values.imageUpdater.writeBackConfig | nindent 4 }}
   {{- end }}
 {{- end }}
+

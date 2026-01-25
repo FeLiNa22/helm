@@ -60,7 +60,7 @@ backend:
     imagePullPolicy: IfNotPresent
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -125,7 +125,7 @@ frontend:
     imagePullPolicy: IfNotPresent
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -199,7 +199,7 @@ exporter:
     imagePullPolicy: IfNotPresent
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""

@@ -1,4 +1,39 @@
 {{- if .Values.imageUpdater.enabled }}
+{{- $imageTag := .Values.image.tag | toString }}
+{{- $updateStrategy := .Values.imageUpdater.updateStrategy }}
+{{- $imageName := .Values.image.repository }}
+{{- if not $updateStrategy }}
+  {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
+    {{- $updateStrategy = "digest" }}
+  {{- else if regexMatch "^v?[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+    {{- $updateStrategy = "semver" }}
+    {{- $cleanTag := regexReplaceAll "^v" $imageTag "" }}
+    {{- $parts := regexSplit "\\." $cleanTag -1 }}
+    {{- $major := index $parts 0 }}
+    {{- $minor := index $parts 1 }}
+    {{- if hasPrefix "v" $imageTag }}
+      {{- $imageName = printf "%s:v%s.%s.x" .Values.image.repository $major $minor }}
+    {{- else }}
+      {{- $imageName = printf "%s:%s.%s.x" .Values.image.repository $major $minor }}
+    {{- end }}
+  {{- end }}
+{{- else if and (eq $updateStrategy "semver") .Values.image.tag }}
+  {{- if regexMatch "^v?[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+    {{- $cleanTag := regexReplaceAll "^v" $imageTag "" }}
+    {{- $parts := regexSplit "\\." $cleanTag -1 }}
+    {{- $major := index $parts 0 }}
+    {{- $minor := index $parts 1 }}
+    {{- if hasPrefix "v" $imageTag }}
+      {{- $imageName = printf "%s:v%s.%s.x" .Values.image.repository $major $minor }}
+    {{- else }}
+      {{- $imageName = printf "%s:%s.%s.x" .Values.image.repository $major $minor }}
+    {{- end }}
+  {{- else }}
+    {{- $imageName = printf "%s:%s" .Values.image.repository $imageTag }}
+  {{- end }}
+{{- else if .Values.image.tag }}
+  {{- $imageName = printf "%s:%s" .Values.image.repository $imageTag }}
+{{- end }}
 apiVersion: argocd-image-updater.argoproj.io/v1alpha1
 kind: ImageUpdater
 metadata:
@@ -13,11 +48,11 @@ spec:
     - namePattern: {{ .Values.imageUpdater.applicationName | default .Release.Name | quote }}
       images:
         - alias: {{ .Values.imageUpdater.imageAlias | default .Release.Name | quote }}
-          imageName: {{ .Values.image.repository }}{{ if .Values.image.tag }}:{{ .Values.image.tag }}{{ end }}
-          {{- if or .Values.imageUpdater.updateStrategy .Values.imageUpdater.allowTags .Values.imageUpdater.ignoreTags .Values.imageUpdater.pullSecret .Values.imageUpdater.forceUpdate .Values.imageUpdater.platforms }}
+          imageName: {{ $imageName }}
+          {{- if or $updateStrategy .Values.imageUpdater.allowTags .Values.imageUpdater.ignoreTags .Values.imageUpdater.pullSecret .Values.imageUpdater.forceUpdate .Values.imageUpdater.platforms }}
           commonUpdateSettings:
-            {{- if .Values.imageUpdater.updateStrategy }}
-            updateStrategy: {{ .Values.imageUpdater.updateStrategy }}
+            {{- if $updateStrategy }}
+            updateStrategy: {{ $updateStrategy }}
             {{- end }}
             {{- if .Values.imageUpdater.forceUpdate }}
             forceUpdate: {{ .Values.imageUpdater.forceUpdate }}
@@ -41,17 +76,18 @@ spec:
               {{- toYaml .Values.imageUpdater.platforms | nindent 14 }}
             {{- end }}
           {{- end }}
-          {{- if or .Values.imageUpdater.helm .Values.imageUpdater.kustomize }}
           manifestTargets:
-            {{- if .Values.imageUpdater.helm }}
             helm:
+              {{- if .Values.imageUpdater.helm }}
               {{- toYaml .Values.imageUpdater.helm | nindent 14 }}
-            {{- end }}
+              {{- else }}
+              name: "image.repository"
+              tag: "image.tag"
+              {{- end }}
             {{- if .Values.imageUpdater.kustomize }}
             kustomize:
               {{- toYaml .Values.imageUpdater.kustomize | nindent 14 }}
             {{- end }}
-          {{- end }}
   {{- if .Values.imageUpdater.writeBackConfig }}
   writeBackConfig:
     {{- toYaml .Values.imageUpdater.writeBackConfig | nindent 4 }}
