@@ -64,7 +64,7 @@ image:
   tag: "32.0.3"
   autoupdate:
     enabled: false
-    strategy: semver
+    strategy: ""
     allowTags: ""
     ignoreTags: []
     pullSecret: ""
@@ -73,8 +73,7 @@ image:
 imagePullSecrets: []
 
 deployment:
-  strategy:
-    type: Recreate
+  strategy: "": Recreate
 
 serviceAccount:
   create: true

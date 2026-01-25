@@ -13,12 +13,37 @@ spec:
     - namePattern: {{ .Values.imageUpdater.applicationName | default .Release.Name | quote }}
       images:
         {{- if .Values.backend.image.autoupdate.enabled }}
+        {{- $imageTag := .Values.backend.image.tag | toString }}
+        {{- $updateStrategy := .Values.backend.image.autoupdate.strategy }}
+        {{- $imageName := .Values.backend.image.repository }}
+        {{- if not $updateStrategy }}
+          {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
+            {{- $updateStrategy = "digest" }}
+          {{- else if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+            {{- $updateStrategy = "semver" }}
+            {{- $parts := regexSplit "\\." $imageTag -1 }}
+            {{- $major := index $parts 0 }}
+            {{- $minor := index $parts 1 }}
+            {{- $imageName = printf "%s:%s.%s.x" .Values.backend.image.repository $major $minor }}
+          {{- end }}
+        {{- else if and (eq $updateStrategy "semver") .Values.backend.image.tag }}
+          {{- if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+            {{- $parts := regexSplit "\\." $imageTag -1 }}
+            {{- $major := index $parts 0 }}
+            {{- $minor := index $parts 1 }}
+            {{- $imageName = printf "%s:%s.%s.x" .Values.backend.image.repository $major $minor }}
+          {{- else }}
+            {{- $imageName = printf "%s:%s" .Values.backend.image.repository $imageTag }}
+          {{- end }}
+        {{- else if .Values.backend.image.tag }}
+          {{- $imageName = printf "%s:%s" .Values.backend.image.repository $imageTag }}
+        {{- end }}
         - alias: "backend"
-          imageName: {{ .Values.backend.image.repository }}{{ if .Values.backend.image.tag }}:{{ .Values.backend.image.tag }}{{ end }}
-          {{- if or .Values.backend.image.autoupdate.strategy .Values.backend.image.autoupdate.allowTags .Values.backend.image.autoupdate.ignoreTags .Values.backend.image.autoupdate.pullSecret .Values.backend.image.autoupdate.platforms }}
+          imageName: {{ $imageName }}
+          {{- if or $updateStrategy .Values.backend.image.autoupdate.allowTags .Values.backend.image.autoupdate.ignoreTags .Values.backend.image.autoupdate.pullSecret .Values.backend.image.autoupdate.platforms }}
           commonUpdateSettings:
-            {{- if .Values.backend.image.autoupdate.strategy }}
-            updateStrategy: {{ .Values.backend.image.autoupdate.strategy }}
+            {{- if $updateStrategy }}
+            updateStrategy: {{ $updateStrategy }}
             {{- end }}
             {{- if .Values.backend.image.autoupdate.allowTags }}
             allowTags: {{ .Values.backend.image.autoupdate.allowTags | quote }}
@@ -39,14 +64,43 @@ spec:
               {{- toYaml .Values.backend.image.autoupdate.platforms | nindent 14 }}
             {{- end }}
           {{- end }}
+          manifestTargets:
+            helm:
+              name: "backend.image.repository"
+              tag: "backend.image.tag"
         {{- end }}
         {{- if .Values.frontend.image.autoupdate.enabled }}
+        {{- $imageTag := .Values.frontend.image.tag | toString }}
+        {{- $updateStrategy := .Values.frontend.image.autoupdate.strategy }}
+        {{- $imageName := .Values.frontend.image.repository }}
+        {{- if not $updateStrategy }}
+          {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
+            {{- $updateStrategy = "digest" }}
+          {{- else if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+            {{- $updateStrategy = "semver" }}
+            {{- $parts := regexSplit "\\." $imageTag -1 }}
+            {{- $major := index $parts 0 }}
+            {{- $minor := index $parts 1 }}
+            {{- $imageName = printf "%s:%s.%s.x" .Values.frontend.image.repository $major $minor }}
+          {{- end }}
+        {{- else if and (eq $updateStrategy "semver") .Values.frontend.image.tag }}
+          {{- if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+            {{- $parts := regexSplit "\\." $imageTag -1 }}
+            {{- $major := index $parts 0 }}
+            {{- $minor := index $parts 1 }}
+            {{- $imageName = printf "%s:%s.%s.x" .Values.frontend.image.repository $major $minor }}
+          {{- else }}
+            {{- $imageName = printf "%s:%s" .Values.frontend.image.repository $imageTag }}
+          {{- end }}
+        {{- else if .Values.frontend.image.tag }}
+          {{- $imageName = printf "%s:%s" .Values.frontend.image.repository $imageTag }}
+        {{- end }}
         - alias: "frontend"
-          imageName: {{ .Values.frontend.image.repository }}{{ if .Values.frontend.image.tag }}:{{ .Values.frontend.image.tag }}{{ end }}
-          {{- if or .Values.frontend.image.autoupdate.strategy .Values.frontend.image.autoupdate.allowTags .Values.frontend.image.autoupdate.ignoreTags .Values.frontend.image.autoupdate.pullSecret .Values.frontend.image.autoupdate.platforms }}
+          imageName: {{ $imageName }}
+          {{- if or $updateStrategy .Values.frontend.image.autoupdate.allowTags .Values.frontend.image.autoupdate.ignoreTags .Values.frontend.image.autoupdate.pullSecret .Values.frontend.image.autoupdate.platforms }}
           commonUpdateSettings:
-            {{- if .Values.frontend.image.autoupdate.strategy }}
-            updateStrategy: {{ .Values.frontend.image.autoupdate.strategy }}
+            {{- if $updateStrategy }}
+            updateStrategy: {{ $updateStrategy }}
             {{- end }}
             {{- if .Values.frontend.image.autoupdate.allowTags }}
             allowTags: {{ .Values.frontend.image.autoupdate.allowTags | quote }}
@@ -67,14 +121,43 @@ spec:
               {{- toYaml .Values.frontend.image.autoupdate.platforms | nindent 14 }}
             {{- end }}
           {{- end }}
+          manifestTargets:
+            helm:
+              name: "frontend.image.repository"
+              tag: "frontend.image.tag"
         {{- end }}
         {{- if .Values.exporter.image.autoupdate.enabled }}
+        {{- $imageTag := .Values.exporter.image.tag | toString }}
+        {{- $updateStrategy := .Values.exporter.image.autoupdate.strategy }}
+        {{- $imageName := .Values.exporter.image.repository }}
+        {{- if not $updateStrategy }}
+          {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
+            {{- $updateStrategy = "digest" }}
+          {{- else if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+            {{- $updateStrategy = "semver" }}
+            {{- $parts := regexSplit "\\." $imageTag -1 }}
+            {{- $major := index $parts 0 }}
+            {{- $minor := index $parts 1 }}
+            {{- $imageName = printf "%s:%s.%s.x" .Values.exporter.image.repository $major $minor }}
+          {{- end }}
+        {{- else if and (eq $updateStrategy "semver") .Values.exporter.image.tag }}
+          {{- if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+            {{- $parts := regexSplit "\\." $imageTag -1 }}
+            {{- $major := index $parts 0 }}
+            {{- $minor := index $parts 1 }}
+            {{- $imageName = printf "%s:%s.%s.x" .Values.exporter.image.repository $major $minor }}
+          {{- else }}
+            {{- $imageName = printf "%s:%s" .Values.exporter.image.repository $imageTag }}
+          {{- end }}
+        {{- else if .Values.exporter.image.tag }}
+          {{- $imageName = printf "%s:%s" .Values.exporter.image.repository $imageTag }}
+        {{- end }}
         - alias: "exporter"
-          imageName: {{ .Values.exporter.image.repository }}{{ if .Values.exporter.image.tag }}:{{ .Values.exporter.image.tag }}{{ end }}
-          {{- if or .Values.exporter.image.autoupdate.strategy .Values.exporter.image.autoupdate.allowTags .Values.exporter.image.autoupdate.ignoreTags .Values.exporter.image.autoupdate.pullSecret .Values.exporter.image.autoupdate.platforms }}
+          imageName: {{ $imageName }}
+          {{- if or $updateStrategy .Values.exporter.image.autoupdate.allowTags .Values.exporter.image.autoupdate.ignoreTags .Values.exporter.image.autoupdate.pullSecret .Values.exporter.image.autoupdate.platforms }}
           commonUpdateSettings:
-            {{- if .Values.exporter.image.autoupdate.strategy }}
-            updateStrategy: {{ .Values.exporter.image.autoupdate.strategy }}
+            {{- if $updateStrategy }}
+            updateStrategy: {{ $updateStrategy }}
             {{- end }}
             {{- if .Values.exporter.image.autoupdate.allowTags }}
             allowTags: {{ .Values.exporter.image.autoupdate.allowTags | quote }}
@@ -95,5 +178,9 @@ spec:
               {{- toYaml .Values.exporter.image.autoupdate.platforms | nindent 14 }}
             {{- end }}
           {{- end }}
+          manifestTargets:
+            helm:
+              name: "exporter.image.repository"
+              tag: "exporter.image.tag"
         {{- end }}
 {{- end }}
