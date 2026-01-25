@@ -98,7 +98,7 @@ jellyfin:
     pullPolicy: IfNotPresent
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -294,7 +294,7 @@ sonarr:
     tag: "4.0.16"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -487,7 +487,7 @@ qbittorrent:
     tag: "latest"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -627,7 +627,7 @@ qbittorrent:
       pullPolicy: IfNotPresent
       autoupdate:
         enabled: false
-        strategy: semver
+        strategy: ""
         allowTags: ""
         ignoreTags: []
         pullSecret: ""
@@ -738,7 +738,7 @@ prowlarr:
     tag: "2.3.0"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -918,7 +918,7 @@ flaresolverr:
     tag: "v3.3.21"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -1102,7 +1102,7 @@ seerr:
     tag: "3.0.0"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -1303,7 +1303,7 @@ bazarr:
     tag: "1.5.3"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -1487,7 +1487,7 @@ radarr:
     tag: "6.0.4"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -1686,7 +1686,7 @@ lidarr:
     tag: "3.1.0"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -1868,7 +1868,7 @@ cleanuparr:
     tag: "latest"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -2032,7 +2032,7 @@ huntarr:
     tag: "latest"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -2205,7 +2205,7 @@ sabnzbd:
     tag: "4.5.5"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -2379,7 +2379,7 @@ plex:
     tag: "1.42.2"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -2549,7 +2549,7 @@ emby:
     tag: "4.9.1"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -2743,7 +2743,7 @@ acestream:
     tag: "latest"
     autoupdate:
       enabled: false
-      strategy: semver
+      strategy: ""
       allowTags: ""
       ignoreTags: []
       pullSecret: ""
@@ -2869,7 +2869,7 @@ acestream:
       pullPolicy: IfNotPresent
       autoupdate:
         enabled: false
-        strategy: semver
+        strategy: ""
         allowTags: ""
         ignoreTags: []
         pullSecret: ""
