@@ -249,6 +249,7 @@ dragonfly:
 
 ## @param postgresql.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param postgresql.standalone.enabled Whether to deploy standalone PostgreSQL using Bitnami subchart.
+## @param postgresql.standalone.architecture PostgreSQL architecture (`standalone` or `replication`).
 ## @param postgresql.standalone.auth.database Name of the default database.
 ## @param postgresql.standalone.auth.username Username for the default database.
 ## @param postgresql.standalone.auth.password Password for the default database user.
@@ -261,6 +262,7 @@ dragonfly:
 ## @param postgresql.standalone.primary.persistence.enabled Whether to enable persistence for PostgreSQL.
 ## @param postgresql.standalone.primary.persistence.size Size of the PostgreSQL persistence volume.
 ## @param postgresql.cluster.enabled Whether to deploy PostgreSQL using CloudNativePG operator.
+## @param postgresql.cluster.name Name of the database cluster.
 ## @param postgresql.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param postgresql.cluster.image.repository PostgreSQL container image repository (with vectorchord extension).
 ## @param postgresql.cluster.image.tag PostgreSQL container image tag.
