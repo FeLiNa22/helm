@@ -236,7 +236,7 @@ ingress:
 
 ## Upgrading
 
-### To 1.6.0
+### To 1.5.0
 
 This version removes the Bitnami PostgreSQL subchart dependency and implements native standalone PostgreSQL deployment.
 
@@ -245,23 +245,23 @@ This version removes the Bitnami PostgreSQL subchart dependency and implements n
 - Standalone mode now uses StatefulSet instead of Bitnami subchart
 - Auth configuration moved from `postgresql.auth.*` to `database.standalone.auth.*`
 - No more `postgresql.*` section in values.yaml
+- `database.mode` structure standardized across charts
 
-To migrate from version 1.5.x:
+To migrate from version 1.4.x:
 1. Backup your data
 2. Update your values.yaml:
    ```yaml
-   # Old (v1.5.0)
-   database:
+   # Old (v1.4.0)
+   postgresql:
      mode: standalone
      standalone:
        enabled: true
-   postgresql:
      auth:
        database: immich
        username: immich
        password: "your-password"
    
-   # New (v1.6.0)
+   # New (v1.5.0)
    database:
      mode: standalone
      standalone:
@@ -274,15 +274,7 @@ To migrate from version 1.5.x:
 3. The migration is non-destructive if using external or cluster modes
 4. For standalone mode, you may need to migrate data from the old PVC to the new one
 
-### To 1.5.0
-
-This version standardizes the database configuration structure to match other charts in this repository.
-
-**Breaking Changes:**
-- `postgresql.*` database mode and configuration has been moved to `database.*`
-- Bitnami PostgreSQL subchart configuration remains under `postgresql.*` (separate from database mode config)
-- `postgresql.mode` → `database.mode`
-- `postgresql.standalone.enabled` → `database.standalone.enabled`
+### To 1.4.0
 - `postgresql.cluster.*` → `database.cluster.*`
 - `postgresql.external.*` → `database.external.*`
 
