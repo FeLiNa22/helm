@@ -30,11 +30,13 @@ spec:
           {{- $serviceConfig := index $.Values $service }}
           {{- if and $serviceConfig.enabled $serviceConfig.image.autoupdate.enabled }}
             {{- $imageTag := $serviceConfig.image.tag | toString }}
+            {{- $imageTag = regexReplaceAll "@[a-z0-9]+:[a-f0-9]+" $imageTag "" }}
             {{- $updateStrategy := $serviceConfig.image.autoupdate.strategy }}
             {{- $imageName := $serviceConfig.image.repository }}
             {{- if not $updateStrategy }}
               {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
                 {{- $updateStrategy = "digest" }}
+                {{- $imageName = printf "%s:%s" $serviceConfig.image.repository $imageTag }}
               {{- else if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
                 {{- $updateStrategy = "semver" }}
                 {{- $parts := regexSplit "\\." $imageTag -1 }}
@@ -88,11 +90,13 @@ spec:
         {{- end }}
         {{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.image.autoupdate.enabled }}
         {{- $imageTag := .Values.qbittorrent.gluetun.image.tag | toString }}
+        {{- $imageTag = regexReplaceAll "@[a-z0-9]+:[a-f0-9]+" $imageTag "" }}
         {{- $updateStrategy := .Values.qbittorrent.gluetun.image.autoupdate.strategy }}
         {{- $imageName := .Values.qbittorrent.gluetun.image.repository }}
         {{- if not $updateStrategy }}
           {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
             {{- $updateStrategy = "digest" }}
+            {{- $imageName = printf "%s:%s" .Values.qbittorrent.gluetun.image.repository $imageTag }}
           {{- else if regexMatch "^v?[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
             {{- $updateStrategy = "semver" }}
             {{- $cleanTag := regexReplaceAll "^v" $imageTag "" }}
@@ -155,11 +159,13 @@ spec:
         {{- end }}
         {{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled .Values.acestream.gluetun.image.autoupdate.enabled }}
         {{- $imageTag := .Values.acestream.gluetun.image.tag | toString }}
+        {{- $imageTag = regexReplaceAll "@[a-z0-9]+:[a-f0-9]+" $imageTag "" }}
         {{- $updateStrategy := .Values.acestream.gluetun.image.autoupdate.strategy }}
         {{- $imageName := .Values.acestream.gluetun.image.repository }}
         {{- if not $updateStrategy }}
           {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
             {{- $updateStrategy = "digest" }}
+            {{- $imageName = printf "%s:%s" .Values.acestream.gluetun.image.repository $imageTag }}
           {{- else if regexMatch "^v?[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
             {{- $updateStrategy = "semver" }}
             {{- $cleanTag := regexReplaceAll "^v" $imageTag "" }}
