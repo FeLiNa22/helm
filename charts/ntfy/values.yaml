@@ -40,6 +40,29 @@
 ## @param persistence.size The size to use for the persistence.
 ## @param persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param persistence.additionalMounts Additional volume mounts to add to the pod.
+## @param config.enabled Whether to enable server.yml configuration via ConfigMap.
+## @param config.baseUrl Base URL for the ntfy server (required for attachments, emails, iOS push).
+## @param config.cacheFile Path to the cache database file.
+## @param config.cacheDuration Duration for which messages are cached.
+## @param config.authFile Path to the authentication database file.
+## @param config.authDefaultAccess Default access level (read-write, read-only, write-only, deny-all).
+## @param config.authUsers List of users to provision in format "<username>:<password-hash>:<role>".
+## @param config.authAccess List of access control entries in format "<username>:<topic-pattern>:<access>".
+## @param config.authTokens List of access tokens in format "<username>:<token>[:<label>]".
+## @param config.behindProxy Whether ntfy is behind a proxy.
+## @param config.attachmentCacheDir Directory for attachment cache.
+## @param config.attachmentTotalSizeLimit Total size limit for attachments.
+## @param config.attachmentFileSizeLimit Per-file size limit for attachments.
+## @param config.attachmentExpiryDuration Duration after which attachments expire.
+## @param config.enableLogin Whether to enable the login page.
+## @param config.enableSignup Whether to enable user signup.
+## @param config.enableReservations Whether to enable topic reservations.
+## @param config.upstreamBaseUrl Upstream base URL for web push.
+## @param config.webPushPublicKey Web push VAPID public key.
+## @param config.webPushPrivateKey Web push VAPID private key.
+## @param config.webPushFile Path to web push database file.
+## @param config.webPushEmailAddress Email address for web push.
+## @param config.extraConfig Additional configuration in YAML format.
 ##
 replicaCount: 1
 
@@ -135,6 +158,55 @@ persistence:
   size: 1Gi
   additionalVolumes: []
   additionalMounts: []
+
+# ntfy server.yml configuration
+# This allows you to configure ntfy server settings via a ConfigMap
+# including authentication, topics, and access control
+# See https://docs.ntfy.sh/config/ for all available options
+config:
+  enabled: false
+  # Base URL for the ntfy server (required for attachments, emails, iOS push, etc.)
+  baseUrl: ""
+  # Cache configuration
+  cacheFile: "/var/cache/ntfy/cache.db"
+  cacheDuration: "12h"
+  # Authentication configuration
+  authFile: "/var/cache/ntfy/auth.db"
+  authDefaultAccess: "read-write"  # Options: read-write, read-only, write-only, deny-all
+  # Provision users in format: "<username>:<password-hash>:<role>"
+  # Use 'ntfy user hash' to generate password hash
+  # Example: "phil:$2a$10$YLiO8U21sX1uhZamTLJXHuxgVC0Z/GKISibrKCLohPgtG7yIxSk4C:admin"
+  authUsers: []
+    # - "admin:$2a$10$YLiO8U21sX1uhZamTLJXHuxgVC0Z/GKISibrKCLohPgtG7yIxSk4C:admin"
+  # Provision access control entries in format: "<username>:<topic-pattern>:<access>"
+  # Access types: read-write (rw), read-only (ro), write-only (wo), deny (none)
+  # Example: "phil:mytopic:rw" or "*:announcements:ro" for anonymous read-only
+  authAccess: []
+    # - "phil:mytopic:rw"
+    # - "*:announcements:ro"
+  # Provision access tokens in format: "<username>:<token>[:<label>]"
+  # Use 'ntfy token generate' to generate tokens
+  authTokens: []
+    # - "phil:tk_3gd7d2yftt4b8ixyfe9mnmro88o76:My Token"
+  # Set to true if ntfy is behind a proxy
+  behindProxy: false
+  # Attachment configuration
+  attachmentCacheDir: ""
+  attachmentTotalSizeLimit: "5G"
+  attachmentFileSizeLimit: "15M"
+  attachmentExpiryDuration: "3h"
+  # Login and signup settings
+  enableLogin: true
+  enableSignup: false
+  enableReservations: false
+  # Web Push configuration (for browser notifications)
+  upstreamBaseUrl: ""
+  webPushPublicKey: ""
+  webPushPrivateKey: ""
+  webPushFile: ""
+  webPushEmailAddress: ""
+  # Extra configuration to append to server.yml (in YAML format)
+  extraConfig: ""
 
 
 ## @section ArgoCD Image Updater parameters
