@@ -2686,6 +2686,8 @@ emby:
 ## @param acestream.service.udp.nodePort The nodePort to use for the Acestream UDP service. Only used if service.type is NodePort.
 ## @param acestream.service.dispatcharr.port The port on which the Dispatcharr service will run.
 ## @param acestream.service.dispatcharr.nodePort The nodePort to use for the Dispatcharr service. Only used if service.type is NodePort.
+## @param acestream.service.stepdaddylivehd.port The port on which the StepDaddyLiveHD service will run.
+## @param acestream.service.stepdaddylivehd.nodePort The nodePort to use for the StepDaddyLiveHD service. Only used if service.type is NodePort.
 ## @param acestream.ingress.enabled Whether to create an ingress for the service.
 ## @param acestream.ingress.className The ingress class name to use.
 ## @param acestream.ingress.annotations Additional annotations to add to the ingress.
@@ -2799,6 +2801,16 @@ acestream:
       #   cpu: 100m
       #   memory: 128Mi
 
+  ## @param acestream.stepdaddylivehd.enabled Whether to enable StepDaddyLiveHD sidecar container.
+  ## @param acestream.stepdaddylivehd.image.repository The Docker repository to pull the StepDaddyLiveHD image from.
+  ## @param acestream.stepdaddylivehd.image.tag The image tag to use for StepDaddyLiveHD.
+  ## @param acestream.stepdaddylivehd.image.pullPolicy The logic of image pulling for StepDaddyLiveHD.
+  ## @param acestream.stepdaddylivehd.env.PORT The port on which StepDaddyLiveHD will listen.
+  ## @param acestream.stepdaddylivehd.env.API_URL The API URL for StepDaddyLiveHD (set to local IP or domain for network access).
+  ## @param acestream.stepdaddylivehd.env.PROXY_CONTENT Whether to proxy video content through the server (TRUE/FALSE).
+  ## @param acestream.stepdaddylivehd.env.SOCKS5 SOCKS5 proxy configuration for DLHD requests (format: user:password@proxy.example.com:1080).
+  ## @param acestream.stepdaddylivehd.resources Resource limits and requests for the StepDaddyLiveHD container.
+  ##
   stepdaddylivehd:
     enabled: true
     image:
