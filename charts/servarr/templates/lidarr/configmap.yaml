@@ -10,34 +10,18 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 data:
-  config.xml: |
-    <Config>
-      <BindAddress>*</BindAddress>
-      <Port>8686</Port>
-      <SslPort>6868</SslPort>
-      <EnableSsl>False</EnableSsl>
-      <LaunchBrowser>True</LaunchBrowser>
-      <AuthenticationMethod>External</AuthenticationMethod>
-      <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
-      <Branch>master</Branch>
-      <LogLevel>info</LogLevel>
-      <SslCertPath></SslCertPath>
-      <SslCertPassword></SslCertPassword>
-      <UrlBase></UrlBase>
-      <InstanceName>Lidarr</InstanceName>
-      <UpdateMechanism>Docker</UpdateMechanism>
-      {{- if eq .Values.lidarr.database.mode "cluster" }}
-      <PostgresUser>lidarr</PostgresUser>
-      <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
-      <PostgresHost>{{ .Release.Name }}-lidarr-db-rw</PostgresHost>
-      <PostgresPort>5432</PostgresPort>
-      {{- else }}
-      <PostgresUser>{{ required "lidarr.database.username is required when lidarr.database.mode is 'external'" .Values.lidarr.database.username }}</PostgresUser>
-      <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
-      <PostgresHost>{{ required "lidarr.database.host is required when lidarr.database.mode is 'external'" .Values.lidarr.database.host }}</PostgresHost>
-      <PostgresPort>{{ .Values.lidarr.database.port }}</PostgresPort>
-      {{- end }}
-      <PostgresMainDb>{{ .Values.lidarr.database.mainDatabase }}</PostgresMainDb>
-      <PostgresLogDb>{{ .Values.lidarr.database.logDatabase }}</PostgresLogDb>
-    </Config>
+  db-config.xml: |
+    {{- if eq .Values.lidarr.database.mode "cluster" }}
+    <PostgresUser>lidarr</PostgresUser>
+    <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
+    <PostgresHost>{{ .Release.Name }}-lidarr-db-rw</PostgresHost>
+    <PostgresPort>5432</PostgresPort>
+    {{- else }}
+    <PostgresUser>{{ required "lidarr.database.username is required when lidarr.database.mode is 'external'" .Values.lidarr.database.username }}</PostgresUser>
+    <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
+    <PostgresHost>{{ required "lidarr.database.host is required when lidarr.database.mode is 'external'" .Values.lidarr.database.host }}</PostgresHost>
+    <PostgresPort>{{ .Values.lidarr.database.port }}</PostgresPort>
+    {{- end }}
+    <PostgresMainDb>{{ .Values.lidarr.database.mainDatabase }}</PostgresMainDb>
+    <PostgresLogDb>{{ .Values.lidarr.database.logDatabase }}</PostgresLogDb>
 {{- end }}
