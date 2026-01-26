@@ -4,7 +4,14 @@
 {{- $updateStrategy := .Values.imageUpdater.updateStrategy }}
 {{- $imageName := .Values.image.repository }}
 {{- if not $updateStrategy }}
-  {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
+  {{- $staticLabels := list "latest" "develop" "dev" "beta" "alpha" "stable" "edge" "nightly" "rc" "canary" }}
+  {{- $isStaticLabel := false }}
+  {{- range $staticLabels }}
+    {{- if or (eq $imageTag .) (hasSuffix (printf "-%s" .) $imageTag) }}
+      {{- $isStaticLabel = true }}
+    {{- end }}
+  {{- end }}
+  {{- if $isStaticLabel }}
     {{- $updateStrategy = "digest" }}
     {{- $imageName = printf "%s:%s" .Values.image.repository $imageTag }}
   {{- else if regexMatch "^v?[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
