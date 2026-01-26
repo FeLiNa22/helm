@@ -2783,6 +2783,12 @@ acestream:
     # TZ: "Europe/Madrid"
     # MY_VAR: "value"
 
+  # Additional arguments to pass to the acestream start-engine command
+  args:
+    - "--bind-all"
+    - "--disable-upnp"
+    - "--disable-ipv6"
+
   dispatcharr:
     image:
       repository: ghcr.io/dispatcharr/dispatcharr

@@ -160,10 +160,18 @@ spec:
               done
               PORT=$(cat /gluetun-shared/forwarded_port)
               echo "Starting acestream with port $PORT"
-              exec /srv/ace/start-engine --client-console --bind-all --port "$PORT"
+              exec /srv/ace/start-engine --client-console {{- range .Values.acestream.args }} {{ . }}{{- end }} --port "$PORT"
           volumeMounts:
             - name: gluetun-shared
               mountPath: /gluetun-shared
+          {{- end }}
+          {{- if not (and .Values.acestream.gluetun.enabled .Values.acestream.gluetun.portForwarding.enabled) }}
+          # Use args when not using gluetun port forwarding
+          args:
+            - "--client-console"
+            {{- range .Values.acestream.args }}
+            - {{ . | quote }}
+            {{- end }}
           {{- end }}
         {{- if not .Values.acestream.gluetun.enabled }}
           ports:
