@@ -305,7 +305,7 @@ database:
     # Use PostgreSQL with pgvecto-rs extension for vector search
     image:
       repository: docker.io/tensorchord/pgvecto-rs
-      tag: "pg16-v0.4.0"
+      tag: "16-v0.3.0"
     auth:
       database: immich
       username: immich
