@@ -34,7 +34,14 @@ spec:
             {{- $updateStrategy := $serviceConfig.image.autoupdate.strategy }}
             {{- $imageName := $serviceConfig.image.repository }}
             {{- if not $updateStrategy }}
-              {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
+              {{- $staticLabels := list "latest" "develop" "dev" "beta" "alpha" "stable" "edge" "nightly" "rc" "canary" }}
+              {{- $isStaticLabel := false }}
+              {{- range $staticLabels }}
+                {{- if or (eq $imageTag .) (hasSuffix (printf "-%s" .) $imageTag) }}
+                  {{- $isStaticLabel = true }}
+                {{- end }}
+              {{- end }}
+              {{- if $isStaticLabel }}
                 {{- $updateStrategy = "digest" }}
                 {{- $imageName = printf "%s:%s" $serviceConfig.image.repository $imageTag }}
               {{- else if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
@@ -94,7 +101,14 @@ spec:
         {{- $updateStrategy := .Values.qbittorrent.gluetun.image.autoupdate.strategy }}
         {{- $imageName := .Values.qbittorrent.gluetun.image.repository }}
         {{- if not $updateStrategy }}
-          {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
+          {{- $staticLabels := list "latest" "develop" "dev" "beta" "alpha" "stable" "edge" "nightly" "rc" "canary" }}
+          {{- $isStaticLabel := false }}
+          {{- range $staticLabels }}
+            {{- if or (eq $imageTag .) (hasSuffix (printf "-%s" .) $imageTag) }}
+              {{- $isStaticLabel = true }}
+            {{- end }}
+          {{- end }}
+          {{- if $isStaticLabel }}
             {{- $updateStrategy = "digest" }}
             {{- $imageName = printf "%s:%s" .Values.qbittorrent.gluetun.image.repository $imageTag }}
           {{- else if regexMatch "^v?[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
@@ -163,7 +177,14 @@ spec:
         {{- $updateStrategy := .Values.acestream.gluetun.image.autoupdate.strategy }}
         {{- $imageName := .Values.acestream.gluetun.image.repository }}
         {{- if not $updateStrategy }}
-          {{- if or (eq $imageTag "latest") (hasSuffix "-latest" $imageTag) }}
+          {{- $staticLabels := list "latest" "develop" "dev" "beta" "alpha" "stable" "edge" "nightly" "rc" "canary" }}
+          {{- $isStaticLabel := false }}
+          {{- range $staticLabels }}
+            {{- if or (eq $imageTag .) (hasSuffix (printf "-%s" .) $imageTag) }}
+              {{- $isStaticLabel = true }}
+            {{- end }}
+          {{- end }}
+          {{- if $isStaticLabel }}
             {{- $updateStrategy = "digest" }}
             {{- $imageName = printf "%s:%s" .Values.acestream.gluetun.image.repository $imageTag }}
           {{- else if regexMatch "^v?[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
