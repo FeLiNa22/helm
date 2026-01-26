@@ -50,7 +50,8 @@ database:
     auth:
       database: immich
       username: immich
-      password: "your-password"
+      password: "your-password"        # Password for the 'immich' user (used by the application)
+      postgresPassword: "admin-pass"   # Password for the 'postgres' superuser (for admin access)
 
 # Cluster mode - uses CloudNativePG operator
 database:
@@ -73,6 +74,18 @@ database:
     existingSecret: "your-postgresql-secret"
     secretKey: "password"
 ```
+
+**Note on Database Authentication:**
+
+In standalone mode, the PostgreSQL deployment uses two separate passwords for security:
+- `password`: Used by the Immich application to connect with the `immich` database user (least privilege)
+- `postgresPassword`: Used for the `postgres` superuser account (administrative access only)
+
+Both passwords are stored in the same Kubernetes Secret (`<release-name>-postgresql`) and are auto-generated if not specified. This follows security best practices by separating application access from administrative access.
+
+In cluster mode using CloudNativePG, these are managed as separate secrets:
+- Application user credentials: `<release-name>-immich-db-app` secret
+- Superuser credentials: `<release-name>-immich-db-superuser` secret
 
 #### DragonflyDB Options
 
