@@ -331,7 +331,7 @@ database:
     # Use PostgreSQL image with pgvecto-rs extension for Immich
     image:
       repository: ghcr.io/tensorchord/cloudnative-pgvecto.rs
-      tag: "16-v0.4.0"
+      tag: "16-v0.3.0"
     database: immich
     owner: immich
     storage:
