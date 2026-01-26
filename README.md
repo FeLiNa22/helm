@@ -239,13 +239,9 @@ Optional for Redis-compatible caching in:
 - `nextcloud` (when `dragonfly.mode: cluster`)
 - `immich` (when `dragonfly.mode: cluster`)
 
-**Installation**:
-```bash
-helm repo add dragonfly https://www.dragonflydb.io/helm-charts
-helm install dragonfly-operator dragonfly/dragonfly-operator
-```
+**Installation**: See [DragonflyDB Operator documentation](https://www.dragonflydb.io/docs/managing-dragonfly/operator/installation) for installation instructions.
 
-See [DragonflyDB documentation](https://www.dragonflydb.io/) for details.
+Note: Most charts also support standalone DragonflyDB mode which doesn't require the operator.
 
 #### ArgoCD Image Updater
 
