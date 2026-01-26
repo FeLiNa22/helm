@@ -81,7 +81,7 @@ spec:
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: 10.43.0.0/16
             - name: FIREWALL_INPUT_PORTS
-              value: "6878,8621,9191{{- if .Values.acestream.stepdaddylivehd.enabled }},3000{{- end }}"
+              value: "6878,8621,9191{{- if .Values.acestream.stepdaddylivehd.enabled }},3000{{- end }}{{- if .Values.acestream.acexy.enabled }},8080{{- end }}"
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: HTTPPROXY
               value: "on"
@@ -123,6 +123,11 @@ spec:
             {{- if .Values.acestream.stepdaddylivehd.enabled }}
             - name: stepdaddy
               containerPort: 3000
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.acestream.acexy.enabled }}
+            - name: acexy
+              containerPort: 8080
               protocol: TCP
             {{- end }}
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
@@ -236,6 +241,28 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.acestream.stepdaddylivehd.resources | nindent 12 }}
+      {{- end }}
+      {{- if .Values.acestream.acexy.enabled }}
+        - name: acexy
+          securityContext:
+            {{- toYaml .Values.acestream.securityContext | nindent 12 }}
+          image: "{{ .Values.acestream.acexy.image.repository }}:{{ .Values.acestream.acexy.image.tag }}"
+          imagePullPolicy: {{ .Values.acestream.acexy.image.pullPolicy }}
+        {{- if not .Values.acestream.gluetun.enabled }}
+          ports:
+            - name: acexy
+              containerPort: 8080
+              protocol: TCP
+        {{- end }}
+          {{- if .Values.acestream.acexy.env }}
+          env:
+            {{- range $k,$v := .Values.acestream.acexy.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.acestream.acexy.resources | nindent 12 }}
       {{- end }}
       {{- if .Values.acestream.runtimeClassName }}
       runtimeClassName: {{ .Values.acestream.runtimeClassName | quote }}

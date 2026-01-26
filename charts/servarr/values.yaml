@@ -2688,6 +2688,8 @@ emby:
 ## @param acestream.service.dispatcharr.nodePort The nodePort to use for the Dispatcharr service. Only used if service.type is NodePort.
 ## @param acestream.service.stepdaddylivehd.port The port on which the StepDaddyLiveHD service will run.
 ## @param acestream.service.stepdaddylivehd.nodePort The nodePort to use for the StepDaddyLiveHD service. Only used if service.type is NodePort.
+## @param acestream.service.acexy.port The port on which the Acexy service will run.
+## @param acestream.service.acexy.nodePort The nodePort to use for the Acexy service. Only used if service.type is NodePort.
 ## @param acestream.ingress.enabled Whether to create an ingress for the service.
 ## @param acestream.ingress.className The ingress class name to use.
 ## @param acestream.ingress.annotations Additional annotations to add to the ingress.
@@ -2830,6 +2832,43 @@ acestream:
       #   cpu: 100m
       #   memory: 128Mi
 
+  ## @param acestream.acexy.enabled Whether to enable Acexy sidecar container (AceStream proxy for stream multiplexing).
+  ## @param acestream.acexy.image.repository The Docker repository to pull the Acexy image from.
+  ## @param acestream.acexy.image.tag The image tag to use for Acexy.
+  ## @param acestream.acexy.image.pullPolicy The logic of image pulling for Acexy.
+  ## @param acestream.acexy.env.ACEXY_LISTEN_ADDR Address where Acexy is listening to.
+  ## @param acestream.acexy.env.ACEXY_SCHEME The scheme of the AceStream middleware (http or https).
+  ## @param acestream.acexy.env.ACEXY_HOST Where the AceStream middleware is located.
+  ## @param acestream.acexy.env.ACEXY_PORT The port to connect to the AceStream middleware.
+  ## @param acestream.acexy.env.ACEXY_M3U8 Enable M3U8 mode in Acexy (experimental).
+  ## @param acestream.acexy.env.ACEXY_EMPTY_TIMEOUT Timeout to consider a stream is finished once empty information is received.
+  ## @param acestream.acexy.env.ACEXY_BUFFER_SIZE Buffer size for stream data.
+  ## @param acestream.acexy.env.ACEXY_NO_RESPONSE_TIMEOUT Time to wait for the AceStream middleware to respond.
+  ## @param acestream.acexy.resources Resource limits and requests for the Acexy container.
+  ##
+  acexy:
+    enabled: false
+    image:
+      repository: ghcr.io/javinator9889/acexy
+      pullPolicy: IfNotPresent
+      tag: "0.2.0"
+    env:
+      ACEXY_LISTEN_ADDR: ":8080"
+      ACEXY_SCHEME: "http"
+      ACEXY_HOST: "localhost"
+      ACEXY_PORT: "6878"
+      ACEXY_M3U8: "false"
+      ACEXY_EMPTY_TIMEOUT: "60s"
+      ACEXY_BUFFER_SIZE: "4MB"
+      ACEXY_NO_RESPONSE_TIMEOUT: "10s"
+    resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+
   service:
     type: LoadBalancer
     http:
@@ -2843,6 +2882,9 @@ acestream:
       nodePort: ""
     stepdaddylivehd:
       port: 3000
+      nodePort: ""
+    acexy:
+      port: 8080
       nodePort: ""
 
 
