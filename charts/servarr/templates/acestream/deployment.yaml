@@ -81,7 +81,7 @@ spec:
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: 10.43.0.0/16
             - name: FIREWALL_INPUT_PORTS
-              value: "6878,8621,9191"
+              value: "6878,8621,9191,3000"
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: HTTPPROXY
               value: "on"
@@ -119,6 +119,9 @@ spec:
               protocol: UDP
             - name: dispatcharr
               containerPort: 9191
+              protocol: TCP
+            - name: stepdaddy
+              containerPort: 3000
               protocol: TCP
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: http-proxy
@@ -210,6 +213,28 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.acestream.dispatcharr.resources | nindent 12 }}
+      {{- if .Values.acestream.stepdaddylivehd.enabled }}
+        - name: stepdaddylivehd
+          securityContext:
+            {{- toYaml .Values.acestream.securityContext | nindent 12 }}
+          image: "{{ .Values.acestream.stepdaddylivehd.image.repository }}:{{ .Values.acestream.stepdaddylivehd.image.tag }}"
+          imagePullPolicy: {{ .Values.acestream.stepdaddylivehd.image.pullPolicy }}
+        {{- if not .Values.acestream.gluetun.enabled }}
+          ports:
+            - name: stepdaddy
+              containerPort: 3000
+              protocol: TCP
+        {{- end }}
+          {{- if .Values.acestream.stepdaddylivehd.env }}
+          env:
+            {{- range $k,$v := .Values.acestream.stepdaddylivehd.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.acestream.stepdaddylivehd.resources | nindent 12 }}
+      {{- end }}
       {{- if .Values.acestream.runtimeClassName }}
       runtimeClassName: {{ .Values.acestream.runtimeClassName | quote }}
       {{- end }}
