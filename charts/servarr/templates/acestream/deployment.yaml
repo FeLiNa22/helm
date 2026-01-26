@@ -81,7 +81,7 @@ spec:
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: 10.43.0.0/16
             - name: FIREWALL_INPUT_PORTS
-              value: "6878,8621,9191,3000"
+              value: "6878,8621,9191{{- if .Values.acestream.stepdaddylivehd.enabled }},3000{{- end }}"
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: HTTPPROXY
               value: "on"
