@@ -1,5 +1,5 @@
 {{- $fullName := include "immich.fullname" . -}}
-{{- if and (eq .Values.dragonfly.mode "standalone") .Values.dragonfly.standalone.enabled }}
+{{- if and .Values.dragonfly.enabled (eq .Values.dragonfly.mode "standalone") }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -111,7 +111,7 @@ spec:
 {{- end }}
 {{- end }}
 
-{{- if eq .Values.dragonfly.mode "cluster" }}
+{{- if and .Values.dragonfly.enabled (eq .Values.dragonfly.mode "cluster") }}
 ---
 apiVersion: dragonflydb.io/v1alpha1
 kind: Dragonfly
