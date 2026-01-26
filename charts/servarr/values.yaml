@@ -2812,7 +2812,7 @@ acestream:
   ## @param acestream.stepdaddylivehd.resources Resource limits and requests for the StepDaddyLiveHD container.
   ##
   stepdaddylivehd:
-    enabled: true
+    enabled: false
     image:
       repository: ghcr.io/gookie-dev/stepdaddylivehd
       pullPolicy: IfNotPresent
