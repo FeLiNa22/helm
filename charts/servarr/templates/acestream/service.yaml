@@ -36,26 +36,6 @@ spec:
       {{- if (and (eq .Values.acestream.service.type "NodePort") (not (empty .Values.acestream.service.dispatcharr.nodePort))) }}
       nodePort: {{ .Values.acestream.service.dispatcharr.nodePort }}
       {{- end }}
-    {{- if .Values.acestream.stepdaddylivehd.enabled }}
-    # StepDaddyLiveHD port
-    - port: {{ .Values.acestream.service.stepdaddylivehd.port | default 3000 }}
-      targetPort: stepdaddy
-      protocol: TCP
-      name: stepdaddy
-      {{- if (and (eq .Values.acestream.service.type "NodePort") (not (empty .Values.acestream.service.stepdaddylivehd.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.stepdaddylivehd.nodePort }}
-      {{- end }}
-    {{- end }}
-    {{- if .Values.acestream.acexy.enabled }}
-    # Acexy port
-    - port: {{ .Values.acestream.service.acexy.port | default 8080 }}
-      targetPort: acexy
-      protocol: TCP
-      name: acexy
-      {{- if (and (eq .Values.acestream.service.type "NodePort") (not (empty .Values.acestream.service.acexy.nodePort))) }}
-      nodePort: {{ .Values.acestream.service.acexy.nodePort }}
-      {{- end }}
-    {{- end }}
     {{- if and .Values.acestream.gluetun.enabled .Values.acestream.gluetun.httpProxy.enabled }}
     # Gluetun HTTP proxy port
     - port: {{ .Values.acestream.gluetun.httpProxy.port | default 8888 }}
