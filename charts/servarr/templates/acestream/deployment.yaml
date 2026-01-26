@@ -120,9 +120,11 @@ spec:
             - name: dispatcharr
               containerPort: 9191
               protocol: TCP
+            {{- if .Values.acestream.stepdaddylivehd.enabled }}
             - name: stepdaddy
               containerPort: 3000
               protocol: TCP
+            {{- end }}
             {{- if .Values.acestream.gluetun.httpProxy.enabled }}
             - name: http-proxy
               containerPort: {{ .Values.acestream.gluetun.httpProxy.port | default 8888 }}
