@@ -29,7 +29,7 @@ This chart deploys the following components:
 
 1. **Immich Server** - The main application server
 2. **Machine Learning** - ML service for face recognition and smart search (optional)
-3. **PostgreSQL** - Database with pgvector/vectorchord extension (standalone using StatefulSet or CloudNativePG cluster)
+3. **PostgreSQL** - Database with vectorchord extension (standalone using StatefulSet or CloudNativePG cluster)
 4. **DragonflyDB** - High-performance Redis-compatible cache and job queue (standalone or cluster via DragonflyDB operator)
 
 ### Database Modes
@@ -38,7 +38,7 @@ This chart deploys the following components:
 
 The chart supports three PostgreSQL deployment modes:
 
-1. **Standalone** (default): Deploys PostgreSQL using StatefulSet with pgvecto-rs extension
+1. **Standalone** (default): Deploys PostgreSQL using StatefulSet with vectorchord extension
 2. **Cluster**: Uses CloudNativePG operator for high-availability PostgreSQL cluster (requires operator installed)
 3. **External**: Connect to an existing PostgreSQL instance
 
@@ -205,8 +205,8 @@ ingress:
 | Name | Description | Value |
 |------|-------------|-------|
 | `database.mode` | Deployment mode: `standalone`, `cluster`, or `external` | `standalone` |
-| `database.standalone.image.repository` | PostgreSQL image with pgvecto-rs | `docker.io/tensorchord/pgvecto-rs` |
-| `database.standalone.image.tag` | PostgreSQL image tag | `pg16-v0.4.0` |
+| `database.standalone.image.repository` | PostgreSQL image with vectorchord | `tensorchord/vchord-postgres` |
+| `database.standalone.image.tag` | PostgreSQL image tag | `pg16-v0.2.0` |
 | `database.standalone.auth.database` | Database name | `immich` |
 | `database.standalone.auth.username` | Database username | `immich` |
 | `database.standalone.auth.password` | Database password | `""` (auto-generated) |
@@ -215,8 +215,8 @@ ingress:
 | `database.standalone.persistence.size` | PostgreSQL volume size | `10Gi` |
 | `database.standalone.persistence.storageClass` | Storage class for PostgreSQL | `""` |
 | `database.cluster.instances` | Number of PostgreSQL instances | `2` |
-| `database.cluster.image.repository` | PostgreSQL image with vectorchord | `ghcr.io/tensorchord/cloudnative-pgvecto.rs` |
-| `database.cluster.image.tag` | PostgreSQL image tag | `16-v0.4.0` |
+| `database.cluster.image.repository` | PostgreSQL image with vectorchord | `tensorchord/cloudnative-vectorchord` |
+| `database.cluster.image.tag` | PostgreSQL image tag | `16.6-v0.2.0` |
 | `database.cluster.storage.size` | Storage size per instance | `10Gi` |
 | `database.external.host` | External PostgreSQL host | `""` |
 | `database.external.port` | External PostgreSQL port | `5432` |
