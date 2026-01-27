@@ -16,6 +16,8 @@ metadata:
   labels:
     {{- include "immich.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
+  annotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
 type: Opaque
 stringData:
   password: {{ $userPassword }}
