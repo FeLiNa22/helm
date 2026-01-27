@@ -1,6 +1,6 @@
 {{- if eq .Values.database.mode "standalone" }}
-{{- $fullName := include "immich.fullname" . -}}
-{{- $secretName := include "immich.postgresql.secretName" . -}}
+{{- $fullName := include "penpot.fullname" . -}}
+{{- $secretName := include "penpot.postgresql.secretName" . -}}
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- $userPassword := "" }}
 {{- if $existingSecret }}
@@ -14,39 +14,18 @@ kind: Secret
 metadata:
   name: {{ $secretName }}
   labels:
-    {{- include "immich.labels" . | nindent 4 }}
+    {{- include "penpot.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
-  {{- if not .Values.database.standalone.auth.password }}
-  annotations:
-    argocd.argoproj.io/compare-options: IgnoreExtraneous
-  {{- end }}
 type: Opaque
 stringData:
   password: {{ $userPassword }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ $fullName }}-postgresql-init
-  labels:
-    {{- include "immich.labels" . | nindent 4 }}
-    app.kubernetes.io/component: database
-data:
-  init-extensions.sh: |
-    #!/bin/bash
-    set -e
-    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-      CREATE EXTENSION IF NOT EXISTS vectors;
-      CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
-      CREATE EXTENSION IF NOT EXISTS pg_trgm;
-    EOSQL
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ $fullName }}-postgresql
   labels:
-    {{- include "immich.labels" . | nindent 4 }}
+    {{- include "penpot.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
 spec:
   type: ClusterIP
@@ -56,7 +35,7 @@ spec:
       targetPort: postgresql
       protocol: TCP
   selector:
-    {{- include "immich.selectorLabels" . | nindent 4 }}
+    {{- include "penpot.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: database
 ---
 apiVersion: apps/v1
@@ -64,19 +43,19 @@ kind: StatefulSet
 metadata:
   name: {{ $fullName }}-postgresql
   labels:
-    {{- include "immich.labels" . | nindent 4 }}
+    {{- include "penpot.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
 spec:
   serviceName: {{ $fullName }}-postgresql
   replicas: 1
   selector:
     matchLabels:
-      {{- include "immich.selectorLabels" . | nindent 6 }}
+      {{- include "penpot.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: database
   template:
     metadata:
       labels:
-        {{- include "immich.selectorLabels" . | nindent 8 }}
+        {{- include "penpot.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: database
     spec:
       containers:
@@ -102,8 +81,6 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
-        - name: init-scripts
-          mountPath: /docker-entrypoint-initdb.d
         {{- if .Values.database.standalone.resources }}
         resources:
           {{- toYaml .Values.database.standalone.resources | nindent 10 }}
@@ -128,12 +105,8 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 6
-      volumes:
-      - name: init-scripts
-        configMap:
-          name: {{ $fullName }}-postgresql-init
-          defaultMode: 0755
       {{- if not .Values.database.standalone.persistence.enabled }}
+      volumes:
       - name: data
         emptyDir: {}
       {{- end }}
@@ -142,7 +115,7 @@ spec:
   - metadata:
       name: data
       labels:
-        {{- include "immich.labels" . | nindent 8 }}
+        {{- include "penpot.labels" . | nindent 8 }}
         app.kubernetes.io/component: database
     spec:
       accessModes:
@@ -155,13 +128,14 @@ spec:
           storage: {{ .Values.database.standalone.persistence.size }}
   {{- end }}
 {{- else if eq .Values.database.mode "cluster" }}
-{{- $fullName := include "immich.fullname" . -}}
+---
+{{- $fullName := include "penpot.fullname" . -}}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: {{ .Release.Name }}-{{ .Values.database.cluster.name }}
   labels:
-    {{- include "immich.labels" . | nindent 4 }}
+    {{- include "penpot.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
 spec:
   instances: {{ .Values.database.cluster.instances }}
@@ -172,7 +146,7 @@ spec:
 
   {{- if or .Values.database.cluster.superuserSecret.name .Values.database.cluster.superuserSecret.create }}
   superuserSecret:
-    name: {{ .Values.database.cluster.superuserSecret.name | default (printf "%s-immich-db-superuser" .Release.Name) }}
+    name: {{ .Values.database.cluster.superuserSecret.name | default (printf "%s-penpot-db-superuser" .Release.Name) }}
   {{- end }}
 
   bootstrap:
@@ -181,11 +155,7 @@ spec:
       owner: {{ .Values.database.cluster.owner }}
       {{- if or .Values.database.cluster.secret.name .Values.database.cluster.secret.create }}
       secret:
-        name: {{ .Values.database.cluster.secret.name | default (printf "%s-immich-db-app" .Release.Name) }}
-      {{- end }}
-      {{- if .Values.database.cluster.initSQL }}
-      postInitSQL:
-        {{- toYaml .Values.database.cluster.initSQL | nindent 8 }}
+        name: {{ .Values.database.cluster.secret.name | default (printf "%s-penpot-db-app" .Release.Name) }}
       {{- end }}
 
   storage:

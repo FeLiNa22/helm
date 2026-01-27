@@ -67,9 +67,15 @@ spec:
             - name: PENPOT_SECRET_KEY
               value: {{ .Values.config.apiSecretKey | quote }}
             - name: PENPOT_DATABASE_URI
+            {{- if .Values.database.mode }}
+              value: "postgresql://{{ include "penpot.postgresql.host" . }}:{{ include "penpot.postgresql.port" . }}/{{ include "penpot.postgresql.database" . }}"
+            {{- else }}
               value: "postgresql://{{ .Values.config.postgresql.host }}:{{ .Values.config.postgresql.port }}/{{ .Values.config.postgresql.database }}"
+            {{- end }}
             - name: PENPOT_DATABASE_USERNAME
-            {{- if not .Values.config.postgresql.secretKeys.usernameKey }}
+            {{- if .Values.database.mode }}
+              value: {{ include "penpot.postgresql.username" . | quote }}
+            {{- else if not .Values.config.postgresql.secretKeys.usernameKey }}
               value: {{ .Values.config.postgresql.username | quote }}
             {{- else }}
               valueFrom:
@@ -78,7 +84,12 @@ spec:
                   key: {{ .Values.config.postgresql.secretKeys.usernameKey }}
             {{- end }}
             - name: PENPOT_DATABASE_PASSWORD
-            {{- if not .Values.config.postgresql.secretKeys.passwordKey }}
+            {{- if .Values.database.mode }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "penpot.postgresql.secretName" . }}
+                  key: {{ include "penpot.postgresql.secretKey" . }}
+            {{- else if not .Values.config.postgresql.secretKeys.passwordKey }}
               value: {{ .Values.config.postgresql.password | quote }}
             {{- else }}
               valueFrom:
@@ -87,7 +98,11 @@ spec:
                   key: {{ .Values.config.postgresql.secretKeys.passwordKey }}
             {{- end }}
             - name: PENPOT_REDIS_URI
+            {{- if .Values.dragonfly.enabled }}
+              value: "redis://{{ include "penpot.dragonfly.host" . }}:{{ include "penpot.dragonfly.port" . }}/0"
+            {{- else }}
               value: "redis://{{ .Values.config.redis.host }}:{{ .Values.config.redis.port }}/{{ .Values.config.redis.database }}"
+            {{- end }}
             - name: PENPOT_ASSETS_STORAGE_BACKEND
               value: {{ .Values.config.assets.storageBackend | quote }}
           {{- if eq .Values.config.assets.storageBackend "assets-fs" }}
