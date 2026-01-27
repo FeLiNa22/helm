@@ -305,7 +305,7 @@ database:
     # Use PostgreSQL with vectorchord extension for vector search
     image:
       repository: tensorchord/vchord-postgres
-      tag: "pg16-v0.2.0"
+      tag: "pg16-v0.3.0"
     auth:
       database: immich
       username: immich
@@ -331,7 +331,7 @@ database:
     # Use PostgreSQL image with vectorchord extension for Immich
     image:
       repository: tensorchord/cloudnative-vectorchord
-      tag: "16.6-v0.2.0"
+      tag: "16-0.3.0"
     database: immich
     owner: immich
     storage:
