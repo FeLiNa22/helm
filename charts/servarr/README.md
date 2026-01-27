@@ -458,6 +458,17 @@ The command removes all the Kubernetes components associated with the chart and 
 | `seerr.probes.startupProbe`                           | Configure startup probe.                                                                                                            | `nil`                      |
 | `seerr.extraEnv`                                      | Additional environment variables to add to the seerr pods.                                                                          | `[]`                       |
 | `seerr.extraEnvFrom`                                  | Additional environment variables from secrets or configmaps to add to the seerr pods.                                               | `[]`                       |
+| `seerr.database.mode`                                 | Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster. | `standalone`               |
+| `seerr.database.host`                                 | Hostname of the external PostgreSQL database (required when mode is 'external').                                                    | `""`                       |
+| `seerr.database.port`                                 | Port of the external PostgreSQL database.                                                                                           | `5432`                     |
+| `seerr.database.username`                             | Username for the external PostgreSQL database.                                                                                      | `""`                       |
+| `seerr.database.password`                             | Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files. | `""`                       |
+| `seerr.database.existingSecret`                       | Name of an existing secret containing the database password (key: 'password'). Recommended for production.                          | `""`                       |
+| `seerr.database.databaseName`                         | Name of the database.                                                                                                               | `jellyseerr`               |
+| `seerr.database.logQueries`                           | Whether to log database queries for debugging.                                                                                      | `false`                    |
+| `seerr.database.cluster.instances`                    | Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').                                     | `2`                        |
+| `seerr.database.cluster.storageClass`                 | Storage class for the CloudNativePG cluster (only used when mode is 'cluster').                                                     | `""`                       |
+| `seerr.database.cluster.storageSize`                  | Storage size for the CloudNativePG cluster (only used when mode is 'cluster').                                                      | `5Gi`                      |
 
 ### Bazarr parameters
 

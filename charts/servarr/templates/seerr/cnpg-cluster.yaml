@@ -1,0 +1,23 @@
+{{- if and .Values.seerr.enabled (eq .Values.seerr.database.mode "cluster") }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Release.Name }}-seerr-db
+  labels:
+    app.kubernetes.io/name: seerr-db
+    app.kubernetes.io/instance: {{ .Release.Name }}-seerr-db
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  instances: {{ .Values.seerr.database.cluster.instances }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.seerr.database.databaseName }}
+      owner: seerr
+  storage:
+    {{- if .Values.seerr.database.cluster.storageClass }}
+    storageClass: {{ .Values.seerr.database.cluster.storageClass }}
+    {{- end }}
+    size: {{ .Values.seerr.database.cluster.storageSize }}
+{{- end }}
