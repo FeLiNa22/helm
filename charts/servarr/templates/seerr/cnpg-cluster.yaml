@@ -13,7 +13,7 @@ spec:
   instances: {{ .Values.seerr.database.cluster.instances }}
   bootstrap:
     initdb:
-      database: {{ .Values.seerr.database.databaseName }}
+      database: {{ include "seerr.database.name" . }}
       owner: seerr
   storage:
     {{- if .Values.seerr.database.cluster.storageClass }}
