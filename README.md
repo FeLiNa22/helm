@@ -633,7 +633,8 @@ Use Cloudflare Tunnel to expose services securely:
 ```bash
 # Install Cloudflare Tunnel
 helm install cf-tunnel felina22/cloudflare-tunnel \
-  --set tunnel.token="your-tunnel-token"
+  --set managed.enabled=true \
+  --set managed.token="your-tunnel-token"
 
 # Keep DNS updated with dynamic IP
 helm install ddns felina22/cloudflare-dynamic-ip-updater \
