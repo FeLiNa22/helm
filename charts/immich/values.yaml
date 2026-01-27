@@ -309,8 +309,8 @@ database:
     auth:
       database: immich
       username: immich
-      password: ""  # Leave empty to auto-generate (persists across upgrades via secret lookup)
-      postgresPassword: ""  # Leave empty to auto-generate (persists across upgrades via secret lookup)
+      password: ""  # Leave empty to auto-generate via immutable Job (persists across upgrades)
+      postgresPassword: ""  # Leave empty to auto-generate via immutable Job (persists across upgrades)
       existingSecret: ""
     persistence:
       enabled: true

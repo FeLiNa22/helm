@@ -1,13 +1,7 @@
 {{- if eq .Values.database.mode "standalone" }}
 {{- $fullName := include "immich.fullname" . -}}
 {{- $secretName := include "immich.postgresql.secretName" . -}}
-{{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
-{{- $userPassword := "" }}
-{{- if $existingSecret }}
-{{- $userPassword = index $existingSecret.data "password" | b64dec }}
-{{- else }}
-{{- $userPassword = .Values.database.standalone.auth.password | default (randAlphaNum 32) }}
-{{- end }}
+{{- if .Values.database.standalone.auth.password }}
 ---
 apiVersion: v1
 kind: Secret
@@ -18,7 +12,115 @@ metadata:
     app.kubernetes.io/component: database
 type: Opaque
 stringData:
-  password: {{ $userPassword }}
+  password: {{ .Values.database.standalone.auth.password }}
+{{- else }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $secretName }}-generator
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  ttlSecondsAfterFinished: 60
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        {{- include "immich.labels" . | nindent 8 }}
+        app.kubernetes.io/component: database-secret-generator
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ $secretName }}-generator
+      containers:
+      - name: secret-generator
+        image: bitnami/kubectl:1.31
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          
+          SECRET_NAME="{{ $secretName }}"
+          NAMESPACE="{{ .Release.Namespace }}"
+          
+          # Check if secret already exists
+          if kubectl get secret "$SECRET_NAME" -n "$NAMESPACE" >/dev/null 2>&1; then
+            echo "Secret $SECRET_NAME already exists, skipping generation"
+            exit 0
+          fi
+          
+          # Generate a random password
+          PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+          
+          # Create the secret
+          kubectl create secret generic "$SECRET_NAME" \
+            --from-literal=password="$PASSWORD" \
+            -n "$NAMESPACE"
+          
+          # Add labels
+          kubectl label secret "$SECRET_NAME" \
+            {{- range $key, $value := include "immich.labels" . | fromYaml }}
+            {{ $key }}={{ $value }} \
+            {{- end }}
+            app.kubernetes.io/component=database \
+            -n "$NAMESPACE"
+          
+          echo "Secret $SECRET_NAME created successfully"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $secretName }}-generator
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ $secretName }}-generator
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "create", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $secretName }}-generator
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ $secretName }}-generator
+subjects:
+- kind: ServiceAccount
+  name: {{ $secretName }}-generator
+  namespace: {{ .Release.Namespace }}
+{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
