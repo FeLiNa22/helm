@@ -48,13 +48,13 @@ spec:
             - name: PENPOT_SECRET_KEY
               value: {{ .Values.config.apiSecretKey | quote }}
             - name: PENPOT_DATABASE_URI
-            {{- if and .Values.database.mode (ne .Values.database.mode "") }}
+            {{- if .Values.database.mode }}
               value: "postgresql://{{ include "penpot.postgresql.host" . }}:{{ include "penpot.postgresql.port" . }}/{{ include "penpot.postgresql.database" . }}"
             {{- else }}
               value: "postgresql://{{ .Values.config.postgresql.host }}:{{ .Values.config.postgresql.port }}/{{ .Values.config.postgresql.database }}"
             {{- end }}
             - name: PENPOT_DATABASE_USERNAME
-            {{- if and .Values.database.mode (ne .Values.database.mode "") }}
+            {{- if .Values.database.mode }}
               value: {{ include "penpot.postgresql.username" . | quote }}
             {{- else if not .Values.config.postgresql.secretKeys.usernameKey }}
               value: {{ .Values.config.postgresql.username | quote }}
@@ -65,7 +65,7 @@ spec:
                   key: {{ .Values.config.postgresql.secretKeys.usernameKey }}
             {{- end }}
             - name: PENPOT_DATABASE_PASSWORD
-            {{- if and .Values.database.mode (ne .Values.database.mode "") }}
+            {{- if .Values.database.mode }}
               valueFrom:
                 secretKeyRef:
                   name: {{ include "penpot.postgresql.secretName" . }}
