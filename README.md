@@ -650,7 +650,7 @@ Deploy AI agent workflows:
 
 ```bash
 helm install crewai felina22/crewai \
-  --set env.OPENAI_API_KEY="your-api-key" \
+  --set crewai.openaiApiKey.value="your-api-key" \
   --set ingress.enabled=true \
   --set ingress.hosts[0].host="ai.example.com"
 ```
