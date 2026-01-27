@@ -250,7 +250,7 @@ Optional for automatic image updates (see [ArgoCD Image Updater](#argocd-image-u
 ### Application-Specific Requirements
 
 - **cloudflare-tunnel**: Cloudflare Tunnel token (for managed tunnels) or tunnel ID, account tag, tunnel name, and tunnel secret (for local tunnels)
-- **cloudflare-dynamic-ip-updater**: Cloudflare API token
+- **cloudflare-dynamic-ip-updater**: Cloudflare API token (authKey), zone ID, DNS record name, and record ID
 - **crewai**: API key from LLM provider (OpenAI, Anthropic, or Azure OpenAI)
 
 ## 🚀 Installation Examples
