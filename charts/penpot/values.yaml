@@ -464,22 +464,30 @@ config:
 ## @section PostgreSQL configuration (Check for [more parameters here](https://artifacthub.io/packages/helm/bitnami/postgresql))
 
 ## @param postgresql.auth.username Name for a custom user to create.
-## @param postgresql.auth.password Password for the custom user to create.
+## @param postgresql.auth.password Password for the custom user to create (used if existingSecret is not specified).
+## @param postgresql.auth.postgresPassword Password for the 'postgres' administrative user (used if existingSecret is not specified).
 ## @param postgresql.auth.database Name for a custom database to create.
+## @param postgresql.auth.existingSecret Reference to an existing Kubernetes secret containing the database credentials. Use 'password' for user, and 'postgres-password' for postgres user.
 ##
 postgresql:
   auth:
     username: example
-    password: secretpassword
+    password: ""
+    postgresPassword: ""
     database: penpot
+    existingSecret: ""
 
 ## @section Redis configuration (Check for [more parameters here](https://artifacthub.io/packages/helm/bitnami/redis))
 
 ## @param redis.auth.enabled Whether to enable password authentication.
+## @param redis.auth.password Password for Redis (used if existingSecret is not specified).
+## @param redis.auth.existingSecret Reference to an existing Kubernetes secret containing Redis credentials. Use 'redis-password' key.
 ##
 redis:
   auth:
     enabled: false
+    password: ""
+    existingSecret: ""
 
 
 ## @section ArgoCD Image Updater parameters

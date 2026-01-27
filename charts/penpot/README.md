@@ -30,6 +30,33 @@ The command deploys penpot on the Kubernetes cluster in the default configuratio
 
 > **Tip**: List all releases using `helm list`
 
+## Password Persistence
+
+This chart automatically manages password persistence for PostgreSQL and Redis to prevent password regeneration on chart upgrades. When you install the chart, it creates secrets with auto-generated passwords. On subsequent upgrades, it reuses the existing passwords from these secrets.
+
+### How It Works
+
+The chart creates the following secrets (where `<release-name>` is your Helm release name):
+- `<release-name>-postgresql-auth` - PostgreSQL passwords
+- `<release-name>-redis-auth` - Redis password (if `redis.auth.enabled: true`)
+
+These secrets are created using Helm's `lookup` function, which checks if the secret already exists. If it does, the existing password is reused. If not, a new random password is generated.
+
+### Using Custom Secrets
+
+If you want to manage your own secrets instead of using the auto-generated ones, set the `existingSecret` parameters in your values:
+
+```yaml
+postgresql:
+  auth:
+    existingSecret: "my-postgresql-secret"  # Must have keys: password, postgres-password
+
+redis:
+  auth:
+    enabled: true
+    existingSecret: "my-redis-secret"  # Must have key: redis-password
+```
+
 ## Uninstalling the Chart
 
 To uninstall/delete the `penpot` deployment:

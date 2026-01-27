@@ -4,7 +4,7 @@ maintainers:
     url: https://raulpatel.com
 apiVersion: v2
 appVersion: 0.87.4
-version: 1.1.4
+version: 1.2.0
 description: Raul Outline Wiki Helm Chart
 home: https://github.com/FeLiNa22/homeserver/tree/main/charts/outline
 icon: https://raulpatel.com/images/raul.svg
