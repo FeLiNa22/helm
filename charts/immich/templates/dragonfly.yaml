@@ -31,9 +31,6 @@ spec:
               containerPort: 6379
               protocol: TCP
           {{- if .Values.dragonfly.standalone.persistence.enabled }}
-          args:
-            - --dir=/data
-            - --dbfilename=dump.rdb
           volumeMounts:
             - name: data
               mountPath: /data
