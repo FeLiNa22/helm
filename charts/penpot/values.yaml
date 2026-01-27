@@ -2,18 +2,18 @@
 
 ## @section Global parameters
 
-## @param global.postgresqlEnabled Whether to deploy the Bitnami PostgreSQL chart as subchart. Check [the official chart](https://artifacthub.io/packages/helm/bitnami/postgresql) for configuration.
-## @param global.redisEnabled Whether to deploy the Bitnami Redis chart as subchart. Check [the official chart](https://artifacthub.io/packages/helm/bitnami/redis) for configuration.
 ## @param global.imagePullSecrets Global Docker registry secret names as an array.
+## @param global.postgresqlEnabled (DEPRECATED) Legacy flag for Bitnami PostgreSQL subchart. Use database.mode instead.
+## @param global.redisEnabled (DEPRECATED) Legacy flag for Bitnami Redis subchart. Use dragonfly.enabled instead.
 ##
 global:
-  postgresqlEnabled: true
-  redisEnabled: true
   ## E.g.
   ## imagePullSecrets:
   ##   - myRegistryKeySecretName
   ##
   imagePullSecrets: []
+  postgresqlEnabled: false
+  redisEnabled: false
 
 ## @section Common parameters
 
@@ -461,7 +461,146 @@ config:
       oidcClientIDKey: ""
       oidcClientSecretKey: ""
 
-## @section PostgreSQL configuration (Check for [more parameters here](https://artifacthub.io/packages/helm/bitnami/postgresql))
+## @section DragonflyDB parameters
+## DragonflyDB is a Redis-compatible in-memory data store used for Penpot's caching
+
+## @param dragonfly.enabled Whether to enable DragonflyDB/Redis for Penpot.
+## @param dragonfly.mode The mode of DragonflyDB deployment: 'standalone', 'cluster', or 'external'.
+## @param dragonfly.standalone.image.repository The Docker repository for Dragonfly image.
+## @param dragonfly.standalone.image.tag The image tag for Dragonfly.
+## @param dragonfly.standalone.resources Resource limits and requests for standalone Dragonfly.
+## @param dragonfly.standalone.persistence.enabled Whether to enable persistence for standalone Dragonfly.
+## @param dragonfly.standalone.persistence.size Size of the persistence volume for standalone Dragonfly.
+## @param dragonfly.standalone.persistence.storageClass Storage class for standalone Dragonfly persistence.
+## @param dragonfly.cluster.replicas Number of Dragonfly replicas in the cluster.
+## @param dragonfly.cluster.image.repository The Docker repository for Dragonfly cluster image.
+## @param dragonfly.cluster.image.tag The image tag for Dragonfly cluster.
+## @param dragonfly.cluster.resources Resource limits and requests for Dragonfly cluster.
+## @param dragonfly.cluster.persistence.enabled Whether to enable persistence for Dragonfly cluster.
+## @param dragonfly.cluster.persistence.size Size of the persistence volume for Dragonfly cluster.
+## @param dragonfly.cluster.persistence.storageClass Storage class for Dragonfly cluster persistence.
+## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
+## @param dragonfly.external.port Port of external DragonflyDB/Redis.
+## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
+## @param dragonfly.external.passwordKey Key in the secret for the password.
+##
+dragonfly:
+  enabled: true
+  mode: standalone
+
+  standalone:
+    image:
+      repository: docker.dragonflydb.io/dragonflydb/dragonfly
+      tag: "v1.25.2"
+    resources: {}
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: ""
+
+  cluster:
+    replicas: 2
+    image:
+      repository: docker.dragonflydb.io/dragonflydb/dragonfly
+      tag: "v1.25.2"
+    resources: {}
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: ""
+
+  external:
+    host: ""
+    port: 6379
+    existingSecret: ""
+    passwordKey: "password"
+
+## @section Database parameters
+## PostgreSQL database is required for Penpot
+
+## @param database.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
+## @param database.standalone.image.repository PostgreSQL image repository.
+## @param database.standalone.image.tag PostgreSQL image tag.
+## @param database.standalone.auth.database Name of the database to create.
+## @param database.standalone.auth.username Username for the database.
+## @param database.standalone.auth.password Password for the database user (leave empty to auto-generate).
+## @param database.standalone.auth.existingSecret Reference to an existing Kubernetes secret for auth.
+## @param database.standalone.persistence.enabled Whether to enable persistence for standalone PostgreSQL.
+## @param database.standalone.persistence.size Size of the persistence volume.
+## @param database.standalone.persistence.storageClass Storage class for persistence.
+## @param database.standalone.resources Resource limits and requests for standalone PostgreSQL.
+## @param database.cluster.name Name of the database cluster.
+## @param database.cluster.instances Number of PostgreSQL instances (replicas).
+## @param database.cluster.image.repository PostgreSQL container image repository.
+## @param database.cluster.image.tag PostgreSQL container image tag.
+## @param database.cluster.database Name of the database to create.
+## @param database.cluster.owner Owner of the database.
+## @param database.cluster.storage.size Size of the storage for each instance.
+## @param database.cluster.storage.storageClass Storage class name for persistent volumes.
+## @param database.cluster.secret.name Name of the secret containing database credentials.
+## @param database.cluster.secret.create Whether to create the database secret.
+## @param database.cluster.secret.username Database user username.
+## @param database.cluster.secret.password Database user password (leave empty to auto-generate).
+## @param database.cluster.superuserSecret.name Name of the secret containing the superuser credentials.
+## @param database.cluster.superuserSecret.create Whether to create the superuser secret.
+## @param database.cluster.superuserSecret.username Superuser username.
+## @param database.cluster.superuserSecret.password Superuser password (leave empty to auto-generate).
+## @param database.external.host Hostname of external PostgreSQL (when mode is 'external').
+## @param database.external.port Port of external PostgreSQL.
+## @param database.external.database Database name of external PostgreSQL.
+## @param database.external.username Username of external PostgreSQL.
+## @param database.external.existingSecret Secret name for external PostgreSQL password.
+## @param database.external.secretKey Key in the secret for the password.
+##
+database:
+  mode: standalone
+
+  standalone:
+    image:
+      repository: postgres
+      tag: "16-alpine"
+    auth:
+      database: penpot
+      username: penpot
+      password: ""
+      existingSecret: ""
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: ""
+    resources: {}
+
+  cluster:
+    name: penpot-db
+    instances: 2
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: "16"
+    database: penpot
+    owner: penpot
+    storage:
+      size: 10Gi
+      storageClass: ""
+    secret:
+      name: ""
+      create: true
+      username: penpot
+      password: ""
+    superuserSecret:
+      name: ""
+      create: true
+      username: postgres
+      password: ""
+
+  external:
+    host: ""
+    port: 5432
+    database: "penpot"
+    username: "penpot"
+    existingSecret: ""
+    secretKey: "password"
+
+## @section PostgreSQL configuration (DEPRECATED - use database instead)
 
 ## @param postgresql.auth.username Name for a custom user to create.
 ## @param postgresql.auth.password Password for the custom user to create.
@@ -470,10 +609,10 @@ config:
 postgresql:
   auth:
     username: example
-    password: secretpassword
+    password: ""
     database: penpot
 
-## @section Redis configuration (Check for [more parameters here](https://artifacthub.io/packages/helm/bitnami/redis))
+## @section Redis configuration (DEPRECATED - use dragonfly instead)
 
 ## @param redis.auth.enabled Whether to enable password authentication.
 ##
