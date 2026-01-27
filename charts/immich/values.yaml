@@ -219,7 +219,7 @@ dragonfly:
   standalone:
     image:
       repository: docker.dragonflydb.io/dragonflydb/dragonfly
-      tag: "v1.25.2"
+      tag: "v1.36.0"
     resources: {}
       # limits:
       #   cpu: 1000m
@@ -237,7 +237,7 @@ dragonfly:
     replicas: 2
     image:
       repository: docker.dragonflydb.io/dragonflydb/dragonfly
-      tag: "v1.25.2"
+      tag: "v1.36.0"
     resources: {}
       # limits:
       #   cpu: 2000m
