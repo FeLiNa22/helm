@@ -32,29 +32,73 @@ The command deploys penpot on the Kubernetes cluster in the default configuratio
 
 ## Password Persistence
 
-This chart automatically manages password persistence for PostgreSQL and Redis to prevent password regeneration on chart upgrades. When you install the chart, it creates secrets with auto-generated passwords. On subsequent upgrades, it reuses the existing passwords from these secrets.
+This chart automatically manages password persistence for PostgreSQL and Redis to prevent password regeneration on chart upgrades.
+
+### Quick Start with Password Persistence
+
+For password persistence to work automatically, you need to configure the subcharts to use the auto-generated secrets. Here's the recommended installation command:
+
+```bash
+# First installation - creates secrets with random passwords
+helm install my-penpot raulpatel/penpot
+
+# Configure subcharts to use the auto-generated secrets
+# Replace 'my-penpot' with your actual release name
+helm upgrade my-penpot raulpatel/penpot \
+  --set postgresql.auth.existingSecret=my-penpot-postgresql-auth \
+  --set redis.auth.enabled=true \
+  --set redis.auth.existingSecret=my-penpot-redis-auth
+```
+
+After this initial setup, all future upgrades will automatically preserve the passwords:
+
+```bash
+helm upgrade my-penpot raulpatel/penpot
+```
 
 ### How It Works
 
-The chart creates the following secrets (where `<release-name>` is your Helm release name):
-- `<release-name>-postgresql-auth` - PostgreSQL passwords
-- `<release-name>-redis-auth` - Redis password (if `redis.auth.enabled: true`)
+On the first install, the chart creates these secrets with auto-generated passwords:
+- `<release-name>-postgresql-auth` - PostgreSQL passwords (keys: `password`, `postgres-password`)
+- `<release-name>-redis-auth` - Redis password (key: `redis-password`, only if `redis.auth.enabled: true`)
 
-These secrets are created using Helm's `lookup` function, which checks if the secret already exists. If it does, the existing password is reused. If not, a new random password is generated.
+These secrets use Helm's `lookup` function to check if they already exist. If they do, the existing passwords are reused. If not, new random passwords are generated.
 
-### Using Custom Secrets
+### Using a Values File
 
-If you want to manage your own secrets instead of using the auto-generated ones, set the `existingSecret` parameters in your values:
+For a more permanent configuration, create a `values.yaml` file:
 
 ```yaml
 postgresql:
   auth:
-    existingSecret: "my-postgresql-secret"  # Must have keys: password, postgres-password
+    existingSecret: "my-penpot-postgresql-auth"  # Replace 'my-penpot' with your release name
 
 redis:
   auth:
     enabled: true
-    existingSecret: "my-redis-secret"  # Must have key: redis-password
+    existingSecret: "my-penpot-redis-auth"  # Replace 'my-penpot' with your release name
+```
+
+Then install/upgrade with:
+
+```bash
+helm install my-penpot raulpatel/penpot -f values.yaml
+helm upgrade my-penpot raulpatel/penpot -f values.yaml
+```
+
+### Using Custom Secrets
+
+If you prefer to manage your own secrets, create them manually before installing the chart:
+
+```yaml
+postgresql:
+  auth:
+    existingSecret: "my-custom-postgresql-secret"  # Must have keys: password, postgres-password
+
+redis:
+  auth:
+    enabled: true
+    existingSecret: "my-custom-redis-secret"  # Must have key: redis-password
 ```
 
 ## Uninstalling the Chart
