@@ -194,13 +194,12 @@ ingress:
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `dragonfly.mode` | Deployment mode: `standalone`, `cluster`, `external`, or `disabled` | `standalone` |
-| `dragonfly.standalone.enabled` | Deploy standalone DragonflyDB | `true` |
+| `dragonfly.enabled` | Enable or disable DragonflyDB/Redis entirely | `true` |
+| `dragonfly.mode` | Deployment mode: `standalone`, `cluster`, or `external` | `standalone` |
 | `dragonfly.standalone.image.repository` | DragonflyDB image repository | `docker.dragonflydb.io/dragonflydb/dragonfly` |
 | `dragonfly.standalone.image.tag` | DragonflyDB image tag | `v1.25.2` |
 | `dragonfly.standalone.persistence.enabled` | Enable persistence | `true` |
 | `dragonfly.standalone.persistence.size` | Persistence volume size | `5Gi` |
-| `dragonfly.cluster.enabled` | Deploy DragonflyDB cluster (requires operator) | `false` |
 | `dragonfly.cluster.replicas` | Number of cluster replicas | `2` |
 | `dragonfly.external.host` | External Redis/DragonflyDB host | `""` |
 | `dragonfly.external.port` | External Redis/DragonflyDB port | `6379` |
