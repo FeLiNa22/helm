@@ -94,7 +94,7 @@ kind: Service
 metadata:
   name: {{ $fullName }}-machine-learning
   labels:
-    {{- include "immich.labels" . | nindent 4 }}
+    {{- include "immich.serviceLabels" . | nindent 4 }}
     app.kubernetes.io/component: machine-learning
 spec:
   type: ClusterIP

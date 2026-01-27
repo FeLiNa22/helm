@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: {{ $fullName }}-server
   labels:
-    {{- include "immich.labels" . | nindent 4 }}
+    {{- include "immich.serviceLabels" . | nindent 4 }}
     app.kubernetes.io/component: server
 spec:
   type: {{ .Values.service.type }}

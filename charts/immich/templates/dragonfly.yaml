@@ -78,7 +78,7 @@ kind: Service
 metadata:
   name: {{ $fullName }}-dragonfly
   labels:
-    {{- include "immich.labels" . | nindent 4 }}
+    {{- include "immich.serviceLabels" . | nindent 4 }}
     app.kubernetes.io/component: dragonfly
 spec:
   type: ClusterIP
