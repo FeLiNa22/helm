@@ -15,13 +15,3 @@ keywords:
   - design
 sources:
   - https://github.com/penpot/penpot
-
-dependencies:
-  - condition: global.postgresqlEnabled
-    name: postgresql
-    repository: https://charts.bitnami.com/bitnami
-    version: 15.x.x
-  - condition: global.redisEnabled
-    name: redis
-    repository: https://charts.bitnami.com/bitnami
-    version: 18.x.x

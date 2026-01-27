@@ -1,0 +1,158 @@
+{{- $fullName := include "penpot.fullname" . -}}
+{{- if and .Values.dragonfly.enabled (eq .Values.dragonfly.mode "standalone") }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullName }}-dragonfly
+  labels:
+    {{- include "penpot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "penpot.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: dragonfly
+  template:
+    metadata:
+      labels:
+        {{- include "penpot.labels" . | nindent 8 }}
+        app.kubernetes.io/component: dragonfly
+    spec:
+      containers:
+        - name: dragonfly
+          image: "{{ .Values.dragonfly.standalone.image.repository }}:{{ .Values.dragonfly.standalone.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          {{- if .Values.dragonfly.standalone.persistence.enabled }}
+          args:
+            - --dir=/data
+            - --dbfilename=dump.rdb
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- end }}
+          livenessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.dragonfly.standalone.resources | nindent 12 }}
+      {{- if .Values.dragonfly.standalone.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-dragonfly
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-dragonfly
+  labels:
+    {{- include "penpot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: redis
+      protocol: TCP
+      name: redis
+  selector:
+    {{- include "penpot.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly
+{{- if .Values.dragonfly.standalone.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $fullName }}-dragonfly
+  labels:
+    {{- include "penpot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.dragonfly.standalone.persistence.storageClass }}
+  storageClassName: {{ .Values.dragonfly.standalone.persistence.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.dragonfly.standalone.persistence.size }}
+{{- end }}
+{{- end }}
+
+{{- if and .Values.dragonfly.enabled (eq .Values.dragonfly.mode "cluster") }}
+---
+apiVersion: dragonflydb.io/v1alpha1
+kind: Dragonfly
+metadata:
+  name: {{ $fullName }}-dragonfly-cluster
+  labels:
+    {{- include "penpot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly-cluster
+spec:
+  replicas: {{ .Values.dragonfly.cluster.replicas }}
+  image: "{{ .Values.dragonfly.cluster.image.repository }}:{{ .Values.dragonfly.cluster.image.tag }}"
+  {{- if .Values.dragonfly.cluster.resources }}
+  resources:
+    {{- toYaml .Values.dragonfly.cluster.resources | nindent 4 }}
+  {{- end }}
+  {{- if .Values.dragonfly.cluster.persistence.enabled }}
+  snapshot:
+    dir: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- if .Values.dragonfly.cluster.persistence.storageClass }}
+        storageClassName: {{ .Values.dragonfly.cluster.persistence.storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.dragonfly.cluster.persistence.size }}
+  {{- end }}
+  {{- with .Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.affinity }}
+  affinity:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

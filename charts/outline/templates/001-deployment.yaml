@@ -73,7 +73,17 @@ spec:
               value: "{{ .Values.outline.utilsSecret.value }}"
           {{- end }}
 
-          {{- if .Values.global.postgresqlEnabled }}
+          {{- if .Values.database.mode }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "outline.postgresql.secretName" . }}
+                  key: {{ include "outline.postgresql.secretKey" . }}
+            - name: DATABASE_URL
+              value: "postgres://{{ include "outline.postgresql.username" . }}:$(POSTGRES_PASSWORD)@{{ include "outline.postgresql.host" . }}:{{ include "outline.postgresql.port" . }}/{{ include "outline.postgresql.database" . }}"
+            - name: DATABASE_URL_TEST
+              value: "postgres://{{ include "outline.postgresql.username" . }}:$(POSTGRES_PASSWORD)@{{ include "outline.postgresql.host" . }}:{{ include "outline.postgresql.port" . }}/{{ include "outline.postgresql.database" . }}_test"
+          {{- else if .Values.global.postgresqlEnabled }}
             {{- if .Values.postgresql.auth.existingSecret }}
             - name: POSTGRES_PASSWORD
               valueFrom:
@@ -144,7 +154,10 @@ spec:
             - name: PGSSLMODE
               value: "{{ .Values.outline.database.sslMode }}"
 
-          {{- if .Values.global.redisEnabled }}
+          {{- if .Values.dragonfly.enabled }}
+            - name: REDIS_URL
+              value: "redis://{{ include "outline.dragonfly.host" . }}:{{ include "outline.dragonfly.port" . }}"
+          {{- else if .Values.global.redisEnabled }}
             - name: REDIS_URL
               value: "redis://{{ .Release.Name }}-redis-master:6379"
           {{- end }}
