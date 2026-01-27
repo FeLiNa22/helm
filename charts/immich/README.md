@@ -76,18 +76,17 @@ database:
 
 #### DragonflyDB Options
 
-The chart supports three DragonflyDB deployment modes, which can be enabled or disabled entirely:
+The chart supports three DragonflyDB deployment modes:
 
 1. **Standalone** (default): Simple single-instance DragonflyDB deployment
 2. **Cluster**: Uses DragonflyDB operator for clustered deployment (requires operator installed)
 3. **External**: Connect to an external Redis/DragonflyDB instance
 
-You can disable DragonflyDB entirely by setting `dragonfly.enabled: false` (not recommended for Immich).
+**Note:** DragonflyDB/Redis is always enabled as it is required for Immich.
 
 ```yaml
-# Standalone mode (default) - enabled
+# Standalone mode (default)
 dragonfly:
-  enabled: true
   mode: standalone
   standalone:
     persistence:
@@ -96,7 +95,6 @@ dragonfly:
 
 # Cluster mode - uses DragonflyDB operator
 dragonfly:
-  enabled: true
   mode: cluster
   cluster:
     replicas: 2
@@ -106,7 +104,6 @@ dragonfly:
 
 # External mode - use external Redis/DragonflyDB
 dragonfly:
-  enabled: true
   mode: external
   external:
     host: "your-redis-host"
@@ -194,7 +191,6 @@ ingress:
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `dragonfly.enabled` | Enable or disable DragonflyDB/Redis entirely | `true` |
 | `dragonfly.mode` | Deployment mode: `standalone`, `cluster`, or `external` | `standalone` |
 | `dragonfly.standalone.image.repository` | DragonflyDB image repository | `docker.dragonflydb.io/dragonflydb/dragonfly` |
 | `dragonfly.standalone.image.tag` | DragonflyDB image tag | `v1.25.2` |

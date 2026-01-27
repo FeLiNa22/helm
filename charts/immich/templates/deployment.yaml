@@ -79,7 +79,6 @@ spec:
                 secretKeyRef:
                   name: {{ include "immich.postgresql.secretName" . }}
                   key: {{ include "immich.postgresql.secretKey" . }}
-            {{- if .Values.dragonfly.enabled }}
             # DragonflyDB/Redis connection
             - name: REDIS_HOSTNAME
               value: {{ include "immich.dragonfly.host" . }}
@@ -91,7 +90,6 @@ spec:
                 secretKeyRef:
                   name: {{ include "immich.dragonfly.secretName" . }}
                   key: {{ include "immich.dragonfly.passwordKey" . }}
-            {{- end }}
             {{- end }}
             {{- if .Values.machineLearning.enabled }}
             # Machine Learning connection
