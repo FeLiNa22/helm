@@ -128,6 +128,7 @@ spec:
           storage: {{ .Values.database.standalone.persistence.size }}
   {{- end }}
 {{- else if eq .Values.database.mode "cluster" }}
+---
 {{- $fullName := include "penpot.fullname" . -}}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster

@@ -73,7 +73,7 @@ spec:
               value: "{{ .Values.outline.utilsSecret.value }}"
           {{- end }}
 
-          {{- if .Values.database.mode }}
+          {{- if and .Values.database.mode (ne .Values.database.mode "") }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:

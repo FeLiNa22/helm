@@ -605,7 +605,7 @@ database:
 postgresql:
   auth:
     username: example
-    password: secretpassword
+    password: ""
     database: penpot
 
 ## @section Redis configuration (DEPRECATED - use dragonfly instead)
