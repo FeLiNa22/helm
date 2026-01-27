@@ -3,6 +3,8 @@
 ## @section Global parameters
 
 ## @param global.imagePullSecrets Global Docker registry secret names as an array.
+## @param global.postgresqlEnabled (DEPRECATED) Legacy flag for Bitnami PostgreSQL subchart. Use database.mode instead.
+## @param global.redisEnabled (DEPRECATED) Legacy flag for Bitnami Redis subchart. Use dragonfly.enabled instead.
 ##
 global:
   ## E.g.
@@ -10,6 +12,8 @@ global:
   ##   - myRegistryKeySecretName
   ##
   imagePullSecrets: []
+  postgresqlEnabled: false
+  redisEnabled: false
 
 ## @section Common parameters
 

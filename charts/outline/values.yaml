@@ -3,9 +3,13 @@
 ## @section Global parameters
 
 ## @param global.minioEnabled Whether to deploy the minio chart as subchart. Check [the official chart](https://artifacthub.io/packages/helm/bitnami/minio) for configuration.
+## @param global.postgresqlEnabled (DEPRECATED) Legacy flag for Bitnami PostgreSQL subchart. Use database.mode instead.
+## @param global.redisEnabled (DEPRECATED) Legacy flag for Bitnami Redis subchart. Use dragonfly.enabled instead.
 ##
 global:
   minioEnabled: true
+  postgresqlEnabled: false
+  redisEnabled: false
 
 ## @section Image parameters
 
