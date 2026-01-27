@@ -308,11 +308,6 @@ ingress:
               port:
                 name: web
 
-## @section Redis parameters
-
-## @param redis.architecture Redis deployment architecture: 'standalone' or 'replication'.
-## @param redis.auth.enabled Enable or disable authentication for Redis.
-##
 ## @section Redis configuration
 
 ## @param redis.architecture Redis deployment architecture: 'standalone' or 'replication'.
@@ -357,8 +352,8 @@ postgresql:
 ## @param minio.disableWebUI Enable or disable the MinIO web user interface.
 ## @param minio.defaultBuckets Comma-separated list of default buckets to create on startup.
 ## @param minio.auth.rootUser Root user name for MinIO access.
-## @param minio.auth.rootPassword Root password for MinIO access (used if existingSecret is not specified).
 ## @param minio.auth.existingSecret Reference to an existing Kubernetes secret containing MinIO credentials. Use 'root-user' for user, and 'root-password' for the password.
+## @param minio.auth.rootPassword Root password for MinIO access (used if existingSecret is not specified).
 ## @param minio.ingress.enabled Enable or disable Ingress for MinIO.
 ## @param minio.ingress.hostname Default host for the ingress resource for MinIO.
 ## @param minio.s3Config.region Direct value for the AWS region, if not using Kubernetes secret.
@@ -375,8 +370,8 @@ minio:
   defaultBuckets: outline
   auth:
     rootUser: ""
-    rootPassword: ""
     existingSecret: ""
+    rootPassword: ""
   ingress:
     enabled: false
     hostname: "outline.server.example"
