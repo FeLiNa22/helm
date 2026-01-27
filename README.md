@@ -638,9 +638,10 @@ helm install cf-tunnel felina22/cloudflare-tunnel \
 
 # Keep DNS updated with dynamic IP
 helm install ddns felina22/cloudflare-dynamic-ip-updater \
-  --set cloudflare.apiToken="your-api-token" \
-  --set cloudflare.zone="example.com" \
-  --set cloudflare.record="home.example.com"
+  --set secret.authKey="your-api-token" \
+  --set secret.zoneId="your-zone-id" \
+  --set secret.dnsRecord="home.example.com" \
+  --set secret.recordId="your-record-id"
 ```
 
 ### AI-Powered Workflows
