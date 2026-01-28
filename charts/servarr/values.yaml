@@ -1250,7 +1250,7 @@ seerr:
   database:
     mode: standalone
     databaseName: jellyseerr
-    logQueries: "false"
+    logQueries: false
     standalone:
       instances: 1
       storageClass: ""
