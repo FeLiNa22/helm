@@ -15,8 +15,10 @@ Seerr Database Host
 Seerr Database Port
 */}}
 {{- define "seerr.database.port" -}}
-{{- if or (eq .Values.seerr.database.mode "cluster") (eq .Values.seerr.database.mode "external") (eq .Values.seerr.database.mode "standalone") }}
+{{- if eq .Values.seerr.database.mode "external" }}
 {{- .Values.seerr.database.external.port | default "5432" }}
+{{- else if or (eq .Values.seerr.database.mode "cluster") (eq .Values.seerr.database.mode "standalone") }}
+{{- "5432" }}
 {{- else }}
 {{- "" }}
 {{- end }}
