@@ -39,7 +39,7 @@ spec:
       serviceAccountName: {{ .Values.prowlarr.serviceAccount.name | default (printf "%s-prowlarr" .Release.Name) }}
       securityContext:
         {{- toYaml .Values.prowlarr.podSecurityContext | nindent 8 }}
-      {{- if or (eq .Values.prowlarr.database.mode "external") (eq .Values.prowlarr.database.mode "cluster") .Values.prowlarr.initContainers }}
+      {{- if or (ne .Values.prowlarr.database.mode "") .Values.prowlarr.initContainers }}
       initContainers:
         {{- if or (eq .Values.prowlarr.database.mode "external") (eq .Values.prowlarr.database.mode "cluster") }}
         - name: init-config
@@ -48,11 +48,32 @@ spec:
             - sh
             - -c
             - |
-              if [ ! -f /config/config.xml ]; then
-                cp /config-template/config.xml /config/config.xml
-                sed -i "s|__DB_PASSWORD__|${DB_PASSWORD}|g" /config/config.xml
-                chown 1000:1000 /config/config.xml
+              # Read the database config snippet
+              DB_CONFIG=$(cat /config-template/db-config.xml)
+              DB_CONFIG=$(echo "$DB_CONFIG" | sed "s|__DB_PASSWORD__|${DB_PASSWORD}|g")
+              
+              # If config.xml exists, inject database fields into it
+              if [ -f /config/config.xml ]; then
+                # Remove any existing database fields first
+                sed -i '/<PostgresUser>/d; /<PostgresPassword>/d; /<PostgresHost>/d; /<PostgresPort>/d; /<PostgresMainDb>/d; /<PostgresLogDb>/d' /config/config.xml
+                
+                # Inject database fields before the closing </Config> tag
+                # Create a temporary file with the injected content
+                awk -v db_config="$DB_CONFIG" '{
+                  if ($0 ~ /<\/Config>/) {
+                    print db_config
+                    print $0
+                  } else {
+                    print $0
+                  }
+                }' /config/config.xml > /config/config.xml.tmp
+                mv /config/config.xml.tmp /config/config.xml
+              else
+                # Create a new config.xml with database fields
+                printf '<Config>\n%s\n</Config>\n' "${DB_CONFIG}" > /config/config.xml
               fi
+              
+              chown 1000:1000 /config/config.xml
           env:
             {{- if eq .Values.prowlarr.database.mode "cluster" }}
             - name: DB_PASSWORD
@@ -77,6 +98,21 @@ spec:
               mountPath: /config
             - name: config-template
               mountPath: /config-template
+        {{- else if eq .Values.prowlarr.database.mode "standalone" }}
+        - name: init-config
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              # Remove database fields from config.xml if they exist
+              if [ -f /config/config.xml ]; then
+                sed -i '/<PostgresUser>/d; /<PostgresPassword>/d; /<PostgresHost>/d; /<PostgresPort>/d; /<PostgresMainDb>/d; /<PostgresLogDb>/d' /config/config.xml
+                chown 1000:1000 /config/config.xml
+              fi
+          volumeMounts:
+            - name: config
+              mountPath: /config
         {{- end }}
         {{- if .Values.prowlarr.initContainers }}
         {{- toYaml .Values.prowlarr.initContainers | nindent 8 }}
