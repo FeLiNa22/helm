@@ -17,9 +17,9 @@ data:
     <PostgresHost>{{ .Release.Name }}-sonarr-db-rw</PostgresHost>
     <PostgresPort>5432</PostgresPort>
     {{- else }}
-    <PostgresUser>{{ required "sonarr.database.username is required when sonarr.database.mode is 'external'" .Values.sonarr.database.username }}</PostgresUser>
+    <PostgresUser>{{ required "sonarr.database.external.username is required when sonarr.database.mode is 'external'" .Values.sonarr.database.external.username }}</PostgresUser>
     <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
-    <PostgresHost>{{ required "sonarr.database.host is required when sonarr.database.mode is 'external'" .Values.sonarr.database.host }}</PostgresHost>
+    <PostgresHost>{{ required "sonarr.database.external.host is required when sonarr.database.mode is 'external'" .Values.sonarr.database.external.host }}</PostgresHost>
     <PostgresPort>{{ .Values.sonarr.database.port }}</PostgresPort>
     {{- end }}
     <PostgresMainDb>{{ .Values.sonarr.database.mainDatabase }}</PostgresMainDb>

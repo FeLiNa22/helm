@@ -89,17 +89,17 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-sonarr-db-app
                   key: password
-            {{- else if .Values.sonarr.database.existingSecret }}
+            {{- else if .Values.sonarr.database.external.existingSecret }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.sonarr.database.existingSecret }}
+                  name: {{ .Values.sonarr.database.external.existingSecret }}
                   key: password
-            {{- else if .Values.sonarr.database.password }}
+            {{- else if .Values.sonarr.database.external.password }}
             - name: DB_PASSWORD
-              value: {{ .Values.sonarr.database.password | quote }}
+              value: {{ .Values.sonarr.database.external.password | quote }}
             {{- else }}
-            {{- fail "sonarr.database.mode is 'external' but neither sonarr.database.existingSecret nor sonarr.database.password is provided. Please configure one of them." }}
+            {{- fail "sonarr.database.mode is 'external' but neither sonarr.database.external.existingSecret nor sonarr.database.external.password is provided. Please configure one of them." }}
             {{- end }}
           volumeMounts:
             - name: config
