@@ -1,0 +1,219 @@
+## Default values for n8n
+
+## @section Image parameters
+
+## @param image.repository The Docker repository to pull the image from.
+## @param image.tag The image tag to use.
+## @param image.pullPolicy The logic of image pulling.
+## @param image.autoupdate.enabled Enable automatic image updates via ArgoCD Image Updater.
+## @param image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param image.autoupdate.pullSecret Reference to secret for private registry authentication.
+## @param image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
+##
+image:
+  repository: n8nio/n8n
+  tag: "latest"
+  pullPolicy: IfNotPresent
+  autoupdate:
+    enabled: false
+    strategy: ""
+    allowTags: ""
+    ignoreTags: []
+    pullSecret: ""
+    platforms: []
+
+## @section Deployment parameters
+
+## @param replicaCount The number of replicas to deploy.
+##
+replicaCount: 1
+
+## @param n8n.protocol Protocol for n8n (http/https).
+## @param n8n.port Port on which n8n will run.
+## @param n8n.startCommand Command to start n8n (default includes sleep delay).
+## @param n8n.persistence.enabled Whether to enable persistence for n8n data.
+## @param n8n.persistence.storageClass The storage class to use for persistence.
+## @param n8n.persistence.size Size of the persistence volume.
+## @param n8n.persistence.existingClaim Use an existing PVC instead of creating a new one.
+## @param n8n.persistence.mountPath Mount path for n8n data.
+## @param n8n.initContainer.enabled Whether to enable the init container for volume permissions.
+## @param n8n.initContainer.image Image for the init container.
+## @param n8n.initContainer.tag Tag for the init container image.
+## @param n8n.resources Resource limits and requests for n8n container.
+## @param n8n.nodeSelector Optional node selector to use.
+## @param n8n.tolerations Whether to set node tolerations.
+## @param n8n.affinity Whether to set node affinity.
+##
+n8n:
+  protocol: http
+  port: 5678
+  startCommand: "sleep 5; n8n start"
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: 10Gi
+    existingClaim: ""
+    mountPath: /home/node/.n8n
+  initContainer:
+    enabled: true
+    image: busybox
+    tag: "1.36"
+  resources:
+    requests:
+      memory: "250Mi"
+    limits:
+      memory: "500Mi"
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+## @section Environment Variables
+
+## @param env Environment variables for n8n (use map format: key: value).
+##
+env: {}
+  # GENERIC_TIMEZONE: "Europe/London"
+  # N8N_METRICS: "true"
+
+## @section Service parameters
+
+## @param service.type The type of service to create.
+## @param service.port The port on which the service will run.
+##
+service:
+  type: ClusterIP
+  port: 80
+
+## @section Ingress parameters
+
+## @param ingress.enabled Whether to enable the ingress.
+## @param ingress.className The ingress class name to use.
+## @param ingress.annotations Annotations for the Ingress resource.
+## @param ingress.tls.enabled Enable TLS for the Ingress.
+## @param ingress.tls.hosts List of hosts for which the TLS certificate is valid.
+## @param ingress.hosts[0].host The host name that the Ingress will respond to.
+## @param ingress.hosts[0].paths[0].path URL path for the HTTP rule.
+## @param ingress.hosts[0].paths[0].pathType Type of path matching.
+##
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  tls:
+    enabled: false
+    hosts: []
+  hosts:
+    - host: n8n.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+## @section Database parameters
+## PostgreSQL database is required for n8n
+
+## @param database.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
+## @param database.type Database type (postgresdb, postgres, mysql, mariadb, sqlite).
+## @param database.standalone.image.repository PostgreSQL image repository.
+## @param database.standalone.image.tag PostgreSQL image tag.
+## @param database.standalone.auth.database Name of the database to create.
+## @param database.standalone.auth.username Username for the database.
+## @param database.standalone.auth.password Password for the database user (leave empty to auto-generate).
+## @param database.standalone.auth.existingSecret Reference to an existing Kubernetes secret for auth.
+## @param database.standalone.persistence.enabled Whether to enable persistence for standalone PostgreSQL.
+## @param database.standalone.persistence.size Size of the persistence volume.
+## @param database.standalone.persistence.storageClass Storage class for persistence.
+## @param database.standalone.resources Resource limits and requests for standalone PostgreSQL.
+## @param database.cluster.name Name of the database cluster.
+## @param database.cluster.instances Number of PostgreSQL instances (replicas).
+## @param database.cluster.image.repository PostgreSQL container image repository.
+## @param database.cluster.image.tag PostgreSQL container image tag.
+## @param database.cluster.database Name of the database to create.
+## @param database.cluster.owner Owner of the database.
+## @param database.cluster.storage.size Size of the storage for each instance.
+## @param database.cluster.storage.storageClass Storage class name for persistent volumes.
+## @param database.cluster.secret.name Name of the secret containing database credentials.
+## @param database.cluster.secret.create Whether to create the database secret.
+## @param database.cluster.secret.username Database user username.
+## @param database.cluster.secret.password Database user password (leave empty to auto-generate).
+## @param database.cluster.superuserSecret.name Name of the secret containing the superuser credentials.
+## @param database.cluster.superuserSecret.create Whether to create the superuser secret.
+## @param database.cluster.superuserSecret.username Superuser username.
+## @param database.cluster.superuserSecret.password Superuser password (leave empty to auto-generate).
+## @param database.external.host Hostname of external PostgreSQL (when mode is 'external').
+## @param database.external.port Port of external PostgreSQL.
+## @param database.external.database Database name of external PostgreSQL.
+## @param database.external.username Username of external PostgreSQL.
+## @param database.external.existingSecret Secret name for external PostgreSQL password.
+## @param database.external.secretKey Key in the secret for the password.
+##
+database:
+  mode: standalone
+  type: postgresdb
+
+  standalone:
+    image:
+      repository: postgres
+      tag: "16-alpine"
+    auth:
+      database: n8n
+      username: n8n
+      password: ""
+      existingSecret: ""
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: ""
+    resources: {}
+
+  cluster:
+    name: n8n-db
+    instances: 2
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: "16"
+    database: n8n
+    owner: n8n
+    storage:
+      size: 10Gi
+      storageClass: ""
+    secret:
+      name: ""
+      create: true
+      username: n8n
+      password: ""
+    superuserSecret:
+      name: ""
+      create: true
+      username: postgres
+      password: ""
+
+  external:
+    host: ""
+    port: 5432
+    database: "n8n"
+    username: "n8n"
+    existingSecret: ""
+    secretKey: "password"
+
+## @section ArgoCD Image Updater parameters
+
+## @param imageUpdater.namespace Namespace where the ImageUpdater CRD will be created.
+## @param imageUpdater.argocdNamespace Namespace where ArgoCD Applications are located.
+## @param imageUpdater.applicationName Name or pattern of the ArgoCD Application to update. Defaults to Release name.
+## @param imageUpdater.imageAlias Alias for the image in the ImageUpdater CRD. Defaults to Release name.
+## @param imageUpdater.forceUpdate Force update even if image is not currently deployed.
+## @param imageUpdater.helm Helm-specific configuration for parameter names (e.g., {name: "image.repository", tag: "image.tag"}).
+## @param imageUpdater.kustomize Kustomize-specific configuration (e.g., {name: "original/image"}).
+## @param imageUpdater.writeBackConfig Write-back configuration for GitOps.
+##
+imageUpdater:
+  namespace: argocd
+  argocdNamespace: argocd
+  applicationName: ""
+  imageAlias: ""
+  forceUpdate: false
+  helm: {}
+  kustomize: {}
+  writeBackConfig: {}

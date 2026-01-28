@@ -1,0 +1,47 @@
+{{- if .Values.image.autoupdate.enabled }}
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageUpdateAutomation
+metadata:
+  name: {{ .Values.imageUpdater.imageAlias | default .Release.Name }}
+  namespace: {{ .Values.imageUpdater.namespace }}
+  labels:
+    {{- include "n8n.labels" . | nindent 4 }}
+spec:
+  interval: 1m0s
+  sourceRef:
+    kind: GitRepository
+    name: {{ .Values.imageUpdater.applicationName | default .Release.Name }}
+    namespace: {{ .Values.imageUpdater.argocdNamespace }}
+  update:
+    path: ./{{ .Release.Namespace }}
+    strategy: Setters
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        email: fluxcdbot@users.noreply.github.com
+        name: fluxcdbot
+      messageTemplate: |
+        Automated image update by Flux
+
+        Automation name: {{ "{{" }} .AutomationObject {{ "}}" }}
+
+        Files:
+        {{ "{{" }} range $filename, $_ := .Updated.Files -{{ "}}" }}
+        - {{ "{{" }} $filename {{ "}}" }}
+        {{ "{{" }} end -{{ "}}" }}
+
+        Objects:
+        {{ "{{" }} range $resource, $_ := .Updated.Objects -{{ "}}" }}
+        - {{ "{{" }} $resource.Kind {{ "}}" }} {{ "{{" }} $resource.Name {{ "}}" }}
+        {{ "{{" }} end -{{ "}}" }}
+
+        Images:
+        {{ "{{" }} range .Updated.Images -{{ "}}" }}
+        - {{ "{{" }} .Name {{ "}}" }}:{{ "{{" }} .NewTags {{ "}}" }}
+        {{ "{{" }} end -{{ "}}" }}
+    push:
+      branch: main
+{{- end }}
