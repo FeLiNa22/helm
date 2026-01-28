@@ -130,7 +130,7 @@ spec:
           resources:
             {{- toYaml .Values.seerr.resources | nindent 12 }}
           env:
-            {{- if or (eq .Values.seerr.database.mode "cluster") (eq .Values.seerr.database.mode "external") }}
+            {{- if or (eq .Values.seerr.database.mode "cluster") (eq .Values.seerr.database.mode "external") (eq .Values.seerr.database.mode "standalone") }}
             - name: DB_TYPE
               value: "postgres"
             - name: DB_HOST

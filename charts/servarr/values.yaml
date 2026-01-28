@@ -1091,14 +1091,17 @@ flaresolverr:
 ## @param seerr.probes.startupProbe Configure startup probe.
 ## @param seerr.extraEnv Additional environment variables to add to the seerr pods.
 ## @param seerr.extraEnvFrom Additional environment variables from secrets or configmaps to add to the seerr pods.
-## @param seerr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
-## @param seerr.database.host Hostname of the external PostgreSQL database (required when mode is 'external').
-## @param seerr.database.port Port of the external PostgreSQL database.
-## @param seerr.database.username Username for the external PostgreSQL database (required when mode is 'external').
-## @param seerr.database.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
-## @param seerr.database.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
+## @param seerr.database.mode Database mode: 'standalone' creates a single-instance PostgreSQL using CloudNativePG, 'external' uses an external PostgreSQL database, 'cluster' creates a multi-instance CloudNativePG cluster.
 ## @param seerr.database.databaseName Name of the database.
 ## @param seerr.database.logQueries Whether to log database queries for debugging.
+## @param seerr.database.standalone.instances Number of PostgreSQL instances for standalone mode (default: 1).
+## @param seerr.database.standalone.storageClass Storage class for the standalone PostgreSQL instance.
+## @param seerr.database.standalone.storageSize Storage size for the standalone PostgreSQL instance.
+## @param seerr.database.external.host Hostname of the external PostgreSQL database (required when mode is 'external').
+## @param seerr.database.external.port Port of the external PostgreSQL database.
+## @param seerr.database.external.username Username for the external PostgreSQL database (required when mode is 'external').
+## @param seerr.database.external.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
+## @param seerr.database.external.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
 ## @param seerr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
 ## @param seerr.database.cluster.storageClass Storage class for the CloudNativePG cluster (only used when mode is 'cluster').
 ## @param seerr.database.cluster.storageSize Storage size for the CloudNativePG cluster (only used when mode is 'cluster').
@@ -1246,13 +1249,18 @@ seerr:
 
   database:
     mode: standalone
-    host: ""
-    port: 5432
-    username: ""
-    password: ""
-    existingSecret: ""
     databaseName: jellyseerr
     logQueries: "false"
+    standalone:
+      instances: 1
+      storageClass: ""
+      storageSize: 5Gi
+    external:
+      host: ""
+      port: 5432
+      username: ""
+      password: ""
+      existingSecret: ""
     cluster:
       instances: 2
       storageClass: ""

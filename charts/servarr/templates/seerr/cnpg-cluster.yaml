@@ -1,4 +1,4 @@
-{{- if and .Values.seerr.enabled (eq .Values.seerr.database.mode "cluster") }}
+{{- if and .Values.seerr.enabled (or (eq .Values.seerr.database.mode "cluster") (eq .Values.seerr.database.mode "standalone")) }}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -10,14 +10,25 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
+  {{- if eq .Values.seerr.database.mode "standalone" }}
+  instances: {{ .Values.seerr.database.standalone.instances }}
+  {{- else }}
   instances: {{ .Values.seerr.database.cluster.instances }}
+  {{- end }}
   bootstrap:
     initdb:
       database: {{ include "seerr.database.name" . }}
       owner: seerr
   storage:
+    {{- if eq .Values.seerr.database.mode "standalone" }}
+    {{- if .Values.seerr.database.standalone.storageClass }}
+    storageClass: {{ .Values.seerr.database.standalone.storageClass }}
+    {{- end }}
+    size: {{ .Values.seerr.database.standalone.storageSize }}
+    {{- else }}
     {{- if .Values.seerr.database.cluster.storageClass }}
     storageClass: {{ .Values.seerr.database.cluster.storageClass }}
     {{- end }}
     size: {{ .Values.seerr.database.cluster.storageSize }}
+    {{- end }}
 {{- end }}
