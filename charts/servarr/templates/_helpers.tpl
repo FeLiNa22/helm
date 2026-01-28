@@ -5,7 +5,7 @@ Seerr Database Host
 {{- if eq .Values.seerr.database.mode "cluster" }}
 {{- printf "%s-seerr-db-rw" .Release.Name }}
 {{- else if eq .Values.seerr.database.mode "external" }}
-{{- .Values.seerr.database.host }}
+{{- .Values.seerr.database.external.host }}
 {{- else }}
 {{- "" }}
 {{- end }}
@@ -29,7 +29,7 @@ Seerr Database Username
 {{- if eq .Values.seerr.database.mode "cluster" }}
 {{- "seerr" }}
 {{- else if eq .Values.seerr.database.mode "external" }}
-{{- .Values.seerr.database.username }}
+{{- .Values.seerr.database.external.username }}
 {{- else }}
 {{- "" }}
 {{- end }}
@@ -52,8 +52,8 @@ Seerr Database Secret Name
 {{- define "seerr.database.secretName" -}}
 {{- if eq .Values.seerr.database.mode "cluster" }}
 {{- printf "%s-seerr-db-app" .Release.Name }}
-{{- else if .Values.seerr.database.existingSecret }}
-{{- .Values.seerr.database.existingSecret }}
+{{- else if .Values.seerr.database.external.existingSecret }}
+{{- .Values.seerr.database.external.existingSecret }}
 {{- else }}
 {{- printf "%s-seerr-db" .Release.Name }}
 {{- end }}

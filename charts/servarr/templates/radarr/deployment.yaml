@@ -89,17 +89,17 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-radarr-db-app
                   key: password
-            {{- else if .Values.radarr.database.existingSecret }}
+            {{- else if .Values.radarr.database.external.existingSecret }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.radarr.database.existingSecret }}
+                  name: {{ .Values.radarr.database.external.existingSecret }}
                   key: password
-            {{- else if .Values.radarr.database.password }}
+            {{- else if .Values.radarr.database.external.password }}
             - name: DB_PASSWORD
-              value: {{ .Values.radarr.database.password | quote }}
+              value: {{ .Values.radarr.database.external.password | quote }}
             {{- else }}
-            {{- fail "radarr.database.mode is 'external' but neither radarr.database.existingSecret nor radarr.database.password is provided. Please configure one of them." }}
+            {{- fail "radarr.database.mode is 'external' but neither radarr.database.external.existingSecret nor radarr.database.external.password is provided. Please configure one of them." }}
             {{- end }}
           volumeMounts:
             - name: config

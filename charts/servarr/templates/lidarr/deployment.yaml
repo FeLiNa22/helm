@@ -89,17 +89,17 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-lidarr-db-app
                   key: password
-            {{- else if .Values.lidarr.database.existingSecret }}
+            {{- else if .Values.lidarr.database.external.existingSecret }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.lidarr.database.existingSecret }}
+                  name: {{ .Values.lidarr.database.external.existingSecret }}
                   key: password
-            {{- else if .Values.lidarr.database.password }}
+            {{- else if .Values.lidarr.database.external.password }}
             - name: DB_PASSWORD
-              value: {{ .Values.lidarr.database.password | quote }}
+              value: {{ .Values.lidarr.database.external.password | quote }}
             {{- else }}
-            {{- fail "lidarr.database.mode is 'external' but neither lidarr.database.existingSecret nor lidarr.database.password is provided. Please configure one of them." }}
+            {{- fail "lidarr.database.mode is 'external' but neither lidarr.database.external.existingSecret nor lidarr.database.external.password is provided. Please configure one of them." }}
             {{- end }}
           volumeMounts:
             - name: config
