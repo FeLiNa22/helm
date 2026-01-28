@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "n8n.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "n8n.labels" . | nindent 4 }}
+    service: n8n
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "n8n.selectorLabels" . | nindent 6 }}
+      service: n8n
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "n8n.selectorLabels" . | nindent 8 }}
+        service: n8n
+    spec:
+      {{- if .Values.n8n.initContainer.enabled }}
+      initContainers:
+        - name: volume-permissions
+          image: {{ .Values.n8n.initContainer.image }}:{{ .Values.n8n.initContainer.tag }}
+          command: ["sh", "-c", "chown 1000:1000 /data"]
+          volumeMounts:
+            - name: n8n-data
+              mountPath: /data
+      {{- end }}
+      containers:
+        - name: n8n
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - {{ .Values.n8n.startCommand }}
+          ports:
+            - containerPort: {{ .Values.n8n.port }}
+          env:
+            - name: DB_TYPE
+              value: {{ .Values.database.type }}
+            - name: DB_POSTGRESDB_HOST
+              value: {{ include "n8n.postgresql.host" . }}
+            - name: DB_POSTGRESDB_PORT
+              value: {{ include "n8n.postgresql.port" . | quote }}
+            - name: DB_POSTGRESDB_DATABASE
+              value: {{ include "n8n.postgresql.database" . }}
+            - name: DB_POSTGRESDB_USER
+              value: {{ include "n8n.postgresql.username" . }}
+            - name: DB_POSTGRESDB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "n8n.postgresql.secretName" . }}
+                  key: {{ include "n8n.postgresql.secretKey" . }}
+            - name: N8N_PROTOCOL
+              value: {{ .Values.n8n.protocol }}
+            - name: N8N_PORT
+              value: {{ .Values.n8n.port | quote }}
+          {{- if .Values.env }}
+          {{- range $k,$v := .Values.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.n8n.resources }}
+          resources:
+            {{- toYaml .Values.n8n.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: n8n-data
+              mountPath: {{ .Values.n8n.persistence.mountPath }}
+      restartPolicy: Always
+      volumes:
+        - name: n8n-data
+          {{- if .Values.n8n.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.n8n.persistence.existingClaim | default (printf "%s-data" (include "n8n.fullname" .)) }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      {{- with .Values.n8n.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.n8n.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.n8n.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
