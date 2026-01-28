@@ -1246,13 +1246,14 @@ seerr:
 
   database:
     mode: standalone
-    host: ""
     port: 5432
-    username: ""
-    password: ""
-    existingSecret: ""
     databaseName: jellyseerr
     logQueries: "false"
+    external:
+      host: ""
+      username: ""
+      password: ""
+      existingSecret: ""
     cluster:
       instances: 2
       storageClass: ""
