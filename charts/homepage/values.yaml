@@ -158,6 +158,30 @@ persistence:
   additionalVolumes: []
   additionalMounts: []
 
+## @section Velero Backup Schedule parameters
+
+## @param velero.enabled Whether to enable Velero backup schedules
+## @param velero.schedule The cron schedule for Velero backups (e.g., "0 2 * * *" for 2am daily)
+## @param velero.ttl Time to live for backups (e.g., "720h" for 30 days)
+## @param velero.includeClusterResources Whether to include cluster-scoped resources in backup
+## @param velero.snapshotVolumes Whether to take volume snapshots
+## @param velero.defaultVolumesToFsBackup Whether to use file system backup for volumes by default
+## @param velero.storageLocation The storage location for backups (leave empty for default)
+## @param velero.volumeSnapshotLocations The volume snapshot locations (leave empty for default)
+## @param velero.labelSelector Additional label selector to filter resources (optional)
+## @param velero.annotations Additional annotations to add to the Velero Schedule resources
+velero:
+  enabled: false
+  schedule: "0 2 * * *"
+  ttl: "720h"
+  includeClusterResources: false
+  snapshotVolumes: true
+  defaultVolumesToFsBackup: false
+  storageLocation: ""
+  volumeSnapshotLocations: []
+  labelSelector: {}
+  annotations: {}
+
 ## @section Homepage Configuration
 
 ## @param config.enableKubernetes Enable Kubernetes integration for service discovery
