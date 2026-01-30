@@ -41,7 +41,8 @@ replicaCount: 1
 ## @param n8n.initContainer.enabled Whether to enable the init container for volume permissions.
 ## @param n8n.initContainer.image Image for the init container.
 ## @param n8n.initContainer.tag Tag for the init container image.
-## @param n8n.resources Resource limits and requests for n8n container.
+## @param n8n.resources.requests.memory Memory request for n8n container.
+## @param n8n.resources.limits.memory Memory limit for n8n container.
 ## @param n8n.nodeSelector Optional node selector to use.
 ## @param n8n.tolerations Whether to set node tolerations.
 ## @param n8n.affinity Whether to set node affinity.
