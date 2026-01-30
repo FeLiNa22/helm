@@ -1,11 +1,11 @@
-{{- if .Values.velero.enabled }}
+{{- if and .Values.velero.enabled .Values.persistence.library.enabled }}
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
   name: {{ include "immich.fullname" . }}
   {{- with .Values.velero.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
+    {{- toYaml . | nindent 6 }}
   {{- end }}
   labels:
     {{- include "immich.labels" . | nindent 4 }}
@@ -25,7 +25,7 @@ spec:
         velero.io/pvc-type: config
     {{- if .Values.velero.labelSelector }}
     {{- with .Values.velero.labelSelector }}
-    {{- toYaml . | nindent 4 }}
+    {{- toYaml . | nindent 6 }}
     {{- end }}
     {{- end }}
     ttl: {{ .Values.velero.ttl }}
@@ -49,4 +49,5 @@ spec:
       labels:
         {{- include "immich.labels" . | nindent 8 }}
         velero.io/backup-type: scheduled
+        velero.io/pvc-target: config
 {{- end }}

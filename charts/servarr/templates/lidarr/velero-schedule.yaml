@@ -12,7 +12,7 @@ metadata:
   name: {{ .Release.Name }}-lidarr
   {{- with .Values.velero.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
+    {{- toYaml . | nindent 6 }}
   {{- end }}
   labels:
     app.kubernetes.io/name: lidarr
@@ -36,7 +36,7 @@ spec:
         velero.io/pvc-type: {{ $pvcType }}
     {{- if .Values.velero.labelSelector }}
     {{- with .Values.velero.labelSelector }}
-    {{- toYaml . | nindent 4 }}
+    {{- toYaml . | nindent 6 }}
     {{- end }}
     {{- end }}
     ttl: {{ .Values.velero.ttl }}
