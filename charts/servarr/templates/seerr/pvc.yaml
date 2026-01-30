@@ -36,13 +36,13 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: {{ .Release.Name }}-seerr-backup
-    velero.io/pvc-type: backup
   labels:
     app.kubernetes.io/name: seerr
     app.kubernetes.io/instance: {{ .Release.Name }}-seerr
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    velero.io/pvc-type: backup
 spec:
   accessModes:
     - {{ .Values.seerr.persistence.backup.accessMode | quote }}

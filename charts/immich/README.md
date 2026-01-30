@@ -197,7 +197,7 @@ ingress:
 | `velero.snapshotVolumes` | Whether to take volume snapshots | `true` |
 | `velero.storageLocation` | Storage location for backups | `""` |
 
-**Note**: When `velero.enabled=true`, a Velero Schedule is created to backup all Immich PVCs including library, database, and machine learning cache volumes.
+**Note**: When `velero.enabled=true`, a Velero Schedule is created to backup only the Immich library PVC (labeled `velero.io/pvc-type: config`). Other PVCs such as database, Dragonfly, or machine learning cache volumes are not included by default and must be backed up via additional Velero configuration or appropriate PVC labels if needed.
 
 ### DragonflyDB parameters
 

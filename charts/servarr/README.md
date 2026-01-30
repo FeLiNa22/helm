@@ -74,7 +74,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `velero.labelSelector`                | Additional label selector to filter resources (optional)                                         | `{}`          |
 | `velero.annotations`                  | Additional annotations to add to the Velero Schedule resources                                   | `{}`          |
 
-**Note**: When `velero.enabled=true`, Velero Schedules are automatically created for each enabled service. The schedules will backup all PVCs associated with the service, including both config PVCs and backup PVCs (if `persistence.backup.enabled=true`). This ensures that both configuration data and backup data are included in Velero backups when they exist.
+**Note**: When `velero.enabled=true`, Velero Schedules are automatically created for each enabled service. The schedules use a priority-based system to backup exactly ONE PVC per service: if `persistence.backup.enabled=true`, only the backup PVC (e.g., `radarr-backup`) is backed up; otherwise, if `persistence.enabled=true`, only the config PVC (e.g., `radarr-config`) is backed up. This ensures targeted and efficient backups.
 
 ### Jellyfin parameters
 
@@ -1100,9 +1100,10 @@ velero:
   snapshotVolumes: true
 ```
 
-This will automatically create Velero backup schedules for all enabled services. Each service's schedule will backup:
-- The service's config PVC (e.g., `radarr-config`)
-- The service's backup PVC (e.g., `radarr-backup`) if `persistence.backup.enabled=true`
+This will automatically create Velero backup schedules for all enabled services. Each service's schedule uses a priority-based system to backup exactly ONE PVC:
+- If `persistence.backup.enabled=true`: backs up only the backup PVC (e.g., `radarr-backup`)
+- If `persistence.backup.enabled=false` but `persistence.enabled=true`: backs up only the config PVC (e.g., `radarr-config`)
+- If both are disabled: no backup schedule is created
 
 #### Example: Custom backup schedule with storage location
 
