@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    velero.io/pvc-type: config
+    app.kubernetes.io/pvc-type: config
   {{- if .Values.persistence.annotations }}
   annotations:
     {{- toYaml .Values.persistence.annotations | nindent 4 }}
@@ -35,7 +35,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    velero.io/pvc-type: backup
+    app.kubernetes.io/pvc-type: backup
   {{- if .Values.persistence.backup.annotations }}
   annotations:
     {{- toYaml .Values.persistence.backup.annotations | nindent 4 }}

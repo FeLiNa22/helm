@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-    velero.io/pvc-type: config
+    app.kubernetes.io/pvc-type: config
   {{- if .Values.plex.persistence.annotations }}
   annotations:
     {{- toYaml .Values.plex.persistence.annotations | nindent 4 }}
@@ -36,7 +36,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}-plex
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    velero.io/pvc-type: backup
+    app.kubernetes.io/pvc-type: backup
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   accessModes:
