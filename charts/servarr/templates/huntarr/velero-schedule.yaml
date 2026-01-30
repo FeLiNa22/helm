@@ -10,6 +10,7 @@ apiVersion: velero.io/v1
 kind: Schedule
 metadata:
   name: {{ .Release.Name }}-huntarr
+  namespace: {{ .Values.velero.namespace | default "velero" }}
   {{- with .Values.velero.annotations }}
   annotations:
     {{- toYaml . | nindent 6 }}
