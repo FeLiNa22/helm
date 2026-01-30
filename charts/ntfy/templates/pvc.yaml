@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    velero.io/pvc-type: config
 spec:
   accessModes:
     - {{ .Values.persistence.accessMode }}

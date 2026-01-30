@@ -1,4 +1,11 @@
-{{- if and .Values.velero.enabled .Values.bazarr.enabled .Values.bazarr.persistence.enabled }}
+{{- if and .Values.velero.enabled .Values.bazarr.enabled (or .Values.bazarr.persistence.enabled .Values.bazarr.persistence.backup.enabled) }}
+{{- $pvcType := "" }}
+{{- if .Values.bazarr.persistence.backup.enabled }}
+{{- $pvcType = "backup" }}
+{{- else if .Values.bazarr.persistence.enabled }}
+{{- $pvcType = "config" }}
+{{- end }}
+{{- if $pvcType }}
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
@@ -23,15 +30,10 @@ spec:
       - persistentvolumeclaims
       - persistentvolumes
     labelSelector:
-      matchExpressions:
-        - key: app.kubernetes.io/instance
-          operator: In
-          values:
-            - {{ .Release.Name }}-bazarr
-        - key: app.kubernetes.io/name
-          operator: In
-          values:
-            - bazarr
+      matchLabels:
+        app.kubernetes.io/name: bazarr
+        app.kubernetes.io/instance: {{ .Release.Name }}-bazarr
+        velero.io/pvc-type: {{ $pvcType }}
     {{- if .Values.velero.labelSelector }}
     {{- with .Values.velero.labelSelector }}
     {{- toYaml . | nindent 4 }}
@@ -60,4 +62,6 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}-bazarr
         velero.io/backup-type: scheduled
         velero.io/service: bazarr
+        velero.io/pvc-target: {{ $pvcType }}
+{{- end }}
 {{- end }}

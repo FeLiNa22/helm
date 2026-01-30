@@ -1,4 +1,11 @@
-{{- if and .Values.velero.enabled .Values.radarr.enabled .Values.radarr.persistence.enabled }}
+{{- if and .Values.velero.enabled .Values.radarr.enabled (or .Values.radarr.persistence.enabled .Values.radarr.persistence.backup.enabled) }}
+{{- $pvcType := "" }}
+{{- if .Values.radarr.persistence.backup.enabled }}
+{{- $pvcType = "backup" }}
+{{- else if .Values.radarr.persistence.enabled }}
+{{- $pvcType = "config" }}
+{{- end }}
+{{- if $pvcType }}
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
@@ -23,15 +30,10 @@ spec:
       - persistentvolumeclaims
       - persistentvolumes
     labelSelector:
-      matchExpressions:
-        - key: app.kubernetes.io/instance
-          operator: In
-          values:
-            - {{ .Release.Name }}-radarr
-        - key: app.kubernetes.io/name
-          operator: In
-          values:
-            - radarr
+      matchLabels:
+        app.kubernetes.io/name: radarr
+        app.kubernetes.io/instance: {{ .Release.Name }}-radarr
+        velero.io/pvc-type: {{ $pvcType }}
     {{- if .Values.velero.labelSelector }}
     {{- with .Values.velero.labelSelector }}
     {{- toYaml . | nindent 4 }}
@@ -60,4 +62,6 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}-radarr
         velero.io/backup-type: scheduled
         velero.io/service: radarr
+        velero.io/pvc-target: {{ $pvcType }}
+{{- end }}
 {{- end }}

@@ -7,6 +7,7 @@ metadata:
   labels:
     {{- include "immich.labels" . | nindent 4 }}
     app.kubernetes.io/component: storage
+    velero.io/pvc-type: config
 spec:
   accessModes:
     - {{ .Values.persistence.library.accessMode | quote }}
@@ -25,6 +26,7 @@ metadata:
   name: {{ $fullName }}-ml-cache
   labels:
     {{- include "immich.labels" . | nindent 4 }}
+    velero.io/pvc-type: ml-cache
     app.kubernetes.io/component: machine-learning
 spec:
   accessModes:

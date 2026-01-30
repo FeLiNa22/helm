@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    velero.io/pvc-type: config
   {{- if .Values.qbittorrent.persistence.annotations }}
   annotations:
     {{- toYaml .Values.qbittorrent.persistence.annotations | nindent 4 }}
@@ -35,6 +36,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    velero.io/pvc-type: backup
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   accessModes:

@@ -1,4 +1,11 @@
-{{- if and .Values.velero.enabled .Values.qbittorrent.enabled .Values.qbittorrent.persistence.enabled }}
+{{- if and .Values.velero.enabled .Values.qbittorrent.enabled (or .Values.qbittorrent.persistence.enabled .Values.qbittorrent.persistence.backup.enabled) }}
+{{- $pvcType := "" }}
+{{- if .Values.qbittorrent.persistence.backup.enabled }}
+{{- $pvcType = "backup" }}
+{{- else if .Values.qbittorrent.persistence.enabled }}
+{{- $pvcType = "config" }}
+{{- end }}
+{{- if $pvcType }}
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
@@ -23,15 +30,10 @@ spec:
       - persistentvolumeclaims
       - persistentvolumes
     labelSelector:
-      matchExpressions:
-        - key: app.kubernetes.io/instance
-          operator: In
-          values:
-            - {{ .Release.Name }}-qbittorrent
-        - key: app.kubernetes.io/name
-          operator: In
-          values:
-            - qbittorrent
+      matchLabels:
+        app.kubernetes.io/name: qbittorrent
+        app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
+        velero.io/pvc-type: {{ $pvcType }}
     {{- if .Values.velero.labelSelector }}
     {{- with .Values.velero.labelSelector }}
     {{- toYaml . | nindent 4 }}
@@ -60,4 +62,6 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
         velero.io/backup-type: scheduled
         velero.io/service: qbittorrent
+        velero.io/pvc-target: {{ $pvcType }}
+{{- end }}
 {{- end }}

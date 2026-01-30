@@ -1,4 +1,11 @@
-{{- if and .Values.velero.enabled .Values.lidarr.enabled .Values.lidarr.persistence.enabled }}
+{{- if and .Values.velero.enabled .Values.lidarr.enabled (or .Values.lidarr.persistence.enabled .Values.lidarr.persistence.backup.enabled) }}
+{{- $pvcType := "" }}
+{{- if .Values.lidarr.persistence.backup.enabled }}
+{{- $pvcType = "backup" }}
+{{- else if .Values.lidarr.persistence.enabled }}
+{{- $pvcType = "config" }}
+{{- end }}
+{{- if $pvcType }}
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
@@ -23,15 +30,10 @@ spec:
       - persistentvolumeclaims
       - persistentvolumes
     labelSelector:
-      matchExpressions:
-        - key: app.kubernetes.io/instance
-          operator: In
-          values:
-            - {{ .Release.Name }}-lidarr
-        - key: app.kubernetes.io/name
-          operator: In
-          values:
-            - lidarr
+      matchLabels:
+        app.kubernetes.io/name: lidarr
+        app.kubernetes.io/instance: {{ .Release.Name }}-lidarr
+        velero.io/pvc-type: {{ $pvcType }}
     {{- if .Values.velero.labelSelector }}
     {{- with .Values.velero.labelSelector }}
     {{- toYaml . | nindent 4 }}
@@ -60,4 +62,6 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}-lidarr
         velero.io/backup-type: scheduled
         velero.io/service: lidarr
+        velero.io/pvc-target: {{ $pvcType }}
+{{- end }}
 {{- end }}
