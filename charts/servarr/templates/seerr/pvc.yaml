@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/pvc-type: config
   {{- with .Values.seerr.persistence.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -41,6 +42,7 @@ metadata:
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/pvc-type: backup
 spec:
   accessModes:
     - {{ .Values.seerr.persistence.backup.accessMode | quote }}

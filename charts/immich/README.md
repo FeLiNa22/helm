@@ -187,6 +187,18 @@ ingress:
 | `persistence.library.accessMode` | Access mode | `ReadWriteOnce` |
 | `persistence.library.size` | Volume size | `100Gi` |
 
+### Velero Backup Schedule parameters
+
+| Name | Description | Value |
+|------|-------------|-------|
+| `velero.enabled` | Enable Velero backup schedules | `false` |
+| `velero.schedule` | Cron schedule for backups (e.g., "0 2 * * *") | `0 2 * * *` |
+| `velero.ttl` | Time to live for backups (e.g., "720h" for 30 days) | `720h` |
+| `velero.snapshotVolumes` | Whether to take volume snapshots | `true` |
+| `velero.storageLocation` | Storage location for backups | `""` |
+
+**Note**: When `velero.enabled=true`, a Velero Schedule is created to backup only the Immich library PVC (labeled `velero.io/pvc-type: config`). Other PVCs such as database, Dragonfly, or machine learning cache volumes are not included by default and must be backed up via additional Velero configuration or appropriate PVC labels if needed.
+
 ### DragonflyDB parameters
 
 | Name | Description | Value |

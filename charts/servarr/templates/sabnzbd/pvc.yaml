@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/pvc-type: config
   {{- if .Values.sabnzbd.persistence.annotations }}
   annotations:
     {{- toYaml .Values.sabnzbd.persistence.annotations | nindent 4 }}
@@ -35,6 +36,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}-sabnzbd
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/pvc-type: backup
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   accessModes:

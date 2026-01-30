@@ -1,0 +1,67 @@
+{{- if and .Values.velero.enabled .Values.sonarr.enabled (or .Values.sonarr.persistence.enabled .Values.sonarr.persistence.backup.enabled) }}
+{{- $pvcType := "" }}
+{{- if .Values.sonarr.persistence.backup.enabled }}
+{{- $pvcType = "backup" }}
+{{- else if .Values.sonarr.persistence.enabled }}
+{{- $pvcType = "config" }}
+{{- end }}
+{{- if $pvcType }}
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: {{ .Release.Name }}-sonarr
+  {{- with .Values.velero.annotations }}
+  annotations:
+    {{- toYaml . | nindent 6 }}
+  {{- end }}
+  labels:
+    app.kubernetes.io/name: sonarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-sonarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    velero.io/backup-schedule: {{ .Release.Name }}-sonarr
+spec:
+  schedule: {{ .Values.velero.schedule | quote }}
+  template:
+    includedNamespaces:
+      - {{ .Release.Namespace }}
+    includedResources:
+      - persistentvolumeclaims
+      - persistentvolumes
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: sonarr
+        app.kubernetes.io/instance: {{ .Release.Name }}-sonarr
+        app.kubernetes.io/pvc-type: {{ $pvcType }}
+    {{- if .Values.velero.labelSelector }}
+    {{- with .Values.velero.labelSelector }}
+    {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- end }}
+    ttl: {{ .Values.velero.ttl }}
+    {{- if .Values.velero.includeClusterResources }}
+    includeClusterResources: {{ .Values.velero.includeClusterResources }}
+    {{- end }}
+    {{- if .Values.velero.snapshotVolumes }}
+    snapshotVolumes: {{ .Values.velero.snapshotVolumes }}
+    {{- end }}
+    {{- if .Values.velero.defaultVolumesToFsBackup }}
+    defaultVolumesToFsBackup: {{ .Values.velero.defaultVolumesToFsBackup }}
+    {{- end }}
+    {{- if .Values.velero.storageLocation }}
+    storageLocation: {{ .Values.velero.storageLocation }}
+    {{- end }}
+    {{- if .Values.velero.volumeSnapshotLocations }}
+    volumeSnapshotLocations:
+      {{- toYaml .Values.velero.volumeSnapshotLocations | nindent 6 }}
+    {{- end }}
+    metadata:
+      labels:
+        app.kubernetes.io/name: sonarr
+        app.kubernetes.io/instance: {{ .Release.Name }}-sonarr
+        velero.io/backup-type: scheduled
+        velero.io/service: sonarr
+        velero.io/pvc-target: {{ $pvcType }}
+{{- end }}
+{{- end }}

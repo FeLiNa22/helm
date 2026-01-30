@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/pvc-type: config
   {{- if .Values.huntarr.persistence.annotations }}
   annotations:
     {{- toYaml .Values.huntarr.persistence.annotations | nindent 4 }}

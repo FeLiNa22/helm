@@ -41,7 +41,8 @@ replicaCount: 1
 ## @param n8n.initContainer.enabled Whether to enable the init container for volume permissions.
 ## @param n8n.initContainer.image Image for the init container.
 ## @param n8n.initContainer.tag Tag for the init container image.
-## @param n8n.resources Resource limits and requests for n8n container.
+## @param n8n.resources.requests.memory Memory request for n8n container.
+## @param n8n.resources.limits.memory Memory limit for n8n container.
 ## @param n8n.nodeSelector Optional node selector to use.
 ## @param n8n.tolerations Whether to set node tolerations.
 ## @param n8n.affinity Whether to set node affinity.
@@ -68,6 +69,30 @@ n8n:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+
+## @section Velero Backup Schedule parameters
+
+## @param velero.enabled Whether to enable Velero backup schedules
+## @param velero.schedule The cron schedule for Velero backups (e.g., "0 2 * * *" for 2am daily)
+## @param velero.ttl Time to live for backups (e.g., "720h" for 30 days)
+## @param velero.includeClusterResources Whether to include cluster-scoped resources in backup
+## @param velero.snapshotVolumes Whether to take volume snapshots
+## @param velero.defaultVolumesToFsBackup Whether to use file system backup for volumes by default
+## @param velero.storageLocation The storage location for backups (leave empty for default)
+## @param velero.volumeSnapshotLocations The volume snapshot locations (leave empty for default)
+## @param velero.labelSelector Additional label selector to filter resources (optional)
+## @param velero.annotations Additional annotations to add to the Velero Schedule resources
+velero:
+  enabled: false
+  schedule: "0 2 * * *"
+  ttl: "720h"
+  includeClusterResources: false
+  snapshotVolumes: true
+  defaultVolumesToFsBackup: false
+  storageLocation: ""
+  volumeSnapshotLocations: []
+  labelSelector: {}
+  annotations: {}
 
 ## @section Environment Variables
 

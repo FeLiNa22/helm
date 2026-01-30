@@ -1,0 +1,53 @@
+{{- if and .Values.velero.enabled .Values.persistence.library.enabled }}
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: {{ include "immich.fullname" . }}
+  {{- with .Values.velero.annotations }}
+  annotations:
+    {{- toYaml . | nindent 6 }}
+  {{- end }}
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    velero.io/backup-schedule: {{ include "immich.fullname" . }}
+spec:
+  schedule: {{ .Values.velero.schedule | quote }}
+  template:
+    includedNamespaces:
+      - {{ .Release.Namespace }}
+    includedResources:
+      - persistentvolumeclaims
+      - persistentvolumes
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: {{ include "immich.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/pvc-type: config
+    {{- if .Values.velero.labelSelector }}
+    {{- with .Values.velero.labelSelector }}
+    {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- end }}
+    ttl: {{ .Values.velero.ttl }}
+    {{- if .Values.velero.includeClusterResources }}
+    includeClusterResources: {{ .Values.velero.includeClusterResources }}
+    {{- end }}
+    {{- if .Values.velero.snapshotVolumes }}
+    snapshotVolumes: {{ .Values.velero.snapshotVolumes }}
+    {{- end }}
+    {{- if .Values.velero.defaultVolumesToFsBackup }}
+    defaultVolumesToFsBackup: {{ .Values.velero.defaultVolumesToFsBackup }}
+    {{- end }}
+    {{- if .Values.velero.storageLocation }}
+    storageLocation: {{ .Values.velero.storageLocation }}
+    {{- end }}
+    {{- if .Values.velero.volumeSnapshotLocations }}
+    volumeSnapshotLocations:
+      {{- toYaml .Values.velero.volumeSnapshotLocations | nindent 6 }}
+    {{- end }}
+    metadata:
+      labels:
+        {{- include "immich.labels" . | nindent 8 }}
+        velero.io/backup-type: scheduled
+        velero.io/pvc-target: config
+{{- end }}

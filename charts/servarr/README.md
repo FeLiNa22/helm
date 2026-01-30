@@ -59,6 +59,23 @@ The command removes all the Kubernetes components associated with the chart and 
 | `media.paths.music`     | The subpath for music within the media PVC. Don't use leading or trailing slashes.     | `music`         |
 | `media.paths.downloads` | The subpath for downloads within the media PVC. Don't use leading or trailing slashes. | `downloads`     |
 
+### Velero Backup Schedule parameters
+
+| Name                                  | Description                                                                                      | Value         |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------- |
+| `velero.enabled`                      | Whether to enable Velero backup schedules for all services                                       | `false`       |
+| `velero.schedule`                     | The cron schedule for Velero backups (e.g., "0 2 * * *" for 2am daily)                         | `0 2 * * *`   |
+| `velero.ttl`                          | Time to live for backups (e.g., "720h" for 30 days)                                             | `720h`        |
+| `velero.includeClusterResources`      | Whether to include cluster-scoped resources in backup                                            | `false`       |
+| `velero.snapshotVolumes`              | Whether to take volume snapshots                                                                 | `true`        |
+| `velero.defaultVolumesToFsBackup`     | Whether to use file system backup for volumes by default                                         | `false`       |
+| `velero.storageLocation`              | The storage location for backups (leave empty for default)                                       | `""`          |
+| `velero.volumeSnapshotLocations`      | The volume snapshot locations (leave empty for default)                                          | `[]`          |
+| `velero.labelSelector`                | Additional label selector to filter resources (optional)                                         | `{}`          |
+| `velero.annotations`                  | Additional annotations to add to the Velero Schedule resources                                   | `{}`          |
+
+**Note**: When `velero.enabled=true`, Velero Schedules are automatically created for each enabled service. The schedules use a priority-based system to backup exactly ONE PVC per service: if `persistence.backup.enabled=true`, only the backup PVC (e.g., `radarr-backup`) is backed up; otherwise, if `persistence.enabled=true`, only the config PVC (e.g., `radarr-config`) is backed up. This ensures targeted and efficient backups.
+
 ### Jellyfin parameters
 
 | Name                                            | Description                                                                                                                                                                                                        | Value                          |
@@ -1065,6 +1082,40 @@ jellyfin:
       storageClass: hdd
       size: 100Gi
       accessMode: ReadWriteOnce
+```
+
+### Velero Backup Configuration
+
+The chart supports automatic backup scheduling using Velero. When enabled, Velero Schedules are created for each enabled service to backup their persistent volumes.
+
+#### Example: Enabling Velero backups
+
+To enable Velero backups for all services with a daily schedule at 2am and 30-day retention:
+
+```yaml
+velero:
+  enabled: true
+  schedule: "0 2 * * *"  # Daily at 2am
+  ttl: "720h"  # 30 days retention
+  snapshotVolumes: true
+```
+
+This will automatically create Velero backup schedules for all enabled services. Each service's schedule uses a priority-based system to backup exactly ONE PVC:
+- If `persistence.backup.enabled=true`: backs up only the backup PVC (e.g., `radarr-backup`)
+- If `persistence.backup.enabled=false` but `persistence.enabled=true`: backs up only the config PVC (e.g., `radarr-config`)
+- If both are disabled: no backup schedule is created
+
+#### Example: Custom backup schedule with storage location
+
+```yaml
+velero:
+  enabled: true
+  schedule: "0 3 * * 0"  # Weekly on Sundays at 3am
+  ttl: "2160h"  # 90 days retention
+  snapshotVolumes: true
+  storageLocation: "aws-s3-backup"
+  volumeSnapshotLocations:
+    - "aws-ebs-snapshots"
 ```
 
 ### FlareSolverr environment variables
