@@ -17,9 +17,9 @@ data:
     <PostgresHost>{{ .Release.Name }}-lidarr-db-rw</PostgresHost>
     <PostgresPort>5432</PostgresPort>
     {{- else }}
-    <PostgresUser>{{ required "lidarr.database.username is required when lidarr.database.mode is 'external'" .Values.lidarr.database.username }}</PostgresUser>
+    <PostgresUser>{{ required "lidarr.database.external.username is required when lidarr.database.mode is 'external'" .Values.lidarr.database.external.username }}</PostgresUser>
     <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
-    <PostgresHost>{{ required "lidarr.database.host is required when lidarr.database.mode is 'external'" .Values.lidarr.database.host }}</PostgresHost>
+    <PostgresHost>{{ required "lidarr.database.external.host is required when lidarr.database.mode is 'external'" .Values.lidarr.database.external.host }}</PostgresHost>
     <PostgresPort>{{ .Values.lidarr.database.port }}</PostgresPort>
     {{- end }}
     <PostgresMainDb>{{ .Values.lidarr.database.mainDatabase }}</PostgresMainDb>

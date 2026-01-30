@@ -81,17 +81,17 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-prowlarr-db-app
                   key: password
-            {{- else if .Values.prowlarr.database.existingSecret }}
+            {{- else if .Values.prowlarr.database.external.existingSecret }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.prowlarr.database.existingSecret }}
+                  name: {{ .Values.prowlarr.database.external.existingSecret }}
                   key: password
-            {{- else if .Values.prowlarr.database.password }}
+            {{- else if .Values.prowlarr.database.external.password }}
             - name: DB_PASSWORD
-              value: {{ .Values.prowlarr.database.password | quote }}
+              value: {{ .Values.prowlarr.database.external.password | quote }}
             {{- else }}
-            {{- fail "prowlarr.database.mode is 'external' but neither prowlarr.database.existingSecret nor prowlarr.database.password is provided. Please configure one of them." }}
+            {{- fail "prowlarr.database.mode is 'external' but neither prowlarr.database.external.existingSecret nor prowlarr.database.external.password is provided. Please configure one of them." }}
             {{- end }}
           volumeMounts:
             - name: config
