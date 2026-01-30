@@ -1,0 +1,56 @@
+{{- if and .Values.enabled .Values.persistence.backup.enabled .Values.persistence.backup.schedule.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-backup
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/component: backup
+spec:
+  schedule: {{ .Values.persistence.backup.schedule.cron | quote }}
+  successfulJobsHistoryLimit: {{ .Values.persistence.backup.schedule.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.persistence.backup.schedule.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: vaultwarden
+            app.kubernetes.io/instance: {{ .Release.Name | quote }}
+            app.kubernetes.io/component: backup
+        spec:
+          restartPolicy: {{ .Values.persistence.backup.schedule.restartPolicy }}
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: {{ .Values.persistence.existingClaim | default (printf "%s" .Release.Name) }}
+            - name: backup
+              persistentVolumeClaim:
+                claimName: {{ .Values.persistence.backup.existingClaim | default (printf "%s-backup" .Release.Name) }}
+          containers:
+            - name: backup
+              image: "{{ .Values.persistence.backup.schedule.image.repository }}:{{ .Values.persistence.backup.schedule.image.tag }}"
+              imagePullPolicy: {{ .Values.persistence.backup.schedule.image.pullPolicy }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+                  BACKUP_FILE="/backup/vaultwarden-backup-${TIMESTAMP}.tar.gz"
+                  echo "Creating backup: ${BACKUP_FILE}"
+                  tar -czf "${BACKUP_FILE}" -C /data .
+                  echo "Backup completed successfully"
+                  # Keep only the last 7 backups
+                  cd /backup && ls -t vaultwarden-backup-*.tar.gz | tail -n +8 | xargs -r rm
+                  echo "Old backups cleaned up"
+              volumeMounts:
+                - name: data
+                  mountPath: /data
+                  readOnly: true
+                - name: backup
+                  mountPath: /backup
+{{- end }}

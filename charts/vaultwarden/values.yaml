@@ -50,6 +50,14 @@
 ## @param persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param persistence.backup.size The size to use for backup persistence.
+## @param persistence.backup.schedule.enabled Whether to enable scheduled backups via CronJob.
+## @param persistence.backup.schedule.cron Cron schedule for automated backups (e.g., "0 2 * * *" for daily at 2 AM).
+## @param persistence.backup.schedule.image.repository The Docker repository for the backup container image.
+## @param persistence.backup.schedule.image.tag The tag for the backup container image.
+## @param persistence.backup.schedule.image.pullPolicy The image pull policy for the backup container.
+## @param persistence.backup.schedule.successfulJobsHistoryLimit Number of successful backup jobs to keep in history.
+## @param persistence.backup.schedule.failedJobsHistoryLimit Number of failed backup jobs to keep in history.
+## @param persistence.backup.schedule.restartPolicy Restart policy for backup job pods.
 ## @param persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -154,6 +162,16 @@ persistence:
     existingClaim: ""
     accessMode: ReadWriteMany
     size: 5Gi
+    schedule:
+      enabled: false
+      cron: "0 2 * * *"
+      image:
+        repository: busybox
+        tag: "1.37.0"
+        pullPolicy: IfNotPresent
+      successfulJobsHistoryLimit: 3
+      failedJobsHistoryLimit: 1
+      restartPolicy: OnFailure
   additionalVolumes: []
   additionalMounts: []
 
