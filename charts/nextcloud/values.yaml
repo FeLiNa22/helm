@@ -303,6 +303,7 @@ persistence:
 ## @section Velero Backup Schedule parameters
 
 ## @param velero.enabled Whether to enable Velero backup schedules
+## @param velero.namespace The namespace where Velero is deployed (Schedule CRD must be created in Velero namespace)
 ## @param velero.schedule The cron schedule for Velero backups (e.g., "0 2 * * *" for 2am daily)
 ## @param velero.ttl Time to live for backups (e.g., "720h" for 30 days)
 ## @param velero.includeClusterResources Whether to include cluster-scoped resources in backup
@@ -314,6 +315,7 @@ persistence:
 ## @param velero.annotations Additional annotations to add to the Velero Schedule resources
 velero:
   enabled: false
+  namespace: "velero"
   schedule: "0 2 * * *"
   ttl: "720h"
   includeClusterResources: false
