@@ -1150,22 +1150,16 @@ flaresolverr:
 ## @param seerr.extraEnv Additional environment variables to add to the seerr pods.
 ## @param seerr.extraEnvFrom Additional environment variables from secrets or configmaps to add to the seerr pods.
 ## @param seerr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
-## @param seerr.database.persistence.enabled Whether to enable persistence for the database (default: true).
-## @param seerr.database.persistence.size Size of the persistence volume (default: 100Mi).
-## @param seerr.database.persistence.storageClass Storage class for persistence.
-## @param seerr.database.persistence.existingClaim Use an existing PVC instead of creating a new one.
-## @param seerr.database.initSQL Array of SQL commands to run on database initialization.
-## @param seerr.database.auth.username Username for the database.
-## @param seerr.database.auth.password Password for the database user.
-## @param seerr.database.auth.existingSecret Reference to an existing Kubernetes secret for auth.
-## @param seerr.database.cluster.name Name of the database cluster.
-## @param seerr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
-## @param seerr.database.cluster.image.repository PostgreSQL container image repository.
-## @param seerr.database.cluster.image.tag PostgreSQL container image tag.
+## @param seerr.database.port Port of the PostgreSQL database.
+## @param seerr.database.databaseName Name of the database.
+## @param seerr.database.logQueries Whether to log database queries for debugging.
 ## @param seerr.database.external.host Hostname of the external PostgreSQL database (required when mode is 'external').
-## @param seerr.database.external.port Port of the PostgreSQL database.
-## @param seerr.database.external.mainDatabase Name of the main database for Seerr.
-## @param seerr.database.external.logDatabase Name of the log database for Seerr.
+## @param seerr.database.external.username Username for the external PostgreSQL database (required when mode is 'external').
+## @param seerr.database.external.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
+## @param seerr.database.external.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
+## @param seerr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
+## @param seerr.database.cluster.storageClass Storage class for the CloudNativePG cluster (only used when mode is 'cluster').
+## @param seerr.database.cluster.storageSize Storage size for the CloudNativePG cluster (only used when mode is 'cluster').
 ##
 seerr:
   enabled: true
