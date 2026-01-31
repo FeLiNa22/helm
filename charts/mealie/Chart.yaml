@@ -4,7 +4,7 @@ maintainers:
     url: https://raulpatel.com
 apiVersion: v2
 appVersion: v2.2.0
-version: 1.1.6
+version: 1.2.0
 description: Mealie Helm Chart
 home: https://github.com/FeLiNa22/homeserver/tree/main/charts/mealie
 icon: https://raulpatel.com/images/raul.svg

@@ -21,8 +21,14 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
   template:
     metadata:
-      {{- with .Values.qbittorrent.podAnnotations }}
+      {{- if and $.Values.velero.enabled (or .Values.qbittorrent.persistence.enabled .Values.qbittorrent.persistence.backup.enabled) }}
       annotations:
+        backup.velero.io/backup-volumes: {{ if .Values.qbittorrent.persistence.backup.enabled }}backup{{ else }}config{{ end }}
+      {{- end }}
+      {{- with .Values.qbittorrent.podAnnotations }}
+      {{- if not (and $.Values.velero.enabled (or $.Values.qbittorrent.persistence.enabled $.Values.qbittorrent.persistence.backup.enabled)) }}
+      annotations:
+      {{- end }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:

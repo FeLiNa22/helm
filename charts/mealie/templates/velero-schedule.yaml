@@ -27,18 +27,7 @@ spec:
     includedNamespaces:
       - {{ .Release.Namespace }}
     includedResources:
-      - persistentvolumeclaims
-      - persistentvolumes
-    labelSelector:
-      matchLabels:
-        app.kubernetes.io/name: mealie
-        app.kubernetes.io/instance: {{ .Release.Name | quote }}
-        app.kubernetes.io/pvc-type: {{ $pvcType }}
-    {{- if .Values.velero.labelSelector }}
-    {{- with .Values.velero.labelSelector }}
-    {{- toYaml . | nindent 6 }}
-    {{- end }}
-    {{- end }}
+      - "*"
     ttl: {{ .Values.velero.ttl }}
     {{- if .Values.velero.includeClusterResources }}
     includeClusterResources: {{ .Values.velero.includeClusterResources }}
