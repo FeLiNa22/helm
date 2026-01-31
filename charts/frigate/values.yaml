@@ -184,7 +184,7 @@ database:
     enabled: true
     size: 100Mi
     storageClass: ""
-    existingClaim: ""
+    existingClaim: ""  # Note: existingClaim is not supported for cluster mode
 
   initSQL: []
     # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"

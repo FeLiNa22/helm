@@ -40,12 +40,6 @@ spec:
     {{- if .Values.database.persistence.storageClass }}
     storageClass: {{ .Values.database.persistence.storageClass }}
     {{- end }}
-    {{- if .Values.database.persistence.existingClaim }}
-    pvcTemplate:
-      dataSource:
-        name: {{ .Values.database.persistence.existingClaim }}
-        kind: PersistentVolumeClaim
-    {{- end }}
 
   postgresql:
     parameters:
