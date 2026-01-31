@@ -45,7 +45,6 @@
 ## @param database.persistence.enabled Whether to enable persistence for the database (default: true).
 ## @param database.persistence.size Size of the persistence volume (default: 100Mi).
 ## @param database.persistence.storageClass Storage class for persistence.
-## @param database.persistence.existingClaim Use an existing PVC instead of creating a new one.
 ## @param database.initSQL Array of SQL commands to run on database initialization.
 ## @param database.auth.username Username for the database.
 ## @param database.auth.password Password for the database user (leave empty to auto-generate).
@@ -184,7 +183,7 @@ database:
     enabled: true
     size: 100Mi
     storageClass: ""
-    existingClaim: ""  # Note: existingClaim is not supported for cluster mode
+    # Note: existingClaim is not supported for CloudNativePG cluster mode
 
   initSQL: []
     # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
