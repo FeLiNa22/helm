@@ -42,7 +42,7 @@ velero:
   enabled: false
   namespace: "velero"
   schedule: "0 2 * * *"
-  ttl: "720h"
+  ttl: "168h"
   includeClusterResources: false
   snapshotVolumes: true
   defaultVolumesToFsBackup: false
