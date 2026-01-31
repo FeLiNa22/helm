@@ -369,7 +369,7 @@ dragonfly:
 ## @param database.enabled Whether to enable PostgreSQL database for Outline (default: true).
 ## @param database.mode The mode of PostgreSQL deployment (only 'cluster' is supported for Outline).
 ## @param database.persistence.enabled Whether to enable persistence for the database (default: true).
-## @param database.persistence.size Size of the persistence volume (default: 100Mi).
+## @param database.persistence.size Size of the persistence volume (default: 10Gi).
 ## @param database.persistence.storageClass Storage class for persistence.
 ## @param database.persistence.existingClaim The name of an existing claim to use for persistence.
 ## @param database.initSQL Array of SQL commands to run on database initialization.
@@ -393,7 +393,7 @@ database:
 
   persistence:
     enabled: true
-    size: 100Mi
+    size: 10Gi
     storageClass: ""
     existingClaim: ""
 
