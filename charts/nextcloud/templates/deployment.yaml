@@ -78,12 +78,29 @@ spec:
               containerPort: 80
               protocol: TCP
           env:
-            {{- if eq .Values.database.mode "cluster" }}
+            {{- if eq .Values.database.mode "standalone" }}
+            # Standalone PostgreSQL mode
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-nextcloud-postgresql
+            - name: POSTGRES_DB
+              value: {{ .Values.database.auth.username }}
+            - name: POSTGRES_USER
+              value: {{ .Values.database.auth.username }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.database.auth.existingSecret }}
+                  name: {{ .Values.database.auth.existingSecret }}
+                  {{- else }}
+                  name: {{ .Release.Name }}-postgresql
+                  {{- end }}
+                  key: password
+            {{- else if eq .Values.database.mode "cluster" }}
             # CloudNativePG cluster mode
             - name: POSTGRES_HOST
               value: {{ .Release.Name }}-{{ .Values.database.cluster.name }}-rw
             - name: POSTGRES_DB
-              value: {{ .Values.database.cluster.database }}
+              value: {{ .Values.database.auth.username }}
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -94,36 +111,23 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.database.cluster.secret.name | default (printf "%s-nextcloud-db-app" .Release.Name) }}
                   key: password
-            {{- else if eq .Values.database.mode "standalone" }}
-            # Standalone PostgreSQL mode (Bitnami subchart)
-            - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-postgresql
-            - name: POSTGRES_DB
-              value: {{ .Values.postgresql.auth.database }}
-            - name: POSTGRES_USER
-              value: {{ .Values.postgresql.auth.username }}
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  {{- if .Values.postgresql.auth.existingSecret }}
-                  name: {{ .Values.postgresql.auth.existingSecret }}
-                  {{- else }}
-                  name: {{ .Release.Name }}-postgresql
-                  {{- end }}
-                  key: password
             {{- else if eq .Values.database.mode "external" }}
             # External PostgreSQL mode
             - name: POSTGRES_HOST
               value: {{ .Values.database.external.host }}:{{ .Values.database.external.port | default 5432 }}
             - name: POSTGRES_DB
-              value: {{ .Values.database.external.database }}
+              value: {{ .Values.database.auth.username }}
             - name: POSTGRES_USER
-              value: {{ .Values.database.external.username }}
+              value: {{ .Values.database.auth.username }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.database.external.existingSecret }}
-                  key: {{ .Values.database.external.secretKey | default "password" }}
+                  {{- if .Values.database.auth.existingSecret }}
+                  name: {{ .Values.database.auth.existingSecret }}
+                  {{- else }}
+                  name: {{ .Release.Name }}-postgresql-external
+                  {{- end }}
+                  key: password
             {{- end }}
             {{- if and (ne .Values.dragonfly.mode "disabled") (ne .Values.dragonfly.mode "") }}
             # DragonflyDB/Redis connection for caching

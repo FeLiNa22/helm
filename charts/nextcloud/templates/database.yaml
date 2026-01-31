@@ -1,4 +1,183 @@
-{{- if and .Values.enabled (eq .Values.database.mode "cluster") .Values.database.cluster.enabled }}
+{{- if eq .Values.database.mode "standalone" }}
+{{- $fullName := printf "%s-nextcloud" .Release.Name -}}
+{{- $secretName := .Values.database.auth.existingSecret | default (printf "%s-postgresql" .Release.Name) -}}
+{{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
+{{- $userPassword := "" }}
+{{- if $existingSecret }}
+{{- $userPassword = index $existingSecret.data "password" | b64dec }}
+{{- else }}
+{{- $userPassword = .Values.database.auth.password }}
+{{- end }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  labels:
+    app.kubernetes.io/name: nextcloud-database
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: database
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- if not .Values.database.auth.password }}
+  annotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+  {{- end }}
+type: Opaque
+stringData:
+  password: {{ $userPassword }}
+{{- if .Values.database.initSQL }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullName }}-postgresql-init
+  labels:
+    app.kubernetes.io/name: nextcloud-database
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: database
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  init-extensions.sh: |
+    #!/bin/bash
+    set -e
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+      {{- range .Values.database.initSQL }}
+      {{ . }}
+      {{- end }}
+    EOSQL
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-postgresql
+  labels:
+    app.kubernetes.io/name: nextcloud-database
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: database
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: postgresql
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: nextcloud
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: database
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $fullName }}-postgresql
+  labels:
+    app.kubernetes.io/name: nextcloud-database
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: database
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  serviceName: {{ $fullName }}-postgresql
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nextcloud
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: database
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nextcloud
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: database
+    spec:
+      containers:
+      - name: postgresql
+        image: "{{ .Values.database.standalone.image.repository }}:{{ .Values.database.standalone.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: postgresql
+          containerPort: 5432
+          protocol: TCP
+        env:
+        - name: POSTGRES_USER
+          value: {{ .Values.database.auth.username | quote }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secretName }}
+              key: password
+        - name: POSTGRES_DB
+          value: {{ .Values.database.auth.username | quote }}
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+        {{- if .Values.database.initSQL }}
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d
+        {{- end }}
+        {{- if .Values.database.standalone.resources }}
+        resources:
+          {{- toYaml .Values.database.standalone.resources | nindent 10 }}
+        {{- end }}
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U {{ .Values.database.auth.username | quote }} -d {{ .Values.database.auth.username | quote }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U {{ .Values.database.auth.username | quote }} -d {{ .Values.database.auth.username | quote }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+      volumes:
+      {{- if .Values.database.initSQL }}
+      - name: init-scripts
+        configMap:
+          name: {{ $fullName }}-postgresql-init
+          defaultMode: 0755
+      {{- end }}
+      {{- if not .Values.database.persistence.enabled }}
+      - name: data
+        emptyDir: {}
+      {{- end }}
+  {{- if .Values.database.persistence.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        app.kubernetes.io/name: nextcloud-database
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: database
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      {{- if .Values.database.persistence.storageClass }}
+      storageClassName: {{ .Values.database.persistence.storageClass }}
+      {{- end }}
+      {{- if .Values.database.persistence.existingClaim }}
+      volumeName: {{ .Values.database.persistence.existingClaim }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.database.persistence.size }}
+  {{- end }}
+{{- else if eq .Values.database.mode "cluster" }}
+{{- $fullName := printf "%s-nextcloud" .Release.Name -}}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -22,17 +201,21 @@ spec:
 
   bootstrap:
     initdb:
-      database: {{ .Values.database.cluster.database }}
-      owner: {{ .Values.database.cluster.owner }}
+      database: {{ .Values.database.auth.username }}
+      owner: {{ .Values.database.auth.username }}
       {{- if or .Values.database.cluster.secret.name .Values.database.cluster.secret.create }}
       secret:
         name: {{ .Values.database.cluster.secret.name | default (printf "%s-nextcloud-db-app" .Release.Name) }}
       {{- end }}
+      {{- if .Values.database.initSQL }}
+      postInitSQL:
+        {{- toYaml .Values.database.initSQL | nindent 8 }}
+      {{- end }}
 
   storage:
-    size: {{ .Values.database.cluster.storage.size }}
-    {{- if .Values.database.cluster.storage.storageClass }}
-    storageClass: {{ .Values.database.cluster.storage.storageClass }}
+    size: {{ .Values.database.persistence.size }}
+    {{- if .Values.database.persistence.storageClass }}
+    storageClass: {{ .Values.database.persistence.storageClass }}
     {{- end }}
 
   postgresql:
