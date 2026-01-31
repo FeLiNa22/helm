@@ -1,135 +1,6 @@
-{{- if eq .Values.database.mode "standalone" }}
+{{- if and .Values.database.enabled (eq .Values.database.mode "cluster") }}
 {{- $fullName := include "outline.fullname" . -}}
-{{- $secretName := include "outline.postgresql.secretName" . -}}
-{{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
-{{- $userPassword := "" }}
-{{- if $existingSecret }}
-{{- $userPassword = index $existingSecret.data "password" | b64dec }}
-{{- else }}
-{{- $userPassword = .Values.database.standalone.auth.password }}
-{{- end }}
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ $secretName }}
-  labels:
-    {{- include "outline.labels" . | nindent 4 }}
-    app.kubernetes.io/component: database
-type: Opaque
-stringData:
-  password: {{ $userPassword }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ $fullName }}-postgresql
-  labels:
-    {{- include "outline.labels" . | nindent 4 }}
-    app.kubernetes.io/component: database
-spec:
-  type: ClusterIP
-  ports:
-    - name: postgresql
-      port: 5432
-      targetPort: postgresql
-      protocol: TCP
-  selector:
-    {{- include "outline.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: database
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: {{ $fullName }}-postgresql
-  labels:
-    {{- include "outline.labels" . | nindent 4 }}
-    app.kubernetes.io/component: database
-spec:
-  serviceName: {{ $fullName }}-postgresql
-  replicas: 1
-  selector:
-    matchLabels:
-      {{- include "outline.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: database
-  template:
-    metadata:
-      labels:
-        {{- include "outline.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/component: database
-    spec:
-      containers:
-      - name: postgresql
-        image: "{{ .Values.database.standalone.image.repository }}:{{ .Values.database.standalone.image.tag }}"
-        imagePullPolicy: IfNotPresent
-        ports:
-        - name: postgresql
-          containerPort: 5432
-          protocol: TCP
-        env:
-        - name: POSTGRES_USER
-          value: {{ .Values.database.standalone.auth.username | quote }}
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ $secretName }}
-              key: password
-        - name: POSTGRES_DB
-          value: {{ .Values.database.standalone.auth.database | quote }}
-        - name: PGDATA
-          value: /var/lib/postgresql/data/pgdata
-        volumeMounts:
-        - name: data
-          mountPath: /var/lib/postgresql/data
-        {{- if .Values.database.standalone.resources }}
-        resources:
-          {{- toYaml .Values.database.standalone.resources | nindent 10 }}
-        {{- end }}
-        livenessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - exec pg_isready -U {{ .Values.database.standalone.auth.username | quote }} -d {{ .Values.database.standalone.auth.database | quote }}
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 6
-        readinessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - exec pg_isready -U {{ .Values.database.standalone.auth.username | quote }} -d {{ .Values.database.standalone.auth.database | quote }}
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 6
-      {{- if not .Values.database.standalone.persistence.enabled }}
-      volumes:
-      - name: data
-        emptyDir: {}
-      {{- end }}
-  {{- if .Values.database.standalone.persistence.enabled }}
-  volumeClaimTemplates:
-  - metadata:
-      name: data
-      labels:
-        {{- include "outline.labels" . | nindent 8 }}
-        app.kubernetes.io/component: database
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      {{- if .Values.database.standalone.persistence.storageClass }}
-      storageClassName: {{ .Values.database.standalone.persistence.storageClass }}
-      {{- end }}
-      resources:
-        requests:
-          storage: {{ .Values.database.standalone.persistence.size }}
-  {{- end }}
-{{- else if eq .Values.database.mode "cluster" }}
----
-{{- $fullName := include "outline.fullname" . -}}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -151,17 +22,30 @@ spec:
 
   bootstrap:
     initdb:
-      database: {{ .Values.database.cluster.database }}
-      owner: {{ .Values.database.cluster.owner }}
+      database: outline
+      owner: {{ .Values.database.auth.username }}
       {{- if or .Values.database.cluster.secret.name .Values.database.cluster.secret.create }}
       secret:
         name: {{ .Values.database.cluster.secret.name | default (printf "%s-outline-db-app" .Release.Name) }}
       {{- end }}
+      {{- if .Values.database.initSQL }}
+      postInitSQL:
+        {{- range .Values.database.initSQL }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- end }}
 
   storage:
-    size: {{ .Values.database.cluster.storage.size }}
-    {{- if .Values.database.cluster.storage.storageClass }}
-    storageClass: {{ .Values.database.cluster.storage.storageClass }}
+    {{- if .Values.database.persistence.existingClaim }}
+    pvcTemplate:
+      dataSource:
+        name: {{ .Values.database.persistence.existingClaim }}
+        kind: PersistentVolumeClaim
+    {{- else }}
+    size: {{ .Values.database.persistence.size }}
+    {{- if .Values.database.persistence.storageClass }}
+    storageClass: {{ .Values.database.persistence.storageClass }}
+    {{- end }}
     {{- end }}
 
   postgresql:
@@ -184,18 +68,18 @@ spec:
   monitoring:
     enablePodMonitor: false
 
-  {{- if .Values.nodeSelector }}
+  {{- if .Values.outline.nodeSelector }}
   nodeSelector:
-    {{- toYaml .Values.nodeSelector | nindent 4 }}
+    {{- toYaml .Values.outline.nodeSelector | nindent 4 }}
   {{- end }}
 
-  {{- if .Values.tolerations }}
+  {{- if .Values.outline.tolerations }}
   tolerations:
-    {{- toYaml .Values.tolerations | nindent 4 }}
+    {{- toYaml .Values.outline.tolerations | nindent 4 }}
   {{- end }}
 
-  {{- if .Values.affinity }}
+  {{- if .Values.outline.affinity }}
   affinity:
-    {{- toYaml .Values.affinity | nindent 4 }}
+    {{- toYaml .Values.outline.affinity | nindent 4 }}
   {{- end }}
 {{- end }}

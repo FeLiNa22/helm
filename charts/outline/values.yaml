@@ -364,58 +364,45 @@ dragonfly:
 
 ## @section Database parameters
 ## PostgreSQL database is required for Outline
+## Note: Outline only supports cluster mode (no standalone or external modes)
 
-## @param database.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
-## @param database.standalone.image.repository PostgreSQL image repository.
-## @param database.standalone.image.tag PostgreSQL image tag.
-## @param database.standalone.auth.database Name of the database to create.
-## @param database.standalone.auth.username Username for the database.
-## @param database.standalone.auth.password Password for the database user (leave empty to auto-generate).
-## @param database.standalone.auth.existingSecret Reference to an existing Kubernetes secret for auth.
-## @param database.standalone.persistence.enabled Whether to enable persistence for standalone PostgreSQL.
-## @param database.standalone.persistence.size Size of the persistence volume.
-## @param database.standalone.persistence.storageClass Storage class for persistence.
-## @param database.standalone.resources Resource limits and requests for standalone PostgreSQL.
+## @param database.enabled Whether to enable PostgreSQL database for Outline (default: true).
+## @param database.mode The mode of PostgreSQL deployment (only 'cluster' is supported for Outline).
+## @param database.persistence.enabled Whether to enable persistence for the database (default: true).
+## @param database.persistence.size Size of the persistence volume (default: 100Mi).
+## @param database.persistence.storageClass Storage class for persistence.
+## @param database.persistence.existingClaim The name of an existing claim to use for persistence.
+## @param database.initSQL Array of SQL commands to run on database initialization.
+## @param database.auth.username Username for the database.
+## @param database.auth.password Password for the database user (leave empty to auto-generate).
+## @param database.auth.existingSecret Reference to an existing Kubernetes secret for auth.
 ## @param database.cluster.name Name of the database cluster.
 ## @param database.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param database.cluster.image.repository PostgreSQL container image repository.
 ## @param database.cluster.image.tag PostgreSQL container image tag.
-## @param database.cluster.database Name of the database to create.
-## @param database.cluster.owner Owner of the database.
-## @param database.cluster.storage.size Size of the storage for each instance.
-## @param database.cluster.storage.storageClass Storage class name for persistent volumes.
 ## @param database.cluster.secret.name Name of the secret containing database credentials.
 ## @param database.cluster.secret.create Whether to create the database secret.
-## @param database.cluster.secret.username Database user username.
-## @param database.cluster.secret.password Database user password (leave empty to auto-generate).
 ## @param database.cluster.superuserSecret.name Name of the secret containing the superuser credentials.
 ## @param database.cluster.superuserSecret.create Whether to create the superuser secret.
 ## @param database.cluster.superuserSecret.username Superuser username.
 ## @param database.cluster.superuserSecret.password Superuser password (leave empty to auto-generate).
-## @param database.external.host Hostname of external PostgreSQL (when mode is 'external').
-## @param database.external.port Port of external PostgreSQL.
-## @param database.external.database Database name of external PostgreSQL.
-## @param database.external.username Username of external PostgreSQL.
-## @param database.external.existingSecret Secret name for external PostgreSQL password.
-## @param database.external.secretKey Key in the secret for the password.
 ##
 database:
-  mode: standalone
+  enabled: true
+  mode: cluster
 
-  standalone:
-    image:
-      repository: postgres
-      tag: "16-alpine"
-    auth:
-      database: outline
-      username: outline
-      password: ""
-      existingSecret: ""
-    persistence:
-      enabled: true
-      size: 10Gi
-      storageClass: ""
-    resources: {}
+  persistence:
+    enabled: true
+    size: 100Mi
+    storageClass: ""
+    existingClaim: ""
+
+  initSQL: []
+
+  auth:
+    username: outline
+    password: ""
+    existingSecret: ""
 
   cluster:
     name: outline-db
@@ -423,29 +410,14 @@ database:
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: "16"
-    database: outline
-    owner: outline
-    storage:
-      size: 10Gi
-      storageClass: ""
     secret:
       name: ""
       create: true
-      username: outline
-      password: ""
     superuserSecret:
       name: ""
       create: true
       username: postgres
       password: ""
-
-  external:
-    host: ""
-    port: 5432
-    database: "outline"
-    username: "outline"
-    existingSecret: ""
-    secretKey: "password"
 
 ## @section Redis parameters (DEPRECATED - use dragonfly instead)
 
