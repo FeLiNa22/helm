@@ -1028,6 +1028,28 @@ entries:
   nextcloud:
   - apiVersion: v2
     appVersion: 32.0.3
+    created: "2026-01-31T23:33:53.527200877Z"
+    description: Nextcloud Helm Chart
+    digest: a4bc601e257e8b83f28efddcff50301c61aa9d74c7c29faf23f431299b0c2461
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/nextcloud
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - nextcloud
+    - cloud
+    - storage
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: nextcloud
+    sources:
+    - https://github.com/nextcloud/server
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/nextcloud-1.3.5/nextcloud-1.3.5.tgz
+    version: 1.3.5
+  - apiVersion: v2
+    appVersion: 32.0.3
     created: "2026-01-31T23:33:30.447429636Z"
     description: Nextcloud Helm Chart
     digest: 54711a0d86f18fa7e7e54af5a949375cf8f19e7f9240ab01183204c597d47807
@@ -3009,4 +3031,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-01-31T23:33:31.462031266Z"
+generated: "2026-01-31T23:33:53.527420936Z"
