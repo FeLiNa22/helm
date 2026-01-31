@@ -426,18 +426,35 @@ sonarr:
 
   database:
     mode: standalone
-    port: 5432
-    mainDatabase: sonarr-main
-    logDatabase: sonarr-log
-    external:
-      host: ""
+    persistence:
+      enabled: true
+      size: 100Mi
+      storageClass: ""
+      existingClaim: ""
+    initSQL: []
+    auth:
       username: ""
       password: ""
       existingSecret: ""
     cluster:
+      name: sonarr-db
       instances: 2
-      storageClass: ""
-      storageSize: 5Gi
+      image:
+        repository: ghcr.io/cloudnative-pg/postgresql
+        tag: "16"
+      secret:
+        name: ""
+        create: true
+      superuserSecret:
+        name: ""
+        create: true
+        username: postgres
+        password: ""
+    external:
+      host: ""
+      port: 5432
+      mainDatabase: sonarr-main
+      logDatabase: sonarr-log
 
 ## @section qBittorrent parameters
 
@@ -871,18 +888,35 @@ prowlarr:
 
   database:
     mode: standalone
-    port: 5432
-    mainDatabase: prowlarr-main
-    logDatabase: prowlarr-log
-    external:
-      host: ""
+    persistence:
+      enabled: true
+      size: 100Mi
+      storageClass: ""
+      existingClaim: ""
+    initSQL: []
+    auth:
       username: ""
       password: ""
       existingSecret: ""
     cluster:
+      name: prowlarr-db
       instances: 2
-      storageClass: ""
-      storageSize: 5Gi
+      image:
+        repository: ghcr.io/cloudnative-pg/postgresql
+        tag: "16"
+      secret:
+        name: ""
+        create: true
+      superuserSecret:
+        name: ""
+        create: true
+        username: postgres
+        password: ""
+    external:
+      host: ""
+      port: 5432
+      mainDatabase: prowlarr-main
+      logDatabase: prowlarr-log
 
 ## @section FlareSolverr parameters
 
@@ -1646,18 +1680,35 @@ radarr:
 
   database:
     mode: standalone
-    port: 5432
-    mainDatabase: radarr-main
-    logDatabase: radarr-log
-    external:
-      host: ""
+    persistence:
+      enabled: true
+      size: 100Mi
+      storageClass: ""
+      existingClaim: ""
+    initSQL: []
+    auth:
       username: ""
       password: ""
       existingSecret: ""
     cluster:
+      name: radarr-db
       instances: 2
-      storageClass: ""
-      storageSize: 5Gi
+      image:
+        repository: ghcr.io/cloudnative-pg/postgresql
+        tag: "16"
+      secret:
+        name: ""
+        create: true
+      superuserSecret:
+        name: ""
+        create: true
+        username: postgres
+        password: ""
+    external:
+      host: ""
+      port: 5432
+      mainDatabase: radarr-main
+      logDatabase: radarr-log
 
 ## @section Lidarr parameters
 
@@ -1846,18 +1897,35 @@ lidarr:
 
   database:
     mode: standalone
-    port: 5432
-    mainDatabase: lidarr-main
-    logDatabase: lidarr-log
-    external:
-      host: ""
+    persistence:
+      enabled: true
+      size: 100Mi
+      storageClass: ""
+      existingClaim: ""
+    initSQL: []
+    auth:
       username: ""
       password: ""
       existingSecret: ""
     cluster:
+      name: lidarr-db
       instances: 2
-      storageClass: ""
-      storageSize: 5Gi
+      image:
+        repository: ghcr.io/cloudnative-pg/postgresql
+        tag: "16"
+      secret:
+        name: ""
+        create: true
+      superuserSecret:
+        name: ""
+        create: true
+        username: postgres
+        password: ""
+    external:
+      host: ""
+      port: 5432
+      mainDatabase: lidarr-main
+      logDatabase: lidarr-log
 
 ## @section Cleanuparr parameters
 

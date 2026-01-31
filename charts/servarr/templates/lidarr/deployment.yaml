@@ -87,19 +87,19 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-lidarr-db-app
+                  name: {{ .Values.lidarr.database.cluster.secret.name | default (printf "%s-lidarr-db-app" .Release.Name) }}
                   key: password
-            {{- else if .Values.lidarr.database.external.existingSecret }}
+            {{- else if .Values.lidarr.database.auth.existingSecret }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.lidarr.database.external.existingSecret }}
+                  name: {{ .Values.lidarr.database.auth.existingSecret }}
                   key: password
-            {{- else if .Values.lidarr.database.external.password }}
+            {{- else if .Values.lidarr.database.auth.password }}
             - name: DB_PASSWORD
-              value: {{ .Values.lidarr.database.external.password | quote }}
+              value: {{ .Values.lidarr.database.auth.password | quote }}
             {{- else }}
-            {{- fail "lidarr.database.mode is 'external' but neither lidarr.database.external.existingSecret nor lidarr.database.external.password is provided. Please configure one of them." }}
+            {{- fail "lidarr.database.mode is 'external' but neither lidarr.database.auth.existingSecret nor lidarr.database.auth.password is provided. Please configure one of them." }}
             {{- end }}
           volumeMounts:
             - name: config

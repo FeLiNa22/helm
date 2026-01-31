@@ -2,7 +2,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-radarr-db
+  name: {{ .Values.radarr.database.cluster.name | default (printf "%s-radarr-db" .Release.Name) }}
   labels:
     app.kubernetes.io/name: radarr-db
     app.kubernetes.io/instance: {{ .Release.Name }}-radarr-db
@@ -11,15 +11,34 @@ metadata:
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   instances: {{ .Values.radarr.database.cluster.instances }}
+  {{- if .Values.radarr.database.cluster.image }}
+  imageName: {{ .Values.radarr.database.cluster.image.repository }}:{{ .Values.radarr.database.cluster.image.tag }}
+  {{- end }}
   bootstrap:
     initdb:
-      database: {{ .Values.radarr.database.mainDatabase }}
-      owner: radarr
+      database: {{ .Values.radarr.database.external.mainDatabase }}
+      owner: {{ .Values.radarr.database.auth.username | default "radarr" }}
+      {{- if .Values.radarr.database.initSQL }}
       postInitSQL:
-        - CREATE DATABASE "{{ .Values.radarr.database.logDatabase }}" OWNER radarr;
+        {{- range .Values.radarr.database.initSQL }}
+        - {{ . | quote }}
+        {{- end }}
+        - CREATE DATABASE "{{ .Values.radarr.database.external.logDatabase }}" OWNER {{ .Values.radarr.database.auth.username | default "radarr" }};
+      {{- else }}
+      postInitSQL:
+        - CREATE DATABASE "{{ .Values.radarr.database.external.logDatabase }}" OWNER {{ .Values.radarr.database.auth.username | default "radarr" }};
+      {{- end }}
+      {{- if .Values.radarr.database.cluster.secret.name }}
+      secret:
+        name: {{ .Values.radarr.database.cluster.secret.name }}
+      {{- end }}
+  {{- if .Values.radarr.database.cluster.superuserSecret.name }}
+  superuserSecret:
+    name: {{ .Values.radarr.database.cluster.superuserSecret.name }}
+  {{- end }}
   storage:
-    {{- if .Values.radarr.database.cluster.storageClass }}
-    storageClass: {{ .Values.radarr.database.cluster.storageClass }}
+    {{- if .Values.radarr.database.persistence.storageClass }}
+    storageClass: {{ .Values.radarr.database.persistence.storageClass }}
     {{- end }}
-    size: {{ .Values.radarr.database.cluster.storageSize }}
+    size: {{ .Values.radarr.database.persistence.size }}
 {{- end }}

@@ -2,7 +2,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-prowlarr-db
+  name: {{ .Values.prowlarr.database.cluster.name | default (printf "%s-prowlarr-db" .Release.Name) }}
   labels:
     app.kubernetes.io/name: prowlarr-db
     app.kubernetes.io/instance: {{ .Release.Name }}-prowlarr-db
@@ -11,15 +11,34 @@ metadata:
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   instances: {{ .Values.prowlarr.database.cluster.instances }}
+  {{- if .Values.prowlarr.database.cluster.image }}
+  imageName: {{ .Values.prowlarr.database.cluster.image.repository }}:{{ .Values.prowlarr.database.cluster.image.tag }}
+  {{- end }}
   bootstrap:
     initdb:
-      database: {{ .Values.prowlarr.database.mainDatabase }}
-      owner: prowlarr
+      database: {{ .Values.prowlarr.database.external.mainDatabase }}
+      owner: {{ .Values.prowlarr.database.auth.username | default "prowlarr" }}
+      {{- if .Values.prowlarr.database.initSQL }}
       postInitSQL:
-        - CREATE DATABASE "{{ .Values.prowlarr.database.logDatabase }}" OWNER prowlarr;
+        {{- range .Values.prowlarr.database.initSQL }}
+        - {{ . | quote }}
+        {{- end }}
+        - CREATE DATABASE "{{ .Values.prowlarr.database.external.logDatabase }}" OWNER {{ .Values.prowlarr.database.auth.username | default "prowlarr" }};
+      {{- else }}
+      postInitSQL:
+        - CREATE DATABASE "{{ .Values.prowlarr.database.external.logDatabase }}" OWNER {{ .Values.prowlarr.database.auth.username | default "prowlarr" }};
+      {{- end }}
+      {{- if .Values.prowlarr.database.cluster.secret.name }}
+      secret:
+        name: {{ .Values.prowlarr.database.cluster.secret.name }}
+      {{- end }}
+  {{- if .Values.prowlarr.database.cluster.superuserSecret.name }}
+  superuserSecret:
+    name: {{ .Values.prowlarr.database.cluster.superuserSecret.name }}
+  {{- end }}
   storage:
-    {{- if .Values.prowlarr.database.cluster.storageClass }}
-    storageClass: {{ .Values.prowlarr.database.cluster.storageClass }}
+    {{- if .Values.prowlarr.database.persistence.storageClass }}
+    storageClass: {{ .Values.prowlarr.database.persistence.storageClass }}
     {{- end }}
-    size: {{ .Values.prowlarr.database.cluster.storageSize }}
+    size: {{ .Values.prowlarr.database.persistence.size }}
 {{- end }}

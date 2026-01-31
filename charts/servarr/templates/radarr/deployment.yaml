@@ -87,19 +87,19 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-radarr-db-app
+                  name: {{ .Values.radarr.database.cluster.secret.name | default (printf "%s-radarr-db-app" .Release.Name) }}
                   key: password
-            {{- else if .Values.radarr.database.external.existingSecret }}
+            {{- else if .Values.radarr.database.auth.existingSecret }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.radarr.database.external.existingSecret }}
+                  name: {{ .Values.radarr.database.auth.existingSecret }}
                   key: password
-            {{- else if .Values.radarr.database.external.password }}
+            {{- else if .Values.radarr.database.auth.password }}
             - name: DB_PASSWORD
-              value: {{ .Values.radarr.database.external.password | quote }}
+              value: {{ .Values.radarr.database.auth.password | quote }}
             {{- else }}
-            {{- fail "radarr.database.mode is 'external' but neither radarr.database.external.existingSecret nor radarr.database.external.password is provided. Please configure one of them." }}
+            {{- fail "radarr.database.mode is 'external' but neither radarr.database.auth.existingSecret nor radarr.database.auth.password is provided. Please configure one of them." }}
             {{- end }}
           volumeMounts:
             - name: config

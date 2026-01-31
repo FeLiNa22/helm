@@ -2,7 +2,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-lidarr-db
+  name: {{ .Values.lidarr.database.cluster.name | default (printf "%s-lidarr-db" .Release.Name) }}
   labels:
     app.kubernetes.io/name: lidarr-db
     app.kubernetes.io/instance: {{ .Release.Name }}-lidarr-db
@@ -11,15 +11,34 @@ metadata:
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   instances: {{ .Values.lidarr.database.cluster.instances }}
+  {{- if .Values.lidarr.database.cluster.image }}
+  imageName: {{ .Values.lidarr.database.cluster.image.repository }}:{{ .Values.lidarr.database.cluster.image.tag }}
+  {{- end }}
   bootstrap:
     initdb:
-      database: {{ .Values.lidarr.database.mainDatabase }}
-      owner: lidarr
+      database: {{ .Values.lidarr.database.external.mainDatabase }}
+      owner: {{ .Values.lidarr.database.auth.username | default "lidarr" }}
+      {{- if .Values.lidarr.database.initSQL }}
       postInitSQL:
-        - CREATE DATABASE "{{ .Values.lidarr.database.logDatabase }}" OWNER lidarr;
+        {{- range .Values.lidarr.database.initSQL }}
+        - {{ . | quote }}
+        {{- end }}
+        - CREATE DATABASE "{{ .Values.lidarr.database.external.logDatabase }}" OWNER {{ .Values.lidarr.database.auth.username | default "lidarr" }};
+      {{- else }}
+      postInitSQL:
+        - CREATE DATABASE "{{ .Values.lidarr.database.external.logDatabase }}" OWNER {{ .Values.lidarr.database.auth.username | default "lidarr" }};
+      {{- end }}
+      {{- if .Values.lidarr.database.cluster.secret.name }}
+      secret:
+        name: {{ .Values.lidarr.database.cluster.secret.name }}
+      {{- end }}
+  {{- if .Values.lidarr.database.cluster.superuserSecret.name }}
+  superuserSecret:
+    name: {{ .Values.lidarr.database.cluster.superuserSecret.name }}
+  {{- end }}
   storage:
-    {{- if .Values.lidarr.database.cluster.storageClass }}
-    storageClass: {{ .Values.lidarr.database.cluster.storageClass }}
+    {{- if .Values.lidarr.database.persistence.storageClass }}
+    storageClass: {{ .Values.lidarr.database.persistence.storageClass }}
     {{- end }}
-    size: {{ .Values.lidarr.database.cluster.storageSize }}
+    size: {{ .Values.lidarr.database.persistence.size }}
 {{- end }}
