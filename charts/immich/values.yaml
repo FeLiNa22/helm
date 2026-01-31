@@ -306,6 +306,10 @@ dragonfly:
 ## @param database.cluster.image.tag PostgreSQL container image tag.
 ## @param database.external.host Hostname of external PostgreSQL (when mode is 'external').
 ## @param database.external.port Port of external PostgreSQL.
+## @param database.external.database Database name of external PostgreSQL.
+## @param database.external.username Username of external PostgreSQL.
+## @param database.external.existingSecret Secret name for external PostgreSQL password.
+## @param database.external.secretKey Key in the secret for the password.
 ##
 database:
   # Mode options: 'standalone', 'cluster', or 'external'
