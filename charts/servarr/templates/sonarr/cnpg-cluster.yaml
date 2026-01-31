@@ -18,6 +18,10 @@ spec:
     initdb:
       database: {{ .Values.sonarr.database.external.mainDatabase }}
       owner: {{ .Values.sonarr.database.auth.username | default "sonarr" }}
+      {{- if .Values.sonarr.database.auth.existingSecret }}
+      secret:
+        name: {{ .Values.sonarr.database.auth.existingSecret }}
+      {{- end }}
       {{- if .Values.sonarr.database.initSQL }}
       postInitSQL:
         {{- range .Values.sonarr.database.initSQL }}

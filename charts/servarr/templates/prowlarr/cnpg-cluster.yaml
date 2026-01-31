@@ -18,6 +18,10 @@ spec:
     initdb:
       database: {{ .Values.prowlarr.database.external.mainDatabase }}
       owner: {{ .Values.prowlarr.database.auth.username | default "prowlarr" }}
+      {{- if .Values.prowlarr.database.auth.existingSecret }}
+      secret:
+        name: {{ .Values.prowlarr.database.auth.existingSecret }}
+      {{- end }}
       {{- if .Values.prowlarr.database.initSQL }}
       postInitSQL:
         {{- range .Values.prowlarr.database.initSQL }}

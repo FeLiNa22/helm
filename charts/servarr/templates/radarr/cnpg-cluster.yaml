@@ -18,6 +18,10 @@ spec:
     initdb:
       database: {{ .Values.radarr.database.external.mainDatabase }}
       owner: {{ .Values.radarr.database.auth.username | default "radarr" }}
+      {{- if .Values.radarr.database.auth.existingSecret }}
+      secret:
+        name: {{ .Values.radarr.database.auth.existingSecret }}
+      {{- end }}
       {{- if .Values.radarr.database.initSQL }}
       postInitSQL:
         {{- range .Values.radarr.database.initSQL }}

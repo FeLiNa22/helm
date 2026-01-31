@@ -1,6 +1,12 @@
 {{- if eq .Values.database.mode "standalone" }}
 {{- $fullName := printf "%s-nextcloud" .Release.Name -}}
-{{- $secretName := .Values.database.auth.existingSecret | default (printf "%s-postgresql" .Release.Name) -}}
+{{- $secretName := include "nextcloud.postgresql.secretName" . -}}
+
+{{- if not .Values.database.auth.existingSecret }}
+{{- if not .Values.database.auth.password }}
+{{- fail "database.auth.password is required when database.auth.existingSecret is not provided" }}
+{{- end }}
+
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- $userPassword := "" }}
 {{- if $existingSecret }}
@@ -18,13 +24,10 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: database
     app.kubernetes.io/managed-by: {{ .Release.Service }}
-  {{- if not .Values.database.auth.password }}
-  annotations:
-    argocd.argoproj.io/compare-options: IgnoreExtraneous
-  {{- end }}
 type: Opaque
 stringData:
   password: {{ $userPassword }}
+{{- end }}
 {{- if .Values.database.initSQL }}
 ---
 apiVersion: v1
@@ -198,6 +201,10 @@ spec:
     initdb:
       database: {{ .Values.database.auth.username }}
       owner: {{ .Values.database.auth.username }}
+      {{- if .Values.database.auth.existingSecret }}
+      secret:
+        name: {{ .Values.database.auth.existingSecret }}
+      {{- end }}
       {{- if .Values.database.initSQL }}
       postInitSQL:
         {{- toYaml .Values.database.initSQL | nindent 8 }}

@@ -89,11 +89,7 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  {{- if .Values.database.auth.existingSecret }}
-                  name: {{ .Values.database.auth.existingSecret }}
-                  {{- else }}
-                  name: {{ .Release.Name }}-postgresql
-                  {{- end }}
+                  name: {{ include "nextcloud.postgresql.secretName" . }}
                   key: password
             {{- else if eq .Values.database.mode "cluster" }}
             # CloudNativePG cluster mode
@@ -109,7 +105,7 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
+                  name: {{ include "nextcloud.postgresql.secretName" . }}
                   key: password
             {{- else if eq .Values.database.mode "external" }}
             # External PostgreSQL mode
@@ -122,11 +118,7 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  {{- if .Values.database.auth.existingSecret }}
-                  name: {{ .Values.database.auth.existingSecret }}
-                  {{- else }}
-                  name: {{ .Release.Name }}-postgresql-external
-                  {{- end }}
+                  name: {{ include "nextcloud.postgresql.secretName" . }}
                   key: password
             {{- end }}
             {{- if and (ne .Values.dragonfly.mode "disabled") (ne .Values.dragonfly.mode "") }}

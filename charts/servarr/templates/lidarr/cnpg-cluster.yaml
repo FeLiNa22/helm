@@ -18,6 +18,10 @@ spec:
     initdb:
       database: {{ .Values.lidarr.database.external.mainDatabase }}
       owner: {{ .Values.lidarr.database.auth.username | default "lidarr" }}
+      {{- if .Values.lidarr.database.auth.existingSecret }}
+      secret:
+        name: {{ .Values.lidarr.database.auth.existingSecret }}
+      {{- end }}
       {{- if .Values.lidarr.database.initSQL }}
       postInitSQL:
         {{- range .Values.lidarr.database.initSQL }}

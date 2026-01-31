@@ -1,6 +1,12 @@
 {{- if eq .Values.database.mode "standalone" }}
 {{- $fullName := include "penpot.fullname" . -}}
 {{- $secretName := include "penpot.postgresql.secretName" . -}}
+
+{{- if not .Values.database.auth.existingSecret }}
+{{- if not .Values.database.auth.password }}
+{{- fail "database.auth.password is required when database.auth.existingSecret is not provided" }}
+{{- end }}
+
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- $userPassword := "" }}
 {{- if $existingSecret }}
@@ -19,6 +25,7 @@ metadata:
 type: Opaque
 stringData:
   password: {{ $userPassword }}
+{{- end }}
 ---
 apiVersion: v1
 kind: Service
@@ -151,6 +158,10 @@ spec:
     initdb:
       database: {{ .Values.database.auth.username }}
       owner: {{ .Values.database.auth.username }}
+      {{- if .Values.database.auth.existingSecret }}
+      secret:
+        name: {{ .Values.database.auth.existingSecret }}
+      {{- end }}
       {{- if .Values.database.initSQL }}
       postInitSQL:
         {{- toYaml .Values.database.initSQL | nindent 8 }}

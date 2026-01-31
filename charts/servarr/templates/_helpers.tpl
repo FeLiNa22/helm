@@ -51,10 +51,15 @@ Seerr Database Secret Name
 */}}
 {{- define "seerr.database.secretName" -}}
 {{- if eq .Values.seerr.database.mode "cluster" }}
-{{- printf "%s-seerr-db-app" .Release.Name }}
-{{- else if .Values.seerr.database.external.existingSecret }}
-{{- .Values.seerr.database.external.existingSecret }}
+{{- if .Values.seerr.database.auth.existingSecret }}
+{{- .Values.seerr.database.auth.existingSecret }}
 {{- else }}
-{{- printf "%s-seerr-db" .Release.Name }}
+{{- printf "%s-seerr-db-app" .Release.Name }}
+{{- end }}
+{{- else }}
+{{- if not .Values.seerr.database.external.existingSecret }}
+{{- fail "seerr.database.external.existingSecret is required when seerr.database.mode is 'external'" }}
+{{- end }}
+{{- .Values.seerr.database.external.existingSecret }}
 {{- end }}
 {{- end }}

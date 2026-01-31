@@ -109,7 +109,7 @@ spec:
             - name: DB_PASS
               valueFrom:
                 secretKeyRef:
-                  name: {{ printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
+                  name: {{ include "frigate.postgresql.secretName" . }}
                   key: password
             - name: DB_HOST
               value: {{ printf "%s-%s-rw" .Release.Name .Values.database.cluster.name }}

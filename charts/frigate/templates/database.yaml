@@ -19,6 +19,10 @@ spec:
     initdb:
       database: {{ .Values.database.auth.username }}
       owner: {{ .Values.database.auth.username }}
+      {{- if .Values.database.auth.existingSecret }}
+      secret:
+        name: {{ .Values.database.auth.existingSecret }}
+      {{- end }}
       {{- if .Values.database.initSQL }}
       postInitSQL:
         {{- toYaml .Values.database.initSQL | nindent 8 }}
