@@ -22,6 +22,9 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      {{- if and .Values.velero.enabled (or .Values.persistence.enabled .Values.persistence.backup.enabled) }}
+        backup.velero.io/backup-volumes: {{ if .Values.persistence.backup.enabled }}backup{{ else }}config{{ end }}
+      {{- end }}
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

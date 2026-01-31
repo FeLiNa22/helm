@@ -19,8 +19,14 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- if and .Values.velero.enabled .Values.persistence.enabled }}
       annotations:
+        backup.velero.io/backup-volumes: cache
+      {{- end }}
+      {{- with .Values.podAnnotations }}
+      {{- if not (and $.Values.velero.enabled $.Values.persistence.enabled) }}
+      annotations:
+      {{- end }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
