@@ -21,8 +21,14 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-radarr
   template:
     metadata:
-      {{- with .Values.radarr.podAnnotations }}
+      {{- if and $.Values.velero.enabled (or .Values.radarr.persistence.enabled .Values.radarr.persistence.backup.enabled) }}
       annotations:
+        backup.velero.io/backup-volumes: {{ if .Values.radarr.persistence.backup.enabled }}backup{{ else }}config{{ end }}
+      {{- end }}
+      {{- with .Values.radarr.podAnnotations }}
+      {{- if not (and $.Values.velero.enabled (or $.Values.radarr.persistence.enabled $.Values.radarr.persistence.backup.enabled)) }}
+      annotations:
+      {{- end }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:

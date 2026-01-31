@@ -19,6 +19,10 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-jellyfin
   template:
     metadata:
+      {{- if and $.Values.velero.enabled (or .Values.jellyfin.persistence.enabled .Values.jellyfin.persistence.backup.enabled) }}
+      annotations:
+        backup.velero.io/backup-volumes: {{ if .Values.jellyfin.persistence.backup.enabled }}backup{{ else }}config{{ end }}
+      {{- end }}
       labels:
         app.kubernetes.io/name: jellyfin
         app.kubernetes.io/instance: {{ .Release.Name }}-jellyfin

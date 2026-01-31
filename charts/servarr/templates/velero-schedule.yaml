@@ -1,45 +1,34 @@
-{{- if and .Values.velero.enabled .Values.jellyfin.enabled (or .Values.jellyfin.persistence.enabled .Values.jellyfin.persistence.backup.enabled) }}
-{{- $pvcType := "" }}
-{{- if .Values.jellyfin.persistence.backup.enabled }}
-{{- $pvcType = "backup" }}
-{{- else if .Values.jellyfin.persistence.enabled }}
-{{- $pvcType = "config" }}
+{{- if .Values.velero.enabled }}
+{{- $hasAnyPersistence := false }}
+{{- range $service := list "bazarr" "emby" "huntarr" "jellyfin" "lidarr" "plex" "prowlarr" "qbittorrent" "radarr" "sabnzbd" "seerr" "sonarr" }}
+  {{- $serviceConfig := index $.Values $service }}
+  {{- if and $serviceConfig.enabled (or $serviceConfig.persistence.enabled $serviceConfig.persistence.backup.enabled) }}
+    {{- $hasAnyPersistence = true }}
+  {{- end }}
 {{- end }}
-{{- if $pvcType }}
+{{- if $hasAnyPersistence }}
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
-  name: {{ .Release.Name }}-jellyfin
+  name: {{ .Release.Name }}
   namespace: {{ .Values.velero.namespace | default "velero" }}
   {{- with .Values.velero.annotations }}
   annotations:
     {{- toYaml . | nindent 6 }}
   {{- end }}
   labels:
-    app.kubernetes.io/name: jellyfin
-    app.kubernetes.io/instance: {{ .Release.Name }}-jellyfin
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-    velero.io/backup-schedule: {{ .Release.Name }}-jellyfin
+    velero.io/backup-schedule: {{ .Release.Name }}
 spec:
   schedule: {{ .Values.velero.schedule | quote }}
   template:
     includedNamespaces:
       - {{ .Release.Namespace }}
     includedResources:
-      - persistentvolumeclaims
-      - persistentvolumes
-    labelSelector:
-      matchLabels:
-        app.kubernetes.io/name: jellyfin
-        app.kubernetes.io/instance: {{ .Release.Name }}-jellyfin
-        app.kubernetes.io/pvc-type: {{ $pvcType }}
-    {{- if .Values.velero.labelSelector }}
-    {{- with .Values.velero.labelSelector }}
-    {{- toYaml . | nindent 6 }}
-    {{- end }}
-    {{- end }}
+      - "*"
     ttl: {{ .Values.velero.ttl }}
     {{- if .Values.velero.includeClusterResources }}
     includeClusterResources: {{ .Values.velero.includeClusterResources }}
@@ -59,10 +48,7 @@ spec:
     {{- end }}
     metadata:
       labels:
-        app.kubernetes.io/name: jellyfin
-        app.kubernetes.io/instance: {{ .Release.Name }}-jellyfin
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
         velero.io/backup-type: scheduled
-        velero.io/service: jellyfin
-        velero.io/pvc-target: {{ $pvcType }}
 {{- end }}
 {{- end }}
