@@ -6,7 +6,7 @@
 {{- if $existingSecret }}
 {{- $userPassword = index $existingSecret.data "password" | b64dec }}
 {{- else }}
-{{- $userPassword = .Values.database.standalone.auth.password }}
+{{- $userPassword = .Values.database.auth.password }}
 {{- end }}
 ---
 apiVersion: v1
@@ -16,13 +16,14 @@ metadata:
   labels:
     {{- include "immich.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
-  {{- if not .Values.database.standalone.auth.password }}
+  {{- if not .Values.database.auth.password }}
   annotations:
     argocd.argoproj.io/compare-options: IgnoreExtraneous
   {{- end }}
 type: Opaque
 stringData:
   password: {{ $userPassword }}
+{{- if .Values.database.initSQL }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -36,10 +37,11 @@ data:
     #!/bin/bash
     set -e
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-      CREATE EXTENSION IF NOT EXISTS vectors;
-      CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
-      CREATE EXTENSION IF NOT EXISTS pg_trgm;
+      {{- range .Values.database.initSQL }}
+      {{ . }}
+      {{- end }}
     EOSQL
+{{- end }}
 ---
 apiVersion: v1
 kind: Service
@@ -89,21 +91,23 @@ spec:
           protocol: TCP
         env:
         - name: POSTGRES_USER
-          value: {{ .Values.database.standalone.auth.username | quote }}
+          value: {{ .Values.database.auth.username | quote }}
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ $secretName }}
               key: password
         - name: POSTGRES_DB
-          value: {{ .Values.database.standalone.auth.database | quote }}
+          value: {{ .Values.database.auth.username | quote }}
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
+        {{- if .Values.database.initSQL }}
         - name: init-scripts
           mountPath: /docker-entrypoint-initdb.d
+        {{- end }}
         {{- if .Values.database.standalone.resources }}
         resources:
           {{- toYaml .Values.database.standalone.resources | nindent 10 }}
@@ -113,7 +117,7 @@ spec:
             command:
             - /bin/sh
             - -c
-            - exec pg_isready -U {{ .Values.database.standalone.auth.username | quote }} -d {{ .Values.database.standalone.auth.database | quote }}
+            - exec pg_isready -U {{ .Values.database.auth.username | quote }} -d {{ .Values.database.auth.username | quote }}
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
@@ -123,21 +127,23 @@ spec:
             command:
             - /bin/sh
             - -c
-            - exec pg_isready -U {{ .Values.database.standalone.auth.username | quote }} -d {{ .Values.database.standalone.auth.database | quote }}
+            - exec pg_isready -U {{ .Values.database.auth.username | quote }} -d {{ .Values.database.auth.username | quote }}
           initialDelaySeconds: 5
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 6
       volumes:
+      {{- if .Values.database.initSQL }}
       - name: init-scripts
         configMap:
           name: {{ $fullName }}-postgresql-init
           defaultMode: 0755
-      {{- if not .Values.database.standalone.persistence.enabled }}
+      {{- end }}
+      {{- if not .Values.database.persistence.enabled }}
       - name: data
         emptyDir: {}
       {{- end }}
-  {{- if .Values.database.standalone.persistence.enabled }}
+  {{- if .Values.database.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -147,12 +153,15 @@ spec:
     spec:
       accessModes:
         - ReadWriteOnce
-      {{- if .Values.database.standalone.persistence.storageClass }}
-      storageClassName: {{ .Values.database.standalone.persistence.storageClass }}
+      {{- if .Values.database.persistence.storageClass }}
+      storageClassName: {{ .Values.database.persistence.storageClass }}
+      {{- end }}
+      {{- if .Values.database.persistence.existingClaim }}
+      volumeName: {{ .Values.database.persistence.existingClaim }}
       {{- end }}
       resources:
         requests:
-          storage: {{ .Values.database.standalone.persistence.size }}
+          storage: {{ .Values.database.persistence.size }}
   {{- end }}
 {{- else if eq .Values.database.mode "cluster" }}
 {{- $fullName := include "immich.fullname" . -}}
@@ -177,21 +186,21 @@ spec:
 
   bootstrap:
     initdb:
-      database: {{ .Values.database.cluster.database }}
-      owner: {{ .Values.database.cluster.owner }}
+      database: {{ .Values.database.auth.username }}
+      owner: {{ .Values.database.auth.username }}
       {{- if or .Values.database.cluster.secret.name .Values.database.cluster.secret.create }}
       secret:
         name: {{ .Values.database.cluster.secret.name | default (printf "%s-immich-db-app" .Release.Name) }}
       {{- end }}
-      {{- if .Values.database.cluster.initSQL }}
+      {{- if .Values.database.initSQL }}
       postInitSQL:
-        {{- toYaml .Values.database.cluster.initSQL | nindent 8 }}
+        {{- toYaml .Values.database.initSQL | nindent 8 }}
       {{- end }}
 
   storage:
-    size: {{ .Values.database.cluster.storage.size }}
-    {{- if .Values.database.cluster.storage.storageClass }}
-    storageClass: {{ .Values.database.cluster.storage.storageClass }}
+    size: {{ .Values.database.persistence.size }}
+    {{- if .Values.database.persistence.storageClass }}
+    storageClass: {{ .Values.database.persistence.storageClass }}
     {{- end }}
 
   postgresql:

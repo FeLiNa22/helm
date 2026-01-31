@@ -81,12 +81,10 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "immich.postgresql.database" -}}
-{{- if eq .Values.database.mode "standalone" }}
-{{- .Values.database.standalone.auth.database }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- .Values.database.cluster.database }}
+{{- if eq .Values.database.mode "external" }}
+{{- .Values.database.external.database | default "immich" }}
 {{- else }}
-{{- .Values.database.external.database }}
+{{- .Values.database.auth.username }}
 {{- end }}
 {{- end }}
 
@@ -94,12 +92,10 @@ PostgreSQL database name
 PostgreSQL username
 */}}
 {{- define "immich.postgresql.username" -}}
-{{- if eq .Values.database.mode "standalone" }}
-{{- .Values.database.standalone.auth.username }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- .Values.database.cluster.secret.username }}
+{{- if eq .Values.database.mode "external" }}
+{{- .Values.database.external.username | default "immich" }}
 {{- else }}
-{{- .Values.database.external.username }}
+{{- .Values.database.auth.username }}
 {{- end }}
 {{- end }}
 
@@ -108,8 +104,8 @@ PostgreSQL secret name
 */}}
 {{- define "immich.postgresql.secretName" -}}
 {{- if eq .Values.database.mode "standalone" }}
-{{- if .Values.database.standalone.auth.existingSecret }}
-{{- .Values.database.standalone.auth.existingSecret }}
+{{- if .Values.database.auth.existingSecret }}
+{{- .Values.database.auth.existingSecret }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
 {{- end }}
@@ -124,12 +120,10 @@ PostgreSQL secret name
 PostgreSQL secret key
 */}}
 {{- define "immich.postgresql.secretKey" -}}
-{{- if eq .Values.database.mode "standalone" }}
-{{- "password" }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- "password" }}
-{{- else }}
+{{- if eq .Values.database.mode "external" }}
 {{- .Values.database.external.secretKey | default "password" }}
+{{- else }}
+{{- "password" }}
 {{- end }}
 {{- end }}
 
