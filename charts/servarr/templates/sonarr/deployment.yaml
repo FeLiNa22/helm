@@ -21,8 +21,14 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-sonarr
   template:
     metadata:
-      {{- with .Values.sonarr.podAnnotations }}
+      {{- if and $.Values.velero.enabled (or .Values.sonarr.persistence.enabled .Values.sonarr.persistence.backup.enabled) }}
       annotations:
+        backup.velero.io/backup-volumes: {{ if .Values.sonarr.persistence.backup.enabled }}backup{{ else }}config{{ end }}
+      {{- end }}
+      {{- with .Values.sonarr.podAnnotations }}
+      {{- if not (and $.Values.velero.enabled (or $.Values.sonarr.persistence.enabled $.Values.sonarr.persistence.backup.enabled)) }}
+      annotations:
+      {{- end }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:

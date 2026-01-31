@@ -16,6 +16,10 @@ spec:
     type: Recreate
   template:
     metadata:
+      {{- if and .Values.velero.enabled .Values.n8n.persistence.enabled }}
+      annotations:
+        backup.velero.io/backup-volumes: n8n-data
+      {{- end }}
       labels:
         {{- include "n8n.selectorLabels" . | nindent 8 }}
         service: n8n

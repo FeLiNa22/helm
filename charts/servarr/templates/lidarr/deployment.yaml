@@ -21,8 +21,14 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-lidarr
   template:
     metadata:
-      {{- with .Values.lidarr.podAnnotations }}
+      {{- if and $.Values.velero.enabled (or .Values.lidarr.persistence.enabled .Values.lidarr.persistence.backup.enabled) }}
       annotations:
+        backup.velero.io/backup-volumes: {{ if .Values.lidarr.persistence.backup.enabled }}backup{{ else }}config{{ end }}
+      {{- end }}
+      {{- with .Values.lidarr.podAnnotations }}
+      {{- if not (and $.Values.velero.enabled (or $.Values.lidarr.persistence.enabled $.Values.lidarr.persistence.backup.enabled)) }}
+      annotations:
+      {{- end }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:

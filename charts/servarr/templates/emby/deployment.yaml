@@ -21,8 +21,14 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-emby
   template:
     metadata:
-      {{- with .Values.emby.podAnnotations }}
+      {{- if and $.Values.velero.enabled (or .Values.emby.persistence.enabled .Values.emby.persistence.backup.enabled) }}
       annotations:
+        backup.velero.io/backup-volumes: {{ if .Values.emby.persistence.backup.enabled }}backup{{ else }}config{{ end }}
+      {{- end }}
+      {{- with .Values.emby.podAnnotations }}
+      {{- if not (and $.Values.velero.enabled (or $.Values.emby.persistence.enabled $.Values.emby.persistence.backup.enabled)) }}
+      annotations:
+      {{- end }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:

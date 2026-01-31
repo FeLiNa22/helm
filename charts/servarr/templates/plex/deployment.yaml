@@ -21,8 +21,14 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-plex
   template:
     metadata:
-      {{- with .Values.plex.podAnnotations }}
+      {{- if and $.Values.velero.enabled (or .Values.plex.persistence.enabled .Values.plex.persistence.backup.enabled) }}
       annotations:
+        backup.velero.io/backup-volumes: {{ if .Values.plex.persistence.backup.enabled }}backup{{ else }}config{{ end }}
+      {{- end }}
+      {{- with .Values.plex.podAnnotations }}
+      {{- if not (and $.Values.velero.enabled (or $.Values.plex.persistence.enabled $.Values.plex.persistence.backup.enabled)) }}
+      annotations:
+      {{- end }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
