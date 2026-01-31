@@ -4,7 +4,7 @@ maintainers:
     url: https://raulpatel.com
 apiVersion: v2
 appVersion: latest
-version: 1.1.0
+version: 1.1.1
 description: n8n workflow automation Helm Chart
 home: https://github.com/FeLiNa22/helm/tree/main/charts/n8n
 icon: https://n8n.io/favicon.ico
