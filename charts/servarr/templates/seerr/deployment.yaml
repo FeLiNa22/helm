@@ -152,8 +152,6 @@ spec:
                   key: password
             - name: DB_NAME
               value: {{ include "seerr.database.name" . | quote }}
-            - name: DB_LOG_QUERIES
-              value: {{ .Values.seerr.database.logQueries | quote }}
             {{- end }}
             {{- with .Values.seerr.extraEnv }}
             {{- toYaml . | nindent 12 }}

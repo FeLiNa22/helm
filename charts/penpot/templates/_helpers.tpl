@@ -78,26 +78,14 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "penpot.postgresql.database" -}}
-{{- if eq .Values.database.mode "standalone" }}
-{{- .Values.database.standalone.auth.database }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- .Values.database.cluster.database }}
-{{- else }}
-{{- .Values.database.external.database }}
-{{- end }}
+{{- .Values.database.auth.username }}
 {{- end }}
 
 {{/*
 PostgreSQL username
 */}}
 {{- define "penpot.postgresql.username" -}}
-{{- if eq .Values.database.mode "standalone" }}
-{{- .Values.database.standalone.auth.username }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- .Values.database.cluster.secret.username }}
-{{- else }}
-{{- .Values.database.external.username }}
-{{- end }}
+{{- .Values.database.auth.username }}
 {{- end }}
 
 {{/*
@@ -105,15 +93,22 @@ PostgreSQL secret name
 */}}
 {{- define "penpot.postgresql.secretName" -}}
 {{- if eq .Values.database.mode "standalone" }}
-{{- if .Values.database.standalone.auth.existingSecret }}
-{{- .Values.database.standalone.auth.existingSecret }}
+{{- if .Values.database.auth.existingSecret }}
+{{- .Values.database.auth.existingSecret }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
 {{- end }}
 {{- else if eq .Values.database.mode "cluster" }}
-{{- .Values.database.cluster.secret.name | default (printf "%s-penpot-db-app" .Release.Name) }}
+{{- if .Values.database.auth.existingSecret }}
+{{- .Values.database.auth.existingSecret }}
 {{- else }}
-{{- .Values.database.external.existingSecret }}
+{{- printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
+{{- end }}
+{{- else }}
+{{- if not .Values.database.auth.existingSecret }}
+{{- fail "database.auth.existingSecret is required when database.mode is 'external'" }}
+{{- end }}
+{{- .Values.database.auth.existingSecret }}
 {{- end }}
 {{- end }}
 
@@ -121,13 +116,7 @@ PostgreSQL secret name
 PostgreSQL secret key
 */}}
 {{- define "penpot.postgresql.secretKey" -}}
-{{- if eq .Values.database.mode "standalone" }}
 {{- "password" }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- "password" }}
-{{- else }}
-{{- .Values.database.external.secretKey | default "password" }}
-{{- end }}
 {{- end }}
 
 {{/*

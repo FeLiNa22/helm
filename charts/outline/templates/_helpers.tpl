@@ -54,12 +54,8 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 PostgreSQL host
 */}}
 {{- define "outline.postgresql.host" -}}
-{{- if eq .Values.database.mode "standalone" }}
-{{- printf "%s-postgresql" (include "outline.fullname" .) }}
-{{- else if eq .Values.database.mode "cluster" }}
+{{- if .Values.database.enabled }}
 {{- printf "%s-%s-rw" .Release.Name .Values.database.cluster.name }}
-{{- else }}
-{{- .Values.database.external.host }}
 {{- end }}
 {{- end }}
 
@@ -67,53 +63,38 @@ PostgreSQL host
 PostgreSQL port
 */}}
 {{- define "outline.postgresql.port" -}}
-{{- if eq .Values.database.mode "external" }}
-{{- .Values.database.external.port | default "5432" }}
-{{- else }}
 {{- "5432" }}
-{{- end }}
 {{- end }}
 
 {{/*
 PostgreSQL database name
 */}}
 {{- define "outline.postgresql.database" -}}
-{{- if eq .Values.database.mode "standalone" }}
-{{- .Values.database.standalone.auth.database }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- .Values.database.cluster.database }}
-{{- else }}
-{{- .Values.database.external.database }}
-{{- end }}
+{{- "outline" }}
 {{- end }}
 
 {{/*
 PostgreSQL username
 */}}
 {{- define "outline.postgresql.username" -}}
-{{- if eq .Values.database.mode "standalone" }}
-{{- .Values.database.standalone.auth.username }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- .Values.database.cluster.secret.username }}
-{{- else }}
-{{- .Values.database.external.username }}
-{{- end }}
+{{- .Values.database.auth.username }}
 {{- end }}
 
 {{/*
 PostgreSQL secret name
 */}}
 {{- define "outline.postgresql.secretName" -}}
-{{- if eq .Values.database.mode "standalone" }}
-{{- if .Values.database.standalone.auth.existingSecret }}
-{{- .Values.database.standalone.auth.existingSecret }}
+{{- if eq .Values.database.mode "cluster" }}
+{{- if .Values.database.auth.existingSecret }}
+{{- .Values.database.auth.existingSecret }}
 {{- else }}
-{{- printf "%s-postgresql" .Release.Name }}
+{{- printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
 {{- end }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- .Values.database.cluster.secret.name | default (printf "%s-outline-db-app" .Release.Name) }}
 {{- else }}
-{{- .Values.database.external.existingSecret }}
+{{- if not .Values.database.auth.existingSecret }}
+{{- fail "database.auth.existingSecret is required when database.mode is 'external'" }}
+{{- end }}
+{{- .Values.database.auth.existingSecret }}
 {{- end }}
 {{- end }}
 
@@ -121,13 +102,7 @@ PostgreSQL secret name
 PostgreSQL secret key
 */}}
 {{- define "outline.postgresql.secretKey" -}}
-{{- if eq .Values.database.mode "standalone" }}
 {{- "password" }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- "password" }}
-{{- else }}
-{{- .Values.database.external.secretKey | default "password" }}
-{{- end }}
 {{- end }}
 
 {{/*

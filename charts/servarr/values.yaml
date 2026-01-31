@@ -299,16 +299,22 @@ jellyfin:
 ## @param sonarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param sonarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param sonarr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
-## @param sonarr.database.port Port of the PostgreSQL database.
-## @param sonarr.database.mainDatabase Name of the main database for Sonarr.
-## @param sonarr.database.logDatabase Name of the log database for Sonarr.
-## @param sonarr.database.external.host Hostname of the external PostgreSQL database (required when mode is 'external').
-## @param sonarr.database.external.username Username for the external PostgreSQL database.
-## @param sonarr.database.external.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
-## @param sonarr.database.external.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
+## @param sonarr.database.persistence.enabled Whether to enable persistence for the database (default: true).
+## @param sonarr.database.persistence.size Size of the persistence volume (default: 100Mi).
+## @param sonarr.database.persistence.storageClass Storage class for persistence.
+## @param sonarr.database.persistence.existingClaim Use an existing PVC instead of creating a new one.
+## @param sonarr.database.initSQL Array of SQL commands to run on database initialization.
+## @param sonarr.database.auth.username Username for the database.
+## @param sonarr.database.auth.password Password for the database user.
+## @param sonarr.database.auth.existingSecret Reference to an existing Kubernetes secret for auth.
+## @param sonarr.database.cluster.name Name of the database cluster.
 ## @param sonarr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
-## @param sonarr.database.cluster.storageClass Storage class for the CloudNativePG cluster (only used when mode is 'cluster').
-## @param sonarr.database.cluster.storageSize Storage size for the CloudNativePG cluster (only used when mode is 'cluster').
+## @param sonarr.database.cluster.image.repository PostgreSQL container image repository.
+## @param sonarr.database.cluster.image.tag PostgreSQL container image tag.
+## @param sonarr.database.external.host Hostname of the external PostgreSQL database (required when mode is 'external').
+## @param sonarr.database.external.port Port of the PostgreSQL database.
+## @param sonarr.database.external.mainDatabase Name of the main database for Sonarr.
+## @param sonarr.database.external.logDatabase Name of the log database for Sonarr.
 ##
 sonarr:
   enabled: true
@@ -426,18 +432,27 @@ sonarr:
 
   database:
     mode: standalone
-    port: 5432
-    mainDatabase: sonarr-main
-    logDatabase: sonarr-log
-    external:
-      host: ""
+    persistence:
+      enabled: true
+      size: 100Mi
+      storageClass: ""
+      existingClaim: ""
+    initSQL: []
+    auth:
       username: ""
       password: ""
       existingSecret: ""
     cluster:
+      name: sonarr-db
       instances: 2
-      storageClass: ""
-      storageSize: 5Gi
+      image:
+        repository: ghcr.io/cloudnative-pg/postgresql
+        tag: "16"
+    external:
+      host: ""
+      port: 5432
+      mainDatabase: sonarr-main
+      logDatabase: sonarr-log
 
 ## @section qBittorrent parameters
 
@@ -744,16 +759,22 @@ qbittorrent:
 ## @param prowlarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param prowlarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param prowlarr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
-## @param prowlarr.database.port Port of the PostgreSQL database.
-## @param prowlarr.database.mainDatabase Name of the main database for Prowlarr.
-## @param prowlarr.database.logDatabase Name of the log database for Prowlarr.
-## @param prowlarr.database.external.host Hostname of the external PostgreSQL database (required when mode is 'external').
-## @param prowlarr.database.external.username Username for the external PostgreSQL database.
-## @param prowlarr.database.external.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
-## @param prowlarr.database.external.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
+## @param prowlarr.database.persistence.enabled Whether to enable persistence for the database (default: true).
+## @param prowlarr.database.persistence.size Size of the persistence volume (default: 100Mi).
+## @param prowlarr.database.persistence.storageClass Storage class for persistence.
+## @param prowlarr.database.persistence.existingClaim Use an existing PVC instead of creating a new one.
+## @param prowlarr.database.initSQL Array of SQL commands to run on database initialization.
+## @param prowlarr.database.auth.username Username for the database.
+## @param prowlarr.database.auth.password Password for the database user.
+## @param prowlarr.database.auth.existingSecret Reference to an existing Kubernetes secret for auth.
+## @param prowlarr.database.cluster.name Name of the database cluster.
 ## @param prowlarr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
-## @param prowlarr.database.cluster.storageClass Storage class for the CloudNativePG cluster (only used when mode is 'cluster').
-## @param prowlarr.database.cluster.storageSize Storage size for the CloudNativePG cluster (only used when mode is 'cluster').
+## @param prowlarr.database.cluster.image.repository PostgreSQL container image repository.
+## @param prowlarr.database.cluster.image.tag PostgreSQL container image tag.
+## @param prowlarr.database.external.host Hostname of the external PostgreSQL database (required when mode is 'external').
+## @param prowlarr.database.external.port Port of the PostgreSQL database.
+## @param prowlarr.database.external.mainDatabase Name of the main database for Prowlarr.
+## @param prowlarr.database.external.logDatabase Name of the log database for Prowlarr.
 ##
 prowlarr:
   enabled: true
@@ -871,18 +892,27 @@ prowlarr:
 
   database:
     mode: standalone
-    port: 5432
-    mainDatabase: prowlarr-main
-    logDatabase: prowlarr-log
-    external:
-      host: ""
+    persistence:
+      enabled: true
+      size: 100Mi
+      storageClass: ""
+      existingClaim: ""
+    initSQL: []
+    auth:
       username: ""
       password: ""
       existingSecret: ""
     cluster:
+      name: prowlarr-db
       instances: 2
-      storageClass: ""
-      storageSize: 5Gi
+      image:
+        repository: ghcr.io/cloudnative-pg/postgresql
+        tag: "16"
+    external:
+      host: ""
+      port: 5432
+      mainDatabase: prowlarr-main
+      logDatabase: prowlarr-log
 
 ## @section FlareSolverr parameters
 
@@ -1120,16 +1150,22 @@ flaresolverr:
 ## @param seerr.extraEnv Additional environment variables to add to the seerr pods.
 ## @param seerr.extraEnvFrom Additional environment variables from secrets or configmaps to add to the seerr pods.
 ## @param seerr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
-## @param seerr.database.port Port of the PostgreSQL database.
-## @param seerr.database.databaseName Name of the database.
-## @param seerr.database.logQueries Whether to log database queries for debugging.
-## @param seerr.database.external.host Hostname of the external PostgreSQL database (required when mode is 'external').
-## @param seerr.database.external.username Username for the external PostgreSQL database (required when mode is 'external').
-## @param seerr.database.external.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
-## @param seerr.database.external.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
+## @param seerr.database.persistence.enabled Whether to enable persistence for the database (default: true).
+## @param seerr.database.persistence.size Size of the persistence volume (default: 100Mi).
+## @param seerr.database.persistence.storageClass Storage class for persistence.
+## @param seerr.database.persistence.existingClaim Use an existing PVC instead of creating a new one.
+## @param seerr.database.initSQL Array of SQL commands to run on database initialization.
+## @param seerr.database.auth.username Username for the database.
+## @param seerr.database.auth.password Password for the database user.
+## @param seerr.database.auth.existingSecret Reference to an existing Kubernetes secret for auth.
+## @param seerr.database.cluster.name Name of the database cluster.
 ## @param seerr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
-## @param seerr.database.cluster.storageClass Storage class for the CloudNativePG cluster (only used when mode is 'cluster').
-## @param seerr.database.cluster.storageSize Storage size for the CloudNativePG cluster (only used when mode is 'cluster').
+## @param seerr.database.cluster.image.repository PostgreSQL container image repository.
+## @param seerr.database.cluster.image.tag PostgreSQL container image tag.
+## @param seerr.database.external.host Hostname of the external PostgreSQL database (required when mode is 'external').
+## @param seerr.database.external.port Port of the PostgreSQL database.
+## @param seerr.database.external.mainDatabase Name of the main database for Seerr.
+## @param seerr.database.external.logDatabase Name of the log database for Seerr.
 ##
 seerr:
   enabled: true
@@ -1274,18 +1310,27 @@ seerr:
 
   database:
     mode: standalone
-    port: 5432
-    databaseName: jellyseerr
-    logQueries: "false"
-    external:
-      host: ""
+    persistence:
+      enabled: true
+      size: 100Mi
+      storageClass: ""
+      existingClaim: ""
+    initSQL: []
+    auth:
       username: ""
       password: ""
       existingSecret: ""
     cluster:
+      name: seerr-db
       instances: 2
-      storageClass: ""
-      storageSize: 5Gi
+      image:
+        repository: ghcr.io/cloudnative-pg/postgresql
+        tag: "16"
+    external:
+      host: ""
+      port: 5432
+      mainDatabase: jellyseerr
+      logDatabase: jellyseerr-log
 
 ## @section Bazarr parameters
 
@@ -1520,16 +1565,22 @@ bazarr:
 ## @param radarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param radarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param radarr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
-## @param radarr.database.port Port of the PostgreSQL database.
-## @param radarr.database.mainDatabase Name of the main database for Radarr.
-## @param radarr.database.logDatabase Name of the log database for Radarr.
-## @param radarr.database.external.host Hostname of the external PostgreSQL database (required when mode is 'external').
-## @param radarr.database.external.username Username for the external PostgreSQL database.
-## @param radarr.database.external.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
-## @param radarr.database.external.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
+## @param radarr.database.persistence.enabled Whether to enable persistence for the database (default: true).
+## @param radarr.database.persistence.size Size of the persistence volume (default: 100Mi).
+## @param radarr.database.persistence.storageClass Storage class for persistence.
+## @param radarr.database.persistence.existingClaim Use an existing PVC instead of creating a new one.
+## @param radarr.database.initSQL Array of SQL commands to run on database initialization.
+## @param radarr.database.auth.username Username for the database.
+## @param radarr.database.auth.password Password for the database user.
+## @param radarr.database.auth.existingSecret Reference to an existing Kubernetes secret for auth.
+## @param radarr.database.cluster.name Name of the database cluster.
 ## @param radarr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
-## @param radarr.database.cluster.storageClass Storage class for the CloudNativePG cluster (only used when mode is 'cluster').
-## @param radarr.database.cluster.storageSize Storage size for the CloudNativePG cluster (only used when mode is 'cluster').
+## @param radarr.database.cluster.image.repository PostgreSQL container image repository.
+## @param radarr.database.cluster.image.tag PostgreSQL container image tag.
+## @param radarr.database.external.host Hostname of the external PostgreSQL database (required when mode is 'external').
+## @param radarr.database.external.port Port of the PostgreSQL database.
+## @param radarr.database.external.mainDatabase Name of the main database for Radarr.
+## @param radarr.database.external.logDatabase Name of the log database for Radarr.
 ##
 radarr:
   enabled: true
@@ -1646,18 +1697,27 @@ radarr:
 
   database:
     mode: standalone
-    port: 5432
-    mainDatabase: radarr-main
-    logDatabase: radarr-log
-    external:
-      host: ""
+    persistence:
+      enabled: true
+      size: 100Mi
+      storageClass: ""
+      existingClaim: ""
+    initSQL: []
+    auth:
       username: ""
       password: ""
       existingSecret: ""
     cluster:
+      name: radarr-db
       instances: 2
-      storageClass: ""
-      storageSize: 5Gi
+      image:
+        repository: ghcr.io/cloudnative-pg/postgresql
+        tag: "16"
+    external:
+      host: ""
+      port: 5432
+      mainDatabase: radarr-main
+      logDatabase: radarr-log
 
 ## @section Lidarr parameters
 
@@ -1720,16 +1780,22 @@ radarr:
 ## @param lidarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param lidarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param lidarr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
-## @param lidarr.database.port Port of the PostgreSQL database.
-## @param lidarr.database.mainDatabase Name of the main database for Lidarr.
-## @param lidarr.database.logDatabase Name of the log database for Lidarr.
-## @param lidarr.database.external.host Hostname of the external PostgreSQL database (required when mode is 'external').
-## @param lidarr.database.external.username Username for the external PostgreSQL database.
-## @param lidarr.database.external.password Password for the external PostgreSQL database. WARNING: For production, use existingSecret instead to avoid storing passwords in values files.
-## @param lidarr.database.external.existingSecret Name of an existing secret containing the database password (key: 'password'). Recommended for production.
+## @param lidarr.database.persistence.enabled Whether to enable persistence for the database (default: true).
+## @param lidarr.database.persistence.size Size of the persistence volume (default: 100Mi).
+## @param lidarr.database.persistence.storageClass Storage class for persistence.
+## @param lidarr.database.persistence.existingClaim Use an existing PVC instead of creating a new one.
+## @param lidarr.database.initSQL Array of SQL commands to run on database initialization.
+## @param lidarr.database.auth.username Username for the database.
+## @param lidarr.database.auth.password Password for the database user.
+## @param lidarr.database.auth.existingSecret Reference to an existing Kubernetes secret for auth.
+## @param lidarr.database.cluster.name Name of the database cluster.
 ## @param lidarr.database.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster (only used when mode is 'cluster').
-## @param lidarr.database.cluster.storageClass Storage class for the CloudNativePG cluster (only used when mode is 'cluster').
-## @param lidarr.database.cluster.storageSize Storage size for the CloudNativePG cluster (only used when mode is 'cluster').
+## @param lidarr.database.cluster.image.repository PostgreSQL container image repository.
+## @param lidarr.database.cluster.image.tag PostgreSQL container image tag.
+## @param lidarr.database.external.host Hostname of the external PostgreSQL database (required when mode is 'external').
+## @param lidarr.database.external.port Port of the PostgreSQL database.
+## @param lidarr.database.external.mainDatabase Name of the main database for Lidarr.
+## @param lidarr.database.external.logDatabase Name of the log database for Lidarr.
 ##
 lidarr:
   enabled: true
@@ -1846,18 +1912,27 @@ lidarr:
 
   database:
     mode: standalone
-    port: 5432
-    mainDatabase: lidarr-main
-    logDatabase: lidarr-log
-    external:
-      host: ""
+    persistence:
+      enabled: true
+      size: 100Mi
+      storageClass: ""
+      existingClaim: ""
+    initSQL: []
+    auth:
       username: ""
       password: ""
       existingSecret: ""
     cluster:
+      name: lidarr-db
       instances: 2
-      storageClass: ""
-      storageSize: 5Gi
+      image:
+        repository: ghcr.io/cloudnative-pg/postgresql
+        tag: "16"
+    external:
+      host: ""
+      port: 5432
+      mainDatabase: lidarr-main
+      logDatabase: lidarr-log
 
 ## @section Cleanuparr parameters
 

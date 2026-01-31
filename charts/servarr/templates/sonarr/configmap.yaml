@@ -12,16 +12,16 @@ metadata:
 data:
   db-config.xml: |
     {{- if eq .Values.sonarr.database.mode "cluster" }}
-    <PostgresUser>sonarr</PostgresUser>
+    <PostgresUser>{{ .Values.sonarr.database.auth.username | default "sonarr" }}</PostgresUser>
     <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
-    <PostgresHost>{{ .Release.Name }}-sonarr-db-rw</PostgresHost>
-    <PostgresPort>5432</PostgresPort>
+    <PostgresHost>{{ .Values.sonarr.database.cluster.name | default (printf "%s-sonarr-db" .Release.Name) }}-rw</PostgresHost>
+    <PostgresPort>{{ .Values.sonarr.database.external.port }}</PostgresPort>
     {{- else }}
-    <PostgresUser>{{ required "sonarr.database.external.username is required when sonarr.database.mode is 'external'" .Values.sonarr.database.external.username }}</PostgresUser>
+    <PostgresUser>{{ required "sonarr.database.auth.username is required when sonarr.database.mode is 'external'" .Values.sonarr.database.auth.username }}</PostgresUser>
     <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
     <PostgresHost>{{ required "sonarr.database.external.host is required when sonarr.database.mode is 'external'" .Values.sonarr.database.external.host }}</PostgresHost>
-    <PostgresPort>{{ .Values.sonarr.database.port }}</PostgresPort>
+    <PostgresPort>{{ .Values.sonarr.database.external.port }}</PostgresPort>
     {{- end }}
-    <PostgresMainDb>{{ .Values.sonarr.database.mainDatabase }}</PostgresMainDb>
-    <PostgresLogDb>{{ .Values.sonarr.database.logDatabase }}</PostgresLogDb>
+    <PostgresMainDb>{{ .Values.sonarr.database.external.mainDatabase }}</PostgresMainDb>
+    <PostgresLogDb>{{ .Values.sonarr.database.external.logDatabase }}</PostgresLogDb>
 {{- end }}

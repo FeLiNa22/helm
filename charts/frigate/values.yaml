@@ -40,23 +40,19 @@
 ## @param tolerations The tolerations to use for the pod.
 ## @param affinity The affinity to use for the pod.
 ## @param env.TZ The timezone to use for the pod.
-## @param database.enabled Whether to enable PostgreSQL database for Frigate events.
-## @param database.name Name of the database cluster (will be suffixed with release name).
-## @param database.instances Number of PostgreSQL instances (replicas).
-## @param database.image.repository PostgreSQL container image repository.
-## @param database.image.tag PostgreSQL container image tag.
-## @param database.database Name of the database to create.
-## @param database.owner Owner of the database.
-## @param database.storage.size Size of the storage for each instance.
-## @param database.storage.storageClass Storage class name for persistent volumes.
-## @param database.secret.name Name of the secret containing database credentials.
-## @param database.secret.create Whether to create the database secret.
-## @param database.secret.username Database user username.
-## @param database.secret.password Database user password (leave empty to auto-generate).
-## @param database.superuserSecret.name Name of the secret containing the superuser credentials.
-## @param database.superuserSecret.create Whether to create the superuser secret.
-## @param database.superuserSecret.username Superuser username.
-## @param database.superuserSecret.password Superuser password (leave empty to auto-generate).
+## @param database.enabled Whether to enable PostgreSQL database for Frigate events (default: true).
+## @param database.mode The mode of PostgreSQL deployment (only 'cluster' is supported for Frigate).
+## @param database.persistence.enabled Whether to enable persistence for the database (default: true).
+## @param database.persistence.size Size of the persistence volume (default: 100Mi).
+## @param database.persistence.storageClass Storage class for persistence.
+## @param database.initSQL Array of SQL commands to run on database initialization.
+## @param database.auth.username Username for the database.
+## @param database.auth.password Password for the database user (leave empty to auto-generate).
+## @param database.auth.existingSecret Reference to an existing Kubernetes secret for auth.
+## @param database.cluster.name Name of the database cluster.
+## @param database.cluster.instances Number of PostgreSQL instances (replicas).
+## @param database.cluster.image.repository PostgreSQL container image repository.
+## @param database.cluster.image.tag PostgreSQL container image tag.
 ## @param tmpfs.enabled Whether to enable tmpfs cache for Frigate.
 ## @param tmpfs.size The size of the tmpfs cache for Frigate.
 ## @param persistence.config.enabled Whether to enable persistence for the config.
@@ -171,35 +167,33 @@ env:
   # FRIGATE_DATABASE_URL: "postgresql://user:password@host:5432/frigate"
 
 # Database configuration using CloudNativePG
+# Note: Frigate only supports cluster mode (no standalone or external modes)
 database:
   enabled: true  # PostgreSQL enabled by default for events
-  # Name of the database cluster (will be suffixed with release name)
-  name: frigate-db
-  # Number of PostgreSQL instances (replicas)
-  instances: 1
-  # PostgreSQL image
-  image:
-    repository: ghcr.io/cloudnative-pg/postgresql
-    tag: "16.6"
-  # Database configuration
-  database: frigate
-  owner: frigate
-  # Storage configuration
-  storage:
-    size: 10Gi
-    storageClass: "ceph-rbd"
-  # Secret configuration
-  secret:
-    name: ""  # Leave empty to auto-generate
-    create: true
+  mode: cluster  # Only cluster mode supported for Frigate
+
+  # Common database configuration
+  persistence:
+    enabled: true
+    size: 100Mi
+    storageClass: ""
+    # Note: existingClaim is not supported for CloudNativePG cluster mode
+
+  initSQL: []
+    # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+
+  auth:
     username: frigate
-    password: ""  # Leave empty to auto-generate
-  # Superuser secret
-  superuserSecret:
-    name: ""  # Leave empty to auto-generate
-    create: true
-    username: postgres
-    password: ""  # Leave empty to auto-generate
+    password: ""
+    existingSecret: ""
+
+  # CloudNativePG Cluster deployment
+  cluster:
+    name: frigate-db
+    instances: 1
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: "16.6"
 
 tmpfs:
   enabled: true
