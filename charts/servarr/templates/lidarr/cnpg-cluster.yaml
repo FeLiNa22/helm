@@ -28,14 +28,6 @@ spec:
       postInitSQL:
         - CREATE DATABASE "{{ .Values.lidarr.database.external.logDatabase }}" OWNER {{ .Values.lidarr.database.auth.username | default "lidarr" }};
       {{- end }}
-      {{- if .Values.lidarr.database.cluster.secret.name }}
-      secret:
-        name: {{ .Values.lidarr.database.cluster.secret.name }}
-      {{- end }}
-  {{- if .Values.lidarr.database.cluster.superuserSecret.name }}
-  superuserSecret:
-    name: {{ .Values.lidarr.database.cluster.superuserSecret.name }}
-  {{- end }}
   storage:
     {{- if .Values.lidarr.database.persistence.storageClass }}
     storageClass: {{ .Values.lidarr.database.persistence.storageClass }}

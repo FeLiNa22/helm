@@ -87,7 +87,7 @@ PostgreSQL secret name
 {{- if .Values.database.auth.existingSecret }}
 {{- .Values.database.auth.existingSecret }}
 {{- else }}
-{{- .Values.database.cluster.secret.name | default (printf "%s-outline-db-app" .Release.Name) }}
+{{- printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
 {{- end }}
 {{- end }}
 

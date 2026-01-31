@@ -380,12 +380,6 @@ dragonfly:
 ## @param database.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param database.cluster.image.repository PostgreSQL container image repository.
 ## @param database.cluster.image.tag PostgreSQL container image tag.
-## @param database.cluster.secret.name Name of the secret containing database credentials.
-## @param database.cluster.secret.create Whether to create the database secret.
-## @param database.cluster.superuserSecret.name Name of the secret containing the superuser credentials.
-## @param database.cluster.superuserSecret.create Whether to create the superuser secret.
-## @param database.cluster.superuserSecret.username Superuser username.
-## @param database.cluster.superuserSecret.password Superuser password (leave empty to auto-generate).
 ##
 database:
   enabled: true
@@ -410,14 +404,6 @@ database:
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: "16"
-    secret:
-      name: ""
-      create: true
-    superuserSecret:
-      name: ""
-      create: true
-      username: postgres
-      password: ""
 
 ## @section Redis parameters (DEPRECATED - use dragonfly instead)
 

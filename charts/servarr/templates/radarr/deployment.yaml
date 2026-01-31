@@ -87,7 +87,7 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.radarr.database.cluster.secret.name | default (printf "%s-radarr-db-app" .Release.Name) }}
+                  name: {{ printf "%s-radarr-db-app" .Release.Name }}
                   key: password
             {{- else if .Values.radarr.database.auth.existingSecret }}
             - name: DB_PASSWORD

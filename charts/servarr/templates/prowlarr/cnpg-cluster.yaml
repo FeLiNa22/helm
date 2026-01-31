@@ -28,14 +28,6 @@ spec:
       postInitSQL:
         - CREATE DATABASE "{{ .Values.prowlarr.database.external.logDatabase }}" OWNER {{ .Values.prowlarr.database.auth.username | default "prowlarr" }};
       {{- end }}
-      {{- if .Values.prowlarr.database.cluster.secret.name }}
-      secret:
-        name: {{ .Values.prowlarr.database.cluster.secret.name }}
-      {{- end }}
-  {{- if .Values.prowlarr.database.cluster.superuserSecret.name }}
-  superuserSecret:
-    name: {{ .Values.prowlarr.database.cluster.superuserSecret.name }}
-  {{- end }}
   storage:
     {{- if .Values.prowlarr.database.persistence.storageClass }}
     storageClass: {{ .Values.prowlarr.database.persistence.storageClass }}

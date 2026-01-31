@@ -87,7 +87,7 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.lidarr.database.cluster.secret.name | default (printf "%s-lidarr-db-app" .Release.Name) }}
+                  name: {{ printf "%s-lidarr-db-app" .Release.Name }}
                   key: password
             {{- else if .Values.lidarr.database.auth.existingSecret }}
             - name: DB_PASSWORD

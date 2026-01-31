@@ -200,14 +200,6 @@ database:
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: "16.6"
-    secret:
-      name: ""
-      create: true
-    superuserSecret:
-      name: ""
-      create: true
-      username: postgres
-      password: ""
 
 tmpfs:
   enabled: true

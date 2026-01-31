@@ -110,7 +110,7 @@ PostgreSQL secret name
 {{- printf "%s-postgresql" .Release.Name }}
 {{- end }}
 {{- else if eq .Values.database.mode "cluster" }}
-{{- .Values.database.cluster.secret.name | default (printf "%s-immich-db-app" .Release.Name) }}
+{{- printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
 {{- else }}
 {{- .Values.database.external.existingSecret }}
 {{- end }}

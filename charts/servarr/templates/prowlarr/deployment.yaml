@@ -79,7 +79,7 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.prowlarr.database.cluster.secret.name | default (printf "%s-prowlarr-db-app" .Release.Name) }}
+                  name: {{ printf "%s-prowlarr-db-app" .Release.Name }}
                   key: password
             {{- else if .Values.prowlarr.database.auth.existingSecret }}
             - name: DB_PASSWORD

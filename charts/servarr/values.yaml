@@ -442,14 +442,6 @@ sonarr:
       image:
         repository: ghcr.io/cloudnative-pg/postgresql
         tag: "16"
-      secret:
-        name: ""
-        create: true
-      superuserSecret:
-        name: ""
-        create: true
-        username: postgres
-        password: ""
     external:
       host: ""
       port: 5432
@@ -904,14 +896,6 @@ prowlarr:
       image:
         repository: ghcr.io/cloudnative-pg/postgresql
         tag: "16"
-      secret:
-        name: ""
-        create: true
-      superuserSecret:
-        name: ""
-        create: true
-        username: postgres
-        password: ""
     external:
       host: ""
       port: 5432
@@ -1696,14 +1680,6 @@ radarr:
       image:
         repository: ghcr.io/cloudnative-pg/postgresql
         tag: "16"
-      secret:
-        name: ""
-        create: true
-      superuserSecret:
-        name: ""
-        create: true
-        username: postgres
-        password: ""
     external:
       host: ""
       port: 5432
@@ -1913,14 +1889,6 @@ lidarr:
       image:
         repository: ghcr.io/cloudnative-pg/postgresql
         tag: "16"
-      secret:
-        name: ""
-        create: true
-      superuserSecret:
-        name: ""
-        create: true
-        username: postgres
-        password: ""
     external:
       host: ""
       port: 5432

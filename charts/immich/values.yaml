@@ -304,12 +304,6 @@ dragonfly:
 ## @param database.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param database.cluster.image.repository PostgreSQL container image repository (with vectorchord extension).
 ## @param database.cluster.image.tag PostgreSQL container image tag.
-## @param database.cluster.secret.name Name of the secret containing database credentials.
-## @param database.cluster.secret.create Whether to create the database secret.
-## @param database.cluster.superuserSecret.name Name of the secret containing the superuser credentials.
-## @param database.cluster.superuserSecret.create Whether to create the superuser secret.
-## @param database.cluster.superuserSecret.username Superuser username.
-## @param database.cluster.superuserSecret.password Superuser password (leave empty to auto-generate).
 ## @param database.external.host Hostname of external PostgreSQL (when mode is 'external').
 ## @param database.external.port Port of external PostgreSQL.
 ##
@@ -361,14 +355,6 @@ database:
     image:
       repository: tensorchord/cloudnative-vectorchord
       tag: "16-0.3.0"
-    secret:
-      name: ""  # Leave empty to auto-generate
-      create: true
-    superuserSecret:
-      name: ""  # Leave empty to auto-generate
-      create: true
-      username: postgres
-      password: ""  # Leave empty to auto-generate
 
   # External PostgreSQL configuration (used when mode is 'external')
   external:

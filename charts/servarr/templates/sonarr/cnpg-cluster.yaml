@@ -28,14 +28,6 @@ spec:
       postInitSQL:
         - CREATE DATABASE "{{ .Values.sonarr.database.external.logDatabase }}" OWNER {{ .Values.sonarr.database.auth.username | default "sonarr" }};
       {{- end }}
-      {{- if .Values.sonarr.database.cluster.secret.name }}
-      secret:
-        name: {{ .Values.sonarr.database.cluster.secret.name }}
-      {{- end }}
-  {{- if .Values.sonarr.database.cluster.superuserSecret.name }}
-  superuserSecret:
-    name: {{ .Values.sonarr.database.cluster.superuserSecret.name }}
-  {{- end }}
   storage:
     {{- if .Values.sonarr.database.persistence.storageClass }}
     storageClass: {{ .Values.sonarr.database.persistence.storageClass }}

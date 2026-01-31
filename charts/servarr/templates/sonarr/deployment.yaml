@@ -87,7 +87,7 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.sonarr.database.cluster.secret.name | default (printf "%s-sonarr-db-app" .Release.Name) }}
+                  name: {{ printf "%s-sonarr-db-app" .Release.Name }}
                   key: password
             {{- else if .Values.sonarr.database.auth.existingSecret }}
             - name: DB_PASSWORD

@@ -104,12 +104,12 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.database.cluster.secret.name | default (printf "%s-nextcloud-db-app" .Release.Name) }}
+                  name: {{ printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
                   key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.database.cluster.secret.name | default (printf "%s-nextcloud-db-app" .Release.Name) }}
+                  name: {{ printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
                   key: password
             {{- else if eq .Values.database.mode "external" }}
             # External PostgreSQL mode
