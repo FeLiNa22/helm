@@ -6,7 +6,7 @@
 {{- if $existingSecret }}
 {{- $userPassword = index $existingSecret.data "password" | b64dec }}
 {{- else }}
-{{- $userPassword = .Values.database.standalone.auth.password | default (randAlphaNum 32) }}
+{{- $userPassword = .Values.database.standalone.auth.password }}
 {{- end }}
 ---
 apiVersion: v1
