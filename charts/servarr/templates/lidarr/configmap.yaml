@@ -12,16 +12,16 @@ metadata:
 data:
   db-config.xml: |
     {{- if eq .Values.lidarr.database.mode "cluster" }}
-    <PostgresUser>lidarr</PostgresUser>
+    <PostgresUser>{{ .Values.lidarr.database.auth.username | default "lidarr" }}</PostgresUser>
     <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
-    <PostgresHost>{{ .Release.Name }}-lidarr-db-rw</PostgresHost>
-    <PostgresPort>5432</PostgresPort>
+    <PostgresHost>{{ .Values.lidarr.database.cluster.name | default (printf "%s-lidarr-db" .Release.Name) }}-rw</PostgresHost>
+    <PostgresPort>{{ .Values.lidarr.database.external.port }}</PostgresPort>
     {{- else }}
-    <PostgresUser>{{ required "lidarr.database.external.username is required when lidarr.database.mode is 'external'" .Values.lidarr.database.external.username }}</PostgresUser>
+    <PostgresUser>{{ required "lidarr.database.auth.username is required when lidarr.database.mode is 'external'" .Values.lidarr.database.auth.username }}</PostgresUser>
     <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
     <PostgresHost>{{ required "lidarr.database.external.host is required when lidarr.database.mode is 'external'" .Values.lidarr.database.external.host }}</PostgresHost>
-    <PostgresPort>{{ .Values.lidarr.database.port }}</PostgresPort>
+    <PostgresPort>{{ .Values.lidarr.database.external.port }}</PostgresPort>
     {{- end }}
-    <PostgresMainDb>{{ .Values.lidarr.database.mainDatabase }}</PostgresMainDb>
-    <PostgresLogDb>{{ .Values.lidarr.database.logDatabase }}</PostgresLogDb>
+    <PostgresMainDb>{{ .Values.lidarr.database.external.mainDatabase }}</PostgresMainDb>
+    <PostgresLogDb>{{ .Values.lidarr.database.external.logDatabase }}</PostgresLogDb>
 {{- end }}

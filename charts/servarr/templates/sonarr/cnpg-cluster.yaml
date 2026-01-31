@@ -2,7 +2,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-sonarr-db
+  name: {{ .Values.sonarr.database.cluster.name | default (printf "%s-sonarr-db" .Release.Name) }}
   labels:
     app.kubernetes.io/name: sonarr-db
     app.kubernetes.io/instance: {{ .Release.Name }}-sonarr-db
@@ -11,15 +11,30 @@ metadata:
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   instances: {{ .Values.sonarr.database.cluster.instances }}
+  {{- if .Values.sonarr.database.cluster.image }}
+  imageName: {{ .Values.sonarr.database.cluster.image.repository }}:{{ .Values.sonarr.database.cluster.image.tag }}
+  {{- end }}
   bootstrap:
     initdb:
-      database: {{ .Values.sonarr.database.mainDatabase }}
-      owner: sonarr
+      database: {{ .Values.sonarr.database.external.mainDatabase }}
+      owner: {{ .Values.sonarr.database.auth.username | default "sonarr" }}
+      {{- if .Values.sonarr.database.auth.existingSecret }}
+      secret:
+        name: {{ .Values.sonarr.database.auth.existingSecret }}
+      {{- end }}
+      {{- if .Values.sonarr.database.initSQL }}
       postInitSQL:
-        - CREATE DATABASE "{{ .Values.sonarr.database.logDatabase }}" OWNER sonarr;
+        {{- range .Values.sonarr.database.initSQL }}
+        - {{ . | quote }}
+        {{- end }}
+        - CREATE DATABASE "{{ .Values.sonarr.database.external.logDatabase }}" OWNER {{ .Values.sonarr.database.auth.username | default "sonarr" }};
+      {{- else }}
+      postInitSQL:
+        - CREATE DATABASE "{{ .Values.sonarr.database.external.logDatabase }}" OWNER {{ .Values.sonarr.database.auth.username | default "sonarr" }};
+      {{- end }}
   storage:
-    {{- if .Values.sonarr.database.cluster.storageClass }}
-    storageClass: {{ .Values.sonarr.database.cluster.storageClass }}
+    {{- if .Values.sonarr.database.persistence.storageClass }}
+    storageClass: {{ .Values.sonarr.database.persistence.storageClass }}
     {{- end }}
-    size: {{ .Values.sonarr.database.cluster.storageSize }}
+    size: {{ .Values.sonarr.database.persistence.size }}
 {{- end }}

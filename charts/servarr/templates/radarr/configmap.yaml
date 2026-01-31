@@ -12,16 +12,16 @@ metadata:
 data:
   db-config.xml: |
     {{- if eq .Values.radarr.database.mode "cluster" }}
-    <PostgresUser>radarr</PostgresUser>
+    <PostgresUser>{{ .Values.radarr.database.auth.username | default "radarr" }}</PostgresUser>
     <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
-    <PostgresHost>{{ .Release.Name }}-radarr-db-rw</PostgresHost>
-    <PostgresPort>5432</PostgresPort>
+    <PostgresHost>{{ .Values.radarr.database.cluster.name | default (printf "%s-radarr-db" .Release.Name) }}-rw</PostgresHost>
+    <PostgresPort>{{ .Values.radarr.database.external.port }}</PostgresPort>
     {{- else }}
-    <PostgresUser>{{ required "radarr.database.external.username is required when radarr.database.mode is 'external'" .Values.radarr.database.external.username }}</PostgresUser>
+    <PostgresUser>{{ required "radarr.database.auth.username is required when radarr.database.mode is 'external'" .Values.radarr.database.auth.username }}</PostgresUser>
     <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
     <PostgresHost>{{ required "radarr.database.external.host is required when radarr.database.mode is 'external'" .Values.radarr.database.external.host }}</PostgresHost>
-    <PostgresPort>{{ .Values.radarr.database.port }}</PostgresPort>
+    <PostgresPort>{{ .Values.radarr.database.external.port }}</PostgresPort>
     {{- end }}
-    <PostgresMainDb>{{ .Values.radarr.database.mainDatabase }}</PostgresMainDb>
-    <PostgresLogDb>{{ .Values.radarr.database.logDatabase }}</PostgresLogDb>
+    <PostgresMainDb>{{ .Values.radarr.database.external.mainDatabase }}</PostgresMainDb>
+    <PostgresLogDb>{{ .Values.radarr.database.external.logDatabase }}</PostgresLogDb>
 {{- end }}

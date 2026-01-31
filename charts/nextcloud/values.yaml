@@ -219,71 +219,74 @@ dragonfly:
 
 # Database configuration
 ## @param database.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
-## @param database.standalone.enabled Whether to deploy standalone PostgreSQL using Bitnami subchart.
-## @param database.cluster.enabled Whether to deploy PostgreSQL using CloudNativePG operator.
+## @param database.persistence.enabled Whether to enable persistence for the database (default: true).
+## @param database.persistence.size Size of the persistence volume (default: 100Mi).
+## @param database.persistence.storageClass Storage class for persistence.
+## @param database.persistence.existingClaim Use an existing PVC instead of creating a new one.
+## @param database.initSQL Array of SQL commands to run on database initialization.
+## @param database.auth.username Username for the database.
+## @param database.auth.password Password for the database user (leave empty to auto-generate).
+## @param database.auth.existingSecret Reference to an existing Kubernetes secret for auth.
+## @param database.standalone.image.repository PostgreSQL image repository.
+## @param database.standalone.image.tag PostgreSQL image tag.
+## @param database.standalone.image.autoupdate.enabled Enable automatic image updates for standalone database (default: false).
+## @param database.standalone.image.autoupdate.updateStrategy Strategy for image updates (e.g., semver, latest).
+## @param database.standalone.resources Resource limits and requests for standalone PostgreSQL.
 ## @param database.cluster.name Name of the database cluster.
 ## @param database.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param database.cluster.image.repository PostgreSQL container image repository.
 ## @param database.cluster.image.tag PostgreSQL container image tag.
-## @param database.cluster.database Name of the database to create.
-## @param database.cluster.owner Owner of the database.
-## @param database.cluster.storage.size Size of the storage for each instance.
-## @param database.cluster.storage.storageClass Storage class name for persistent volumes.
-## @param database.cluster.secret.name Name of the secret containing database credentials.
-## @param database.cluster.secret.create Whether to create the database secret.
-## @param database.cluster.secret.username Database user username.
-## @param database.cluster.secret.password Database user password (leave empty to auto-generate).
-## @param database.cluster.superuserSecret.name Name of the secret containing the superuser credentials.
-## @param database.cluster.superuserSecret.create Whether to create the superuser secret.
-## @param database.cluster.superuserSecret.username Superuser username.
-## @param database.cluster.superuserSecret.password Superuser password (leave empty to auto-generate).
 ## @param database.external.host Hostname of external PostgreSQL (when mode is 'external').
 ## @param database.external.port Port of external PostgreSQL.
-## @param database.external.database Database name of external PostgreSQL.
-## @param database.external.username Username of external PostgreSQL.
-## @param database.external.existingSecret Secret name for external PostgreSQL password.
-## @param database.external.secretKey Key in the secret for the password.
+##
 database:
   # Mode options: 'standalone', 'cluster', or 'external'
   mode: cluster
 
-  # Standalone PostgreSQL deployment (using Bitnami subchart)
-  # Configure subchart values in the 'postgresql:' section below
-  standalone:
-    enabled: false
-
-  # CloudNativePG Cluster deployment (using CNPG operator) - original configuration
-  cluster:
+  # Common database configuration
+  persistence:
     enabled: true
+    size: 10Gi
+    storageClass: "ceph-rbd"
+    existingClaim: ""
+
+  # SQL commands to initialize the database
+  # Each line should be a complete SQL statement
+  initSQL: []
+
+  auth:
+    username: nextcloud
+    password: ""  # Leave empty to auto-generate (persists across upgrades via secret lookup)
+    existingSecret: ""
+
+  # Standalone PostgreSQL deployment (using StatefulSet)
+  standalone:
+    image:
+      repository: postgres
+      tag: "16-alpine"
+      autoupdate:
+        enabled: false
+        updateStrategy: ""
+    resources: {}
+      # limits:
+      #   cpu: 1000m
+      #   memory: 2Gi
+      # requests:
+      #   cpu: 100m
+      #   memory: 256Mi
+
+  # CloudNativePG Cluster deployment (using CNPG operator)
+  cluster:
     name: nextcloud-db
     instances: 2
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
-      tag: "16.6"
-    database: nextcloud
-    owner: nextcloud
-    storage:
-      size: 10Gi
-      storageClass: "ceph-rbd"
-    secret:
-      name: ""  # Leave empty to auto-generate
-      create: true
-      username: nextcloud
-      password: ""  # Leave empty to auto-generate
-    superuserSecret:
-      name: ""  # Leave empty to auto-generate
-      create: true
-      username: postgres
-      password: ""  # Leave empty to auto-generate
+      tag: "16"
 
   # External PostgreSQL configuration (used when mode is 'external')
   external:
     host: ""
     port: 5432
-    database: "nextcloud"
-    username: "nextcloud"
-    existingSecret: ""
-    secretKey: "password"
 
 persistence:
   enabled: true
@@ -347,33 +350,3 @@ imageUpdater:
   helm: {}
   kustomize: {}
   writeBackConfig: {}
-
-## @section PostgreSQL Subchart Configuration (Bitnami)
-## These values are passed to the postgresql subchart when database.mode is 'standalone'
-## See https://github.com/bitnami/charts/tree/main/bitnami/postgresql for all options
-##
-## @param postgresql.architecture PostgreSQL architecture for Bitnami subchart.
-## @param postgresql.auth.database Name of the default database for Bitnami subchart.
-## @param postgresql.auth.username Username for the default database for Bitnami subchart.
-## @param postgresql.auth.password Password for the default database user for Bitnami subchart.
-## @param postgresql.auth.postgresPassword Password for the 'postgres' administrative user for Bitnami subchart.
-## @param postgresql.auth.existingSecret Reference to an existing Kubernetes secret for Bitnami subchart.
-## @param postgresql.primary.persistence.enabled Whether to enable persistence for Bitnami subchart.
-## @param postgresql.primary.persistence.size Size of the PostgreSQL persistence volume for Bitnami subchart.
-## @param postgresql.primary.persistence.storageClass Storage class for PostgreSQL persistence for Bitnami subchart.
-##
-postgresql:
-  # Values here are passed directly to the Bitnami PostgreSQL subchart
-  # when database.standalone.enabled is true
-  architecture: standalone
-  auth:
-    database: nextcloud
-    username: nextcloud
-    password: ""
-    postgresPassword: ""
-    existingSecret: ""
-  primary:
-    persistence:
-      enabled: true
-      size: 10Gi
-      storageClass: "ceph-rbd"

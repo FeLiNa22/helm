@@ -12,16 +12,16 @@ metadata:
 data:
   db-config.xml: |
     {{- if eq .Values.prowlarr.database.mode "cluster" }}
-    <PostgresUser>prowlarr</PostgresUser>
+    <PostgresUser>{{ .Values.prowlarr.database.auth.username | default "prowlarr" }}</PostgresUser>
     <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
-    <PostgresHost>{{ .Release.Name }}-prowlarr-db-rw</PostgresHost>
-    <PostgresPort>5432</PostgresPort>
+    <PostgresHost>{{ .Values.prowlarr.database.cluster.name | default (printf "%s-prowlarr-db" .Release.Name) }}-rw</PostgresHost>
+    <PostgresPort>{{ .Values.prowlarr.database.external.port }}</PostgresPort>
     {{- else }}
-    <PostgresUser>{{ required "prowlarr.database.external.username is required when prowlarr.database.mode is 'external'" .Values.prowlarr.database.external.username }}</PostgresUser>
+    <PostgresUser>{{ required "prowlarr.database.auth.username is required when prowlarr.database.mode is 'external'" .Values.prowlarr.database.auth.username }}</PostgresUser>
     <PostgresPassword>__DB_PASSWORD__</PostgresPassword>
     <PostgresHost>{{ required "prowlarr.database.external.host is required when prowlarr.database.mode is 'external'" .Values.prowlarr.database.external.host }}</PostgresHost>
-    <PostgresPort>{{ .Values.prowlarr.database.port }}</PostgresPort>
+    <PostgresPort>{{ .Values.prowlarr.database.external.port }}</PostgresPort>
     {{- end }}
-    <PostgresMainDb>{{ .Values.prowlarr.database.mainDatabase }}</PostgresMainDb>
-    <PostgresLogDb>{{ .Values.prowlarr.database.logDatabase }}</PostgresLogDb>
+    <PostgresMainDb>{{ .Values.prowlarr.database.external.mainDatabase }}</PostgresMainDb>
+    <PostgresLogDb>{{ .Values.prowlarr.database.external.logDatabase }}</PostgresLogDb>
 {{- end }}

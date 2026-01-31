@@ -15,6 +15,10 @@ spec:
     initdb:
       database: {{ include "seerr.database.name" . }}
       owner: seerr
+      {{- if .Values.seerr.database.auth.existingSecret }}
+      secret:
+        name: {{ .Values.seerr.database.auth.existingSecret }}
+      {{- end }}
   storage:
     {{- if .Values.seerr.database.cluster.storageClass }}
     storageClass: {{ .Values.seerr.database.cluster.storageClass }}

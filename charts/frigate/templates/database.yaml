@@ -1,38 +1,37 @@
-{{- if and .Values.enabled .Values.database.enabled }}
+{{- if and .Values.enabled .Values.database.enabled (eq .Values.database.mode "cluster") }}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.database.name }}
+  name: {{ .Release.Name }}-{{ .Values.database.cluster.name }}
   labels:
     app.kubernetes.io/name: frigate-database
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: database
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
-  instances: {{ .Values.database.instances }}
+  instances: {{ .Values.database.cluster.instances }}
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: switchover
 
-  imageName: {{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}
-
-  {{- if or .Values.database.superuserSecret.name .Values.database.superuserSecret.create }}
-  superuserSecret:
-    name: {{ .Values.database.superuserSecret.name | default (printf "%s-frigate-db-superuser" .Release.Name) }}
-  {{- end }}
+  imageName: {{ .Values.database.cluster.image.repository }}:{{ .Values.database.cluster.image.tag }}
 
   bootstrap:
     initdb:
-      database: {{ .Values.database.database }}
-      owner: {{ .Values.database.owner }}
-      {{- if or .Values.database.secret.name .Values.database.secret.create }}
+      database: {{ .Values.database.auth.username }}
+      owner: {{ .Values.database.auth.username }}
+      {{- if .Values.database.auth.existingSecret }}
       secret:
-        name: {{ .Values.database.secret.name | default (printf "%s-frigate-db-app" .Release.Name) }}
+        name: {{ .Values.database.auth.existingSecret }}
+      {{- end }}
+      {{- if .Values.database.initSQL }}
+      postInitSQL:
+        {{- toYaml .Values.database.initSQL | nindent 8 }}
       {{- end }}
 
   storage:
-    size: {{ .Values.database.storage.size }}
-    {{- if .Values.database.storage.storageClass }}
-    storageClass: {{ .Values.database.storage.storageClass }}
+    size: {{ .Values.database.persistence.size }}
+    {{- if .Values.database.persistence.storageClass }}
+    storageClass: {{ .Values.database.persistence.storageClass }}
     {{- end }}
 
   postgresql:
