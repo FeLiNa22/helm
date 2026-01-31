@@ -2,7 +2,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-seerr-db
+  name: {{ .Values.seerr.database.cluster.name | default (printf "%s-seerr-db" .Release.Name) }}
   labels:
     app.kubernetes.io/name: seerr-db
     app.kubernetes.io/instance: {{ .Release.Name }}-seerr-db
@@ -11,17 +11,30 @@ metadata:
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
 spec:
   instances: {{ .Values.seerr.database.cluster.instances }}
+  {{- if .Values.seerr.database.cluster.image }}
+  imageName: {{ .Values.seerr.database.cluster.image.repository }}:{{ .Values.seerr.database.cluster.image.tag }}
+  {{- end }}
   bootstrap:
     initdb:
-      database: {{ include "seerr.database.name" . }}
-      owner: seerr
+      database: {{ .Values.seerr.database.external.mainDatabase }}
+      owner: {{ .Values.seerr.database.auth.username | default "seerr" }}
       {{- if .Values.seerr.database.auth.existingSecret }}
       secret:
         name: {{ .Values.seerr.database.auth.existingSecret }}
       {{- end }}
+      {{- if .Values.seerr.database.initSQL }}
+      postInitSQL:
+        {{- range .Values.seerr.database.initSQL }}
+        - {{ . | quote }}
+        {{- end }}
+        - CREATE DATABASE "{{ .Values.seerr.database.external.logDatabase }}" OWNER {{ .Values.seerr.database.auth.username | default "seerr" }};
+      {{- else }}
+      postInitSQL:
+        - CREATE DATABASE "{{ .Values.seerr.database.external.logDatabase }}" OWNER {{ .Values.seerr.database.auth.username | default "seerr" }};
+      {{- end }}
   storage:
-    {{- if .Values.seerr.database.cluster.storageClass }}
-    storageClass: {{ .Values.seerr.database.cluster.storageClass }}
+    {{- if .Values.seerr.database.persistence.storageClass }}
+    storageClass: {{ .Values.seerr.database.persistence.storageClass }}
     {{- end }}
-    size: {{ .Values.seerr.database.cluster.storageSize }}
+    size: {{ .Values.seerr.database.persistence.size }}
 {{- end }}

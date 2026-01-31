@@ -3,7 +3,7 @@ Seerr Database Host
 */}}
 {{- define "seerr.database.host" -}}
 {{- if eq .Values.seerr.database.mode "cluster" }}
-{{- printf "%s-seerr-db-rw" .Release.Name }}
+{{- printf "%s-%s-rw" .Release.Name (.Values.seerr.database.cluster.name | default "seerr-db") }}
 {{- else if eq .Values.seerr.database.mode "external" }}
 {{- .Values.seerr.database.external.host }}
 {{- else }}
@@ -16,7 +16,7 @@ Seerr Database Port
 */}}
 {{- define "seerr.database.port" -}}
 {{- if or (eq .Values.seerr.database.mode "cluster") (eq .Values.seerr.database.mode "external") }}
-{{- .Values.seerr.database.port | default "5432" }}
+{{- .Values.seerr.database.external.port | default "5432" }}
 {{- else }}
 {{- "" }}
 {{- end }}
@@ -27,9 +27,9 @@ Seerr Database Username
 */}}
 {{- define "seerr.database.username" -}}
 {{- if eq .Values.seerr.database.mode "cluster" }}
-{{- "seerr" }}
+{{- .Values.seerr.database.auth.username | default "seerr" }}
 {{- else if eq .Values.seerr.database.mode "external" }}
-{{- .Values.seerr.database.external.username }}
+{{- .Values.seerr.database.auth.username }}
 {{- else }}
 {{- "" }}
 {{- end }}
@@ -40,7 +40,7 @@ Seerr Database Name
 */}}
 {{- define "seerr.database.name" -}}
 {{- if or (eq .Values.seerr.database.mode "cluster") (eq .Values.seerr.database.mode "external") }}
-{{- .Values.seerr.database.databaseName | default "jellyseerr" }}
+{{- .Values.seerr.database.external.mainDatabase | default "jellyseerr" }}
 {{- else }}
 {{- "" }}
 {{- end }}
@@ -54,12 +54,12 @@ Seerr Database Secret Name
 {{- if .Values.seerr.database.auth.existingSecret }}
 {{- .Values.seerr.database.auth.existingSecret }}
 {{- else }}
-{{- printf "%s-seerr-db-app" .Release.Name }}
+{{- printf "%s-%s-app" .Release.Name (.Values.seerr.database.cluster.name | default "seerr-db") }}
 {{- end }}
 {{- else }}
-{{- if not .Values.seerr.database.external.existingSecret }}
-{{- fail "seerr.database.external.existingSecret is required when seerr.database.mode is 'external'" }}
+{{- if not .Values.seerr.database.auth.existingSecret }}
+{{- fail "seerr.database.auth.existingSecret is required when seerr.database.mode is 'external'" }}
 {{- end }}
-{{- .Values.seerr.database.external.existingSecret }}
+{{- .Values.seerr.database.auth.existingSecret }}
 {{- end }}
 {{- end }}
