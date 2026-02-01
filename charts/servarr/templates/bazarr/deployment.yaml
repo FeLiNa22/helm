@@ -79,13 +79,13 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        {{- if .Values.bazarr.persistence.additionalVolumes }}
-          {{- .Values.bazarr.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- if .Values.bazarr.persistence.backup.enabled }}
         - name: backup
           persistentVolumeClaim:
             claimName: {{ .Values.bazarr.persistence.backup.existingClaim | default (printf "%s-bazarr-backup" .Release.Name) }}
         {{- end }}
+        {{- if .Values.bazarr.persistence.additionalVolumes }}
+          {{- .Values.bazarr.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
       containers:
         - name: bazarr

@@ -64,13 +64,13 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        {{- if .Values.plex.persistence.additionalVolumes }}
-          {{- .Values.plex.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- if .Values.plex.persistence.backup.enabled }}
         - name: backup
           persistentVolumeClaim:
             claimName: {{ .Values.plex.persistence.backup.existingClaim | default (printf "%s-plex-backup" .Release.Name) }}
         {{- end }}
+        {{- if .Values.plex.persistence.additionalVolumes }}
+          {{- .Values.plex.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
       containers:
         - name: plex
