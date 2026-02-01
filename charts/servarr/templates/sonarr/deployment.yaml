@@ -159,13 +159,13 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        {{- if .Values.sonarr.persistence.additionalVolumes }}
-          {{- .Values.sonarr.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- if .Values.sonarr.persistence.backup.enabled }}
         - name: backup
           persistentVolumeClaim:
             claimName: {{ .Values.sonarr.persistence.backup.existingClaim | default (printf "%s-sonarr-backup" .Release.Name) }}
         {{- end }}
+        {{- if .Values.sonarr.persistence.additionalVolumes }}
+          {{- .Values.sonarr.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
       containers:
         - name: sonarr

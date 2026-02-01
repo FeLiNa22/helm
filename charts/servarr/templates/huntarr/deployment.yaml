@@ -57,6 +57,11 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if .Values.huntarr.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.huntarr.persistence.backup.existingClaim | default (printf "%s-huntarr-backup" .Release.Name) }}
+        {{- end }}
         {{- if .Values.huntarr.persistence.additionalVolumes }}
           {{- .Values.huntarr.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
@@ -69,6 +74,10 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            {{- if .Values.huntarr.persistence.backup.enabled }}
+            - mountPath: /config/backups
+              name: backup
+            {{- end }}
           {{- if .Values.huntarr.persistence.additionalMounts }}
             {{- .Values.huntarr.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}

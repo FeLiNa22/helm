@@ -159,13 +159,13 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        {{- if .Values.radarr.persistence.additionalVolumes }}
-          {{- .Values.radarr.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- if .Values.radarr.persistence.backup.enabled }}
         - name: backup
           persistentVolumeClaim:
             claimName: {{ .Values.radarr.persistence.backup.existingClaim | default (printf "%s-radarr-backup" .Release.Name) }}
         {{- end }}
+        {{- if .Values.radarr.persistence.additionalVolumes }}
+          {{- .Values.radarr.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
       containers:
         - name: radarr

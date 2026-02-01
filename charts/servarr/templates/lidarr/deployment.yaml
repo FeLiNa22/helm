@@ -159,13 +159,13 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        {{- if .Values.lidarr.persistence.additionalVolumes }}
-          {{- .Values.lidarr.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- if .Values.lidarr.persistence.backup.enabled }}
         - name: backup
           persistentVolumeClaim:
             claimName: {{ .Values.lidarr.persistence.backup.existingClaim | default (printf "%s-lidarr-backup" .Release.Name) }}
         {{- end }}
+        {{- if .Values.lidarr.persistence.additionalVolumes }}
+          {{- .Values.lidarr.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
       containers:
         - name: lidarr

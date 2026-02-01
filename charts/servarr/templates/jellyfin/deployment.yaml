@@ -156,6 +156,11 @@ spec:
           sizeLimit: {{ .Values.jellyfin.persistence.cache.size }}
           {{- end }}
       {{- end }}
+      {{- if .Values.jellyfin.persistence.backup.enabled }}
+      - name: backup
+        persistentVolumeClaim:
+          claimName: {{ .Values.jellyfin.persistence.backup.existingClaim | default (printf "%s-jellyfin-backup" .Release.Name) }}
+      {{- end }}
       - name: media
       {{- if .Values.media.enabled }}
         persistentVolumeClaim:
