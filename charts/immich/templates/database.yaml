@@ -195,6 +195,13 @@ spec:
         {{- toYaml .Values.database.initSQL | nindent 8 }}
       {{- end }}
 
+  managed:
+    roles:
+    - name: {{ .Values.database.auth.username }}
+      ensure: present
+      login: true
+      superuser: true
+
   storage:
     size: {{ .Values.database.persistence.size }}
     {{- if .Values.database.persistence.storageClass }}
