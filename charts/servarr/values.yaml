@@ -2706,8 +2706,8 @@ emby:
     # fsGroup: 2000
 
   securityContext:
-    runAsNonRoot: true
     allowPrivilegeEscalation: false
+    
 
   initContainers: []
     # - name: init-container
