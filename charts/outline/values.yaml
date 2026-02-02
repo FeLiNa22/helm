@@ -124,7 +124,7 @@ outline:
   fileStorage:
     type: s3 # set to local|s3
     storageClassName: "ceph-rbd"
-    storageSize: 250Gi
+    storageSize: 512Mi
     localRootDir: /var/lib/outline/data
     uploadMaxSize: "26214400"
     initContainerSecurityContext:
@@ -132,7 +132,7 @@ outline:
     backup:
       enabled: true
       storageClassName: "cephfs"
-      storageSize: 250Gi
+      storageSize: 512Mi
       existingClaim: ""
   nodeSelector: {}
   tolerations: []
@@ -342,7 +342,7 @@ dragonfly:
     resources: {}
     persistence:
       enabled: true
-      size: 5Gi
+      size: 512Mi
       storageClass: ""
 
   cluster:
@@ -353,7 +353,7 @@ dragonfly:
     resources: {}
     persistence:
       enabled: true
-      size: 5Gi
+      size: 512Mi
       storageClass: ""
 
   external:
@@ -387,7 +387,7 @@ database:
 
   persistence:
     enabled: true
-    size: 10Gi
+    size: 512Mi
     storageClass: ""
     existingClaim: ""
 

@@ -149,13 +149,13 @@ persistence:
   storageClass: "ceph-rbd"
   existingClaim: ""
   accessMode: ReadWriteOnce
-  size: 1Gi
+  size: 512Mi
   backup:
     enabled: true
     storageClass: "cephfs"
     existingClaim: ""
     accessMode: ReadWriteMany
-    size: 5Gi
+    size: 512Mi
   additionalVolumes: []
   additionalMounts: []
 

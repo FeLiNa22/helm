@@ -155,7 +155,7 @@ persistence:
   storageClass: ""
   existingClaim: ""
   accessMode: ReadWriteOnce
-  size: 1Gi
+  size: 512Mi
   additionalVolumes: []
   additionalMounts: []
 

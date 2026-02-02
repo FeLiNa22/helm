@@ -16,7 +16,7 @@ media:
   storageClass: ""
   existingClaim: ""
   accessMode: ReadWriteMany
-  size: 10Gi
+  size: 512Mi
   labels: {}
   annotations: {}
   paths:
@@ -156,7 +156,7 @@ jellyfin:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 1Gi
+    size: 512Mi
     labels: {}
     annotations: {}
     backup:
@@ -164,7 +164,7 @@ jellyfin:
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -417,13 +417,13 @@ sonarr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
       enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -434,7 +434,7 @@ sonarr:
     mode: standalone
     persistence:
       enabled: true
-      size: 100Mi
+      size: 512Mi
       storageClass: ""
       existingClaim: ""
     initSQL: []
@@ -623,19 +623,19 @@ qbittorrent:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
       enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     downloads:
       enabled: false
       storageClass: ""
       existingClaim: ""
       accessMode: ReadWriteOnce
-      size: 100Gi
+      size: 512Mi
     additionalVolumes: []
     additionalMounts: []
 
@@ -877,13 +877,13 @@ prowlarr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
       enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -894,7 +894,7 @@ prowlarr:
     mode: standalone
     persistence:
       enabled: true
-      size: 100Mi
+      size: 512Mi
       storageClass: ""
       existingClaim: ""
     initSQL: []
@@ -1269,14 +1269,14 @@ seerr:
     accessModes:
       - ReadWriteOnce
     volumeName: ""
-    size: 800Mi
+    size: 512Mi
     annotations: {}
     backup:
       enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -1312,7 +1312,7 @@ seerr:
     mode: standalone
     persistence:
       enabled: true
-      size: 100Mi
+      size: 512Mi
       storageClass: ""
       existingClaim: ""
     initSQL: []
@@ -1491,13 +1491,13 @@ bazarr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
       enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -1682,13 +1682,13 @@ radarr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
       enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -1699,7 +1699,7 @@ radarr:
     mode: standalone
     persistence:
       enabled: true
-      size: 100Mi
+      size: 512Mi
       storageClass: ""
       existingClaim: ""
     initSQL: []
@@ -1897,13 +1897,13 @@ lidarr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
       enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -1914,7 +1914,7 @@ lidarr:
     mode: standalone
     persistence:
       enabled: true
-      size: 100Mi
+      size: 512Mi
       storageClass: ""
       existingClaim: ""
     initSQL: []
@@ -2090,7 +2090,7 @@ cleanuparr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 100Mi
+    size: 512Mi
     additionalVolumes: []
     additionalMounts: []
 
@@ -2253,13 +2253,13 @@ huntarr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 100Mi
+    size: 512Mi
     backup:
       enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     additionalVolumes: []
     additionalMounts: []
 
@@ -2425,19 +2425,19 @@ sabnzbd:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
       enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     downloads:
       enabled: false
       storageClass: ""
       existingClaim: ""
       accessMode: ReadWriteOnce
-      size: 100Gi
+      size: 512Mi
     additionalVolumes: []
     additionalMounts: []
 
@@ -2600,13 +2600,13 @@ plex:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 1Gi
+    size: 512Mi
     backup:
       enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     additionalVolumes: []
     additionalMounts: []
 
@@ -2774,19 +2774,19 @@ emby:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 1Gi
+    size: 512Mi
     backup:
       enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true 
       storageClass: ""
       existingClaim: ""
       accessMode: ReadWriteOnce
-      size: 1Gi
+      size: 512Mi
     transcode:
       enabled: true
       sizeLimit: 4Gi
@@ -3003,13 +3003,13 @@ acestream:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 1Gi
+    size: 512Mi
     backup:
       enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     additionalVolumes: []
     additionalMounts: []
 

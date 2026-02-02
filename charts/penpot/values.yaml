@@ -249,7 +249,7 @@ exporter:
 persistence:
   enabled: true
   storageClass: "ceph-rbd"
-  size: 8Gi
+  size: 512Mi
   existingClaim: ""
   accessModes:
     - ReadWriteOnce
@@ -260,7 +260,7 @@ persistence:
     existingClaim: ""
     accessModes:
       - ReadWriteMany
-    size: 8Gi
+    size: 512Mi
 
 ## @section Penpot Configuration parameters
 
@@ -495,7 +495,7 @@ dragonfly:
     resources: {}
     persistence:
       enabled: true
-      size: 5Gi
+      size: 512Mi
       storageClass: ""
 
   cluster:
@@ -506,7 +506,7 @@ dragonfly:
     resources: {}
     persistence:
       enabled: true
-      size: 5Gi
+      size: 512Mi
       storageClass: ""
 
   external:
@@ -545,7 +545,7 @@ database:
   # Common database configuration
   persistence:
     enabled: true
-    size: 100Mi
+    size: 512Mi
     storageClass: ""
     existingClaim: ""
 
