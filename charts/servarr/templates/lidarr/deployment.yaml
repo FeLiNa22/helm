@@ -177,7 +177,7 @@ spec:
             - mountPath: /config
               name: config
             {{- if .Values.lidarr.persistence.backup.enabled }}
-            - mountPath: /config/backups
+            - mountPath: /config/Backups
               name: backup
             {{- end }}
             {{- if .Values.lidarr.persistence.cache.enabled }}

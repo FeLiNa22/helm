@@ -19,3 +19,27 @@ spec:
   storageClassName: {{ .Values.acestream.persistence.storageClass | quote }}
   {{- end }}
 {{- end }}
+
+---
+{{- if and .Values.acestream.enabled .Values.acestream.persistence.backup.enabled (not .Values.acestream.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-acestream-backup
+  labels:
+    app.kubernetes.io/name: acestream
+    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/pvc-type: backup
+spec:
+  accessModes:
+    - {{ .Values.acestream.persistence.backup.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.acestream.persistence.backup.size | quote }}
+  {{- if .Values.acestream.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.acestream.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}

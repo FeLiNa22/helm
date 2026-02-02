@@ -51,6 +51,11 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if .Values.acestream.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.acestream.persistence.backup.existingClaim | default (printf "%s-acestream-backup" .Release.Name) }}
+        {{- end }}
         {{- if .Values.acestream.persistence.additionalVolumes }}
           {{- .Values.acestream.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
@@ -192,6 +197,10 @@ spec:
             - mountPath: /data
               name: config
               subPath: dispatcharr
+            {{- if .Values.acestream.persistence.backup.enabled }}
+            - mountPath: /data/backups
+              name: backup
+            {{- end }}
           {{- if .Values.acestream.persistence.additionalMounts }}
             {{- .Values.acestream.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}

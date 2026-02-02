@@ -177,7 +177,7 @@ spec:
             - mountPath: /config
               name: config
             {{- if .Values.sonarr.persistence.backup.enabled }}
-            - mountPath: /config/backups
+            - mountPath: /config/Backups
               name: backup
             {{- end }}
             {{- if .Values.sonarr.persistence.cache.enabled }}
