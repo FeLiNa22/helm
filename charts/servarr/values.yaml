@@ -2668,6 +2668,8 @@ plex:
 ## @param emby.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param emby.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param emby.persistence.backup.size The size to use for backup persistence.
+## @param emby.persistence.transcode.enabled Whether to enable emptyDir transcode volume for temporary transcodes.
+## @param emby.persistence.transcode.sizeLimit Size limit for the emptyDir transcode volume (e.g., "4Gi", "8Gi").
 ## @param emby.persistence.cache.enabled Whether to enable cache persistence for the service.
 ## @param emby.persistence.cache.storageClass The storage class to use for cache persistence.
 ## @param emby.persistence.cache.existingClaim The name of an existing claim to use for cache persistence.
@@ -2780,11 +2782,14 @@ emby:
       accessMode: ReadWriteMany
       size: 5Gi
     cache:
-      enabled: true
+      enabled: true 
       storageClass: ""
       existingClaim: ""
       accessMode: ReadWriteOnce
       size: 1Gi
+    transcode:
+      enabled: false
+      sizeLimit: 4Gi
     additionalVolumes: []
     additionalMounts: []
 
