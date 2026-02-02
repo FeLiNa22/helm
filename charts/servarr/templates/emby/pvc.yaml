@@ -48,3 +48,27 @@ spec:
   storageClassName: {{ .Values.emby.persistence.backup.storageClass | quote }}
   {{- end }}
 {{- end }}
+
+---
+{{- if and .Values.emby.enabled .Values.emby.persistence.cache.enabled (not .Values.emby.persistence.cache.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-emby-cache
+  labels:
+    app.kubernetes.io/name: emby
+    app.kubernetes.io/instance: {{ .Release.Name }}-emby
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/pvc-type: cache
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.emby.persistence.cache.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.emby.persistence.cache.size | quote }}
+  {{- if .Values.emby.persistence.cache.storageClass }}
+  storageClassName: {{ .Values.emby.persistence.cache.storageClass | quote }}
+  {{- end }}
+{{- end }}
