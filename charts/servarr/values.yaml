@@ -2652,8 +2652,9 @@ plex:
 ## @param emby.nodeSelector The node selector to use for the pod.
 ## @param emby.tolerations The tolerations to use for the pod.
 ## @param emby.affinity The affinity to use for the pod.
-## @param emby.env.PUID The user ID to use for the pod.
-## @param emby.env.PGID The group ID to use for the pod.
+## @param emby.env.UID The user ID to run emby as (default: 2).
+## @param emby.env.GID The group ID to run emby as (default: 2).
+## @param emby.env.GIDLIST A comma-separated list of additional GIDs to run emby as (default: 2).
 ## @param emby.env.TZ The timezone to use for the pod.
 ## @param emby.persistence.enabled Whether to enable persistence.
 ## @param emby.persistence.storageClass The storage class to use for the persistence.
@@ -2702,13 +2703,10 @@ emby:
   podSecurityContext: {}
     # fsGroup: 2000
 
-  securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 100
+    runAsNonRoot: true
 
   initContainers: []
     # - name: init-container
@@ -2760,9 +2758,10 @@ emby:
   affinity: {}
 
   env:
-    PUID: "1000"
-    PGID: "1000"
+    UID: "1000"
+    GID: "100"
     TZ: "Europe/London"
+    GIDLIST: "100"
 
   persistence:
     enabled: true
