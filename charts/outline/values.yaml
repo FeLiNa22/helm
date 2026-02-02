@@ -130,7 +130,7 @@ outline:
     initContainerSecurityContext:
       enabled: false
     backup:
-      enabled: false
+      enabled: true
       storageClassName: "cephfs"
       storageSize: 250Gi
       existingClaim: ""

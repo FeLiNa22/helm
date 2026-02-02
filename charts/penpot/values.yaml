@@ -247,7 +247,7 @@ exporter:
 ## @param persistence.backup.size The size to use for backup persistence.
 ##
 persistence:
-  enabled: false
+  enabled: true
   storageClass: "ceph-rbd"
   size: 8Gi
   existingClaim: ""
@@ -255,7 +255,7 @@ persistence:
     - ReadWriteOnce
   annotations: {}
   backup:
-    enabled: false
+    enabled: true
     storageClass: "cephfs"
     existingClaim: ""
     accessModes:

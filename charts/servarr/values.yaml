@@ -160,7 +160,7 @@ jellyfin:
     labels: {}
     annotations: {}
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
@@ -419,7 +419,7 @@ sonarr:
     accessMode: ReadWriteOnce
     size: 800Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
@@ -625,7 +625,7 @@ qbittorrent:
     accessMode: ReadWriteOnce
     size: 800Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
@@ -879,7 +879,7 @@ prowlarr:
     accessMode: ReadWriteOnce
     size: 800Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
@@ -1272,7 +1272,7 @@ seerr:
     size: 800Mi
     annotations: {}
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
@@ -1493,7 +1493,7 @@ bazarr:
     accessMode: ReadWriteOnce
     size: 800Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
@@ -1684,7 +1684,7 @@ radarr:
     accessMode: ReadWriteOnce
     size: 800Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
@@ -1899,7 +1899,7 @@ lidarr:
     accessMode: ReadWriteOnce
     size: 800Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
@@ -2255,7 +2255,7 @@ huntarr:
     accessMode: ReadWriteOnce
     size: 100Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
@@ -2427,7 +2427,7 @@ sabnzbd:
     accessMode: ReadWriteOnce
     size: 800Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
@@ -2602,7 +2602,7 @@ plex:
     accessMode: ReadWriteOnce
     size: 1Gi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
@@ -2776,7 +2776,7 @@ emby:
     accessMode: ReadWriteOnce
     size: 1Gi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
@@ -2788,7 +2788,7 @@ emby:
       accessMode: ReadWriteOnce
       size: 1Gi
     transcode:
-      enabled: false
+      enabled: true
       sizeLimit: 4Gi
     additionalVolumes: []
     additionalMounts: []
@@ -3005,7 +3005,7 @@ acestream:
     accessMode: ReadWriteOnce
     size: 1Gi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany

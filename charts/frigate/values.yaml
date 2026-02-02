@@ -213,7 +213,7 @@ persistence:
     accessMode: ReadWriteOnce
     size: 10Gi
   backup:
-    enabled: false
+    enabled: true
     storageClass: "cephfs"
     existingClaim: ""
     accessMode: ReadWriteMany

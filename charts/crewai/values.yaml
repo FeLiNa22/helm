@@ -173,13 +173,13 @@ crewai:
     # CUSTOM_VAR: "value"
 
 persistence:
-  enabled: false
+  enabled: true
   storageClass: "ceph-rbd"
   existingClaim: ""
   accessMode: ReadWriteOnce
   size: 5Gi
   backup:
-    enabled: false
+    enabled: true
     storageClass: "cephfs"
     existingClaim: ""
     accessMode: ReadWriteMany

@@ -24,10 +24,10 @@ spec:
 {{- if .Values.persistence.storageClass }}
   storageClassName: "{{ .Values.persistence.storageClass }}"
 {{- end }}
-{{- end -}}
+{{- end }}
 
 ---
-{{- if and .Values.persistence.backup.enabled (not .Values.persistence.backup.existingClaim) -}}
+{{- if and .Values.persistence.backup.enabled (not .Values.persistence.backup.existingClaim) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
