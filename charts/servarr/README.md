@@ -1071,8 +1071,11 @@ The command removes all the Kubernetes components associated with the chart and 
 | `emby.persistence.backup.existingClaim`              | The name of an existing claim to use for backup persistence.                                                                        | `""`                       |
 | `emby.persistence.backup.accessMode`                 | The access mode to use for backup persistence.                                                                                      | `ReadWriteMany`            |
 | `emby.persistence.backup.size`                       | The size to use for backup persistence.                                                                                             | `5Gi`                      |
-| `emby.persistence.cache.enabled`                     | Whether to enable emptyDir cache volume for the service.                                                                            | `true`                     |
-| `emby.persistence.cache.size`                        | Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.                              | `""`                       |
+| `emby.persistence.cache.enabled`                     | Whether to enable cache persistence for the service.                                                                                | `true`                     |
+| `emby.persistence.cache.storageClass`                | The storage class to use for cache persistence.                                                                                     | `""`                       |
+| `emby.persistence.cache.existingClaim`               | The name of an existing claim to use for cache persistence.                                                                         | `""`                       |
+| `emby.persistence.cache.accessMode`                  | The access mode to use for cache persistence.                                                                                       | `ReadWriteOnce`            |
+| `emby.persistence.cache.size`                        | The size to use for cache persistence.                                                                                              | `1Gi`                      |
 | `emby.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                       |
 | `emby.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                       |
 
