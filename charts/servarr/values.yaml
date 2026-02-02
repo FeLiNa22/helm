@@ -2988,6 +2988,12 @@ acestream:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 1Gi
+    backup:
+      enabled: false
+      storageClass: "cephfs"
+      existingClaim: ""
+      accessMode: ReadWriteMany
+      size: 5Gi
     additionalVolumes: []
     additionalMounts: []
 
