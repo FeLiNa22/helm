@@ -129,6 +129,27 @@ persistence:
     existingClaim: ""  # Use existing PVC if desired
 ```
 
+### Database Backups
+
+Enable scheduled database backups:
+
+```yaml
+database:
+  backup:
+    enabled: true
+    cron: "0 2 * * *"  # Daily at 2am
+    retention: 30       # Keep last 30 backups
+    path: /backups
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: "fast-storage"
+      accessMode: ReadWriteOnce
+      existingClaim: ""  # Use existing PVC if desired
+```
+
+The backup CronJob creates compressed SQL dumps of the PostgreSQL database. Backups are stored with timestamps and old backups are automatically removed based on the retention policy.
+
 ### Ingress
 
 Enable ingress to expose Immich externally:
@@ -217,25 +238,71 @@ ingress:
 | Name | Description | Value |
 |------|-------------|-------|
 | `database.mode` | Deployment mode: `standalone`, `cluster`, or `external` | `standalone` |
+| `database.auth.username` | Database username | `immich` |
+| `database.auth.password` | Database password (leave empty to auto-generate) | `""` |
+| `database.secret.name` | Existing secret name for database password (leave empty to auto-create) | `""` |
+| `database.secret.passwordKey` | Key in the secret containing the password | `password` |
+| `database.persistence.enabled` | Enable PostgreSQL persistence | `true` |
+| `database.persistence.size` | PostgreSQL volume size | `10Gi` |
+| `database.persistence.storageClass` | Storage class for PostgreSQL | `""` |
 | `database.standalone.image.repository` | PostgreSQL image with vectorchord | `tensorchord/vchord-postgres` |
-| `database.standalone.image.tag` | PostgreSQL image tag | `pg16-v0.2.0` |
-| `database.standalone.auth.database` | Database name | `immich` |
-| `database.standalone.auth.username` | Database username | `immich` |
-| `database.standalone.auth.password` | Database password | `""` (auto-generated) |
-| `database.standalone.auth.postgresPassword` | Postgres superuser password | `""` (auto-generated) |
-| `database.standalone.persistence.enabled` | Enable PostgreSQL persistence | `true` |
-| `database.standalone.persistence.size` | PostgreSQL volume size | `10Gi` |
-| `database.standalone.persistence.storageClass` | Storage class for PostgreSQL | `""` |
+| `database.standalone.image.tag` | PostgreSQL image tag | `pg16-v0.3.0` |
 | `database.cluster.instances` | Number of PostgreSQL instances | `2` |
 | `database.cluster.image.repository` | PostgreSQL image with vectorchord | `tensorchord/cloudnative-vectorchord` |
-| `database.cluster.image.tag` | PostgreSQL image tag | `16.6-v0.2.0` |
-| `database.cluster.storage.size` | Storage size per instance | `10Gi` |
+| `database.cluster.image.tag` | PostgreSQL image tag | `16-0.3.0` |
 | `database.external.host` | External PostgreSQL host | `""` |
 | `database.external.port` | External PostgreSQL port | `5432` |
 | `database.external.database` | External database name | `immich` |
 | `database.external.username` | External database username | `immich` |
 
+### Database Backup parameters
+
+| Name | Description | Value |
+|------|-------------|-------|
+| `database.backup.enabled` | Enable scheduled database backups | `false` |
+| `database.backup.cron` | Cron schedule for backups (e.g., "0 2 * * *" for 2am daily) | `0 2 * * *` |
+| `database.backup.retention` | Number of backups to retain | `30` |
+| `database.backup.path` | Path inside the container for backups | `/backups` |
+| `database.backup.persistence.enabled` | Enable persistence for backups | `true` |
+| `database.backup.persistence.size` | Backup volume size | `512Mi` |
+| `database.backup.persistence.storageClass` | Storage class for backup volume | `""` |
+| `database.backup.persistence.accessMode` | Access mode for backup volume | `ReadWriteOnce` |
+| `database.backup.persistence.existingClaim` | Use existing PVC for backups | `""` |
+
 ## Upgrading
+
+### To 1.6.0
+
+This version adds:
+- Database backup CronJob support for scheduled PostgreSQL backups
+- New `database.secret.name` and `database.secret.passwordKey` values for flexible secret management
+- Auto-generation of random passwords when not provided
+
+**Changes:**
+- `database.auth.existingSecret` is now `database.secret.name`
+- Added `database.secret.passwordKey` to customize the secret key
+- If `database.auth.password` is not provided and the secret doesn't exist, a random 32-character password is automatically generated
+- New `database.backup.*` configuration section for scheduled database backups
+
+To migrate from version 1.5.x:
+1. Update your values.yaml to use the new secret configuration:
+   ```yaml
+   # Old (v1.5.x)
+   database:
+     auth:
+       username: immich
+       password: "your-password"
+       existingSecret: ""
+   
+   # New (v1.6.0)
+   database:
+     auth:
+       username: immich
+       password: "your-password"  # Or leave empty to auto-generate
+     secret:
+       name: ""  # Or reference an existing secret
+       passwordKey: "password"
+   ```
 
 ### To 1.5.0
 

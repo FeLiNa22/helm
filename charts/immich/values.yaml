@@ -294,7 +294,8 @@ dragonfly:
 ## @param database.initSQL Array of SQL commands to run on database initialization.
 ## @param database.auth.username Username for the database.
 ## @param database.auth.password Password for the database user (leave empty to auto-generate).
-## @param database.auth.existingSecret Reference to an existing Kubernetes secret for auth.
+## @param database.secret.name Existing secret name for database password (leave empty to auto-create).
+## @param database.secret.passwordKey Key in the secret containing the password (default: password).
 ## @param database.standalone.image.repository PostgreSQL image repository (with vectorchord extension).
 ## @param database.standalone.image.tag PostgreSQL image tag.
 ## @param database.standalone.image.autoupdate.enabled Enable automatic image updates for standalone database (default: false).
@@ -310,6 +311,15 @@ dragonfly:
 ## @param database.external.username Username of external PostgreSQL.
 ## @param database.external.existingSecret Secret name for external PostgreSQL password.
 ## @param database.external.secretKey Key in the secret for the password.
+## @param database.backup.enabled Enable scheduled database backups (default: false).
+## @param database.backup.cron Cron schedule for backups (default: "0 2 * * *" for 2am daily).
+## @param database.backup.retention Number of backups to retain (default: 30).
+## @param database.backup.path Path inside the container for backups (default: /backups).
+## @param database.backup.persistence.enabled Enable persistence for backups (default: true).
+## @param database.backup.persistence.size Backup volume size (default: 512Mi).
+## @param database.backup.persistence.storageClass Storage class for backup volume.
+## @param database.backup.persistence.accessMode Access mode for backup volume (default: ReadWriteOnce).
+## @param database.backup.persistence.existingClaim Use existing PVC for backups.
 ##
 database:
   # Mode options: 'standalone', 'cluster', or 'external'
@@ -331,7 +341,11 @@ database:
   auth:
     username: immich
     password: ""  # Leave empty to auto-generate (persists across upgrades via secret lookup)
-    existingSecret: ""
+
+  # Secret configuration for database password
+  secret:
+    name: ""  # Leave empty to auto-generate (defaults to <release>-postgresql)
+    passwordKey: "password"  # Key in the secret containing the password
 
   # Standalone PostgreSQL deployment (using StatefulSet)
   standalone:
@@ -367,6 +381,19 @@ database:
     username: "immich"
     existingSecret: ""
     secretKey: "password"
+
+  # Scheduled database backups
+  backup:
+    enabled: false
+    cron: "0 2 * * *"  # Daily at 2am
+    retention: 30  # Number of backups to retain
+    path: /backups  # Path inside the container where backups are stored
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: ""
+      accessMode: ReadWriteOnce
+      existingClaim: ""
 
 
 ## @section ArgoCD Image Updater parameters
