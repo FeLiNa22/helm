@@ -59,10 +59,8 @@ spec:
           {{- end }}
         {{- if .Values.emby.persistence.cache.enabled }}
         - name: cache
-          emptyDir:
-            {{- if .Values.emby.persistence.cache.size }}
-            sizeLimit: {{ .Values.emby.persistence.cache.size }}
-            {{- end }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.emby.persistence.cache.existingClaim | default (printf "%s-emby-cache" .Release.Name) }}
         {{- end }}
         {{- if .Values.emby.persistence.transcode.enabled }}
         - name: transcode
