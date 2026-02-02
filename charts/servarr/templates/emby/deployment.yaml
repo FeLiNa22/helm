@@ -64,6 +64,13 @@ spec:
             sizeLimit: {{ .Values.emby.persistence.cache.size }}
             {{- end }}
         {{- end }}
+        {{- if .Values.emby.persistence.transcode.enabled }}
+        - name: transcode
+          emptyDir:
+            {{- if .Values.emby.persistence.transcode.sizeLimit }}
+            sizeLimit: {{ .Values.emby.persistence.transcode.sizeLimit }}
+            {{- end }}
+        {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.emby.persistence.enabled }}
           persistentVolumeClaim:
@@ -95,6 +102,10 @@ spec:
             {{- if .Values.emby.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache
+            {{- end }}
+            {{- if .Values.emby.persistence.transcode.enabled }}
+            - mountPath: /config/transcode
+              name: transcode
             {{- end }}
           {{- if and .Values.media.enabled .Values.sonarr.enabled .Values.sonarr.persistence.enabled .Values.emby.persistence.enabled }}
             - mountPath: "/media/{{ .Values.media.paths.tv }}"

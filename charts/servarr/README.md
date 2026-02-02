@@ -1073,6 +1073,8 @@ The command removes all the Kubernetes components associated with the chart and 
 | `emby.persistence.backup.size`                       | The size to use for backup persistence.                                                                                             | `5Gi`                      |
 | `emby.persistence.cache.enabled`                     | Whether to enable emptyDir cache volume for the service.                                                                            | `true`                     |
 | `emby.persistence.cache.size`                        | Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.                              | `""`                       |
+| `emby.persistence.transcode.enabled`                 | Whether to enable emptyDir transcode volume for temporary transcodes.                                                               | `false`                    |
+| `emby.persistence.transcode.sizeLimit`               | Size limit for the emptyDir transcode volume (e.g., "4Gi", "8Gi").                                                                  | `4Gi`                      |
 | `emby.persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                       |
 | `emby.persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                       |
 
