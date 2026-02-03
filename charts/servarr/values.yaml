@@ -631,11 +631,10 @@ qbittorrent:
       accessMode: ReadWriteMany
       size: 512Mi
     downloads:
-      enabled: false
+      enabled: true
       storageClass: ""
-      existingClaim: ""
       accessMode: ReadWriteOnce
-      size: 512Mi
+      size: 100Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -2433,11 +2432,10 @@ sabnzbd:
       accessMode: ReadWriteMany
       size: 512Mi
     downloads:
-      enabled: false
+      enabled: true
       storageClass: ""
-      existingClaim: ""
       accessMode: ReadWriteOnce
-      size: 512Mi
+      size: 100Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -2789,7 +2787,9 @@ emby:
       size: 512Mi
     transcode:
       enabled: true
-      sizeLimit: 4Gi
+      storageClass: ""
+      accessMode: ReadWriteOnce
+      size: 100Gi
     additionalVolumes: []
     additionalMounts: []
 
