@@ -5,10 +5,9 @@
 
 {{- if not .Values.database.secret.name }}
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
+{{- if not $existingSecret }}
 {{- $userPassword := "" }}
-{{- if $existingSecret }}
-{{- $userPassword = index $existingSecret.data $secretKey | b64dec }}
-{{- else if .Values.database.auth.password }}
+{{- if .Values.database.auth.password }}
 {{- $userPassword = .Values.database.auth.password }}
 {{- else }}
 {{- $userPassword = randAlphaNum 32 }}
@@ -24,6 +23,7 @@ metadata:
 type: Opaque
 stringData:
   {{ $secretKey }}: {{ $userPassword }}
+{{- end }}
 {{- end }}
 {{- if .Values.database.initSQL }}
 ---
