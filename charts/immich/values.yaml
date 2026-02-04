@@ -309,8 +309,6 @@ dragonfly:
 ## @param database.external.port Port of external PostgreSQL.
 ## @param database.external.database Database name of external PostgreSQL.
 ## @param database.external.username Username of external PostgreSQL.
-## @param database.external.existingSecret Secret name for external PostgreSQL password.
-## @param database.external.secretKey Key in the secret for the password.
 ## @param database.backup.enabled Enable scheduled database backups (default: false).
 ## @param database.backup.cron Cron schedule for backups (default: "0 2 * * *" for 2am daily).
 ## @param database.backup.retention Number of backups to retain (default: 30).
