@@ -24,3 +24,27 @@ spec:
     requests:
       storage: {{ .Values.huntarr.persistence.size | quote }}
 {{- end }}
+
+---
+{{- if and .Values.huntarr.enabled .Values.huntarr.persistence.backup.enabled (not .Values.huntarr.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-huntarr-backup
+  labels:
+    app.kubernetes.io/name: huntarr
+    app.kubernetes.io/instance: {{ .Release.Name }}-huntarr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/pvc-type: backup
+spec:
+  accessModes:
+    - {{ .Values.huntarr.persistence.backup.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.huntarr.persistence.backup.size | quote }}
+  {{- if .Values.huntarr.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.huntarr.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}
