@@ -4,7 +4,7 @@ maintainers:
     url: https://raulpatel.com
 apiVersion: v2
 appVersion: 0.121.1
-version: 1.2.2
+version: 1.1.5
 description: CrewAI Enterprise Helm Chart - Deploy AI agent workflows to Kubernetes
 home: https://github.com/FeLiNa22/homeserver/tree/main/charts/crewai
 icon: https://raulpatel.com/images/raul.svg
