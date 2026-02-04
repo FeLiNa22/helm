@@ -64,10 +64,16 @@ spec:
         {{- end }}
         {{- if .Values.emby.persistence.transcode.enabled }}
         - name: transcode
-          emptyDir:
-            {{- if .Values.emby.persistence.transcode.sizeLimit }}
-            sizeLimit: {{ .Values.emby.persistence.transcode.sizeLimit }}
-            {{- end }}
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: [ "{{ .Values.emby.persistence.transcode.accessMode }}" ]
+                {{- if .Values.emby.persistence.transcode.storageClass }}
+                storageClassName: {{ .Values.emby.persistence.transcode.storageClass | quote }}
+                {{- end }}
+                resources:
+                  requests:
+                    storage: {{ .Values.emby.persistence.transcode.size }}
         {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.emby.persistence.enabled }}

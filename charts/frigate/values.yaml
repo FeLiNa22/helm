@@ -175,7 +175,7 @@ database:
   # Common database configuration
   persistence:
     enabled: true
-    size: 100Mi
+    size: 512Mi
     storageClass: ""
     # Note: existingClaim is not supported for CloudNativePG cluster mode
 
@@ -205,19 +205,19 @@ persistence:
     storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 1Gi
+    size: 512Mi
   media:
     enabled: true
     storageClass: "ceph-rbd"
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 10Gi
+    size: 512Mi
   backup:
-    enabled: false
+    enabled: true
     storageClass: "cephfs"
     existingClaim: ""
     accessMode: ReadWriteMany
-    size: 10Gi
+    size: 512Mi
   additionalVolumes: []
   additionalMounts: []
 
