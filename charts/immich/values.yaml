@@ -315,6 +315,8 @@ dragonfly:
 ## @param database.backup.cron Cron schedule for backups (default: "0 2 * * *" for 2am daily).
 ## @param database.backup.retention Number of backups to retain (default: 30).
 ## @param database.backup.path Path inside the container for backups (default: /backups).
+## @param database.backup.image.repository Custom image repository for backup job (optional).
+## @param database.backup.image.tag Custom image tag for backup job (optional).
 ## @param database.backup.persistence.enabled Enable persistence for backups (default: true).
 ## @param database.backup.persistence.size Backup volume size (default: 512Mi).
 ## @param database.backup.persistence.storageClass Storage class for backup volume.
