@@ -382,12 +382,15 @@ database:
     existingSecret: ""
     secretKey: "password"
 
-  # Scheduled database backups
+  # Scheduled database backups (only for standalone and external modes; cluster mode uses CNPG PITR)
   backup:
     enabled: false
     cron: "0 2 * * *"  # Daily at 2am
     retention: 30  # Number of backups to retain
     path: /backups  # Path inside the container where backups are stored
+    image:
+      repository: ""  # Leave empty to use standalone image or postgres:16-alpine for external mode
+      tag: ""
     persistence:
       enabled: true
       size: 512Mi

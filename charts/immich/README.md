@@ -131,7 +131,7 @@ persistence:
 
 ### Database Backups
 
-Enable scheduled database backups:
+Enable scheduled database backups (supported in `standalone` and `external` modes; cluster mode uses CNPG PITR):
 
 ```yaml
 database:
@@ -140,6 +140,9 @@ database:
     cron: "0 2 * * *"  # Daily at 2am
     retention: 30       # Keep last 30 backups
     path: /backups
+    image:
+      repository: ""    # Optional: custom image (defaults to standalone image or postgres:16-alpine for external)
+      tag: ""
     persistence:
       enabled: true
       size: 512Mi
@@ -149,6 +152,8 @@ database:
 ```
 
 The backup CronJob creates compressed SQL dumps of the PostgreSQL database. Backups are stored with timestamps and old backups are automatically removed based on the retention policy.
+
+**Note:** Database backups are not available in `cluster` mode as CloudNativePG (CNPG) provides built-in Point-in-Time Recovery (PITR) functionality.
 
 ### Ingress
 
@@ -263,6 +268,8 @@ ingress:
 | `database.backup.cron` | Cron schedule for backups (e.g., "0 2 * * *" for 2am daily) | `0 2 * * *` |
 | `database.backup.retention` | Number of backups to retain | `30` |
 | `database.backup.path` | Path inside the container for backups | `/backups` |
+| `database.backup.image.repository` | Custom image for backup job (optional) | `""` |
+| `database.backup.image.tag` | Custom image tag for backup job (optional) | `""` |
 | `database.backup.persistence.enabled` | Enable persistence for backups | `true` |
 | `database.backup.persistence.size` | Backup volume size | `512Mi` |
 | `database.backup.persistence.storageClass` | Storage class for backup volume | `""` |
@@ -270,6 +277,13 @@ ingress:
 | `database.backup.persistence.existingClaim` | Use existing PVC for backups | `""` |
 
 ## Upgrading
+
+### To 1.6.1
+
+This version extends database backup support:
+- Database backups now work in both `standalone` and `external` modes
+- Added `database.backup.image` configuration for custom backup images
+- Cluster mode (CNPG) does not include backup CronJob as it provides built-in PITR
 
 ### To 1.6.0
 

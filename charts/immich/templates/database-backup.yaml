@@ -1,4 +1,4 @@
-{{- if and (eq .Values.database.mode "standalone") .Values.database.backup.enabled }}
+{{- if and (ne .Values.database.mode "cluster") .Values.database.backup.enabled }}
 {{- $fullName := include "immich.fullname" . -}}
 {{- $secretName := include "immich.postgresql.secretName" . -}}
 {{- $secretKey := include "immich.postgresql.secretKey" . -}}
@@ -98,7 +98,13 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: backup
+            {{- if and .Values.database.backup.image.repository .Values.database.backup.image.tag }}
+            image: "{{ .Values.database.backup.image.repository }}:{{ .Values.database.backup.image.tag }}"
+            {{- else if eq .Values.database.mode "standalone" }}
             image: "{{ .Values.database.standalone.image.repository }}:{{ .Values.database.standalone.image.tag }}"
+            {{- else }}
+            image: "postgres:16-alpine"
+            {{- end }}
             imagePullPolicy: IfNotPresent
             command:
             - /bin/bash
@@ -109,9 +115,9 @@ spec:
             - name: POSTGRES_PORT
               value: {{ include "immich.postgresql.port" . | quote }}
             - name: POSTGRES_USER
-              value: {{ .Values.database.auth.username | quote }}
+              value: {{ include "immich.postgresql.username" . | quote }}
             - name: POSTGRES_DB
-              value: {{ .Values.database.auth.username | quote }}
+              value: {{ include "immich.postgresql.database" . | quote }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
