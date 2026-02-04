@@ -54,7 +54,7 @@ n8n:
   persistence:
     enabled: true
     storageClass: ""
-    size: 10Gi
+    size: 512Mi
     existingClaim: ""
     mountPath: /home/node/.n8n
   initContainer:
@@ -169,7 +169,7 @@ database:
   # Common database configuration
   persistence:
     enabled: true
-    size: 100Mi
+    size: 512Mi
     storageClass: ""
     existingClaim: ""
 

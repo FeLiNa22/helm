@@ -82,8 +82,16 @@ spec:
         {{- end }}
         {{- if .Values.qbittorrent.persistence.downloads.enabled }}
         - name: downloads
-          persistentVolumeClaim:
-            claimName: {{ .Values.qbittorrent.persistence.downloads.existingClaim | default (printf "%s-qbittorrent-downloads" .Release.Name) }}
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: [ "{{ .Values.qbittorrent.persistence.downloads.accessMode }}" ]
+                {{- if .Values.qbittorrent.persistence.downloads.storageClass }}
+                storageClassName: {{ .Values.qbittorrent.persistence.downloads.storageClass | quote }}
+                {{- end }}
+                resources:
+                  requests:
+                    storage: {{ .Values.qbittorrent.persistence.downloads.size }}
         {{- end }}
 
       containers:

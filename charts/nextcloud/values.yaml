@@ -189,7 +189,7 @@ dragonfly:
       #   memory: 256Mi
     persistence:
       enabled: true
-      size: 5Gi
+      size: 512Mi
       storageClass: ""
 
   # Dragonfly Cluster deployment (using DragonflyDB operator)
@@ -207,7 +207,7 @@ dragonfly:
       #   memory: 512Mi
     persistence:
       enabled: true
-      size: 5Gi
+      size: 512Mi
       storageClass: ""
 
   # External DragonflyDB/Redis configuration (used when mode is 'external')
@@ -246,7 +246,7 @@ database:
   # Common database configuration
   persistence:
     enabled: true
-    size: 10Gi
+    size: 512Mi
     storageClass: "ceph-rbd"
     existingClaim: ""
 
@@ -293,13 +293,13 @@ persistence:
   storageClass: "ceph-rbd"
   existingClaim: ""
   accessMode: ReadWriteOnce
-  size: 10Gi
+  size: 512Mi
   backup:
-    enabled: false
+    enabled: true
     storageClass: "cephfs"
     existingClaim: ""
     accessMode: ReadWriteMany
-    size: 10Gi
+    size: 512Mi
   additionalVolumes: []
   additionalMounts: []
 

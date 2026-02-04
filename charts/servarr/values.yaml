@@ -16,7 +16,7 @@ media:
   storageClass: ""
   existingClaim: ""
   accessMode: ReadWriteMany
-  size: 10Gi
+  size: 512Mi
   labels: {}
   annotations: {}
   paths:
@@ -156,15 +156,15 @@ jellyfin:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 1Gi
+    size: 512Mi
     labels: {}
     annotations: {}
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -417,13 +417,13 @@ sonarr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -434,7 +434,7 @@ sonarr:
     mode: standalone
     persistence:
       enabled: true
-      size: 100Mi
+      size: 512Mi
       storageClass: ""
       existingClaim: ""
     initSQL: []
@@ -511,11 +511,10 @@ sonarr:
 ## @param qbittorrent.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param qbittorrent.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param qbittorrent.persistence.backup.size The size to use for backup persistence.
-## @param qbittorrent.persistence.downloads.enabled Whether to enable a separate PVC for downloads at /config/downloads/incomplete.
-## @param qbittorrent.persistence.downloads.storageClass The storage class to use for the downloads PVC (e.g., ceph-rbd for faster storage).
-## @param qbittorrent.persistence.downloads.existingClaim The name of an existing claim to use for the downloads PVC.
-## @param qbittorrent.persistence.downloads.accessMode The access mode to use for the downloads PVC.
-## @param qbittorrent.persistence.downloads.size The size to use for the downloads PVC.
+## @param qbittorrent.persistence.downloads.enabled Whether to enable ephemeral volume for downloads at /config/downloads/incomplete.
+## @param qbittorrent.persistence.downloads.storageClass The storage class to use for the ephemeral downloads volume.
+## @param qbittorrent.persistence.downloads.accessMode The access mode to use for the ephemeral downloads volume.
+## @param qbittorrent.persistence.downloads.size The size to use for the ephemeral downloads volume.
 ## @param qbittorrent.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param qbittorrent.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -623,17 +622,16 @@ qbittorrent:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     downloads:
-      enabled: false
+      enabled: true
       storageClass: ""
-      existingClaim: ""
       accessMode: ReadWriteOnce
       size: 100Gi
     additionalVolumes: []
@@ -877,13 +875,13 @@ prowlarr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -894,7 +892,7 @@ prowlarr:
     mode: standalone
     persistence:
       enabled: true
-      size: 100Mi
+      size: 512Mi
       storageClass: ""
       existingClaim: ""
     initSQL: []
@@ -1269,14 +1267,14 @@ seerr:
     accessModes:
       - ReadWriteOnce
     volumeName: ""
-    size: 800Mi
+    size: 512Mi
     annotations: {}
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -1312,7 +1310,7 @@ seerr:
     mode: standalone
     persistence:
       enabled: true
-      size: 100Mi
+      size: 512Mi
       storageClass: ""
       existingClaim: ""
     initSQL: []
@@ -1491,13 +1489,13 @@ bazarr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -1682,13 +1680,13 @@ radarr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -1699,7 +1697,7 @@ radarr:
     mode: standalone
     persistence:
       enabled: true
-      size: 100Mi
+      size: 512Mi
       storageClass: ""
       existingClaim: ""
     initSQL: []
@@ -1897,13 +1895,13 @@ lidarr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true
       size: ""
@@ -1914,7 +1912,7 @@ lidarr:
     mode: standalone
     persistence:
       enabled: true
-      size: 100Mi
+      size: 512Mi
       storageClass: ""
       existingClaim: ""
     initSQL: []
@@ -2090,7 +2088,7 @@ cleanuparr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 100Mi
+    size: 512Mi
     additionalVolumes: []
     additionalMounts: []
 
@@ -2253,13 +2251,13 @@ huntarr:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 100Mi
+    size: 512Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     additionalVolumes: []
     additionalMounts: []
 
@@ -2318,11 +2316,10 @@ huntarr:
 ## @param sabnzbd.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param sabnzbd.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param sabnzbd.persistence.backup.size The size to use for backup persistence.
-## @param sabnzbd.persistence.downloads.enabled Whether to enable a separate PVC for downloads at /config/downloads/incomplete.
-## @param sabnzbd.persistence.downloads.storageClass The storage class to use for the downloads PVC (e.g., ceph-rbd for faster storage).
-## @param sabnzbd.persistence.downloads.existingClaim The name of an existing claim to use for the downloads PVC.
-## @param sabnzbd.persistence.downloads.accessMode The access mode to use for the downloads PVC.
-## @param sabnzbd.persistence.downloads.size The size to use for the downloads PVC.
+## @param sabnzbd.persistence.downloads.enabled Whether to enable ephemeral volume for downloads at /config/downloads/incomplete.
+## @param sabnzbd.persistence.downloads.storageClass The storage class to use for the ephemeral downloads volume.
+## @param sabnzbd.persistence.downloads.accessMode The access mode to use for the ephemeral downloads volume.
+## @param sabnzbd.persistence.downloads.size The size to use for the ephemeral downloads volume.
 ## @param sabnzbd.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param sabnzbd.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -2425,17 +2422,16 @@ sabnzbd:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 800Mi
+    size: 512Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     downloads:
-      enabled: false
+      enabled: true
       storageClass: ""
-      existingClaim: ""
       accessMode: ReadWriteOnce
       size: 100Gi
     additionalVolumes: []
@@ -2600,13 +2596,13 @@ plex:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 1Gi
+    size: 512Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     additionalVolumes: []
     additionalMounts: []
 
@@ -2630,9 +2626,7 @@ plex:
 ## @param emby.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param emby.podAnnotations Additional annotations to add to the pod.
 ## @param emby.podSecurityContext The security context to use for the pod.
-## @param emby.securityContext.runAsUser The user ID to run the container as.
-## @param emby.securityContext.runAsGroup The group ID to run the container as.
-## @param emby.securityContext.runAsNonRoot Whether to run the container as a non-root user.
+## @param emby.securityContext.allowPrivilegeEscalation Whether to allow privilege escalation.
 ## @param emby.initContainers Additional init containers to add to the pod.
 ## @param emby.service.type The type of service to create.
 ## @param emby.service.port The port on which the service will run.
@@ -2668,8 +2662,10 @@ plex:
 ## @param emby.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param emby.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param emby.persistence.backup.size The size to use for backup persistence.
-## @param emby.persistence.transcode.enabled Whether to enable emptyDir transcode volume for temporary transcodes.
-## @param emby.persistence.transcode.sizeLimit Size limit for the emptyDir transcode volume (e.g., "4Gi", "8Gi").
+## @param emby.persistence.transcode.enabled Whether to enable ephemeral transcode volume for temporary transcodes.
+## @param emby.persistence.transcode.storageClass The storage class to use for the ephemeral transcode volume.
+## @param emby.persistence.transcode.accessMode The access mode to use for the ephemeral transcode volume.
+## @param emby.persistence.transcode.size The size to use for the ephemeral transcode volume.
 ## @param emby.persistence.cache.enabled Whether to enable cache persistence for the service.
 ## @param emby.persistence.cache.storageClass The storage class to use for cache persistence.
 ## @param emby.persistence.cache.existingClaim The name of an existing claim to use for cache persistence.
@@ -2774,22 +2770,24 @@ emby:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 1Gi
+    size: 512Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     cache:
       enabled: true 
       storageClass: ""
       existingClaim: ""
       accessMode: ReadWriteOnce
-      size: 1Gi
+      size: 512Mi
     transcode:
-      enabled: false
-      sizeLimit: 4Gi
+      enabled: true
+      storageClass: ""
+      accessMode: ReadWriteOnce
+      size: 100Gi
     additionalVolumes: []
     additionalMounts: []
 
@@ -3003,13 +3001,13 @@ acestream:
     storageClass: ""
     existingClaim: ""
     accessMode: ReadWriteOnce
-    size: 1Gi
+    size: 512Mi
     backup:
-      enabled: false
+      enabled: true
       storageClass: "cephfs"
       existingClaim: ""
       accessMode: ReadWriteMany
-      size: 5Gi
+      size: 512Mi
     additionalVolumes: []
     additionalMounts: []
 
