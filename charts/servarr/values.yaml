@@ -1256,10 +1256,10 @@ seerr:
       existingClaim: ""
       accessMode: ReadWriteMany
       size: 512Mi
-  
-  # Liveness / Readiness / Startup Probes
     additionalVolumes: []
     additionalMounts: []
+
+  # Liveness / Readiness / Startup Probes
   probes:
     livenessProbe:
       enabled: false
