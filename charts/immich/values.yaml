@@ -379,8 +379,7 @@ database:
     port: 5432
     database: "immich"
     username: "immich"
-    existingSecret: ""
-    secretKey: "password"
+    # Password is sourced from the secret configured in database.secret.name / database.secret.passwordKey
 
   # Scheduled database backups (only for standalone and external modes; cluster mode uses CNPG PITR)
   backup:
