@@ -423,6 +423,8 @@ sonarr:
       accessMode: ReadWriteMany
       size: 512Mi
 
+    additionalVolumes: []
+    additionalMounts: []
   database:
     mode: standalone
     persistence:
@@ -865,6 +867,8 @@ prowlarr:
       accessMode: ReadWriteMany
       size: 512Mi
 
+    additionalVolumes: []
+    additionalMounts: []
   database:
     mode: standalone
     persistence:
@@ -1254,6 +1258,8 @@ seerr:
       size: 512Mi
   
   # Liveness / Readiness / Startup Probes
+    additionalVolumes: []
+    additionalMounts: []
   probes:
     livenessProbe:
       enabled: false
@@ -1468,6 +1474,8 @@ bazarr:
       existingClaim: ""
       accessMode: ReadWriteMany
       size: 512Mi
+    additionalVolumes: []
+    additionalMounts: []
 
 ## @section Radarr parameters
 
@@ -1550,6 +1558,7 @@ bazarr:
 radarr:
   enabled: true
   replicaCount: 1
+
 
   image:
     repository: lscr.io/linuxserver/radarr
@@ -1655,6 +1664,8 @@ radarr:
       accessMode: ReadWriteMany
       size: 512Mi
 
+    additionalVolumes: []
+    additionalMounts: []
   database:
     mode: standalone
     persistence:
@@ -1865,6 +1876,8 @@ lidarr:
       accessMode: ReadWriteMany
       size: 512Mi
 
+    additionalVolumes: []
+    additionalMounts: []
   database:
     mode: standalone
     persistence:

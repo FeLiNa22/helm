@@ -48,3 +48,4 @@ spec:
   storageClassName: {{ .Values.emby.persistence.backup.storageClass | quote }}
   {{- end }}
 {{- end }}
+
