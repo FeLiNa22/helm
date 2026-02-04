@@ -1867,6 +1867,40 @@ entries:
   servarr:
   - apiVersion: v2
     appVersion: 1.2.3
+    created: "2026-02-04T23:01:00.248779688Z"
+    description: Raul Servarr Helm Chart
+    digest: 320292446b294e25a9de2394632ed6e3180c0c09a2c241e0a0d74f5a2aeee7cb
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/servarr
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - bazarr
+    - lidarr
+    - sonarr
+    - radarr
+    - flaresolverr
+    - jellyfin
+    - seerr
+    - qbittorrent
+    - prowlarr
+    - cleanuparr
+    - huntarr
+    - sabnzbd
+    - frigate
+    - plex
+    - emby
+    - acestream
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: servarr
+    sources:
+    - https://github.com/Servarr
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/servarr-1.5.0/servarr-1.5.0.tgz
+    version: 1.5.0
+  - apiVersion: v2
+    appVersion: 1.2.3
     created: "2026-02-04T22:53:27.71158251Z"
     description: Raul Servarr Helm Chart
     digest: 6bdf7e1dc1dadaa371b497a01a914626f95fe00766e17ca48e5034969286df9c
@@ -3499,4 +3533,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-02-04T22:53:27.711994333Z"
+generated: "2026-02-04T23:01:00.249462613Z"
