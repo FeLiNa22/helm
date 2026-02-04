@@ -145,13 +145,6 @@ spec:
           configMap:
             name: {{ .Release.Name }}-sonarr-config
         {{- end }}
-        {{- if .Values.sonarr.persistence.cache.enabled }}
-        - name: cache
-          emptyDir:
-            {{- if .Values.sonarr.persistence.cache.size }}
-            sizeLimit: {{ .Values.sonarr.persistence.cache.size }}
-            {{- end }}
-        {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.sonarr.persistence.enabled }}
           persistentVolumeClaim:
@@ -179,10 +172,6 @@ spec:
             {{- if .Values.sonarr.persistence.backup.enabled }}
             - mountPath: /config/Backups
               name: backup
-            {{- end }}
-            {{- if .Values.sonarr.persistence.cache.enabled }}
-            - mountPath: /config/cache
-              name: cache
             {{- end }}
           {{- if and .Values.media.enabled .Values.sonarr.persistence.enabled }}
             - mountPath: /media

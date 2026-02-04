@@ -145,13 +145,6 @@ spec:
           configMap:
             name: {{ .Release.Name }}-radarr-config
         {{- end }}
-        {{- if .Values.radarr.persistence.cache.enabled }}
-        - name: cache
-          emptyDir:
-            {{- if .Values.radarr.persistence.cache.size }}
-            sizeLimit: {{ .Values.radarr.persistence.cache.size }}
-            {{- end }}
-        {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.radarr.persistence.enabled }}
           persistentVolumeClaim:
@@ -179,10 +172,6 @@ spec:
             {{- if .Values.radarr.persistence.backup.enabled }}
             - mountPath: /config/Backups
               name: backup
-            {{- end }}
-            {{- if .Values.radarr.persistence.cache.enabled }}
-            - mountPath: /config/cache
-              name: cache
             {{- end }}
           {{- if and .Values.media.enabled .Values.radarr.persistence.enabled }}
             - mountPath: /media

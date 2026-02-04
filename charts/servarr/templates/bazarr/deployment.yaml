@@ -65,13 +65,6 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        {{- if .Values.bazarr.persistence.cache.enabled }}
-        - name: cache
-          emptyDir:
-            {{- if .Values.bazarr.persistence.cache.size }}
-            sizeLimit: {{ .Values.bazarr.persistence.cache.size }}
-            {{- end }}
-        {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.bazarr.persistence.enabled }}
           persistentVolumeClaim:
@@ -99,10 +92,6 @@ spec:
             {{- if .Values.bazarr.persistence.backup.enabled }}
             - mountPath: /config/backup
               name: backup
-            {{- end }}
-            {{- if .Values.bazarr.persistence.cache.enabled }}
-            - mountPath: /config/cache
-              name: cache
             {{- end }}
           {{- if and .Values.media.enabled .Values.sonarr.persistence.enabled .Values.bazarr.persistence.enabled }}
             - mountPath: "/media/{{ .Values.media.paths.tv }}"

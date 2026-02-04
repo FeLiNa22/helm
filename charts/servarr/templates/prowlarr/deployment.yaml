@@ -137,13 +137,6 @@ spec:
           configMap:
             name: {{ .Release.Name }}-prowlarr-config
         {{- end }}
-        {{- if .Values.prowlarr.persistence.cache.enabled }}
-        - name: cache
-          emptyDir:
-            {{- if .Values.prowlarr.persistence.cache.size }}
-            sizeLimit: {{ .Values.prowlarr.persistence.cache.size }}
-            {{- end }}
-        {{- end }}
         {{- if .Values.prowlarr.persistence.backup.enabled }}
         - name: backup
           persistentVolumeClaim:
@@ -164,10 +157,6 @@ spec:
             {{- if .Values.prowlarr.persistence.backup.enabled }}
             - mountPath: /config/Backups
               name: backup
-            {{- end }}
-            {{- if .Values.prowlarr.persistence.cache.enabled }}
-            - mountPath: /config/cache
-              name: cache
             {{- end }}
           {{- if .Values.prowlarr.persistence.additionalMounts }}
             {{- .Values.prowlarr.persistence.additionalMounts | toYaml | nindent 12 }}
