@@ -21,12 +21,12 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-qbittorrent
   template:
     metadata:
-      {{- if and $.Values.velero.enabled (or .Values.qbittorrent.persistence.enabled .Values.qbittorrent.persistence.backup.enabled) }}
+      {{- if and $.Values.velero.enabled .Values.qbittorrent.persistence.enabled }}
       annotations:
-        backup.velero.io/backup-volumes: {{ if .Values.qbittorrent.persistence.backup.enabled }}backup{{ else }}config{{ end }}
+        backup.velero.io/backup-volumes: config
       {{- end }}
       {{- with .Values.qbittorrent.podAnnotations }}
-      {{- if not (and $.Values.velero.enabled (or $.Values.qbittorrent.persistence.enabled $.Values.qbittorrent.persistence.backup.enabled)) }}
+      {{- if not (and $.Values.velero.enabled .Values.qbittorrent.persistence.enabled) }}
       annotations:
       {{- end }}
         {{- toYaml . | nindent 8 }}
@@ -74,11 +74,6 @@ spec:
           {{- end }}
         {{- if .Values.qbittorrent.persistence.additionalVolumes }}
           {{- .Values.qbittorrent.persistence.additionalVolumes | toYaml | nindent 8}}
-        {{- end }}
-        {{- if .Values.qbittorrent.persistence.backup.enabled }}
-        - name: backup
-          persistentVolumeClaim:
-            claimName: {{ .Values.qbittorrent.persistence.backup.existingClaim | default (printf "%s-qbittorrent-backup" .Release.Name) }}
         {{- end }}
         {{- if .Values.qbittorrent.persistence.downloads.enabled }}
         - name: downloads
@@ -178,10 +173,6 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
-          {{- if .Values.qbittorrent.persistence.backup.enabled }}
-            - mountPath: /config/backups
-              name: backup
-          {{- end }}
           {{- if .Values.qbittorrent.persistence.downloads.enabled }}
             - mountPath: /config/downloads/incomplete
               name: downloads

@@ -506,11 +506,6 @@ sonarr:
 ## @param qbittorrent.persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param qbittorrent.persistence.accessMode The access mode to use for the persistence.
 ## @param qbittorrent.persistence.size The size to use for the persistence.
-## @param qbittorrent.persistence.backup.enabled Whether to enable backup persistence for the config.
-## @param qbittorrent.persistence.backup.storageClass The storage class to use for backup persistence.
-## @param qbittorrent.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
-## @param qbittorrent.persistence.backup.accessMode The access mode to use for backup persistence.
-## @param qbittorrent.persistence.backup.size The size to use for backup persistence.
 ## @param qbittorrent.persistence.downloads.enabled Whether to enable ephemeral volume for downloads at /config/downloads/incomplete.
 ## @param qbittorrent.persistence.downloads.storageClass The storage class to use for the ephemeral downloads volume.
 ## @param qbittorrent.persistence.downloads.accessMode The access mode to use for the ephemeral downloads volume.
@@ -623,12 +618,6 @@ qbittorrent:
     existingClaim: ""
     accessMode: ReadWriteOnce
     size: 512Mi
-    backup:
-      enabled: true
-      storageClass: "cephfs"
-      existingClaim: ""
-      accessMode: ReadWriteMany
-      size: 512Mi
     downloads:
       enabled: true
       storageClass: ""
