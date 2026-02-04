@@ -86,8 +86,10 @@ velero:
 ## @param jellyfin.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param jellyfin.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param jellyfin.persistence.backup.size The size to use for backup persistence.
-## @param jellyfin.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
-## @param jellyfin.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
+## @param jellyfin.persistence.cache.enabled Whether to enable ephemeral cache volume for the service.
+## @param jellyfin.persistence.cache.storageClass The storage class to use for the ephemeral cache volume.
+## @param jellyfin.persistence.cache.accessMode The access mode to use for the ephemeral cache volume.
+## @param jellyfin.persistence.cache.size Size for the ephemeral cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param jellyfin.persistence.extraExistingClaimMounts Additional existing claim mounts to add to the pod.
 ## @param jellyfin.resources The resources to use for the pod.
 ## @param jellyfin.runtimeClassName The runtime class to use for the pod.
@@ -167,6 +169,8 @@ jellyfin:
       size: 512Mi
     cache:
       enabled: true
+      storageClass: ""
+      accessMode: ReadWriteOnce
       size: ""
 
     extraExistingClaimMounts: []
@@ -2463,8 +2467,10 @@ sabnzbd:
 ## @param plex.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param plex.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param plex.persistence.backup.size The size to use for backup persistence.
-## @param plex.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
-## @param plex.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
+## @param plex.persistence.cache.enabled Whether to enable ephemeral cache volume for the service.
+## @param plex.persistence.cache.storageClass The storage class to use for the ephemeral cache volume.
+## @param plex.persistence.cache.accessMode The access mode to use for the ephemeral cache volume.
+## @param plex.persistence.cache.size Size for the ephemeral cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param plex.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param plex.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -2577,6 +2583,8 @@ plex:
       size: 512Mi
     cache:
       enabled: true
+      storageClass: ""
+      accessMode: ReadWriteOnce
       size: ""
     additionalVolumes: []
     additionalMounts: []
@@ -2641,8 +2649,10 @@ plex:
 ## @param emby.persistence.transcode.storageClass The storage class to use for the ephemeral transcode volume.
 ## @param emby.persistence.transcode.accessMode The access mode to use for the ephemeral transcode volume.
 ## @param emby.persistence.transcode.size The size to use for the ephemeral transcode volume.
-## @param emby.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
-## @param emby.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
+## @param emby.persistence.cache.enabled Whether to enable ephemeral cache volume for the service.
+## @param emby.persistence.cache.storageClass The storage class to use for the ephemeral cache volume.
+## @param emby.persistence.cache.accessMode The access mode to use for the ephemeral cache volume.
+## @param emby.persistence.cache.size Size for the ephemeral cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param emby.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param emby.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -2751,6 +2761,8 @@ emby:
       size: 512Mi
     cache:
       enabled: true
+      storageClass: ""
+      accessMode: ReadWriteOnce
       size: ""
     transcode:
       enabled: true

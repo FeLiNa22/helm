@@ -59,10 +59,16 @@ spec:
           {{- end }}
         {{- if .Values.plex.persistence.cache.enabled }}
         - name: cache
-          emptyDir:
-            {{- if .Values.plex.persistence.cache.size }}
-            sizeLimit: {{ .Values.plex.persistence.cache.size }}
-            {{- end }}
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: [ "{{ .Values.plex.persistence.cache.accessMode }}" ]
+                {{- if .Values.plex.persistence.cache.storageClass }}
+                storageClassName: {{ .Values.plex.persistence.cache.storageClass | quote }}
+                {{- end }}
+                resources:
+                  requests:
+                    storage: {{ .Values.plex.persistence.cache.size }}
         {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.plex.persistence.enabled }}
