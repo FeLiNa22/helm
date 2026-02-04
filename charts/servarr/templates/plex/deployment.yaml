@@ -57,6 +57,13 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        {{- if .Values.plex.persistence.cache.enabled }}
+        - name: cache
+          emptyDir:
+            {{- if .Values.plex.persistence.cache.size }}
+            sizeLimit: {{ .Values.plex.persistence.cache.size }}
+            {{- end }}
+        {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.plex.persistence.enabled }}
           persistentVolumeClaim:
@@ -84,6 +91,10 @@ spec:
           {{- if .Values.plex.persistence.backup.enabled }}
             - mountPath: /config/backups
               name: backup
+          {{- end }}
+          {{- if .Values.plex.persistence.cache.enabled }}
+            - mountPath: /config/cache
+              name: cache
           {{- end }}
           {{- if and .Values.media.enabled .Values.sonarr.enabled .Values.sonarr.persistence.enabled .Values.plex.persistence.enabled }}
             - mountPath: "/media/{{ .Values.media.paths.tv }}"
