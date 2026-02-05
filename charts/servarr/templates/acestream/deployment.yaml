@@ -23,9 +23,13 @@ spec:
     metadata:
       annotations:
        {{- if and $.Values.velero.enabled (or .Values.acestream.persistence.enabled .Values.acestream.persistence.backup.enabled) }}
+      annotations:
         backup.velero.io/backup-volumes: {{ if .Values.acestream.persistence.backup.enabled }}backup{{ else }}config{{ end }}
       {{- end }}
       {{- with .Values.acestream.podAnnotations }}
+      {{- if not (and $.Values.velero.enabled (or $.Values.acestream.persistence.enabled $.Values.acestream.persistence.backup.enabled)) }}
+      annotations:
+      {{- end }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
