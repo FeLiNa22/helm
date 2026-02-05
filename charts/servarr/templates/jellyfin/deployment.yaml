@@ -151,10 +151,16 @@ spec:
       {{- end }}
       {{- if .Values.jellyfin.persistence.cache.enabled }}
       - name: cache
-        emptyDir:
-          {{- if .Values.jellyfin.persistence.cache.size }}
-          sizeLimit: {{ .Values.jellyfin.persistence.cache.size }}
-          {{- end }}
+        ephemeral:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ "{{ .Values.jellyfin.persistence.cache.accessMode }}" ]
+              {{- if .Values.jellyfin.persistence.cache.storageClass }}
+              storageClassName: {{ .Values.jellyfin.persistence.cache.storageClass | quote }}
+              {{- end }}
+              resources:
+                requests:
+                  storage: {{ .Values.jellyfin.persistence.cache.size }}
       {{- end }}
       {{- if .Values.jellyfin.persistence.backup.enabled }}
       - name: backup

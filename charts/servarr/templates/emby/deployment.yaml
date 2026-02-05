@@ -59,8 +59,16 @@ spec:
           {{- end }}
         {{- if .Values.emby.persistence.cache.enabled }}
         - name: cache
-          persistentVolumeClaim:
-            claimName: {{ .Values.emby.persistence.cache.existingClaim | default (printf "%s-emby-cache" .Release.Name) }}
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: [ "{{ .Values.emby.persistence.cache.accessMode }}" ]
+                {{- if .Values.emby.persistence.cache.storageClass }}
+                storageClassName: {{ .Values.emby.persistence.cache.storageClass | quote }}
+                {{- end }}
+                resources:
+                  requests:
+                    storage: {{ .Values.emby.persistence.cache.size }}
         {{- end }}
         {{- if .Values.emby.persistence.transcode.enabled }}
         - name: transcode

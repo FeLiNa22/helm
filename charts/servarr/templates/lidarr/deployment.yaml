@@ -145,13 +145,6 @@ spec:
           configMap:
             name: {{ .Release.Name }}-lidarr-config
         {{- end }}
-        {{- if .Values.lidarr.persistence.cache.enabled }}
-        - name: cache
-          emptyDir:
-            {{- if .Values.lidarr.persistence.cache.size }}
-            sizeLimit: {{ .Values.lidarr.persistence.cache.size }}
-            {{- end }}
-        {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.lidarr.persistence.enabled }}
           persistentVolumeClaim:
@@ -179,10 +172,6 @@ spec:
             {{- if .Values.lidarr.persistence.backup.enabled }}
             - mountPath: /config/Backups
               name: backup
-            {{- end }}
-            {{- if .Values.lidarr.persistence.cache.enabled }}
-            - mountPath: /config/cache
-              name: cache
             {{- end }}
           {{- if and .Values.media.enabled .Values.lidarr.persistence.enabled }}
             - mountPath: /media
