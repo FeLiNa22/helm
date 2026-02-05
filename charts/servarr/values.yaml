@@ -2908,17 +2908,8 @@ acestream:
     fsGroupChangePolicy: OnRootMismatch
 
   securityContext:
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      readOnlyRootFilesystem: false
-      runAsNonRoot: true
-      privileged: false
-      runAsUser: 1000
-      runAsGroup: 1000
-      seccompProfile:
-        type: RuntimeDefault
+      privileged: true
+
 
   initContainers: []
     # - name: init-container
