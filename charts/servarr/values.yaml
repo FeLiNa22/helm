@@ -2903,9 +2903,7 @@ acestream:
 
   podAnnotations: {}
 
-  podSecurityContext:
-    fsGroup: 1000
-    fsGroupChangePolicy: OnRootMismatch
+  podSecurityContext: {}
     # fsGroup: 2000
 
   securityContext:
