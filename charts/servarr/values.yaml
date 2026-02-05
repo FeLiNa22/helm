@@ -176,7 +176,7 @@ jellyfin:
       size: "1Gi"
     transcode:
       enabled: true
-      sizeLimit: 4Gi
+      sizeLimit: "4Gi"
 
     extraExistingClaimMounts: []
       # - name: external-mount
@@ -2585,7 +2585,7 @@ plex:
       size: "1Gi"
     transcode:
       enabled: true
-      sizeLimit: 4Gi
+      sizeLimit: "4Gi"
     additionalVolumes: []
     additionalMounts: []
 
@@ -2764,7 +2764,7 @@ emby:
       size: "1Gi"
     transcode:
       enabled: true
-      sizeLimit: 4Gi
+      sizeLimit: "4Gi"
     additionalVolumes: []
     additionalMounts: []
 
