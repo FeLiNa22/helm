@@ -218,10 +218,11 @@ jellyfin:
 
   extraContainers: {}
 
-  podSecurityContext: {}
-  # Jellyfin can be run as an unprivileged user with the following settings:
-    # runAsUser: 65534
-    # runAsGroup: 65534
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
 
   securityContext: {}
   # For example, you might need to grant the following capabilities to enable hardware acceleration when mounting a /dev/dri device:
@@ -352,7 +353,11 @@ sonarr:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
     # fsGroup: 2000
 
   securityContext: {}
@@ -546,7 +551,11 @@ qbittorrent:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
     # fsGroup: 2000
 
   securityContext: {}
@@ -794,7 +803,11 @@ prowlarr:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
     # fsGroup: 2000
 
   securityContext: {}
@@ -982,6 +995,8 @@ flaresolverr:
   podAnnotations: {}
 
   podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
 
@@ -1180,6 +1195,8 @@ seerr:
   podLabels: {}
 
   podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
 
@@ -1400,7 +1417,11 @@ bazarr:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
     # fsGroup: 2000
 
   securityContext: {}
@@ -1586,7 +1607,11 @@ radarr:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
     # fsGroup: 2000
 
   securityContext: {}
@@ -1796,7 +1821,11 @@ lidarr:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
     # fsGroup: 2000
 
   securityContext: {}
@@ -1985,7 +2014,11 @@ cleanuparr:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
     # fsGroup: 2000
 
   securityContext: {}
@@ -2149,7 +2182,11 @@ huntarr:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
     # fsGroup: 2000
 
   securityContext: {}
@@ -2321,7 +2358,11 @@ sabnzbd:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
     # fsGroup: 2000
 
   securityContext: {}
@@ -2500,7 +2541,11 @@ plex:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
     # fsGroup: 2000
 
   securityContext: {}
@@ -2683,7 +2728,11 @@ emby:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
     # fsGroup: 2000
 
   securityContext:
@@ -2884,7 +2933,11 @@ acestream:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
     # fsGroup: 2000
 
   securityContext:
