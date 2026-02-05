@@ -2931,9 +2931,11 @@ acestream:
       repository: ghcr.io/dispatcharr/dispatcharr
       pullPolicy: IfNotPresent
       tag: "latest"
-    env: {}
-      # TZ: "Europe/Madrid"
-      # MY_VAR: "value"
+    env: 
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Europe/London"
+      UMASK: "002"
     resources: {}
       # limits:
       #   cpu: 100m
