@@ -90,6 +90,8 @@ velero:
 ## @param jellyfin.persistence.cache.storageClass The storage class to use for the ephemeral cache volume.
 ## @param jellyfin.persistence.cache.accessMode The access mode to use for the ephemeral cache volume.
 ## @param jellyfin.persistence.cache.size Size for the ephemeral cache volume (default: "1Gi").
+## @param jellyfin.persistence.transcode.enabled Whether to enable emptyDir transcode volume for temporary transcodes.
+## @param jellyfin.persistence.transcode.sizeLimit Size limit for the emptyDir transcode volume (e.g., "4Gi", "8Gi").
 ## @param jellyfin.persistence.extraExistingClaimMounts Additional existing claim mounts to add to the pod.
 ## @param jellyfin.resources The resources to use for the pod.
 ## @param jellyfin.runtimeClassName The runtime class to use for the pod.
@@ -172,6 +174,9 @@ jellyfin:
       storageClass: ""
       accessMode: ReadWriteOnce
       size: "1Gi"
+    transcode:
+      enabled: true
+      sizeLimit: "4Gi"
 
     extraExistingClaimMounts: []
       # - name: external-mount
@@ -2461,6 +2466,8 @@ sabnzbd:
 ## @param plex.persistence.cache.storageClass The storage class to use for the ephemeral cache volume.
 ## @param plex.persistence.cache.accessMode The access mode to use for the ephemeral cache volume.
 ## @param plex.persistence.cache.size Size for the ephemeral cache volume (default: "1Gi").
+## @param plex.persistence.transcode.enabled Whether to enable emptyDir transcode volume for temporary transcodes.
+## @param plex.persistence.transcode.sizeLimit Size limit for the emptyDir transcode volume (e.g., "4Gi", "8Gi").
 ## @param plex.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param plex.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -2576,6 +2583,9 @@ plex:
       storageClass: ""
       accessMode: ReadWriteOnce
       size: "1Gi"
+    transcode:
+      enabled: true
+      sizeLimit: "4Gi"
     additionalVolumes: []
     additionalMounts: []
 
@@ -2635,10 +2645,8 @@ plex:
 ## @param emby.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param emby.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param emby.persistence.backup.size The size to use for backup persistence.
-## @param emby.persistence.transcode.enabled Whether to enable ephemeral transcode volume for temporary transcodes.
-## @param emby.persistence.transcode.storageClass The storage class to use for the ephemeral transcode volume.
-## @param emby.persistence.transcode.accessMode The access mode to use for the ephemeral transcode volume.
-## @param emby.persistence.transcode.size The size to use for the ephemeral transcode volume.
+## @param emby.persistence.transcode.enabled Whether to enable emptyDir transcode volume for temporary transcodes.
+## @param emby.persistence.transcode.sizeLimit Size limit for the emptyDir transcode volume (e.g., "4Gi", "8Gi").
 ## @param emby.persistence.cache.enabled Whether to enable ephemeral cache volume for the service.
 ## @param emby.persistence.cache.storageClass The storage class to use for the ephemeral cache volume.
 ## @param emby.persistence.cache.accessMode The access mode to use for the ephemeral cache volume.
@@ -2756,9 +2764,7 @@ emby:
       size: "1Gi"
     transcode:
       enabled: true
-      storageClass: ""
-      accessMode: ReadWriteOnce
-      size: 100Gi
+      sizeLimit: "4Gi"
     additionalVolumes: []
     additionalMounts: []
 

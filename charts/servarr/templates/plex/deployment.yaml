@@ -70,6 +70,14 @@ spec:
                   requests:
                     storage: {{ .Values.plex.persistence.cache.size }}
         {{- end }}
+        {{- if .Values.plex.persistence.transcode.enabled }}
+        - name: transcode
+          emptyDir:
+            medium: Memory
+            {{- if .Values.plex.persistence.transcode.sizeLimit }}
+            sizeLimit: {{ .Values.plex.persistence.transcode.sizeLimit }}
+            {{- end }}
+        {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.plex.persistence.enabled }}
           persistentVolumeClaim:
@@ -101,6 +109,10 @@ spec:
           {{- if .Values.plex.persistence.cache.enabled }}
             - mountPath: /config/cache
               name: cache
+          {{- end }}
+          {{- if .Values.plex.persistence.transcode.enabled }}
+            - mountPath: /config/transcode
+              name: transcode
           {{- end }}
           {{- if and .Values.media.enabled .Values.sonarr.enabled .Values.sonarr.persistence.enabled .Values.plex.persistence.enabled }}
             - mountPath: "/media/{{ .Values.media.paths.tv }}"
