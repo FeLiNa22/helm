@@ -2929,11 +2929,7 @@ acestream:
       repository: ghcr.io/dispatcharr/dispatcharr
       pullPolicy: IfNotPresent
       tag: "latest"
-    env: 
-      PUID: "1000"
-      PGID: "1000"
-      TZ: "Europe/London"
-      UMASK: "002"
+    env: {}
     resources: {}
       # limits:
       #   cpu: 100m
