@@ -21,8 +21,11 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-acestream
   template:
     metadata:
-      {{- with .Values.acestream.podAnnotations }}
       annotations:
+       {{- if and $.Values.velero.enabled (or .Values.acestream.persistence.enabled .Values.acestream.persistence.backup.enabled) }}
+        backup.velero.io/backup-volumes: {{ if .Values.acestream.persistence.backup.enabled }}backup{{ else }}config{{ end }}
+      {{- end }}
+      {{- with .Values.acestream.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
