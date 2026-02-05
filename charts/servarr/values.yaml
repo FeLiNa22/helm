@@ -169,7 +169,7 @@ jellyfin:
       size: 512Mi
     cache:
       enabled: true
-      storageClass: "ceph-rbd"
+      storageClass: ""
       accessMode: ReadWriteOnce
       size: "1Gi"
 
@@ -2573,7 +2573,7 @@ plex:
       size: 512Mi
     cache:
       enabled: true
-      storageClass: "ceph-rbd"
+      storageClass: ""
       accessMode: ReadWriteOnce
       size: "1Gi"
     additionalVolumes: []
@@ -2751,7 +2751,7 @@ emby:
       size: 512Mi
     cache:
       enabled: true
-      storageClass: "ceph-rbd"
+      storageClass: ""
       accessMode: ReadWriteOnce
       size: "1Gi"
     transcode:
