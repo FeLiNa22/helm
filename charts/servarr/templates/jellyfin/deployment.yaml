@@ -107,6 +107,10 @@ spec:
             - mountPath: /config/cache
               name: cache
             {{- end }}
+            {{- if .Values.jellyfin.persistence.transcode.enabled }}
+            - mountPath: /config/transcode
+              name: transcode
+            {{- end }}
             {{- range .Values.jellyfin.persistence.extraExistingClaimMounts }}
             - name: {{ .name }}
               mountPath: {{ .mountPath }}
@@ -161,6 +165,14 @@ spec:
               resources:
                 requests:
                   storage: {{ .Values.jellyfin.persistence.cache.size }}
+      {{- end }}
+      {{- if .Values.jellyfin.persistence.transcode.enabled }}
+      - name: transcode
+        emptyDir:
+          medium: Memory
+          {{- if .Values.jellyfin.persistence.transcode.sizeLimit }}
+          sizeLimit: {{ .Values.jellyfin.persistence.transcode.sizeLimit }}
+          {{- end }}
       {{- end }}
       {{- if .Values.jellyfin.persistence.backup.enabled }}
       - name: backup
