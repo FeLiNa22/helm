@@ -2903,8 +2903,10 @@ acestream:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
-    # fsGroup: 2000
+  podSecurityContext: 
+    runAsUser: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
 
   securityContext:
     privileged: true
@@ -2929,7 +2931,11 @@ acestream:
       repository: ghcr.io/dispatcharr/dispatcharr
       pullPolicy: IfNotPresent
       tag: "latest"
-    env: {}
+    env: 
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Europe/London"
+      UMASK: "002"
     resources: {}
       # limits:
       #   cpu: 100m
