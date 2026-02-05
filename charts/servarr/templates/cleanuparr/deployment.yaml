@@ -21,8 +21,14 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-cleanuparr
   template:
     metadata:
-      {{- with .Values.cleanuparr.podAnnotations }}
+      {{- if and $.Values.velero.enabled .Values.cleanuparr.persistence.enabled}}
       annotations:
+        backup.velero.io/backup-volumes: config
+      {{- end }}
+      {{- with .Values.cleanuparr.podAnnotations }}
+      {{- if not (and $.Values.velero.enabled $.Values.cleanuparr.persistence.enabled) }}
+      annotations:
+      {{- end }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
