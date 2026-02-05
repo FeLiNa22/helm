@@ -2904,7 +2904,6 @@ acestream:
   podAnnotations: {}
 
   podSecurityContext: 
-    runAsUser: 1000
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
 
@@ -2937,6 +2936,18 @@ acestream:
       TZ: "Europe/London"
       UMASK: "002"
     resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: false
+      runAsNonRoot: true
+      privileged: false
+      runAsUser: 1000
+      runAsGroup: 1000
+      seccompProfile:
+        type: RuntimeDefault
       # limits:
       #   cpu: 100m
       #   memory: 128Mi
