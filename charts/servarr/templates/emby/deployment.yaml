@@ -111,7 +111,7 @@ spec:
               name: cache
             {{- end }}
             {{- if .Values.emby.persistence.transcode.enabled }}
-            - mountPath: /config/transcode
+            - mountPath: /config/transcoding-temp
               name: transcode
             {{- end }}
           {{- if and .Values.media.enabled .Values.sonarr.enabled .Values.sonarr.persistence.enabled .Values.emby.persistence.enabled }}
