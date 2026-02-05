@@ -89,7 +89,7 @@ velero:
 ## @param jellyfin.persistence.cache.enabled Whether to enable ephemeral cache volume for the service.
 ## @param jellyfin.persistence.cache.storageClass The storage class to use for the ephemeral cache volume.
 ## @param jellyfin.persistence.cache.accessMode The access mode to use for the ephemeral cache volume.
-## @param jellyfin.persistence.cache.size Size for the ephemeral cache volume (default: "10Gi").
+## @param jellyfin.persistence.cache.size Size for the ephemeral cache volume (default: "1Gi").
 ## @param jellyfin.persistence.extraExistingClaimMounts Additional existing claim mounts to add to the pod.
 ## @param jellyfin.resources The resources to use for the pod.
 ## @param jellyfin.runtimeClassName The runtime class to use for the pod.
@@ -169,9 +169,9 @@ jellyfin:
       size: 512Mi
     cache:
       enabled: true
-      storageClass: ""
+      storageClass: "ceph-rbd"
       accessMode: ReadWriteOnce
-      size: "10Gi"
+      size: "1Gi"
 
     extraExistingClaimMounts: []
       # - name: external-mount
@@ -740,8 +740,6 @@ qbittorrent:
 ## @param prowlarr.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param prowlarr.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param prowlarr.persistence.backup.size The size to use for backup persistence.
-## @param prowlarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
-## @param prowlarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param prowlarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param prowlarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param prowlarr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
@@ -1113,8 +1111,6 @@ flaresolverr:
 ## @param seerr.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param seerr.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param seerr.persistence.backup.size The size to use for backup persistence.
-## @param seerr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
-## @param seerr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param seerr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param seerr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param seerr.probes.livenessProbe.enabled Whether to enable the liveness probe.
@@ -1367,8 +1363,6 @@ seerr:
 ## @param bazarr.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param bazarr.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param bazarr.persistence.backup.size The size to use for backup persistence.
-## @param bazarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
-## @param bazarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param bazarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param bazarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -1537,8 +1531,6 @@ bazarr:
 ## @param radarr.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param radarr.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param radarr.persistence.backup.size The size to use for backup persistence.
-## @param radarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
-## @param radarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param radarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param radarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param radarr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
@@ -1750,8 +1742,6 @@ radarr:
 ## @param lidarr.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param lidarr.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param lidarr.persistence.backup.size The size to use for backup persistence.
-## @param lidarr.persistence.cache.enabled Whether to enable emptyDir cache volume for the service.
-## @param lidarr.persistence.cache.size Size limit for the emptyDir cache volume (e.g., "1Gi", "500Mi"). If not set, no size limit is applied.
 ## @param lidarr.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param lidarr.persistence.additionalMounts Additional volume mounts to add to the pod.
 ## @param lidarr.database.mode Database mode: 'standalone' uses SQLite (default), 'external' uses an external PostgreSQL database, 'cluster' creates a CloudNativePG cluster.
@@ -2470,7 +2460,7 @@ sabnzbd:
 ## @param plex.persistence.cache.enabled Whether to enable ephemeral cache volume for the service.
 ## @param plex.persistence.cache.storageClass The storage class to use for the ephemeral cache volume.
 ## @param plex.persistence.cache.accessMode The access mode to use for the ephemeral cache volume.
-## @param plex.persistence.cache.size Size for the ephemeral cache volume (default: "10Gi").
+## @param plex.persistence.cache.size Size for the ephemeral cache volume (default: "1Gi").
 ## @param plex.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param plex.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -2583,9 +2573,9 @@ plex:
       size: 512Mi
     cache:
       enabled: true
-      storageClass: ""
+      storageClass: "ceph-rbd"
       accessMode: ReadWriteOnce
-      size: "10Gi"
+      size: "1Gi"
     additionalVolumes: []
     additionalMounts: []
 
@@ -2652,7 +2642,7 @@ plex:
 ## @param emby.persistence.cache.enabled Whether to enable ephemeral cache volume for the service.
 ## @param emby.persistence.cache.storageClass The storage class to use for the ephemeral cache volume.
 ## @param emby.persistence.cache.accessMode The access mode to use for the ephemeral cache volume.
-## @param emby.persistence.cache.size Size for the ephemeral cache volume (default: "10Gi").
+## @param emby.persistence.cache.size Size for the ephemeral cache volume (default: "1Gi").
 ## @param emby.persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param emby.persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -2761,9 +2751,9 @@ emby:
       size: 512Mi
     cache:
       enabled: true
-      storageClass: ""
+      storageClass: "ceph-rbd"
       accessMode: ReadWriteOnce
-      size: "10Gi"
+      size: "1Gi"
     transcode:
       enabled: true
       storageClass: ""
