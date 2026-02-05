@@ -305,6 +305,13 @@ dragonfly:
 ## @param database.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param database.cluster.image.repository PostgreSQL container image repository (with vectorchord extension).
 ## @param database.cluster.image.tag PostgreSQL container image tag.
+## @param database.cluster.backup.enabled Enable S3 backups for CNPG cluster (default: false).
+## @param database.cluster.backup.schedule Cron schedule for CNPG backups (default: "0 0 * * *").
+## @param database.cluster.backup.retentionPolicy Retention policy for CNPG backups (default: "30d").
+## @param database.cluster.backup.s3.destinationPath S3 destination path (e.g., s3://bucket/path).
+## @param database.cluster.backup.s3.endpointURL S3 endpoint URL for non-AWS storage.
+## @param database.cluster.backup.s3.secretName Secret name containing ACCESS_KEY_ID and ACCESS_SECRET_KEY.
+## @param database.cluster.backup.s3.region S3 region (optional).
 ## @param database.external.host Hostname of external PostgreSQL (when mode is 'external').
 ## @param database.external.port Port of external PostgreSQL.
 ## @param database.external.database Database name of external PostgreSQL.
@@ -372,6 +379,24 @@ database:
     image:
       repository: tensorchord/cloudnative-vectorchord
       tag: "16-0.3.0"
+    # S3 backup configuration for CNPG (enables PITR with S3 storage)
+    backup:
+      enabled: false
+      # Schedule for full backups (cron format)
+      schedule: "0 0 * * *"  # Daily at midnight
+      # Retention policy
+      retentionPolicy: "30d"
+      # S3 configuration
+      s3:
+        # S3 bucket destination path (e.g., s3://bucket-name/path/to/backups)
+        destinationPath: ""
+        # S3 endpoint URL (for non-AWS S3-compatible storage)
+        endpointURL: ""
+        # Name of the secret containing S3 credentials
+        # Secret should contain ACCESS_KEY_ID and ACCESS_SECRET_KEY
+        secretName: ""
+        # S3 region (optional)
+        region: ""
 
   # External PostgreSQL configuration (used when mode is 'external')
   external:
@@ -381,7 +406,7 @@ database:
     username: "immich"
     # Password is sourced from the secret configured in database.secret.name / database.secret.passwordKey
 
-  # Scheduled database backups (only for standalone and external modes; cluster mode uses CNPG PITR)
+  # Scheduled database backups (only for standalone and external modes; cluster mode uses CNPG S3 backup)
   backup:
     enabled: false
     cron: "0 2 * * *"  # Daily at 2am

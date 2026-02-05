@@ -229,6 +229,38 @@ spec:
   monitoring:
     enablePodMonitor: false
 
+  {{- if .Values.database.cluster.backup.enabled }}
+  backup:
+    barmanObjectStore:
+      destinationPath: {{ .Values.database.cluster.backup.s3.destinationPath }}
+      {{- if .Values.database.cluster.backup.s3.endpointURL }}
+      endpointURL: {{ .Values.database.cluster.backup.s3.endpointURL }}
+      {{- end }}
+      {{- if .Values.database.cluster.backup.s3.region }}
+      s3Credentials:
+        region:
+          value: {{ .Values.database.cluster.backup.s3.region }}
+      {{- end }}
+      {{- if .Values.database.cluster.backup.s3.secretName }}
+      s3Credentials:
+        accessKeyId:
+          name: {{ .Values.database.cluster.backup.s3.secretName }}
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: {{ .Values.database.cluster.backup.s3.secretName }}
+          key: ACCESS_SECRET_KEY
+        {{- if .Values.database.cluster.backup.s3.region }}
+        region:
+          value: {{ .Values.database.cluster.backup.s3.region }}
+        {{- end }}
+      {{- end }}
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: {{ .Values.database.cluster.backup.retentionPolicy | default "30d" | quote }}
+  {{- end }}
+
   {{- if .Values.nodeSelector }}
   nodeSelector:
     {{- toYaml .Values.nodeSelector | nindent 4 }}
@@ -243,4 +275,19 @@ spec:
   affinity:
     {{- toYaml .Values.affinity | nindent 4 }}
   {{- end }}
+{{- if .Values.database.cluster.backup.enabled }}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.database.cluster.name }}-backup
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database-backup
+spec:
+  schedule: {{ .Values.database.cluster.backup.schedule | default "0 0 * * *" | quote }}
+  backupOwnerReference: self
+  cluster:
+    name: {{ .Release.Name }}-{{ .Values.database.cluster.name }}
+{{- end }}
 {{- end }}

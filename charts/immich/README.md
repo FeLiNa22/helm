@@ -131,7 +131,7 @@ persistence:
 
 ### Database Backups
 
-Enable scheduled database backups (supported in `standalone` and `external` modes; cluster mode uses CNPG PITR):
+Enable scheduled database backups (supported in `standalone` and `external` modes):
 
 ```yaml
 database:
@@ -153,7 +153,36 @@ database:
 
 The backup CronJob creates compressed SQL dumps of the PostgreSQL database. Backups are stored with timestamps and old backups are automatically removed based on the retention policy.
 
-**Note:** Database backups are not available in `cluster` mode as CloudNativePG (CNPG) provides built-in Point-in-Time Recovery (PITR) functionality.
+### Cluster Mode S3 Backups
+
+For `cluster` mode (CNPG), S3 backups can be enabled for Point-in-Time Recovery:
+
+```yaml
+database:
+  mode: cluster
+  cluster:
+    backup:
+      enabled: true
+      schedule: "0 0 * * *"  # Daily at midnight
+      retentionPolicy: "30d"
+      s3:
+        destinationPath: "s3://my-bucket/immich-backups"
+        endpointURL: "https://s3.amazonaws.com"  # Optional for AWS, required for other S3-compatible storage
+        secretName: "s3-credentials"  # Secret with ACCESS_KEY_ID and ACCESS_SECRET_KEY keys
+        region: "us-east-1"  # Optional
+```
+
+The S3 credentials secret should contain:
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: s3-credentials
+type: Opaque
+stringData:
+  ACCESS_KEY_ID: "your-access-key"
+  ACCESS_SECRET_KEY: "your-secret-key"
+```
 
 ### Ingress
 
@@ -255,6 +284,13 @@ ingress:
 | `database.cluster.instances` | Number of PostgreSQL instances | `2` |
 | `database.cluster.image.repository` | PostgreSQL image with vectorchord | `tensorchord/cloudnative-vectorchord` |
 | `database.cluster.image.tag` | PostgreSQL image tag | `16-0.3.0` |
+| `database.cluster.backup.enabled` | Enable S3 backups for CNPG cluster | `false` |
+| `database.cluster.backup.schedule` | Cron schedule for CNPG backups | `0 0 * * *` |
+| `database.cluster.backup.retentionPolicy` | Retention policy for CNPG backups | `30d` |
+| `database.cluster.backup.s3.destinationPath` | S3 destination path (e.g., s3://bucket/path) | `""` |
+| `database.cluster.backup.s3.endpointURL` | S3 endpoint URL for non-AWS storage | `""` |
+| `database.cluster.backup.s3.secretName` | Secret containing ACCESS_KEY_ID and ACCESS_SECRET_KEY | `""` |
+| `database.cluster.backup.s3.region` | S3 region (optional) | `""` |
 | `database.external.host` | External PostgreSQL host | `""` |
 | `database.external.port` | External PostgreSQL port | `5432` |
 | `database.external.database` | External database name | `immich` |
@@ -283,7 +319,8 @@ ingress:
 This version extends database backup support:
 - Database backups now work in both `standalone` and `external` modes
 - Added `database.backup.image` configuration for custom backup images
-- Cluster mode (CNPG) does not include backup CronJob as it provides built-in PITR
+- Added S3 backup support for `cluster` mode (CNPG) via `database.cluster.backup.*`
+- CNPG cluster mode can now backup directly to S3-compatible storage with PITR support
 
 ### To 1.6.0
 
