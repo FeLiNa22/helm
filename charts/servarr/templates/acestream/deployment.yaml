@@ -203,6 +203,7 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: config
+              subPath: dispatcharr
             {{- if .Values.acestream.persistence.backup.enabled }}
             - mountPath: /data/backups
               name: backup
