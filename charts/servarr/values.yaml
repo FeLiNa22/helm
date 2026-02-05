@@ -218,6 +218,9 @@ jellyfin:
 
   extraContainers: {}
 
+  # Pod Security Context - runs the pod as UID 1000 / GID 1000
+  # This matches the default user/group used by init containers for file ownership
+  # Jellyfin can also be run as an unprivileged user (e.g., 65534) by overriding these values
   podSecurityContext:
     runAsUser: 1000
     runAsGroup: 1000
