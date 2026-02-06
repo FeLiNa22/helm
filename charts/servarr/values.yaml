@@ -103,7 +103,8 @@ velero:
 ## @param jellyfin.extraEnvVars Additional environment variables to add to the pod.
 ## @param jellyfin.extraInitContainers Additional init containers to add to the pod.
 ## @param jellyfin.extraContainers Additional sidecar containers to add to the pod.
-## @param jellyfin.podSecurityContext The security context to use for the pod.
+## @param jellyfin.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param jellyfin.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param jellyfin.securityContext The security context to use for the container.
 ## @param jellyfin.livenessProbe.enabled Whether to enable the liveness probe.
 ## @param jellyfin.livenessProbe.failureThreshold The number of times to retry before giving up.
@@ -268,7 +269,8 @@ jellyfin:
 ## @param sonarr.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param sonarr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param sonarr.podAnnotations Additional annotations to add to the pod.
-## @param sonarr.podSecurityContext The security context to use for the pod.
+## @param sonarr.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param sonarr.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param sonarr.securityContext The security context to use for the container.
 ## @param sonarr.initContainers Additional init containers to add to the pod.
 ## @param sonarr.service.type The type of service to create.
@@ -480,7 +482,8 @@ sonarr:
 ## @param qbittorrent.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param qbittorrent.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param qbittorrent.podAnnotations Additional annotations to add to the pod.
-## @param qbittorrent.podSecurityContext The security context to use for the pod.
+## @param qbittorrent.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param qbittorrent.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param qbittorrent.securityContext The security context to use for the container.
 ## @param qbittorrent.initContainers Additional init containers to add to the pod.
 ## @param qbittorrent.service.type The type of service to create (applies to all ports).
@@ -713,7 +716,8 @@ qbittorrent:
 ## @param prowlarr.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param prowlarr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param prowlarr.podAnnotations Additional annotations to add to the pod.
-## @param prowlarr.podSecurityContext The security context to use for the pod.
+## @param prowlarr.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param prowlarr.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param prowlarr.securityContext The security context to use for the container.
 ## @param prowlarr.initContainers Additional init containers to add to the pod.
 ## @param prowlarr.service.type The type of service to create.
@@ -926,8 +930,7 @@ prowlarr:
 ## @param flaresolverr.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param flaresolverr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param flaresolverr.podAnnotations Additional annotations to add to the pod.
-## @param flaresolverr.podSecurityContext.fsGroup The group ID to use for the pod.
-## @param flaresolverr.podSecurityContext.fsGroupChangePolicy The policy to use for the pod.
+## @param flaresolverr.podSecurityContext The security context to use for the pod.
 ## @param flaresolverr.securityContext.allowPrivilegeEscalation Whether to allow privilege escalation.
 ## @param flaresolverr.securityContext.capabilities.drop The capabilities to drop.
 ## @param flaresolverr.securityContext.readOnlyRootFilesystem Whether to use a read-only root filesystem.
@@ -1078,8 +1081,7 @@ flaresolverr:
 ## @param seerr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param seerr.podAnnotations Additional annotations to add to the pod.
 ## @param seerr.podLabels Additional labels to add to the pod.
-## @param seerr.podSecurityContext.fsGroup The group ID to use for the pod.
-## @param seerr.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
+## @param seerr.podSecurityContext The security context to use for the pod.
 ## @param seerr.securityContext.allowPrivilegeEscalation Whether to allow privilege escalation.
 ## @param seerr.securityContext.capabilities.drop List of capabilities to drop.
 ## @param seerr.securityContext.readOnlyRootFilesystem Whether the root filesystem should be read-only.
@@ -1324,7 +1326,8 @@ seerr:
 ## @param bazarr.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param bazarr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param bazarr.podAnnotations Additional annotations to add to the pod.
-## @param bazarr.podSecurityContext The security context to use for the pod.
+## @param bazarr.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param bazarr.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param bazarr.securityContext The security context to use for the container.
 ## @param bazarr.initContainers Additional init containers to add to the pod.
 ## @param bazarr.service.type The type of service to create.
@@ -1493,7 +1496,8 @@ bazarr:
 ## @param radarr.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param radarr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param radarr.podAnnotations Additional annotations to add to the pod.
-## @param radarr.podSecurityContext The security context to use for the pod.
+## @param radarr.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param radarr.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param radarr.securityContext The security context to use for the container.
 ## @param radarr.initContainers Additional init containers to add to the pod.
 ## @param radarr.service.type The type of service to create.
@@ -1706,7 +1710,8 @@ radarr:
 ## @param lidarr.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param lidarr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param lidarr.podAnnotations Additional annotations to add to the pod.
-## @param lidarr.podSecurityContext The security context to use for the pod.
+## @param lidarr.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param lidarr.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param lidarr.securityContext The security context to use for the container.
 ## @param lidarr.initContainers Additional init containers to add to the pod.
 ## @param lidarr.service.type The type of service to create.
@@ -1918,7 +1923,8 @@ lidarr:
 ## @param cleanuparr.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param cleanuparr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param cleanuparr.podAnnotations Additional annotations to add to the pod.
-## @param cleanuparr.podSecurityContext The security context to use for the pod.
+## @param cleanuparr.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param cleanuparr.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param cleanuparr.securityContext The security context to use for the container.
 ## @param cleanuparr.initContainers Additional init containers to add to the pod.
 ## @param cleanuparr.service.type The type of service to create.
@@ -2080,7 +2086,8 @@ cleanuparr:
 ## @param huntarr.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param huntarr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param huntarr.podAnnotations Additional annotations to add to the pod.
-## @param huntarr.podSecurityContext The security context to use for the pod.
+## @param huntarr.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param huntarr.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param huntarr.securityContext The security context to use for the container.
 ## @param huntarr.initContainers Additional init containers to add to the pod.
 ## @param huntarr.service.type The type of service to create.
@@ -2251,7 +2258,8 @@ huntarr:
 ## @param sabnzbd.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param sabnzbd.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param sabnzbd.podAnnotations Additional annotations to add to the pod.
-## @param sabnzbd.podSecurityContext The security context to use for the pod.
+## @param sabnzbd.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param sabnzbd.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param sabnzbd.securityContext The security context to use for the container.
 ## @param sabnzbd.initContainers Additional init containers to add to the pod.
 ## @param sabnzbd.service.type The type of service to create.
@@ -2429,7 +2437,8 @@ sabnzbd:
 ## @param plex.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param plex.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param plex.podAnnotations Additional annotations to add to the pod.
-## @param plex.podSecurityContext The security context to use for the pod.
+## @param plex.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param plex.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param plex.securityContext The security context to use for the container.
 ## @param plex.initContainers Additional init containers to add to the pod.
 ## @param plex.service.type The type of service to create.
@@ -2614,7 +2623,8 @@ plex:
 ## @param emby.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param emby.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param emby.podAnnotations Additional annotations to add to the pod.
-## @param emby.podSecurityContext The security context to use for the pod.
+## @param emby.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param emby.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param emby.securityContext.allowPrivilegeEscalation Whether to allow privilege escalation.
 ## @param emby.initContainers Additional init containers to add to the pod.
 ## @param emby.service.type The type of service to create.
@@ -2795,14 +2805,18 @@ emby:
 ## @param acestream.serviceAccount.annotations Additional annotations to add to the service account.
 ## @param acestream.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param acestream.podAnnotations Additional annotations to add to the pod.
-## @param acestream.podSecurityContext The security context to use for the pod.
+## @param acestream.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param acestream.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param acestream.securityContext.privileged Whether to run the acestream-engine container in privileged mode to allow multicast operations.
 ## @param acestream.initContainers Additional init containers to add to the pod.
 ## @param acestream.env Additional environment variables to add to the acestream engine container.
 ## @param acestream.dispatcharr.image.repository The Docker repository to pull the Dispatcharr image from.
 ## @param acestream.dispatcharr.image.tag The image tag to use for Dispatcharr.
 ## @param acestream.dispatcharr.image.pullPolicy The logic of image pulling for Dispatcharr.
-## @param acestream.dispatcharr.env Additional environment variables for Dispatcharr.
+## @param acestream.dispatcharr.env.PUID User ID for Dispatcharr process.
+## @param acestream.dispatcharr.env.PGID Group ID for Dispatcharr process.
+## @param acestream.dispatcharr.env.TZ Timezone for Dispatcharr.
+## @param acestream.dispatcharr.env.UMASK File creation mask for Dispatcharr.
 ## @param acestream.dispatcharr.resources Resource limits and requests for the Dispatcharr container.
 ## @param acestream.service.type The type of service to create (applies to all ports).
 ## @param acestream.service.http.port The port on which the Acestream HTTP service will run.
