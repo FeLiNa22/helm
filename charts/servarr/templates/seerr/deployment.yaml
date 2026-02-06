@@ -19,12 +19,12 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-seerr
   template:
     metadata:
-      {{- if and $.Values.velero.enabled (or .Values.seerr.persistence.enabled .Values.seerr.persistence.backup.enabled) }}
+      {{- if and $.Values.velero.enabled .Values.seerr.persistence.enabled }}
       annotations:
-        backup.velero.io/backup-volumes: {{ if .Values.seerr.persistence.backup.enabled }}backup{{ else }}config{{ end }}
+        backup.velero.io/backup-volumes: config
       {{- end }}
       {{- with .Values.seerr.podAnnotations }}
-      {{- if not (and $.Values.velero.enabled (or $.Values.seerr.persistence.enabled $.Values.seerr.persistence.backup.enabled)) }}
+      {{- if not (and $.Values.velero.enabled .Values.seerr.persistence.enabled) }}
       annotations:
       {{- end }}
         {{- toYaml . | nindent 8 }}
@@ -58,11 +58,6 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
-        {{- if .Values.seerr.persistence.backup.enabled }}
-        - name: backup
-          persistentVolumeClaim:
-            claimName: {{ .Values.seerr.persistence.backup.existingClaim | default (printf "%s-seerr-backup" .Release.Name) }}
-        {{- end }}
         {{- if .Values.seerr.persistence.additionalVolumes }}
           {{- .Values.seerr.persistence.additionalVolumes | toYaml | nindent 8}}
         {{- end }}
@@ -156,10 +151,6 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /app/config
-            {{- if .Values.seerr.persistence.backup.enabled }}
-            - name: backup
-              mountPath: /app/config/backups
-            {{- end }}
           {{- if .Values.seerr.persistence.additionalMounts }}
             {{- .Values.seerr.persistence.additionalMounts | toYaml | nindent 12 }}
           {{- end }}
