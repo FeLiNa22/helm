@@ -72,11 +72,31 @@ spec:
         {{- end }}
         {{- if .Values.emby.persistence.transcode.enabled }}
         - name: transcode
+          {{- if eq .Values.emby.persistence.transcode.type "memory" }}
           emptyDir:
             medium: Memory
-            {{- if .Values.emby.persistence.transcode.sizeLimit }}
-            sizeLimit: {{ .Values.emby.persistence.transcode.sizeLimit }}
+            {{- if .Values.emby.persistence.transcode.memory.sizeLimit }}
+            sizeLimit: {{ .Values.emby.persistence.transcode.memory.sizeLimit }}
             {{- end }}
+          {{- else if eq .Values.emby.persistence.transcode.type "disk" }}
+          {{- if .Values.emby.persistence.transcode.disk.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.emby.persistence.transcode.disk.existingClaim }}
+          {{- else }}
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: [ "{{ .Values.emby.persistence.transcode.disk.accessMode }}" ]
+                {{- if .Values.emby.persistence.transcode.disk.storageClass }}
+                storageClassName: {{ .Values.emby.persistence.transcode.disk.storageClass | quote }}
+                {{- end }}
+                resources:
+                  requests:
+                    storage: {{ .Values.emby.persistence.transcode.disk.size }}
+          {{- end }}
+          {{- else }}
+          {{- fail "emby.persistence.transcode.type must be either 'memory' or 'disk'" }}
+          {{- end }}
         {{- end }}
         - name: media
           {{- if and .Values.media.enabled .Values.emby.persistence.enabled }}
