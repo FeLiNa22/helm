@@ -268,7 +268,7 @@ initContainers:
 |-----------|-------------|---------|
 | `replicaCount` | Number of replicas | `1` |
 | `image.repository` | Docker image repository | `nginx` |
-| `image.tag` | Image tag | `latest` |
+| `image.tag` | Image tag (uses Chart.appVersion if not set) | `""` |
 | `image.pullPolicy` | Image pull policy | `IfNotPresent` |
 | `service.type` | Service type | `ClusterIP` |
 | `service.port` | Service port | `80` |
