@@ -129,6 +129,62 @@ persistence:
     existingClaim: ""  # Use existing PVC if desired
 ```
 
+### Database Backups
+
+Enable scheduled database backups using pg_dump (works for all database modes: standalone, cluster, and external):
+
+```yaml
+database:
+  backup:
+    enabled: true
+    cron: "0 2 * * *"  # Daily at 2am
+    retention: 30       # Keep last 30 backups
+    path: /backups
+    image:
+      repository: ""    # Optional: custom image (defaults to standalone image or postgres:16-alpine for external/cluster)
+      tag: ""
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: "fast-storage"
+      accessMode: ReadWriteOnce
+      existingClaim: ""  # Use existing PVC if desired
+```
+
+The backup CronJob creates compressed SQL dumps of the PostgreSQL database. Backups are stored with timestamps and old backups are automatically removed based on the retention policy.
+
+### Cluster Mode PITR Backups
+
+For `cluster` mode (CNPG), you can additionally enable Point-in-Time Recovery (PITR) backups to S3-compatible object storage:
+
+```yaml
+database:
+  mode: cluster
+  cluster:
+    pitrBackup:
+      enabled: true
+      retentionPolicy: "30d"
+      objectStorage:
+        destinationPath: "s3://my-bucket/immich-backups"
+        endpointURL: "https://s3.amazonaws.com"  # Optional for AWS, required for other S3-compatible storage
+        secretName: "s3-credentials"  # Secret with ACCESS_KEY_ID and ACCESS_SECRET_KEY keys
+        region: "us-east-1"  # Optional
+```
+
+The S3 credentials secret should contain:
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: s3-credentials
+type: Opaque
+stringData:
+  ACCESS_KEY_ID: "your-access-key"
+  ACCESS_SECRET_KEY: "your-secret-key"
+```
+
+**Note:** PITR backups are in addition to the pg_dump backups. You can enable both for comprehensive backup coverage.
+
 ### Ingress
 
 Enable ingress to expose Immich externally:
@@ -217,25 +273,88 @@ ingress:
 | Name | Description | Value |
 |------|-------------|-------|
 | `database.mode` | Deployment mode: `standalone`, `cluster`, or `external` | `standalone` |
+| `database.auth.username` | Database username | `immich` |
+| `database.auth.password` | Database password (leave empty to auto-generate) | `""` |
+| `database.secret.name` | Existing secret name for database password (leave empty to auto-create) | `""` |
+| `database.secret.passwordKey` | Key in the secret containing the password | `password` |
+| `database.persistence.enabled` | Enable PostgreSQL persistence | `true` |
+| `database.persistence.size` | PostgreSQL volume size | `10Gi` |
+| `database.persistence.storageClass` | Storage class for PostgreSQL | `""` |
 | `database.standalone.image.repository` | PostgreSQL image with vectorchord | `tensorchord/vchord-postgres` |
-| `database.standalone.image.tag` | PostgreSQL image tag | `pg16-v0.2.0` |
-| `database.standalone.auth.database` | Database name | `immich` |
-| `database.standalone.auth.username` | Database username | `immich` |
-| `database.standalone.auth.password` | Database password | `""` (auto-generated) |
-| `database.standalone.auth.postgresPassword` | Postgres superuser password | `""` (auto-generated) |
-| `database.standalone.persistence.enabled` | Enable PostgreSQL persistence | `true` |
-| `database.standalone.persistence.size` | PostgreSQL volume size | `10Gi` |
-| `database.standalone.persistence.storageClass` | Storage class for PostgreSQL | `""` |
+| `database.standalone.image.tag` | PostgreSQL image tag | `pg16-v0.3.0` |
 | `database.cluster.instances` | Number of PostgreSQL instances | `2` |
 | `database.cluster.image.repository` | PostgreSQL image with vectorchord | `tensorchord/cloudnative-vectorchord` |
-| `database.cluster.image.tag` | PostgreSQL image tag | `16.6-v0.2.0` |
-| `database.cluster.storage.size` | Storage size per instance | `10Gi` |
+| `database.cluster.image.tag` | PostgreSQL image tag | `16-0.3.0` |
+| `database.cluster.pitrBackup.enabled` | Enable PITR backups for CNPG cluster | `false` |
+| `database.cluster.pitrBackup.retentionPolicy` | Retention policy for PITR backups | `30d` |
+| `database.cluster.pitrBackup.objectStorage.destinationPath` | S3 destination path (e.g., s3://bucket/path) | `""` |
+| `database.cluster.pitrBackup.objectStorage.endpointURL` | S3 endpoint URL for non-AWS storage | `""` |
+| `database.cluster.pitrBackup.objectStorage.secretName` | Secret containing ACCESS_KEY_ID and ACCESS_SECRET_KEY | `""` |
+| `database.cluster.pitrBackup.objectStorage.region` | S3 region (optional) | `""` |
 | `database.external.host` | External PostgreSQL host | `""` |
 | `database.external.port` | External PostgreSQL port | `5432` |
 | `database.external.database` | External database name | `immich` |
 | `database.external.username` | External database username | `immich` |
 
+### Database Backup parameters (pg_dump)
+
+| Name | Description | Value |
+|------|-------------|-------|
+| `database.backup.enabled` | Enable scheduled pg_dump backups for all database modes | `false` |
+| `database.backup.cron` | Cron schedule for backups (e.g., "0 2 * * *" for 2am daily) | `0 2 * * *` |
+| `database.backup.retention` | Number of backups to retain | `30` |
+| `database.backup.path` | Path inside the container for backups | `/backups` |
+| `database.backup.image.repository` | Custom image for backup job (optional) | `""` |
+| `database.backup.image.tag` | Custom image tag for backup job (optional) | `""` |
+| `database.backup.persistence.enabled` | Enable persistence for backups | `true` |
+| `database.backup.persistence.size` | Backup volume size | `512Mi` |
+| `database.backup.persistence.storageClass` | Storage class for backup volume | `""` |
+| `database.backup.persistence.accessMode` | Access mode for backup volume | `ReadWriteOnce` |
+| `database.backup.persistence.existingClaim` | Use existing PVC for backups | `""` |
+
 ## Upgrading
+
+### To 1.6.1
+
+This version extends database backup support:
+- pg_dump backups (`database.backup.enabled`) now work in ALL database modes (standalone, cluster, external)
+- Added `database.backup.image` configuration for custom backup images
+- Renamed `database.cluster.backup.*` to `database.cluster.pitrBackup.*` for CNPG PITR backups
+- Changed `database.cluster.backup.s3.*` to `database.cluster.pitrBackup.objectStorage.*`
+- Removed `database.cluster.backup.schedule` (PITR uses continuous WAL archiving)
+
+### To 1.6.0
+
+This version adds:
+- Database backup CronJob support for scheduled PostgreSQL backups
+- New `database.secret.name` and `database.secret.passwordKey` values for flexible secret management
+- Auto-generation of random passwords when not provided
+
+**Changes:**
+- `database.auth.existingSecret` is now `database.secret.name`
+- Added `database.secret.passwordKey` to customize the secret key
+- If `database.auth.password` is not provided and the secret doesn't exist, a random 32-character password is automatically generated
+- New `database.backup.*` configuration section for scheduled database backups
+
+To migrate from version 1.5.x:
+1. Update your values.yaml to use the new secret configuration:
+   ```yaml
+   # Old (v1.5.x)
+   database:
+     auth:
+       username: immich
+       password: "your-password"
+       existingSecret: ""
+   
+   # New (v1.6.0)
+   database:
+     auth:
+       username: immich
+       password: "your-password"  # Or leave empty to auto-generate
+     secret:
+       name: ""  # Or reference an existing secret
+       passwordKey: "password"
+   ```
 
 ### To 1.5.0
 

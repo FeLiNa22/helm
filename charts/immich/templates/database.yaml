@@ -1,18 +1,16 @@
 {{- if eq .Values.database.mode "standalone" }}
 {{- $fullName := include "immich.fullname" . -}}
 {{- $secretName := include "immich.postgresql.secretName" . -}}
+{{- $secretKey := include "immich.postgresql.secretKey" . -}}
 
-{{- if not .Values.database.auth.existingSecret }}
-{{- if not .Values.database.auth.password }}
-{{- fail "database.auth.password is required when database.auth.existingSecret is not provided" }}
-{{- end }}
-
+{{- if not .Values.database.secret.name }}
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
+{{- if not $existingSecret }}
 {{- $userPassword := "" }}
-{{- if $existingSecret }}
-{{- $userPassword = index $existingSecret.data "password" | b64dec }}
-{{- else }}
+{{- if .Values.database.auth.password }}
 {{- $userPassword = .Values.database.auth.password }}
+{{- else }}
+{{- $userPassword = randAlphaNum 32 }}
 {{- end }}
 ---
 apiVersion: v1
@@ -24,7 +22,8 @@ metadata:
     app.kubernetes.io/component: database
 type: Opaque
 stringData:
-  password: {{ $userPassword }}
+  {{ $secretKey }}: {{ $userPassword }}
+{{- end }}
 {{- end }}
 {{- if .Values.database.initSQL }}
 ---
@@ -99,7 +98,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ $secretName }}
-              key: password
+              key: {{ $secretKey }}
         - name: POSTGRES_DB
           value: {{ .Values.database.auth.username | quote }}
         - name: PGDATA
@@ -186,9 +185,9 @@ spec:
     initdb:
       database: {{ .Values.database.auth.username }}
       owner: {{ .Values.database.auth.username }}
-      {{- if .Values.database.auth.existingSecret }}
+      {{- if .Values.database.secret.name }}
       secret:
-        name: {{ .Values.database.auth.existingSecret }}
+        name: {{ .Values.database.secret.name }}
       {{- end }}
       {{- if .Values.database.initSQL }}
       postInitSQL:
@@ -229,6 +228,33 @@ spec:
 
   monitoring:
     enablePodMonitor: false
+
+  {{- if .Values.database.cluster.pitrBackup.enabled }}
+  backup:
+    barmanObjectStore:
+      destinationPath: {{ .Values.database.cluster.pitrBackup.objectStorage.destinationPath }}
+      {{- if .Values.database.cluster.pitrBackup.objectStorage.endpointURL }}
+      endpointURL: {{ .Values.database.cluster.pitrBackup.objectStorage.endpointURL }}
+      {{- end }}
+      {{- if .Values.database.cluster.pitrBackup.objectStorage.secretName }}
+      s3Credentials:
+        accessKeyId:
+          name: {{ .Values.database.cluster.pitrBackup.objectStorage.secretName }}
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: {{ .Values.database.cluster.pitrBackup.objectStorage.secretName }}
+          key: ACCESS_SECRET_KEY
+        {{- if .Values.database.cluster.pitrBackup.objectStorage.region }}
+        region:
+          value: {{ .Values.database.cluster.pitrBackup.objectStorage.region }}
+        {{- end }}
+      {{- end }}
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: {{ .Values.database.cluster.pitrBackup.retentionPolicy | default "30d" | quote }}
+  {{- end }}
 
   {{- if .Values.nodeSelector }}
   nodeSelector:
