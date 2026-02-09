@@ -811,6 +811,28 @@ entries:
   immich:
   - apiVersion: v2
     appVersion: v2.4.1
+    created: "2026-02-09T22:51:17.252326069Z"
+    description: A Helm chart for Immich - High performance self-hosted photo and
+      video management solution
+    digest: 10da52d135355ce565fc9bd9313dbcf6643c8e77cbb264586a8261f145ea3465
+    home: https://immich.app
+    keywords:
+    - immich
+    - photos
+    - videos
+    - media
+    - self-hosted
+    maintainers:
+    - name: FeLiNa22
+    name: immich
+    sources:
+    - https://github.com/immich-app/immich
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/immich-1.5.4/immich-1.5.4.tgz
+    version: 1.5.4
+  - apiVersion: v2
+    appVersion: v2.4.1
     created: "2026-02-04T22:09:35.459825365Z"
     description: A Helm chart for Immich - High performance self-hosted photo and
       video management solution
@@ -3703,4 +3725,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-02-09T11:59:28.255075257Z"
+generated: "2026-02-09T22:51:17.252545329Z"
