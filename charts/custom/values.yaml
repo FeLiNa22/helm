@@ -34,7 +34,7 @@ replicaCount: 1
 image:
   repository: nginx
   pullPolicy: IfNotPresent
-  tag: "latest"
+  tag: ""  # Defaults to Chart.appVersion if not set
 
 imagePullSecrets: []
 
@@ -135,7 +135,6 @@ persistence:
 ## @param database.persistence.enabled Whether to enable persistence for the database (default: true).
 ## @param database.persistence.size Size of the persistence volume (default: 1Gi).
 ## @param database.persistence.storageClass Storage class for persistence.
-## @param database.persistence.existingClaim Use an existing PVC instead of creating a new one.
 ## @param database.initSQL Array of SQL commands to run on database initialization.
 ## @param database.auth.username Username for the database.
 ## @param database.auth.password Password for the database user (leave empty to auto-generate).
@@ -180,7 +179,6 @@ database:
     enabled: true
     size: 1Gi
     storageClass: ""
-    existingClaim: ""
 
   # SQL commands to initialize the database
   # Each line should be a complete SQL statement

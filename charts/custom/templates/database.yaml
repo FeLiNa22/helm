@@ -159,9 +159,6 @@ spec:
       {{- if .Values.database.persistence.storageClass }}
       storageClassName: {{ .Values.database.persistence.storageClass }}
       {{- end }}
-      {{- if .Values.database.persistence.existingClaim }}
-      volumeName: {{ .Values.database.persistence.existingClaim }}
-      {{- end }}
       resources:
         requests:
           storage: {{ .Values.database.persistence.size }}

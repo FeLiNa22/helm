@@ -69,14 +69,20 @@ spec:
               
               # Cleanup old backups
               RETENTION={{ .Values.database.backup.retention }}
-              echo "Keeping last $RETENTION backups"
-              cd {{ .Values.database.backup.path }}
-              ls -t backup-*.sql.gz | tail -n +$((RETENTION + 1)) | xargs -r rm -f
-              echo "Cleanup completed"
+              if [ "$RETENTION" -gt 0 ]; then
+                echo "Keeping last $RETENTION backups"
+                cd {{ .Values.database.backup.path }}
+                if ls backup-*.sql.gz >/dev/null 2>&1; then
+                  ls -t backup-*.sql.gz | tail -n +$((RETENTION + 1)) | xargs -r rm -f
+                  echo "Cleanup completed"
+                else
+                  echo "No existing backups to clean up"
+                fi
+              fi
               
               # List remaining backups
               echo "Current backups:"
-              ls -lh backup-*.sql.gz 2>/dev/null || echo "No backups found"
+              cd {{ .Values.database.backup.path }} && ls -lh backup-*.sql.gz 2>/dev/null || echo "No backups found"
             env:
             - name: DB_HOST
               value: {{ include "custom.postgresql.host" . }}
