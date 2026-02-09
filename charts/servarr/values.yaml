@@ -2782,12 +2782,14 @@ emby:
       size: "1Gi"
     transcode:
       enabled: true
-      memoryOnly:
-        enabled: false
-      storageClass: ""
-      accessMode: ReadWriteOnce
-      size: "4Gi"
-      sizeLimit: "4Gi"
+      type: "memory"
+      memory:
+        sizeLimit: "4Gi"
+      disk:
+        storageClass: ""
+        existingClaim: ""
+        size: "10Gi"
+        accessMode: ReadWriteOnce
     additionalVolumes: []
     additionalMounts: []
 

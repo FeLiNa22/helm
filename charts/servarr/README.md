@@ -1008,7 +1008,7 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Emby parameters
 
-> **Note**: As of chart version 1.7.3, the default behavior for `emby.persistence.transcode` has changed from using an in-memory `emptyDir` (RAM disk) to using an ephemeral volume claim. To maintain the previous behavior, set `emby.persistence.transcode.memoryOnly.enabled=true`.
+> **Note**: As of chart version 1.7.3, the transcode volume configuration has been restructured. Use `emby.persistence.transcode.type` to select between `memory` (default, RAM disk) or `disk` (ephemeral volume).
 
 | Name                                                 | Description                                                                                                                         | Value                      |
 | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
@@ -1067,12 +1067,13 @@ The command removes all the Kubernetes components associated with the chart and 
 | `emby.persistence.backup.existingClaim`              | The name of an existing claim to use for backup persistence.                                                                        | `""`                       |
 | `emby.persistence.backup.accessMode`                 | The access mode to use for backup persistence.                                                                                      | `ReadWriteMany`            |
 | `emby.persistence.backup.size`                       | The size to use for backup persistence.                                                                                             | `512Mi`                    |
-| `emby.persistence.transcode.enabled`                 | Whether to enable emptyDir transcode volume for temporary transcodes.                                                               | `true`                     |
-| `emby.persistence.transcode.memoryOnly.enabled`      | When true, uses an in-memory emptyDir. When false, uses an ephemeral volume.                                                        | `false`                    |
-| `emby.persistence.transcode.storageClass`            | The storage class to use for the ephemeral transcode volume (when memoryOnly is false).                                            | `""`                       |
-| `emby.persistence.transcode.accessMode`              | The access mode to use for the ephemeral transcode volume (when memoryOnly is false).                                              | `ReadWriteOnce`            |
-| `emby.persistence.transcode.size`                    | Size for the ephemeral transcode volume (when memoryOnly is false).                                                                 | `4Gi`                      |
-| `emby.persistence.transcode.sizeLimit`               | Size limit for the in-memory emptyDir transcode volume (when memoryOnly is true).                                                   | `4Gi`                      |
+| `emby.persistence.transcode.enabled`                 | Whether to enable transcode volume for temporary transcodes.                                                                        | `true`                     |
+| `emby.persistence.transcode.type`                    | Type of transcode volume: `memory` (RAM disk) or `disk` (ephemeral/persistent volume).                                              | `memory`                   |
+| `emby.persistence.transcode.memory.sizeLimit`        | Size limit for the in-memory emptyDir transcode volume (when type is `memory`).                                                     | `4Gi`                      |
+| `emby.persistence.transcode.disk.storageClass`       | The storage class to use for the disk-based transcode volume (when type is `disk`).                                                 | `""`                       |
+| `emby.persistence.transcode.disk.existingClaim`      | The name of an existing claim to use for disk-based transcode (when type is `disk`).                                                | `""`                       |
+| `emby.persistence.transcode.disk.size`               | Size for the ephemeral transcode volume (when type is `disk` and no existingClaim).                                                 | `10Gi`                     |
+| `emby.persistence.transcode.disk.accessMode`         | The access mode to use for the disk-based transcode volume (when type is `disk`).                                                   | `ReadWriteOnce`            |
 | `emby.persistence.cache.enabled`                     | Whether to enable ephemeral cache volume for the service.                                                                           | `true`                     |
 | `emby.persistence.cache.storageClass`                | The storage class to use for the ephemeral cache volume.                                                                            | `""`                       |
 | `emby.persistence.cache.accessMode`                  | The access mode to use for the ephemeral cache volume.                                                                              | `ReadWriteOnce`            |
