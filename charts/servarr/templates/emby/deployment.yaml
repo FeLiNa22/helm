@@ -94,6 +94,8 @@ spec:
                   requests:
                     storage: {{ .Values.emby.persistence.transcode.disk.size }}
           {{- end }}
+          {{- else }}
+          {{- fail "emby.persistence.transcode.type must be either 'memory' or 'disk'" }}
           {{- end }}
         {{- end }}
         - name: media
