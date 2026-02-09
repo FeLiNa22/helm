@@ -2661,8 +2661,13 @@ plex:
 ## @param emby.persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
 ## @param emby.persistence.backup.accessMode The access mode to use for backup persistence.
 ## @param emby.persistence.backup.size The size to use for backup persistence.
-## @param emby.persistence.transcode.enabled Whether to enable emptyDir transcode volume for temporary transcodes.
-## @param emby.persistence.transcode.sizeLimit Size limit for the emptyDir transcode volume (e.g., "4Gi", "8Gi").
+## @param emby.persistence.transcode.enabled Whether to enable transcode volume for temporary transcodes.
+## @param emby.persistence.transcode.type Type of transcode volume: "memory" (RAM disk) or "disk" (ephemeral/persistent volume).
+## @param emby.persistence.transcode.memory.sizeLimit Size limit for the in-memory emptyDir transcode volume (when type is "memory").
+## @param emby.persistence.transcode.disk.storageClass The storage class to use for the disk-based transcode volume (when type is "disk").
+## @param emby.persistence.transcode.disk.existingClaim The name of an existing claim to use for disk-based transcode (when type is "disk").
+## @param emby.persistence.transcode.disk.size Size for the ephemeral transcode volume (when type is "disk" and no existingClaim).
+## @param emby.persistence.transcode.disk.accessMode The access mode to use for the disk-based transcode volume (when type is "disk").
 ## @param emby.persistence.cache.enabled Whether to enable ephemeral cache volume for the service.
 ## @param emby.persistence.cache.storageClass The storage class to use for the ephemeral cache volume.
 ## @param emby.persistence.cache.accessMode The access mode to use for the ephemeral cache volume.
