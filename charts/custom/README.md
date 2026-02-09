@@ -196,6 +196,26 @@ database:
       size: 10Gi
 ```
 
+### Velero Backups
+
+Enable Velero backup schedules for the application:
+
+```yaml
+velero:
+  enabled: true
+  namespace: "velero"
+  schedule: "0 2 * * *"  # Daily at 2am
+  ttl: "168h"  # 7 days retention
+  snapshotVolumes: true
+
+persistence:
+  data:
+    enabled: true  # Required for Velero backups
+    size: 10Gi
+```
+
+**Note:** Velero backups require persistence to be enabled. The backup will include the data volume.
+
 ### Environment Variables
 
 Environment variables are passed to the application container using a map format:

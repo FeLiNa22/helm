@@ -1,0 +1,48 @@
+{{- if and .Values.velero.enabled .Values.persistence.data.enabled }}
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: {{ include "custom.fullname" . }}
+  namespace: {{ .Values.velero.namespace | default "velero" }}
+  {{- with .Values.velero.annotations }}
+  annotations:
+    {{- toYaml . | nindent 6 }}
+  {{- end }}
+  labels:
+    {{- include "custom.labels" . | nindent 4 }}
+    velero.io/backup-schedule: {{ include "custom.fullname" . }}
+spec:
+  schedule: {{ .Values.velero.schedule | quote }}
+  template:
+    includedNamespaces:
+      - {{ .Release.Namespace }}
+    includedResources:
+      - "*"
+    ttl: {{ .Values.velero.ttl }}
+    {{- if .Values.velero.includeClusterResources }}
+    includeClusterResources: {{ .Values.velero.includeClusterResources }}
+    {{- end }}
+    {{- if .Values.velero.snapshotVolumes }}
+    snapshotVolumes: {{ .Values.velero.snapshotVolumes }}
+    {{- end }}
+    {{- if .Values.velero.defaultVolumesToFsBackup }}
+    defaultVolumesToFsBackup: {{ .Values.velero.defaultVolumesToFsBackup }}
+    {{- end }}
+    {{- if .Values.velero.storageLocation }}
+    storageLocation: {{ .Values.velero.storageLocation }}
+    {{- end }}
+    {{- if .Values.velero.volumeSnapshotLocations }}
+    volumeSnapshotLocations:
+      {{- toYaml .Values.velero.volumeSnapshotLocations | nindent 6 }}
+    {{- end }}
+    {{- if .Values.velero.labelSelector }}
+    labelSelector:
+      matchLabels:
+        {{- toYaml .Values.velero.labelSelector | nindent 8 }}
+    {{- end }}
+    metadata:
+      labels:
+        {{- include "custom.labels" . | nindent 8 }}
+        velero.io/backup-type: scheduled
+        velero.io/pvc-target: data
+{{- end }}
