@@ -1,4 +1,4 @@
-{{- if and (ne .Values.database.mode "cluster") .Values.database.backup.enabled }}
+{{- if .Values.database.backup.enabled }}
 {{- $fullName := include "immich.fullname" . -}}
 {{- $secretName := include "immich.postgresql.secretName" . -}}
 {{- $secretKey := include "immich.postgresql.secretKey" . -}}

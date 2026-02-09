@@ -131,7 +131,7 @@ persistence:
 
 ### Database Backups
 
-Enable scheduled database backups (supported in `standalone` and `external` modes):
+Enable scheduled database backups using pg_dump (works for all database modes: standalone, cluster, and external):
 
 ```yaml
 database:
@@ -141,7 +141,7 @@ database:
     retention: 30       # Keep last 30 backups
     path: /backups
     image:
-      repository: ""    # Optional: custom image (defaults to standalone image or postgres:16-alpine for external)
+      repository: ""    # Optional: custom image (defaults to standalone image or postgres:16-alpine for external/cluster)
       tag: ""
     persistence:
       enabled: true
@@ -153,19 +153,18 @@ database:
 
 The backup CronJob creates compressed SQL dumps of the PostgreSQL database. Backups are stored with timestamps and old backups are automatically removed based on the retention policy.
 
-### Cluster Mode S3 Backups
+### Cluster Mode PITR Backups
 
-For `cluster` mode (CNPG), S3 backups can be enabled for Point-in-Time Recovery:
+For `cluster` mode (CNPG), you can additionally enable Point-in-Time Recovery (PITR) backups to S3-compatible object storage:
 
 ```yaml
 database:
   mode: cluster
   cluster:
-    backup:
+    pitrBackup:
       enabled: true
-      schedule: "0 0 * * *"  # Daily at midnight
       retentionPolicy: "30d"
-      s3:
+      objectStorage:
         destinationPath: "s3://my-bucket/immich-backups"
         endpointURL: "https://s3.amazonaws.com"  # Optional for AWS, required for other S3-compatible storage
         secretName: "s3-credentials"  # Secret with ACCESS_KEY_ID and ACCESS_SECRET_KEY keys
@@ -183,6 +182,8 @@ stringData:
   ACCESS_KEY_ID: "your-access-key"
   ACCESS_SECRET_KEY: "your-secret-key"
 ```
+
+**Note:** PITR backups are in addition to the pg_dump backups. You can enable both for comprehensive backup coverage.
 
 ### Ingress
 
@@ -284,23 +285,22 @@ ingress:
 | `database.cluster.instances` | Number of PostgreSQL instances | `2` |
 | `database.cluster.image.repository` | PostgreSQL image with vectorchord | `tensorchord/cloudnative-vectorchord` |
 | `database.cluster.image.tag` | PostgreSQL image tag | `16-0.3.0` |
-| `database.cluster.backup.enabled` | Enable S3 backups for CNPG cluster | `false` |
-| `database.cluster.backup.schedule` | Cron schedule for CNPG backups | `0 0 * * *` |
-| `database.cluster.backup.retentionPolicy` | Retention policy for CNPG backups | `30d` |
-| `database.cluster.backup.s3.destinationPath` | S3 destination path (e.g., s3://bucket/path) | `""` |
-| `database.cluster.backup.s3.endpointURL` | S3 endpoint URL for non-AWS storage | `""` |
-| `database.cluster.backup.s3.secretName` | Secret containing ACCESS_KEY_ID and ACCESS_SECRET_KEY | `""` |
-| `database.cluster.backup.s3.region` | S3 region (optional) | `""` |
+| `database.cluster.pitrBackup.enabled` | Enable PITR backups for CNPG cluster | `false` |
+| `database.cluster.pitrBackup.retentionPolicy` | Retention policy for PITR backups | `30d` |
+| `database.cluster.pitrBackup.objectStorage.destinationPath` | S3 destination path (e.g., s3://bucket/path) | `""` |
+| `database.cluster.pitrBackup.objectStorage.endpointURL` | S3 endpoint URL for non-AWS storage | `""` |
+| `database.cluster.pitrBackup.objectStorage.secretName` | Secret containing ACCESS_KEY_ID and ACCESS_SECRET_KEY | `""` |
+| `database.cluster.pitrBackup.objectStorage.region` | S3 region (optional) | `""` |
 | `database.external.host` | External PostgreSQL host | `""` |
 | `database.external.port` | External PostgreSQL port | `5432` |
 | `database.external.database` | External database name | `immich` |
 | `database.external.username` | External database username | `immich` |
 
-### Database Backup parameters
+### Database Backup parameters (pg_dump)
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `database.backup.enabled` | Enable scheduled database backups | `false` |
+| `database.backup.enabled` | Enable scheduled pg_dump backups for all database modes | `false` |
 | `database.backup.cron` | Cron schedule for backups (e.g., "0 2 * * *" for 2am daily) | `0 2 * * *` |
 | `database.backup.retention` | Number of backups to retain | `30` |
 | `database.backup.path` | Path inside the container for backups | `/backups` |
@@ -317,10 +317,11 @@ ingress:
 ### To 1.6.1
 
 This version extends database backup support:
-- Database backups now work in both `standalone` and `external` modes
+- pg_dump backups (`database.backup.enabled`) now work in ALL database modes (standalone, cluster, external)
 - Added `database.backup.image` configuration for custom backup images
-- Added S3 backup support for `cluster` mode (CNPG) via `database.cluster.backup.*`
-- CNPG cluster mode can now backup directly to S3-compatible storage with PITR support
+- Renamed `database.cluster.backup.*` to `database.cluster.pitrBackup.*` for CNPG PITR backups
+- Changed `database.cluster.backup.s3.*` to `database.cluster.pitrBackup.objectStorage.*`
+- Removed `database.cluster.backup.schedule` (PITR uses continuous WAL archiving)
 
 ### To 1.6.0
 

@@ -229,36 +229,31 @@ spec:
   monitoring:
     enablePodMonitor: false
 
-  {{- if .Values.database.cluster.backup.enabled }}
+  {{- if .Values.database.cluster.pitrBackup.enabled }}
   backup:
     barmanObjectStore:
-      destinationPath: {{ .Values.database.cluster.backup.s3.destinationPath }}
-      {{- if .Values.database.cluster.backup.s3.endpointURL }}
-      endpointURL: {{ .Values.database.cluster.backup.s3.endpointURL }}
+      destinationPath: {{ .Values.database.cluster.pitrBackup.objectStorage.destinationPath }}
+      {{- if .Values.database.cluster.pitrBackup.objectStorage.endpointURL }}
+      endpointURL: {{ .Values.database.cluster.pitrBackup.objectStorage.endpointURL }}
       {{- end }}
-      {{- if .Values.database.cluster.backup.s3.region }}
-      s3Credentials:
-        region:
-          value: {{ .Values.database.cluster.backup.s3.region }}
-      {{- end }}
-      {{- if .Values.database.cluster.backup.s3.secretName }}
+      {{- if .Values.database.cluster.pitrBackup.objectStorage.secretName }}
       s3Credentials:
         accessKeyId:
-          name: {{ .Values.database.cluster.backup.s3.secretName }}
+          name: {{ .Values.database.cluster.pitrBackup.objectStorage.secretName }}
           key: ACCESS_KEY_ID
         secretAccessKey:
-          name: {{ .Values.database.cluster.backup.s3.secretName }}
+          name: {{ .Values.database.cluster.pitrBackup.objectStorage.secretName }}
           key: ACCESS_SECRET_KEY
-        {{- if .Values.database.cluster.backup.s3.region }}
+        {{- if .Values.database.cluster.pitrBackup.objectStorage.region }}
         region:
-          value: {{ .Values.database.cluster.backup.s3.region }}
+          value: {{ .Values.database.cluster.pitrBackup.objectStorage.region }}
         {{- end }}
       {{- end }}
       wal:
         compression: gzip
       data:
         compression: gzip
-    retentionPolicy: {{ .Values.database.cluster.backup.retentionPolicy | default "30d" | quote }}
+    retentionPolicy: {{ .Values.database.cluster.pitrBackup.retentionPolicy | default "30d" | quote }}
   {{- end }}
 
   {{- if .Values.nodeSelector }}
@@ -275,19 +270,4 @@ spec:
   affinity:
     {{- toYaml .Values.affinity | nindent 4 }}
   {{- end }}
-{{- if .Values.database.cluster.backup.enabled }}
----
-apiVersion: postgresql.cnpg.io/v1
-kind: ScheduledBackup
-metadata:
-  name: {{ .Release.Name }}-{{ .Values.database.cluster.name }}-backup
-  labels:
-    {{- include "immich.labels" . | nindent 4 }}
-    app.kubernetes.io/component: database-backup
-spec:
-  schedule: {{ .Values.database.cluster.backup.schedule | default "0 0 * * *" | quote }}
-  backupOwnerReference: self
-  cluster:
-    name: {{ .Release.Name }}-{{ .Values.database.cluster.name }}
-{{- end }}
 {{- end }}
