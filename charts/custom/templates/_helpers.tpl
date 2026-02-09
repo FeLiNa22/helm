@@ -1,0 +1,131 @@
+{{/*
+Expand the name of the chart.
+*/}}
+{{- define "custom.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
+*/}}
+{{- define "custom.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Common labels
+*/}}
+{{- define "custom.labels" -}}
+{{ include "custom.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "custom.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "custom.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "custom.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "custom.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
+PostgreSQL host
+*/}}
+{{- define "custom.postgresql.host" -}}
+{{- if eq .Values.database.mode "standalone" }}
+{{- printf "%s-postgresql" (include "custom.fullname" .) }}
+{{- else if eq .Values.database.mode "cluster" }}
+{{- printf "%s-%s-rw" .Release.Name .Values.database.cluster.name }}
+{{- else }}
+{{- .Values.database.external.host }}
+{{- end }}
+{{- end }}
+
+{{/*
+PostgreSQL port
+*/}}
+{{- define "custom.postgresql.port" -}}
+{{- if eq .Values.database.mode "external" }}
+{{- .Values.database.external.port | default "5432" }}
+{{- else }}
+{{- "5432" }}
+{{- end }}
+{{- end }}
+
+{{/*
+PostgreSQL database name
+*/}}
+{{- define "custom.postgresql.database" -}}
+{{- if eq .Values.database.mode "external" }}
+{{- .Values.database.external.database | default "custom" }}
+{{- else }}
+{{- .Values.database.auth.username }}
+{{- end }}
+{{- end }}
+
+{{/*
+PostgreSQL username
+*/}}
+{{- define "custom.postgresql.username" -}}
+{{- if eq .Values.database.mode "external" }}
+{{- .Values.database.external.username | default "custom" }}
+{{- else }}
+{{- .Values.database.auth.username }}
+{{- end }}
+{{- end }}
+
+{{/*
+PostgreSQL secret name
+*/}}
+{{- define "custom.postgresql.secretName" -}}
+{{- if eq .Values.database.mode "standalone" }}
+{{- if .Values.database.secret.name }}
+{{- .Values.database.secret.name }}
+{{- else }}
+{{- printf "%s-postgresql" .Release.Name }}
+{{- end }}
+{{- else if eq .Values.database.mode "cluster" }}
+{{- if .Values.database.secret.name }}
+{{- .Values.database.secret.name }}
+{{- else }}
+{{- printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
+{{- end }}
+{{- else }}
+{{- if not .Values.database.secret.name }}
+{{- fail "database.secret.name is required when database.mode is 'external'" }}
+{{- end }}
+{{- .Values.database.secret.name }}
+{{- end }}
+{{- end }}
+
+{{/*
+PostgreSQL secret key
+*/}}
+{{- define "custom.postgresql.secretKey" -}}
+{{- .Values.database.secret.passwordKey | default "password" }}
+{{- end }}

@@ -1,0 +1,259 @@
+## @section Application parameters
+
+## @param replicaCount The number of replicas to deploy for the application.
+## @param image.repository The Docker repository to pull the image from.
+## @param image.pullPolicy The logic of image pulling.
+## @param image.tag The image tag to use.
+## @param imagePullSecrets The image pull secrets to use.
+## @param deployment.strategy.type The deployment strategy to use.
+## @param serviceAccount.create Whether to create a service account.
+## @param serviceAccount.annotations Additional annotations to add to the service account.
+## @param serviceAccount.name The name of the service account to use.
+## @param podAnnotations Additional annotations to add to the pod.
+## @param podSecurityContext The security context to use for the pod.
+## @param securityContext The security context to use for the container.
+## @param initContainers Additional init containers to add to the pod.
+## @param service.type The type of service to create.
+## @param service.port The port on which the service will run.
+## @param service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param ingress.enabled Whether to create an ingress for the service.
+## @param ingress.className The ingress class name to use.
+## @param ingress.annotations Additional annotations to add to the ingress.
+## @param ingress.hosts[0].host The host to use for the ingress.
+## @param ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param ingress.tls The TLS configuration for the ingress.
+## @param resources The resources to use for the pod.
+## @param nodeSelector The node selector to use for the pod.
+## @param tolerations The tolerations to use for the pod.
+## @param affinity The affinity to use for the pod.
+## @param env.TZ The timezone to use for the pod.
+##
+replicaCount: 1
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+
+deployment:
+  strategy:
+    type: Recreate
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+initContainers: []
+  # - name: init-container
+  #   image: busybox
+  #   command: ['sh', '-c', 'echo "this is an init container"']
+
+service:
+  type: ClusterIP
+  port: 80
+  nodePort: ""
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: custom.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: custom-tls
+  #    hosts:
+  #      - custom.local
+
+resources: {}
+  # limits:
+  #   cpu: 1000m
+  #   memory: 2Gi
+  # requests:
+  #   cpu: 100m
+  #   memory: 256Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+## Additional environment variables for the application
+## Use map format: key: value
+env:
+  TZ: "Europe/London"
+
+## @section Persistence parameters
+
+## @param persistence.data.enabled Whether to enable persistence for the data.
+## @param persistence.data.storageClass The storage class to use for the data.
+## @param persistence.data.existingClaim The name of an existing claim to use for the data.
+## @param persistence.data.accessMode The access mode to use for the data.
+## @param persistence.data.size The size to use for the data.
+## @param persistence.data.mountPath The mount path for the data volume.
+## @param persistence.additionalVolumes Additional volumes to add to the pod.
+## @param persistence.additionalMounts Additional volume mounts to add to the pod.
+##
+persistence:
+  data:
+    enabled: true
+    storageClass: ""
+    existingClaim: ""
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    mountPath: /data
+  additionalVolumes: []
+  additionalMounts: []
+
+## @section Database parameters
+## PostgreSQL database configuration - can be disabled, standalone, cluster, or external
+
+## @param database.enabled Whether to enable PostgreSQL database.
+## @param database.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
+## @param database.persistence.enabled Whether to enable persistence for the database (default: true).
+## @param database.persistence.size Size of the persistence volume (default: 1Gi).
+## @param database.persistence.storageClass Storage class for persistence.
+## @param database.persistence.existingClaim Use an existing PVC instead of creating a new one.
+## @param database.initSQL Array of SQL commands to run on database initialization.
+## @param database.auth.username Username for the database.
+## @param database.auth.password Password for the database user (leave empty to auto-generate).
+## @param database.secret.name Existing secret name for database password (leave empty to auto-create).
+## @param database.secret.passwordKey Key in the secret containing the password (default: password).
+## @param database.standalone.image.repository PostgreSQL image repository.
+## @param database.standalone.image.tag PostgreSQL image tag.
+## @param database.standalone.resources Resource limits and requests for standalone PostgreSQL.
+## @param database.cluster.name Name of the database cluster.
+## @param database.cluster.instances Number of PostgreSQL instances (replicas).
+## @param database.cluster.image.repository PostgreSQL container image repository.
+## @param database.cluster.image.tag PostgreSQL container image tag.
+## @param database.cluster.pitrBackup.enabled Enable PITR backups for CNPG cluster (default: false).
+## @param database.cluster.pitrBackup.retentionPolicy Retention policy for PITR backups (default: "30d").
+## @param database.cluster.pitrBackup.objectStorage.destinationPath S3 destination path (e.g., s3://bucket/path).
+## @param database.cluster.pitrBackup.objectStorage.endpointURL S3 endpoint URL for non-AWS storage.
+## @param database.cluster.pitrBackup.objectStorage.secretName Secret name containing ACCESS_KEY_ID and ACCESS_SECRET_KEY.
+## @param database.cluster.pitrBackup.objectStorage.region S3 region (optional).
+## @param database.external.host Hostname of external PostgreSQL (when mode is 'external').
+## @param database.external.port Port of external PostgreSQL.
+## @param database.external.database Database name of external PostgreSQL.
+## @param database.external.username Username of external PostgreSQL.
+## @param database.backup.enabled Enable scheduled pg_dump backups for all database modes (default: false).
+## @param database.backup.cron Cron schedule for backups (default: "0 2 * * *" for 2am daily).
+## @param database.backup.retention Number of backups to retain (default: 30).
+## @param database.backup.path Path inside the container for backups (default: /backups).
+## @param database.backup.image.repository Custom image repository for backup job (optional).
+## @param database.backup.image.tag Custom image tag for backup job (optional).
+## @param database.backup.persistence.enabled Enable persistence for backups (default: true).
+## @param database.backup.persistence.size Backup volume size (default: 512Mi).
+## @param database.backup.persistence.storageClass Storage class for backup volume.
+## @param database.backup.persistence.accessMode Access mode for backup volume (default: ReadWriteOnce).
+## @param database.backup.persistence.existingClaim Use existing PVC for backups.
+##
+database:
+  enabled: true
+  # Mode options: 'standalone', 'cluster', or 'external'
+  mode: standalone
+
+  # Common database configuration
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: ""
+    existingClaim: ""
+
+  # SQL commands to initialize the database
+  # Each line should be a complete SQL statement
+  initSQL: []
+    # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+
+  auth:
+    username: custom
+    password: ""  # Leave empty to auto-generate (persists across upgrades via secret lookup)
+
+  # Secret configuration for database password
+  secret:
+    name: ""  # Leave empty to auto-generate (defaults to <release>-postgresql)
+    passwordKey: "password"  # Key in the secret containing the password
+
+  # Standalone PostgreSQL deployment (using StatefulSet)
+  standalone:
+    image:
+      repository: postgres
+      tag: "16-alpine"
+    resources: {}
+      # limits:
+      #   cpu: 1000m
+      #   memory: 2Gi
+      # requests:
+      #   cpu: 100m
+      #   memory: 256Mi
+
+  # CloudNativePG Cluster deployment (using CNPG operator)
+  cluster:
+    name: custom-db
+    instances: 2
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: "16"
+    # PITR (Point-in-Time Recovery) backup configuration for CNPG
+    # This is in addition to pg_dump backups configured in database.backup
+    pitrBackup:
+      enabled: false
+      # Retention policy for PITR backups
+      retentionPolicy: "30d"
+      # Object storage configuration (S3-compatible)
+      objectStorage:
+        # S3 bucket destination path (e.g., s3://bucket-name/path/to/backups)
+        destinationPath: ""
+        # S3 endpoint URL (for non-AWS S3-compatible storage)
+        endpointURL: ""
+        # Name of the secret containing S3 credentials
+        # Secret should contain ACCESS_KEY_ID and ACCESS_SECRET_KEY
+        secretName: ""
+        # S3 region (optional)
+        region: ""
+
+  # External PostgreSQL configuration (used when mode is 'external')
+  external:
+    host: ""
+    port: 5432
+    database: "custom"
+    username: "custom"
+    # Password is sourced from the secret configured in database.secret.name / database.secret.passwordKey
+
+  # Scheduled database backups using pg_dump (works for all database modes)
+  backup:
+    enabled: false
+    cron: "0 2 * * *"  # Daily at 2am
+    retention: 30  # Number of backups to retain
+    path: /backups  # Path inside the container where backups are stored
+    image:
+      repository: ""  # Leave empty to use standalone image or postgres:16-alpine for external mode
+      tag: ""
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: ""
+      accessMode: ReadWriteOnce
+      existingClaim: ""

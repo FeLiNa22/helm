@@ -1,0 +1,13 @@
+apiVersion: v2
+name: custom
+description: A Helm chart for deploying a generic Docker image with optional PostgreSQL database
+type: application
+version: 0.1.0
+appVersion: "latest"
+keywords:
+  - custom
+  - docker
+  - postgres
+  - generic
+maintainers:
+  - name: FeLiNa22
