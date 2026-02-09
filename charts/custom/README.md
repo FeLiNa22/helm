@@ -214,6 +214,26 @@ When the database is enabled, these environment variables are automatically set:
 - `DB_USER` - Database username
 - `DB_PASSWORD` - Database password (from secret)
 
+### Image Auto-update
+
+The chart supports automatic image updates via ArgoCD Image Updater:
+
+```yaml
+image:
+  repository: myapp/myimage
+  tag: "1.0.0"
+  autoupdate:
+    enabled: true
+    strategy: semver  # or 'latest', 'digest', etc.
+    allowTags: "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$"  # Optional: filter tags
+```
+
+The auto-update feature will:
+- Automatically detect and update to newer versions based on the strategy
+- Support semver, digest, and other update strategies
+- Allow filtering tags with regex patterns
+- Support private registries with pull secrets
+
 ### Ingress
 
 Enable ingress for external access:
@@ -270,6 +290,8 @@ initContainers:
 | `image.repository` | Docker image repository | `nginx` |
 | `image.tag` | Image tag (uses Chart.appVersion if not set) | `""` |
 | `image.pullPolicy` | Image pull policy | `IfNotPresent` |
+| `image.autoupdate.enabled` | Enable automatic image updates | `false` |
+| `image.autoupdate.strategy` | Update strategy (semver, latest, digest, etc.) | `""` |
 | `service.type` | Service type | `ClusterIP` |
 | `service.port` | Service port | `80` |
 
@@ -277,7 +299,7 @@ initContainers:
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `database.enabled` | Enable PostgreSQL database | `true` |
+| `database.enabled` | Enable PostgreSQL database | `false` |
 | `database.mode` | Database mode: `standalone`, `cluster`, or `external` | `standalone` |
 | `database.auth.username` | Database username | `custom` |
 | `database.auth.password` | Database password (auto-generated if empty) | `""` |
@@ -288,7 +310,7 @@ initContainers:
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `persistence.data.enabled` | Enable data persistence | `true` |
+| `persistence.data.enabled` | Enable data persistence | `false` |
 | `persistence.data.size` | Data volume size | `1Gi` |
 | `persistence.data.mountPath` | Mount path for data | `/data` |
 | `persistence.data.accessMode` | Access mode | `ReadWriteOnce` |
