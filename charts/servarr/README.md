@@ -1008,6 +1008,8 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Emby parameters
 
+> **Note**: As of chart version 1.7.3, the default behavior for `emby.persistence.transcode` has changed from using an in-memory `emptyDir` (RAM disk) to using an ephemeral volume claim. To maintain the previous behavior, set `emby.persistence.transcode.memoryOnly.enabled=true`.
+
 | Name                                                 | Description                                                                                                                         | Value                      |
 | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
 | `emby.enabled`                                       | Whether to enable Emby.                                                                                                             | `false`                    |
