@@ -1,0 +1,94 @@
+{{- if .Values.image.autoupdate.enabled }}
+{{- $imageTag := .Values.image.tag | toString }}
+{{- $imageTag = regexReplaceAll "@[a-z0-9]+:[a-f0-9]+" $imageTag "" }}
+{{- $updateStrategy := .Values.image.autoupdate.strategy }}
+{{- $imageName := .Values.image.repository }}
+{{- if not $updateStrategy }}
+  {{- $staticLabels := list "latest" "develop" "dev" "beta" "alpha" "stable" "edge" "nightly" "rc" "canary" }}
+  {{- $isStaticLabel := false }}
+  {{- range $staticLabels }}
+    {{- if or (eq $imageTag .) (hasSuffix (printf "-%s" .) $imageTag) }}
+      {{- $isStaticLabel = true }}
+    {{- end }}
+  {{- end }}
+  {{- if $isStaticLabel }}
+    {{- $updateStrategy = "digest" }}
+    {{- $imageName = printf "%s:%s" .Values.image.repository $imageTag }}
+  {{- else if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+    {{- $updateStrategy = "semver" }}
+    {{- $parts := regexSplit "\\." $imageTag -1 }}
+    {{- $major := index $parts 0 }}
+    {{- $minor := index $parts 1 }}
+    {{- $imageName = printf "%s:%s.%s.x" .Values.image.repository $major $minor }}
+  {{- end }}
+{{- else if and (eq $updateStrategy "semver") .Values.image.tag }}
+  {{- if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
+    {{- $parts := regexSplit "\\." $imageTag -1 }}
+    {{- $major := index $parts 0 }}
+    {{- $minor := index $parts 1 }}
+    {{- $imageName = printf "%s:%s.%s.x" .Values.image.repository $major $minor }}
+  {{- else }}
+    {{- $imageName = printf "%s:%s" .Values.image.repository $imageTag }}
+  {{- end }}
+{{- else if .Values.image.tag }}
+  {{- $imageName = printf "%s:%s" .Values.image.repository $imageTag }}
+{{- end }}
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.imageUpdater.namespace | default "argocd" }}
+  labels:
+    app: {{ .Release.Name }}
+    release: {{ .Release.Name }}
+spec:
+  namespace: {{ .Values.imageUpdater.argocdNamespace | default "argocd" }}
+  applicationRefs:
+    - namePattern: {{ .Values.imageUpdater.applicationName | default .Release.Name | quote }}
+      images:
+        - alias: {{ .Values.imageUpdater.imageAlias | default .Release.Name | quote }}
+          imageName: {{ $imageName }}
+          {{- if or $updateStrategy .Values.image.autoupdate.allowTags .Values.image.autoupdate.ignoreTags .Values.image.autoupdate.pullSecret .Values.imageUpdater.forceUpdate .Values.image.autoupdate.platforms }}
+          commonUpdateSettings:
+            {{- if $updateStrategy }}
+            updateStrategy: {{ $updateStrategy }}
+            {{- end }}
+            {{- if .Values.imageUpdater.forceUpdate }}
+            forceUpdate: {{ .Values.imageUpdater.forceUpdate }}
+            {{- end }}
+            {{- if .Values.image.autoupdate.allowTags }}
+            allowTags: {{ .Values.image.autoupdate.allowTags | quote }}
+            {{- end }}
+            {{- if .Values.image.autoupdate.ignoreTags }}
+            ignoreTags:
+              {{- if kindIs "string" .Values.image.autoupdate.ignoreTags }}
+              - {{ .Values.image.autoupdate.ignoreTags | quote }}
+              {{- else }}
+              {{- toYaml .Values.image.autoupdate.ignoreTags | nindent 14 }}
+              {{- end }}
+            {{- end }}
+            {{- if .Values.image.autoupdate.pullSecret }}
+            pullSecret: {{ .Values.image.autoupdate.pullSecret | quote }}
+            {{- end }}
+            {{- if .Values.image.autoupdate.platforms }}
+            platforms:
+              {{- toYaml .Values.image.autoupdate.platforms | nindent 14 }}
+            {{- end }}
+          {{- end }}
+          manifestTargets:
+            helm:
+              {{- if .Values.imageUpdater.helm }}
+              {{- toYaml .Values.imageUpdater.helm | nindent 14 }}
+              {{- else }}
+              name: "image.repository"
+              tag: "image.tag"
+              {{- end }}
+            {{- if .Values.imageUpdater.kustomize }}
+            kustomize:
+              {{- toYaml .Values.imageUpdater.kustomize | nindent 14 }}
+            {{- end }}
+  {{- if .Values.imageUpdater.writeBackConfig }}
+  writeBackConfig:
+    {{- toYaml .Values.imageUpdater.writeBackConfig | nindent 4 }}
+  {{- end }}
+{{- end }}
