@@ -54,7 +54,7 @@ spec:
         spec:
           {{- with .Values.imagePullSecrets }}
           imagePullSecrets:
-            {{- toYaml . | nindent 10 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           restartPolicy: OnFailure
           containers:
