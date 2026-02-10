@@ -302,6 +302,25 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/crewai-1.0.0/crewai-1.0.0.tgz
     version: 1.0.0
+  custom:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2026-02-10T00:22:20.623113389Z"
+    description: A Helm chart for deploying a generic Docker image with optional PostgreSQL
+      database
+    digest: 5fec32019802ed977fd4ae62d9c1db66237af1138574174e331c25702361b214
+    keywords:
+    - custom
+    - docker
+    - postgres
+    - generic
+    maintainers:
+    - name: FeLiNa22
+    name: custom
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/custom-0.3.0/custom-0.3.0.tgz
+    version: 0.3.0
   excalidraw:
   - apiVersion: v2
     appVersion: 0.17.6
@@ -3725,4 +3744,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-02-09T22:51:17.252545329Z"
+generated: "2026-02-10T00:22:20.623469722Z"
