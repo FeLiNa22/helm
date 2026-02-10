@@ -52,6 +52,10 @@ spec:
             {{- include "custom.selectorLabels" . | nindent 12 }}
             app.kubernetes.io/component: database-backup
         spec:
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
           restartPolicy: OnFailure
           containers:
           - name: backup
