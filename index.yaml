@@ -305,6 +305,24 @@ entries:
   custom:
   - apiVersion: v2
     appVersion: latest
+    created: "2026-02-12T22:22:13.82715234Z"
+    description: A Helm chart for deploying a generic Docker image with optional PostgreSQL
+      database
+    digest: e89db00406dae1039ca04f813996f53486824915131e12b4280d2ddf5f6627a2
+    keywords:
+    - custom
+    - docker
+    - postgres
+    - generic
+    maintainers:
+    - name: FeLiNa22
+    name: custom
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/custom-0.3.1/custom-0.3.1.tgz
+    version: 0.3.1
+  - apiVersion: v2
+    appVersion: latest
     created: "2026-02-10T00:22:20.623113389Z"
     description: A Helm chart for deploying a generic Docker image with optional PostgreSQL
       database
@@ -828,6 +846,28 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/homepage-1.0.0/homepage-1.0.0.tgz
     version: 1.0.0
   immich:
+  - apiVersion: v2
+    appVersion: v2.4.1
+    created: "2026-02-12T22:22:13.977073868Z"
+    description: A Helm chart for Immich - High performance self-hosted photo and
+      video management solution
+    digest: bf7e9905f55373c6ec30021d6d0fae1186ac800f2eae13a96e06e3056fec757f
+    home: https://immich.app
+    keywords:
+    - immich
+    - photos
+    - videos
+    - media
+    - self-hosted
+    maintainers:
+    - name: FeLiNa22
+    name: immich
+    sources:
+    - https://github.com/immich-app/immich
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/immich-1.5.6/immich-1.5.6.tgz
+    version: 1.5.6
   - apiVersion: v2
     appVersion: v2.4.1
     created: "2026-02-12T19:20:02.549843798Z"
@@ -3869,4 +3909,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-02-12T20:54:27.327012747Z"
+generated: "2026-02-12T22:22:13.977453186Z"
