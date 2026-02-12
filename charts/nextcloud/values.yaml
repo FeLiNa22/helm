@@ -158,6 +158,7 @@ env:
 ## @param dragonfly.standalone.persistence.enabled Whether to enable persistence for standalone Dragonfly.
 ## @param dragonfly.standalone.persistence.size Size of the persistence volume for standalone Dragonfly.
 ## @param dragonfly.standalone.persistence.storageClass Storage class for standalone Dragonfly persistence.
+## @param dragonfly.standalone.persistence.accessMode Access mode for standalone Dragonfly persistence volume.
 ## @param dragonfly.cluster.replicas Number of Dragonfly replicas in the cluster.
 ## @param dragonfly.cluster.image.repository The Docker repository for Dragonfly cluster image.
 ## @param dragonfly.cluster.image.tag The image tag for Dragonfly cluster.
@@ -165,6 +166,8 @@ env:
 ## @param dragonfly.cluster.persistence.enabled Whether to enable persistence for Dragonfly cluster.
 ## @param dragonfly.cluster.persistence.size Size of the persistence volume for Dragonfly cluster.
 ## @param dragonfly.cluster.persistence.storageClass Storage class for Dragonfly cluster persistence.
+## @param dragonfly.cluster.persistence.accessMode Access mode for Dragonfly cluster persistence volume.
+## @param dragonfly.cluster.snapshot.cron Cron schedule for Dragonfly cluster snapshots.
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
@@ -191,6 +194,7 @@ dragonfly:
       enabled: true
       size: 512Mi
       storageClass: ""
+      accessMode: ReadWriteOnce
 
   # Dragonfly Cluster deployment (using DragonflyDB operator)
   cluster:
@@ -209,6 +213,10 @@ dragonfly:
       enabled: true
       size: 512Mi
       storageClass: ""
+      accessMode: ReadWriteOnce
+    snapshot:
+      # Snapshot schedule in cron format (default: every 5 minutes)
+      cron: "*/5 * * * *"
 
   # External DragonflyDB/Redis configuration (used when mode is 'external')
   external:
