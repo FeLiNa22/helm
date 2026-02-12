@@ -1075,6 +1075,7 @@ flaresolverr:
 ## @param seerr.image.autoupdate.pullSecret Pull secret name for private registries.
 ## @param seerr.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
 ## @param seerr.imagePullSecrets The image pull secrets to use.
+## @param seerr.deployment.strategy.type The deployment strategy to use.
 ## @param seerr.serviceAccount.create Whether to create a service account.
 ## @param seerr.serviceAccount.automount Automatically mount a ServiceAccount's API credentials.
 ## @param seerr.serviceAccount.annotations Additional annotations to add to the service account.
