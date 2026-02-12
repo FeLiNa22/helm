@@ -1,6 +1,36 @@
-{{- if and .Values.database.enabled (eq .Values.database.mode "cluster") }}
+{{- if .Values.database.enabled }}
 {{- $fullName := include "outline.fullname" . -}}
+{{- $secretName := include "outline.postgresql.secretName" . -}}
+
+{{- if and (not .Values.database.auth.existingSecret) (eq .Values.database.mode "cluster") }}
+{{- if not .Values.database.auth.password }}
+{{- fail "database.auth.password is required when database.auth.existingSecret is not provided" }}
+{{- end }}
+
+{{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
+{{- $userPassword := "" }}
+{{- if $existingSecret }}
+{{- $userPassword = index $existingSecret.data "password" | b64dec }}
+{{- else }}
+{{- $userPassword = .Values.database.auth.password }}
+{{- end }}
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  labels:
+    {{- include "outline.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+type: Opaque
+stringData:
+  password: {{ $userPassword }}
+{{- end }}
+
+{{- if eq .Values.database.mode "cluster" }}
+---
+{{- $fullName := include "outline.fullname" . -}}
+{{- $secretName := include "outline.postgresql.secretName" . -}}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -19,10 +49,8 @@ spec:
     initdb:
       database: outline
       owner: {{ .Values.database.auth.username }}
-      {{- if .Values.database.auth.existingSecret }}
       secret:
-        name: {{ .Values.database.auth.existingSecret }}
-      {{- end }}
+        name: {{ $secretName }}
       {{- if .Values.database.initSQL }}
       postInitSQL:
         {{- range .Values.database.initSQL }}

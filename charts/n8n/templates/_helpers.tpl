@@ -92,16 +92,10 @@ PostgreSQL username
 PostgreSQL secret name
 */}}
 {{- define "n8n.postgresql.secretName" -}}
-{{- if eq .Values.database.mode "standalone" }}
 {{- if .Values.database.auth.existingSecret }}
 {{- .Values.database.auth.existingSecret }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
-{{- end }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
-{{- else }}
-{{- .Values.database.auth.existingSecret }}
 {{- end }}
 {{- end }}
 

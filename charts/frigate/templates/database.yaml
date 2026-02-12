@@ -1,4 +1,36 @@
-{{- if and .Values.enabled .Values.database.enabled (eq .Values.database.mode "cluster") }}
+{{- if and .Values.enabled .Values.database.enabled }}
+{{- $secretName := include "frigate.postgresql.secretName" . -}}
+
+{{- if and (not .Values.database.auth.existingSecret) (eq .Values.database.mode "cluster") }}
+{{- if not .Values.database.auth.password }}
+{{- fail "database.auth.password is required when database.auth.existingSecret is not provided" }}
+{{- end }}
+
+{{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
+{{- $userPassword := "" }}
+{{- if $existingSecret }}
+{{- $userPassword = index $existingSecret.data "password" | b64dec }}
+{{- else }}
+{{- $userPassword = .Values.database.auth.password }}
+{{- end }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  labels:
+    app.kubernetes.io/name: frigate-database
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: database
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+type: Opaque
+stringData:
+  password: {{ $userPassword }}
+{{- end }}
+
+{{- if eq .Values.database.mode "cluster" }}
+---
+{{- $secretName := include "frigate.postgresql.secretName" . -}}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -19,10 +51,8 @@ spec:
     initdb:
       database: {{ .Values.database.auth.username }}
       owner: {{ .Values.database.auth.username }}
-      {{- if .Values.database.auth.existingSecret }}
       secret:
-        name: {{ .Values.database.auth.existingSecret }}
-      {{- end }}
+        name: {{ $secretName }}
       {{- if .Values.database.initSQL }}
       postInitSQL:
         {{- toYaml .Values.database.initSQL | nindent 8 }}

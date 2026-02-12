@@ -1,6 +1,6 @@
-{{- if eq .Values.database.mode "standalone" }}
 {{- $fullName := include "n8n.fullname" . -}}
 {{- $secretName := include "n8n.postgresql.secretName" . -}}
+{{- if not .Values.database.auth.existingSecret }}
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- $userPassword := "" }}
 {{- if $existingSecret }}
@@ -20,6 +20,8 @@ metadata:
 type: Opaque
 stringData:
   password: {{ $userPassword }}
+{{- end }}
+{{- if eq .Values.database.mode "standalone" }}
 ---
 apiVersion: v1
 kind: Service
@@ -136,6 +138,7 @@ spec:
 {{- else if eq .Values.database.mode "cluster" }}
 ---
 {{- $fullName := include "n8n.fullname" . -}}
+{{- $secretName := include "n8n.postgresql.secretName" . -}}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -155,6 +158,8 @@ spec:
     initdb:
       database: {{ .Values.database.auth.username }}
       owner: {{ .Values.database.auth.username }}
+      secret:
+        name: {{ $secretName }}
       {{- if .Values.database.initSQL }}
       postInitSQL:
         {{- toYaml .Values.database.initSQL | nindent 8 }}
