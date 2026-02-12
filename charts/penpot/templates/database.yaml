@@ -1,4 +1,3 @@
-{{- if eq .Values.database.mode "standalone" }}
 {{- $fullName := include "penpot.fullname" . -}}
 {{- $secretName := include "penpot.postgresql.secretName" . -}}
 
@@ -26,6 +25,7 @@ type: Opaque
 stringData:
   password: {{ $userPassword }}
 {{- end }}
+{{- if eq .Values.database.mode "standalone" }}
 ---
 apiVersion: v1
 kind: Service
@@ -140,6 +140,7 @@ spec:
 {{- else if eq .Values.database.mode "cluster" }}
 ---
 {{- $fullName := include "penpot.fullname" . -}}
+{{- $secretName := include "penpot.postgresql.secretName" . -}}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -158,10 +159,8 @@ spec:
     initdb:
       database: {{ .Values.database.auth.username }}
       owner: {{ .Values.database.auth.username }}
-      {{- if .Values.database.auth.existingSecret }}
       secret:
-        name: {{ .Values.database.auth.existingSecret }}
-      {{- end }}
+        name: {{ $secretName }}
       {{- if .Values.database.initSQL }}
       postInitSQL:
         {{- toYaml .Values.database.initSQL | nindent 8 }}

@@ -103,23 +103,10 @@ PostgreSQL username
 PostgreSQL secret name
 */}}
 {{- define "immich.postgresql.secretName" -}}
-{{- if eq .Values.database.mode "standalone" }}
 {{- if .Values.database.secret.name }}
 {{- .Values.database.secret.name }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
-{{- end }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- if .Values.database.secret.name }}
-{{- .Values.database.secret.name }}
-{{- else }}
-{{- printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
-{{- end }}
-{{- else }}
-{{- if not .Values.database.secret.name }}
-{{- fail "database.secret.name is required when database.mode is 'external'" }}
-{{- end }}
-{{- .Values.database.secret.name }}
 {{- end }}
 {{- end }}
 

@@ -1,5 +1,4 @@
 {{- if .Values.database.enabled }}
-{{- if eq .Values.database.mode "standalone" }}
 {{- $fullName := include "custom.fullname" . -}}
 {{- $secretName := include "custom.postgresql.secretName" . -}}
 {{- $secretKey := include "custom.postgresql.secretKey" . -}}
@@ -26,6 +25,7 @@ stringData:
   {{ $secretKey }}: {{ $userPassword }}
 {{- end }}
 {{- end }}
+{{- if eq .Values.database.mode "standalone" }}
 {{- if .Values.database.initSQL }}
 ---
 apiVersion: v1
@@ -165,6 +165,8 @@ spec:
   {{- end }}
 {{- else if eq .Values.database.mode "cluster" }}
 {{- $fullName := include "custom.fullname" . -}}
+{{- $secretName := include "custom.postgresql.secretName" . -}}
+---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -183,10 +185,8 @@ spec:
     initdb:
       database: {{ .Values.database.auth.username }}
       owner: {{ .Values.database.auth.username }}
-      {{- if .Values.database.secret.name }}
       secret:
-        name: {{ .Values.database.secret.name }}
-      {{- end }}
+        name: {{ $secretName }}
       {{- if .Values.database.initSQL }}
       postInitSQL:
         {{- toYaml .Values.database.initSQL | nindent 8 }}
