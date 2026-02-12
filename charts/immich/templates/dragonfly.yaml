@@ -98,7 +98,7 @@ metadata:
     app.kubernetes.io/component: dragonfly
 spec:
   accessModes:
-    - ReadWriteOnce
+    - {{ .Values.dragonfly.standalone.persistence.accessMode | quote }}
   {{- if .Values.dragonfly.standalone.persistence.storageClass }}
   storageClassName: {{ .Values.dragonfly.standalone.persistence.storageClass }}
   {{- end }}
@@ -129,7 +129,7 @@ spec:
     cron: {{ .Values.dragonfly.cluster.snapshot.cron | quote }}
     persistentVolumeClaimSpec:
       accessModes:
-        - ReadWriteOnce
+        - {{ .Values.dragonfly.cluster.persistence.accessMode | quote }}
       {{- if .Values.dragonfly.cluster.persistence.storageClass }}
       storageClassName: {{ .Values.dragonfly.cluster.persistence.storageClass }}
       {{- end }}

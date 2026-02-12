@@ -497,6 +497,7 @@ dragonfly:
       enabled: true
       size: 512Mi
       storageClass: ""
+      accessMode: ReadWriteOnce
 
   cluster:
     replicas: 2
@@ -508,6 +509,7 @@ dragonfly:
       enabled: true
       size: 512Mi
       storageClass: ""
+      accessMode: ReadWriteOnce
     snapshot:
       # Snapshot schedule in cron format (default: every 5 minutes)
       cron: "*/5 * * * *"
