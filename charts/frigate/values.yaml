@@ -47,8 +47,7 @@
 ## @param database.persistence.storageClass Storage class for persistence.
 ## @param database.initSQL Array of SQL commands to run on database initialization.
 ## @param database.auth.username Username for the database.
-## @param database.auth.password Password for the database user (leave empty to auto-generate).
-## @param database.auth.existingSecret Reference to an existing Kubernetes secret for auth.
+## @param database.auth.existingSecret Reference to an existing Kubernetes secret for auth (leave empty to auto-create).
 ## @param database.cluster.name Name of the database cluster.
 ## @param database.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param database.cluster.image.repository PostgreSQL container image repository.
@@ -184,7 +183,6 @@ database:
 
   auth:
     username: frigate
-    password: ""
     existingSecret: ""
 
   # CloudNativePG Cluster deployment

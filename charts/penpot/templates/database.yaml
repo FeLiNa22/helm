@@ -3,27 +3,18 @@
 
 {{- if not .Values.database.auth.existingSecret }}
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
+{{- if not $existingSecret }}
 {{- $userPassword := "" }}
-{{- if $existingSecret }}
-{{- $userPassword = index $existingSecret.data "password" | b64dec }}
-{{- else }}
 {{- if eq .Values.database.mode "cluster" }}
 {{- $oldCNPGSecretName := printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
 {{- $oldCNPGSecret := lookup "v1" "Secret" .Release.Namespace $oldCNPGSecretName }}
 {{- if $oldCNPGSecret }}
 {{- $userPassword = index $oldCNPGSecret.data "password" | b64dec }}
-{{- else if .Values.database.auth.password }}
-{{- $userPassword = .Values.database.auth.password }}
 {{- else }}
 {{- $userPassword = randAlphaNum 32 }}
 {{- end }}
 {{- else }}
-{{- if .Values.database.auth.password }}
-{{- $userPassword = .Values.database.auth.password }}
-{{- else }}
 {{- $userPassword = randAlphaNum 32 }}
-{{- end }}
-{{- end }}
 {{- end }}
 ---
 apiVersion: v1
@@ -36,6 +27,7 @@ metadata:
 type: Opaque
 stringData:
   password: {{ $userPassword }}
+{{- end }}
 {{- end }}
 {{- if eq .Values.database.mode "standalone" }}
 ---

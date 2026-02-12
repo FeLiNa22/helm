@@ -354,7 +354,6 @@ database:
 
   auth:
     username: immich
-    password: ""  # Leave empty to auto-generate (persists across upgrades via secret lookup)
 
   # Secret configuration for database password
   secret:
