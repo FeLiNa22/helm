@@ -3,16 +3,20 @@
 {{- $secretName := include "outline.postgresql.secretName" . -}}
 
 {{- if and (not .Values.database.auth.existingSecret) (eq .Values.database.mode "cluster") }}
-{{- if not .Values.database.auth.password }}
-{{- fail "database.auth.password is required when database.auth.existingSecret is not provided" }}
-{{- end }}
-
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- $userPassword := "" }}
 {{- if $existingSecret }}
 {{- $userPassword = index $existingSecret.data "password" | b64dec }}
 {{- else }}
+{{- $oldCNPGSecretName := printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
+{{- $oldCNPGSecret := lookup "v1" "Secret" .Release.Namespace $oldCNPGSecretName }}
+{{- if $oldCNPGSecret }}
+{{- $userPassword = index $oldCNPGSecret.data "password" | b64dec }}
+{{- else if .Values.database.auth.password }}
 {{- $userPassword = .Values.database.auth.password }}
+{{- else }}
+{{- $userPassword = randAlphaNum 32 }}
+{{- end }}
 {{- end }}
 ---
 apiVersion: v1
