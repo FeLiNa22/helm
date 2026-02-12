@@ -1171,6 +1171,10 @@ seerr:
 
   imagePullSecrets: []
 
+  deployment:
+    strategy:
+      type: Recreate
+
   serviceAccount:
     create: true
     automount: true
