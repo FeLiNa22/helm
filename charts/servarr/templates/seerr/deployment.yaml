@@ -13,6 +13,8 @@ spec:
   {{- if not .Values.seerr.autoscaling.enabled }}
   replicas: {{ .Values.seerr.replicaCount }}
   {{- end }}
+  strategy:
+    {{- .Values.seerr.deployment.strategy | toYaml | nindent 4 }}
   selector:
     matchLabels:
       app.kubernetes.io/name: seerr
