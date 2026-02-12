@@ -48,6 +48,10 @@ spec:
     spec:
       template:
         metadata:
+          {{- if and .Values.velero.enabled .Values.database.backup.persistence.enabled }}
+          annotations:
+            backup.velero.io/backup-volumes: backup
+          {{- end }}
           labels:
             {{- include "custom.selectorLabels" . | nindent 12 }}
             app.kubernetes.io/component: database-backup
