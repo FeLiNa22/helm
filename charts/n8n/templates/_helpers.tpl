@@ -92,8 +92,8 @@ PostgreSQL username
 PostgreSQL secret name
 */}}
 {{- define "n8n.postgresql.secretName" -}}
-{{- if .Values.database.auth.existingSecret }}
-{{- .Values.database.auth.existingSecret }}
+{{- if .Values.database.secret.name }}
+{{- .Values.database.secret.name }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
 {{- end }}
@@ -103,5 +103,5 @@ PostgreSQL secret name
 PostgreSQL secret key
 */}}
 {{- define "n8n.postgresql.secretKey" -}}
-{{- "password" }}
+{{- .Values.database.secret.passwordKey | default "password" }}
 {{- end }}

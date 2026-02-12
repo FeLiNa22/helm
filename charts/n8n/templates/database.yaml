@@ -1,6 +1,6 @@
 {{- $fullName := include "n8n.fullname" . -}}
 {{- $secretName := include "n8n.postgresql.secretName" . -}}
-{{- if not .Values.database.auth.existingSecret }}
+{{- if not .Values.database.secret.name }}
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- if not $existingSecret }}
 {{- $userPassword := "" }}

@@ -1,7 +1,7 @@
 {{- if and .Values.enabled .Values.database.enabled }}
 {{- $secretName := include "frigate.postgresql.secretName" . -}}
 
-{{- if and (not .Values.database.auth.existingSecret) (eq .Values.database.mode "cluster") }}
+{{- if and (not .Values.database.secret.name) (eq .Values.database.mode "cluster") }}
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- if not $existingSecret }}
 {{- $userPassword := "" }}

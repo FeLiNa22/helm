@@ -1,7 +1,7 @@
 {{- $fullName := include "penpot.fullname" . -}}
 {{- $secretName := include "penpot.postgresql.secretName" . -}}
 
-{{- if not .Values.database.auth.existingSecret }}
+{{- if not .Values.database.secret.name }}
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- if not $existingSecret }}
 {{- $userPassword := "" }}
