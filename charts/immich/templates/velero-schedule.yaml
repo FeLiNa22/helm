@@ -1,4 +1,4 @@
-{{- if and .Values.velero.enabled (or .Values.persistence.library.enabled (and .Values.database.backup.enabled .Values.database.backup.persistence.enabled)) }}
+{{- if .Values.velero.enabled }}
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
@@ -39,5 +39,5 @@ spec:
       labels:
         {{- include "immich.labels" . | nindent 8 }}
         velero.io/backup-type: scheduled
-        velero.io/pvc-target: config
+
 {{- end }}
