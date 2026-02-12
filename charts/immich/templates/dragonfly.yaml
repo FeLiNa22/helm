@@ -126,19 +126,16 @@ spec:
   {{- end }}
   {{- if .Values.dragonfly.cluster.persistence.enabled }}
   snapshot:
-    dir: /data
-  volumeClaimTemplates:
-    - metadata:
-        name: data
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        {{- if .Values.dragonfly.cluster.persistence.storageClass }}
-        storageClassName: {{ .Values.dragonfly.cluster.persistence.storageClass }}
-        {{- end }}
-        resources:
-          requests:
-            storage: {{ .Values.dragonfly.cluster.persistence.size }}
+    cron: {{ .Values.dragonfly.cluster.snapshot.cron | quote }}
+    persistentVolumeClaimSpec:
+      accessModes:
+        - ReadWriteOnce
+      {{- if .Values.dragonfly.cluster.persistence.storageClass }}
+      storageClassName: {{ .Values.dragonfly.cluster.persistence.storageClass }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.dragonfly.cluster.persistence.size }}
   {{- end }}
   {{- with .Values.nodeSelector }}
   nodeSelector:
