@@ -148,11 +148,11 @@ spec:
           name: {{ $fullName }}-postgresql-init
           defaultMode: 0755
       {{- end }}
-      {{- if not .Values.postgres.persistence.enabled }}
+      {{- if not .Values.postgres.standalone.persistence.enabled }}
       - name: data
         emptyDir: {}
       {{- end }}
-  {{- if .Values.postgres.persistence.enabled }}
+  {{- if .Values.postgres.standalone.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -162,12 +162,12 @@ spec:
     spec:
       accessModes:
         - ReadWriteOnce
-      {{- if .Values.postgres.persistence.storageClass }}
-      storageClassName: {{ .Values.postgres.persistence.storageClass }}
+      {{- if .Values.postgres.standalone.persistence.storageClass }}
+      storageClassName: {{ .Values.postgres.standalone.persistence.storageClass }}
       {{- end }}
       resources:
         requests:
-          storage: {{ .Values.postgres.persistence.size }}
+          storage: {{ .Values.postgres.standalone.persistence.size }}
   {{- end }}
 {{- else if eq .Values.postgres.mode "cluster" }}
 {{- $fullName := include "custom.fullname" . -}}
@@ -206,9 +206,9 @@ spec:
       superuser: true
 
   storage:
-    size: {{ .Values.postgres.persistence.size }}
-    {{- if .Values.postgres.persistence.storageClass }}
-    storageClass: {{ .Values.postgres.persistence.storageClass }}
+    size: {{ .Values.postgres.cluster.persistence.size }}
+    {{- if .Values.postgres.cluster.persistence.storageClass }}
+    storageClass: {{ .Values.postgres.cluster.persistence.storageClass }}
     {{- end }}
 
   postgresql:

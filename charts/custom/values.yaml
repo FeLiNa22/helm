@@ -171,25 +171,54 @@ velero:
 
 ## @param postgres.enabled Whether to enable PostgreSQL database.
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
-## @param postgres.persistence.enabled Whether to enable persistence for the database (default: true).
-## @param postgres.persistence.size Size of the persistence volume (default: 1Gi).
-## @param postgres.persistence.storageClass Storage class for persistence.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.auth.username Username for the database.
 ## @param postgres.secret.name Existing secret name for database password (leave empty to auto-create).
 ## @param postgres.secret.passwordKey Key in the secret containing the password (default: password).
+## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
+## @param postgres.standalone.persistence.size Size of the persistence volume.
+## @param postgres.standalone.persistence.storageClass Storage class for persistence.
+## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
 ## @param postgres.standalone.image.repository PostgreSQL image repository.
+## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
+## @param postgres.standalone.persistence.size Size of the persistence volume.
+## @param postgres.standalone.persistence.storageClass Storage class for persistence.
+## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
 ## @param postgres.standalone.image.tag PostgreSQL image tag.
 ## @param postgres.standalone.resources Resource limits and requests for standalone PostgreSQL.
 ## @param postgres.cluster.name Name of the database cluster.
 ## @param postgres.cluster.instances Number of PostgreSQL instances (replicas).
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
 ## @param postgres.cluster.image.repository PostgreSQL container image repository.
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
 ## @param postgres.cluster.image.tag PostgreSQL container image tag.
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
 ## @param postgres.cluster.pitrBackup.enabled Enable PITR backups for CNPG cluster (default: false).
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
 ## @param postgres.cluster.pitrBackup.retentionPolicy Retention policy for PITR backups (default: "30d").
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
 ## @param postgres.cluster.pitrBackup.objectStorage.destinationPath S3 destination path (e.g., s3://bucket/path).
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
 ## @param postgres.cluster.pitrBackup.objectStorage.endpointURL S3 endpoint URL for non-AWS storage.
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
 ## @param postgres.cluster.pitrBackup.objectStorage.secretName Secret name containing ACCESS_KEY_ID and ACCESS_SECRET_KEY.
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
 ## @param postgres.cluster.pitrBackup.objectStorage.region S3 region (optional).
 ## @param postgres.external.host Hostname of external PostgreSQL (when mode is 'external').
 ## @param postgres.external.port Port of external PostgreSQL.
@@ -210,13 +239,6 @@ postgres:
   enabled: false
   # Mode options: 'standalone', 'cluster', or 'external'
   mode: standalone
-
-  # Common database configuration
-  persistence:
-    enabled: true
-    size: 1Gi
-    storageClass: ""
-
   # SQL commands to initialize the database
   # Each line should be a complete SQL statement
   initSQL: []
@@ -243,9 +265,20 @@ postgres:
       #   cpu: 100m
       #   memory: 256Mi
 
+
+    persistence:
+      enabled: true
+      size: 1Gi
+      storageClass: ""
   # CloudNativePG Cluster deployment (using CNPG operator)
   cluster:
     name: custom-db
+
+    persistence:
+      enabled: true
+      size: 1Gi
+      storageClass: ""
+
     instances: 2
     image:
       repository: ghcr.io/cloudnative-pg/postgresql

@@ -59,15 +59,15 @@ spec:
       {{- end }}
 
   storage:
-    {{- if .Values.postgres.persistence.existingClaim }}
+    {{- if .Values.postgres.cluster.persistence.existingClaim }}
     pvcTemplate:
       dataSource:
-        name: {{ .Values.postgres.persistence.existingClaim }}
+        name: {{ .Values.postgres.cluster.persistence.existingClaim }}
         kind: PersistentVolumeClaim
     {{- else }}
-    size: {{ .Values.postgres.persistence.size }}
-    {{- if .Values.postgres.persistence.storageClass }}
-    storageClass: {{ .Values.postgres.persistence.storageClass }}
+    size: {{ .Values.postgres.cluster.persistence.size }}
+    {{- if .Values.postgres.cluster.persistence.storageClass }}
+    storageClass: {{ .Values.postgres.cluster.persistence.storageClass }}
     {{- end }}
     {{- end }}
 

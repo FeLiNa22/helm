@@ -42,16 +42,19 @@
 ## @param env.TZ The timezone to use for the pod.
 ## @param postgres.enabled Whether to enable PostgreSQL database for Frigate events (default: true).
 ## @param postgres.mode The mode of PostgreSQL deployment (only 'cluster' is supported for Frigate).
-## @param postgres.persistence.enabled Whether to enable persistence for the database (default: true).
-## @param postgres.persistence.size Size of the persistence volume (default: 100Mi).
-## @param postgres.persistence.storageClass Storage class for persistence.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.auth.username Username for the database.
 ## @param postgres.secret.name Existing secret name for database password (leave empty to auto-create).
 ## @param postgres.secret.passwordKey Key in the secret containing the password (default: password).
 ## @param postgres.cluster.name Name of the database cluster.
 ## @param postgres.cluster.instances Number of PostgreSQL instances (replicas).
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
 ## @param postgres.cluster.image.repository PostgreSQL container image repository.
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
 ## @param postgres.cluster.image.tag PostgreSQL container image tag.
 ## @param tmpfs.enabled Whether to enable tmpfs cache for Frigate.
 ## @param tmpfs.size The size of the tmpfs cache for Frigate.
@@ -171,14 +174,6 @@ env:
 postgres:
   enabled: true  # PostgreSQL enabled by default for events
   mode: cluster  # Only cluster mode supported for Frigate
-
-  # Common database configuration
-  persistence:
-    enabled: true
-    size: 512Mi
-    storageClass: ""
-    # Note: existingClaim is not supported for CloudNativePG cluster mode
-
   initSQL: []
     # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
 
@@ -193,6 +188,12 @@ postgres:
   # CloudNativePG Cluster deployment
   cluster:
     name: frigate-db
+
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: ""
+
     instances: 1
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
