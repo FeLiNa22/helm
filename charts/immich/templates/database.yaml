@@ -1,3 +1,4 @@
+{{- if .Values.postgres.enabled }}
 {{- $fullName := include "immich.fullname" . -}}
 {{- $secretName := include "immich.postgresql.secretName" . -}}
 {{- $secretKey := include "immich.postgresql.secretKey" . -}}
@@ -265,4 +266,5 @@ spec:
   affinity:
     {{- toYaml .Values.affinity | nindent 4 }}
   {{- end }}
+{{- end }}
 {{- end }}
