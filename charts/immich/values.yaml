@@ -377,9 +377,12 @@ postgres:
   database: "immich"  # Database name (used in all modes)
 
   # Secret configuration for database password
+  # Secret configuration for database password
+  # You must provide EITHER secretName (to use existing secret) OR value (to create new secret with password)
   password:
-    secretName: ""  # Leave empty to auto-generate (defaults to <release>-postgresql)
+    secretName: ""  # Name of existing secret containing the password
     secretKey: "password"  # Key in the secret containing the password
+    value: ""  # Direct password value (if secretName is empty, this must be provided)
 
   # Standalone PostgreSQL deployment (using StatefulSet)
   standalone:
