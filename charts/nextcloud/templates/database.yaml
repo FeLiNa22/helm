@@ -205,8 +205,8 @@ spec:
 
   bootstrap:
     initdb:
-      database: {{ .Values.postgres.database | default "nextcloud" }}
-      owner: {{ .Values.postgres.username | default "nextcloud" }}
+      database: {{ include "nextcloud.postgresql.database" . }}
+      owner: {{ include "nextcloud.postgresql.username" . }}
       secret:
         name: {{ $secretName }}
       {{- if .Values.postgres.initSQL }}

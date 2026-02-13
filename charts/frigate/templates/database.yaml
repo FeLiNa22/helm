@@ -49,8 +49,8 @@ spec:
 
   bootstrap:
     initdb:
-      database: {{ .Values.postgres.database | default "frigate" }}
-      owner: {{ .Values.postgres.username | default "frigate" }}
+      database: {{ include "frigate.postgresql.database" . }}
+      owner: {{ include "frigate.postgresql.username" . }}
       secret:
         name: {{ $secretName }}
       {{- if .Values.postgres.initSQL }}
