@@ -242,8 +242,9 @@ ingress:
 | `postgres.initSQL`                                    | Array of SQL commands to run on database initialization.                                | `[]`                                          |
 | `postgres.username`                                   | Username for the database.                                                              | `nextcloud`                                   |
 | `postgres.database`                                   | Database name for PostgreSQL.                                                           | `nextcloud`                                   |
-| `postgres.password.secretName`                        | Existing secret name for database password (leave empty to auto-create).                | `""`                                          |
+| `postgres.password.secretName`                        | Existing secret name for database password (mutually exclusive with value).             | `""`                                          |
 | `postgres.password.secretKey`                         | Key in the secret containing the password (default: password).                          | `password`                                    |
+| `postgres.password.value`                             | Direct password value (used when secretName is empty, REQUIRED).                        | `""`                                          |
 | `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                                           | `true`                                        |
 | `postgres.standalone.persistence.size`                | Size of the persistence volume.                                                         | `512Mi`                                       |
 | `postgres.standalone.persistence.storageClass`        | Storage class for persistence.                                                          | `ceph-rbd`                                    |
