@@ -38,7 +38,6 @@
 ## @param nodeSelector The node selector to use for the pod.
 ## @param tolerations The tolerations to use for the pod.
 ## @param affinity The affinity to use for the pod.
-## @param env.TZ The timezone to use for the pod.
 ##
 replicaCount: 1
 
