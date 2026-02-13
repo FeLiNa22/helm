@@ -1,18 +1,12 @@
-{{- if .Values.database.enabled }}
-{{- if eq .Values.database.mode "standalone" }}
+{{- if .Values.postgres.enabled }}
 {{- $fullName := include "custom.fullname" . -}}
 {{- $secretName := include "custom.postgresql.secretName" . -}}
 {{- $secretKey := include "custom.postgresql.secretKey" . -}}
 
-{{- if not .Values.database.secret.name }}
+{{- if not .Values.postgres.password.secretName }}
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- if not $existingSecret }}
-{{- $userPassword := "" }}
-{{- if .Values.database.auth.password }}
-{{- $userPassword = .Values.database.auth.password }}
-{{- else }}
-{{- $userPassword = randAlphaNum 32 }}
-{{- end }}
+{{- $userPassword := randAlphaNum 32 }}
 ---
 apiVersion: v1
 kind: Secret
@@ -26,7 +20,8 @@ stringData:
   {{ $secretKey }}: {{ $userPassword }}
 {{- end }}
 {{- end }}
-{{- if .Values.database.initSQL }}
+{{- if eq .Values.postgres.mode "standalone" }}
+{{- if .Values.postgres.initSQL }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -40,7 +35,7 @@ data:
     #!/bin/bash
     set -e
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-      {{- range .Values.database.initSQL }}
+      {{- range .Values.postgres.initSQL }}
       {{ . }}
       {{- end }}
     EOSQL
@@ -86,7 +81,7 @@ spec:
     spec:
       containers:
       - name: postgresql
-        image: "{{ .Values.database.standalone.image.repository }}:{{ .Values.database.standalone.image.tag }}"
+        image: "{{ .Values.postgres.standalone.image.repository }}:{{ .Values.postgres.standalone.image.tag }}"
         imagePullPolicy: IfNotPresent
         ports:
         - name: postgresql
@@ -94,33 +89,33 @@ spec:
           protocol: TCP
         env:
         - name: POSTGRES_USER
-          value: {{ .Values.database.auth.username | quote }}
+          value: {{ .Values.postgres.username | quote }}
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ $secretName }}
               key: {{ $secretKey }}
         - name: POSTGRES_DB
-          value: {{ .Values.database.auth.username | quote }}
+          value: {{ .Values.postgres.username | quote }}
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
-        {{- if .Values.database.initSQL }}
+        {{- if .Values.postgres.initSQL }}
         - name: init-scripts
           mountPath: /docker-entrypoint-initdb.d
         {{- end }}
-        {{- if .Values.database.standalone.resources }}
+        {{- if .Values.postgres.standalone.resources }}
         resources:
-          {{- toYaml .Values.database.standalone.resources | nindent 10 }}
+          {{- toYaml .Values.postgres.standalone.resources | nindent 10 }}
         {{- end }}
         livenessProbe:
           exec:
             command:
             - /bin/sh
             - -c
-            - exec pg_isready -U {{ .Values.database.auth.username | quote }} -d {{ .Values.database.auth.username | quote }}
+            - exec pg_isready -U {{ .Values.postgres.username | quote }} -d {{ .Values.postgres.username | quote }}
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
@@ -130,23 +125,23 @@ spec:
             command:
             - /bin/sh
             - -c
-            - exec pg_isready -U {{ .Values.database.auth.username | quote }} -d {{ .Values.database.auth.username | quote }}
+            - exec pg_isready -U {{ .Values.postgres.username | quote }} -d {{ .Values.postgres.username | quote }}
           initialDelaySeconds: 5
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 6
       volumes:
-      {{- if .Values.database.initSQL }}
+      {{- if .Values.postgres.initSQL }}
       - name: init-scripts
         configMap:
           name: {{ $fullName }}-postgresql-init
           defaultMode: 0755
       {{- end }}
-      {{- if not .Values.database.persistence.enabled }}
+      {{- if not .Values.postgres.standalone.persistence.enabled }}
       - name: data
         emptyDir: {}
       {{- end }}
-  {{- if .Values.database.persistence.enabled }}
+  {{- if .Values.postgres.standalone.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -156,53 +151,53 @@ spec:
     spec:
       accessModes:
         - ReadWriteOnce
-      {{- if .Values.database.persistence.storageClass }}
-      storageClassName: {{ .Values.database.persistence.storageClass }}
+      {{- if .Values.postgres.standalone.persistence.storageClass }}
+      storageClassName: {{ .Values.postgres.standalone.persistence.storageClass }}
       {{- end }}
       resources:
         requests:
-          storage: {{ .Values.database.persistence.size }}
+          storage: {{ .Values.postgres.standalone.persistence.size }}
   {{- end }}
-{{- else if eq .Values.database.mode "cluster" }}
+{{- else if eq .Values.postgres.mode "cluster" }}
 {{- $fullName := include "custom.fullname" . -}}
+{{- $secretName := include "custom.postgresql.secretName" . -}}
+---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.database.cluster.name }}
+  name: {{ .Release.Name }}-custom-db
   labels:
     {{- include "custom.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
 spec:
-  instances: {{ .Values.database.cluster.instances }}
+  instances: {{ .Values.postgres.cluster.instances }}
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: switchover
 
-  imageName: {{ .Values.database.cluster.image.repository }}:{{ .Values.database.cluster.image.tag }}
+  imageName: {{ .Values.postgres.cluster.image.repository }}:{{ .Values.postgres.cluster.image.tag }}
 
   bootstrap:
     initdb:
-      database: {{ .Values.database.auth.username }}
-      owner: {{ .Values.database.auth.username }}
-      {{- if .Values.database.secret.name }}
+      database: {{ include "custom.postgresql.database" . }}
+      owner: {{ include "custom.postgresql.username" . }}
       secret:
-        name: {{ .Values.database.secret.name }}
-      {{- end }}
-      {{- if .Values.database.initSQL }}
+        name: {{ $secretName }}
+      {{- if .Values.postgres.initSQL }}
       postInitSQL:
-        {{- toYaml .Values.database.initSQL | nindent 8 }}
+        {{- toYaml .Values.postgres.initSQL | nindent 8 }}
       {{- end }}
 
   managed:
     roles:
-    - name: {{ .Values.database.auth.username }}
+    - name: {{ include "custom.postgresql.username" . }}
       ensure: present
       login: true
       superuser: true
 
   storage:
-    size: {{ .Values.database.persistence.size }}
-    {{- if .Values.database.persistence.storageClass }}
-    storageClass: {{ .Values.database.persistence.storageClass }}
+    size: {{ .Values.postgres.cluster.persistence.size }}
+    {{- if .Values.postgres.cluster.persistence.storageClass }}
+    storageClass: {{ .Values.postgres.cluster.persistence.storageClass }}
     {{- end }}
 
   postgresql:
@@ -225,31 +220,31 @@ spec:
   monitoring:
     enablePodMonitor: false
 
-  {{- if .Values.database.cluster.pitrBackup.enabled }}
+  {{- if .Values.postgres.cluster.pitrBackup.enabled }}
   backup:
     barmanObjectStore:
-      destinationPath: {{ .Values.database.cluster.pitrBackup.objectStorage.destinationPath }}
-      {{- if .Values.database.cluster.pitrBackup.objectStorage.endpointURL }}
-      endpointURL: {{ .Values.database.cluster.pitrBackup.objectStorage.endpointURL }}
+      destinationPath: {{ .Values.postgres.cluster.pitrBackup.objectStorage.destinationPath }}
+      {{- if .Values.postgres.cluster.pitrBackup.objectStorage.endpointURL }}
+      endpointURL: {{ .Values.postgres.cluster.pitrBackup.objectStorage.endpointURL }}
       {{- end }}
-      {{- if .Values.database.cluster.pitrBackup.objectStorage.secretName }}
+      {{- if .Values.postgres.cluster.pitrBackup.objectStorage.secretName }}
       s3Credentials:
         accessKeyId:
-          name: {{ .Values.database.cluster.pitrBackup.objectStorage.secretName }}
+          name: {{ .Values.postgres.cluster.pitrBackup.objectStorage.secretName }}
           key: ACCESS_KEY_ID
         secretAccessKey:
-          name: {{ .Values.database.cluster.pitrBackup.objectStorage.secretName }}
+          name: {{ .Values.postgres.cluster.pitrBackup.objectStorage.secretName }}
           key: ACCESS_SECRET_KEY
-        {{- if .Values.database.cluster.pitrBackup.objectStorage.region }}
+        {{- if .Values.postgres.cluster.pitrBackup.objectStorage.region }}
         region:
-          value: {{ .Values.database.cluster.pitrBackup.objectStorage.region }}
+          value: {{ .Values.postgres.cluster.pitrBackup.objectStorage.region }}
         {{- end }}
       {{- end }}
       wal:
         compression: gzip
       data:
         compression: gzip
-    retentionPolicy: {{ .Values.database.cluster.pitrBackup.retentionPolicy | default "30d" | quote }}
+    retentionPolicy: {{ .Values.postgres.cluster.pitrBackup.retentionPolicy | default "30d" | quote }}
   {{- end }}
 
   {{- if .Values.nodeSelector }}

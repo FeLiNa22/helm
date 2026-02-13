@@ -44,19 +44,25 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Global parameters
 
-| Name                       | Description                                                                                                                                      | Value  |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| `global.postgresqlEnabled` | Whether to deploy the postgresql subchart. Check the [chart](https://artifacthub.io/packages/helm/bitnami/postgresql) for configuration.         | `true` |
-| `global.redisEnabled`      | Whether to deploy the redis chart as subchart. Check [the official chart](https://artifacthub.io/packages/helm/bitnami/redis) for configuration. | `true` |
-| `global.minioEnabled`      | Whether to deploy the minio chart as subchart. Check [the official chart](https://artifacthub.io/packages/helm/bitnami/minio) for configuration. | `true` |
+| Name                       | Description                                                                                                                                      | Value   |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
+| `global.minioEnabled`      | Whether to deploy the minio chart as subchart. Check [the official chart](https://artifacthub.io/packages/helm/bitnami/minio) for configuration. | `true`  |
+| `global.postgresqlEnabled` | (DEPRECATED) Legacy flag for Bitnami PostgreSQL subchart. Use database.mode instead.                                                             | `false` |
+| `global.redisEnabled`      | (DEPRECATED) Legacy flag for Bitnami Redis subchart. Use dragonfly.enabled instead.                                                              | `false` |
 
 ### Image parameters
 
-| Name                    | Description                                   | Value                 |
-| ----------------------- | --------------------------------------------- | --------------------- |
-| `image.repository`      | The Docker repository to pull the image from. | `outlinewiki/outline` |
-| `image.tag`             | The image tag to use.                         | `0.82.0`              |
-| `image.imagePullPolicy` | The logic of image pulling.                   | `IfNotPresent`        |
+| Name                          | Description                                                                            | Value                 |
+| ----------------------------- | -------------------------------------------------------------------------------------- | --------------------- |
+| `image.repository`            | The Docker repository to pull the image from.                                          | `outlinewiki/outline` |
+| `image.tag`                   | The image tag to use.                                                                  | `0.87.4`              |
+| `image.imagePullPolicy`       | The logic of image pulling.                                                            | `IfNotPresent`        |
+| `image.autoupdate.enabled`    | Enable automatic image updates via ArgoCD Image Updater.                               | `false`               |
+| `image.autoupdate.strategy`   | Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest). | `""`                  |
+| `image.autoupdate.allowTags`  | Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").  | `""`                  |
+| `image.autoupdate.ignoreTags` | List of glob patterns to ignore specific tags.                                         | `[]`                  |
+| `image.autoupdate.pullSecret` | Reference to secret for private registry authentication.                               | `""`                  |
+| `image.autoupdate.platforms`  | List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).                       | `[]`                  |
 
 ### Deployment parameters
 
@@ -74,11 +80,15 @@ The command removes all the Kubernetes components associated with the chart and 
 | `outline.service.url`                                      | The URL where the application will be accessible.                                                     | `https://app.outline.dev` |
 | `outline.service.port`                                     | The port on which the application will run.                                                           | `3000`                    |
 | `outline.fileStorage.type`                                 | Type of file storage to be used (e.g., local, s3).                                                    | `s3`                      |
-| `outline.fileStorage.storageClassName`                     | The storageclass name to use default "".                                                              | `""`                      |
-| `outline.fileStorage.storageSize`                          | The storageclass size to use default 250Gi.                                                           | `250Gi`                   |
+| `outline.fileStorage.storageClassName`                     | The storageclass name to use default "".                                                              | `ceph-rbd`                |
+| `outline.fileStorage.storageSize`                          | The storageclass size to use default 250Gi.                                                           | `512Mi`                   |
 | `outline.fileStorage.localRootDir`                         | Local directory path for storing files, if using local storage.                                       | `/var/lib/outline/data`   |
 | `outline.fileStorage.uploadMaxSize`                        | Maximum file upload size limit.                                                                       | `26214400`                |
 | `outline.fileStorage.initContainerSecurityContext.enabled` | Whether to set the security context for the initContainer. Useful for deployments on GKE and similar. | `false`                   |
+| `outline.fileStorage.backup.enabled`                       | Whether to enable backup persistence for file storage.                                                | `true`                    |
+| `outline.fileStorage.backup.storageClassName`              | The storage class to use for backup persistence.                                                      | `cephfs`                  |
+| `outline.fileStorage.backup.storageSize`                   | The size to use for backup persistence.                                                               | `512Mi`                   |
+| `outline.fileStorage.backup.existingClaim`                 | The name of an existing claim to use for backup persistence.                                          | `""`                      |
 | `outline.nodeSelector`                                     | Optional node selector to use.                                                                        | `{}`                      |
 | `outline.tolerations`                                      | Whether to set node tolerations.                                                                      | `[]`                      |
 | `outline.affinity`                                         | Whether to set node affinity.                                                                         | `{}`                      |
@@ -154,28 +164,83 @@ The command removes all the Kubernetes components associated with the chart and 
 | `auth.oidc.displayName`                                    | Name to display for OIDC authentication.                                                              | `OpenID Connect`          |
 | `auth.oidc.scopes`                                         | OIDC scopes to request.                                                                               | `openid profile email`    |
 
+### Service parameters
+
+| Name           | Description                             | Value          |
+| -------------- | --------------------------------------- | -------------- |
+| `service.type` | The type of service to create.          | `LoadBalancer` |
+| `service.port` | The port on which the service will run. | `80`           |
+
 ### Ingress parameters
 
-| Name                                                    | Description                                           | Value    |
-| ------------------------------------------------------- | ----------------------------------------------------- | -------- |
-| `ingress.enabled`                                       | Whether to enable the ingress.                        | `false`  |
-| `ingress.annotations`                                   | Annotations for the Ingress resource.                 | `{}`     |
-| `ingress.tls.enabled`                                   | Enable TLS for the Ingress.                           | `false`  |
-| `ingress.tls.hosts`                                     | List of hosts for which the TLS certificate is valid. | `[]`     |
-| `ingress.rules.host`                                    | The host name that the Ingress will respond to.       | `""`     |
-| `ingress.rules.http.paths[0].path`                      | URL path for the HTTP rule.                           | `/`      |
-| `ingress.rules.http.paths[0].pathType`                  | Type of path matching.                                | `Prefix` |
-| `ingress.rules.http.paths[0].backend.service.name`      | Name of the service that serves the specified path.   | `""`     |
-| `ingress.rules.http.paths[0].backend.service.port.name` | Name of the service port.                             | `web`    |
+| Name                                                     | Description                                           | Value    |
+| -------------------------------------------------------- | ----------------------------------------------------- | -------- |
+| `ingress.enabled`                                        | Whether to enable the ingress.                        | `true`   |
+| `ingress.annotations`                                    | Annotations for the Ingress resource.                 | `{}`     |
+| `ingress.tls.enabled`                                    | Enable TLS for the Ingress.                           | `false`  |
+| `ingress.tls.hosts`                                      | List of hosts for which the TLS certificate is valid. | `[]`     |
+| `ingress.rules.host`                                     | The host name that the Ingress will respond to.       | `""`     |
+| `ingress.rules.http.paths[0].path`                       | URL path for the HTTP rule.                           | `/`      |
+| `ingress.rules.http.paths[0].pathType`                   | Type of path matching.                                | `Prefix` |
+| `ingress.rules.http.paths[0].backend.service.secretName` | Name of the service that serves the specified path.   | `""`     |
+| `ingress.rules.http.paths[0].backend.service.port.name`  | Name of the service port.                             | `web`    |
 
-### Redis parameters
+### DragonflyDB parameters
+
+| Name                                            | Description                                                                 | Value                                         |
+| ----------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------- |
+| `dragonfly.enabled`                             | Whether to enable DragonflyDB/Redis for Outline.                            | `true`                                        |
+| `dragonfly.mode`                                | The mode of DragonflyDB deployment: 'standalone', 'cluster', or 'external'. | `standalone`                                  |
+| `dragonfly.standalone.image.repository`         | The Docker repository for Dragonfly image.                                  | `docker.dragonflydb.io/dragonflydb/dragonfly` |
+| `dragonfly.standalone.image.tag`                | The image tag for Dragonfly.                                                | `v1.25.2`                                     |
+| `dragonfly.standalone.resources`                | Resource limits and requests for standalone Dragonfly.                      | `{}`                                          |
+| `dragonfly.standalone.persistence.enabled`      | Whether to enable persistence for standalone Dragonfly.                     | `true`                                        |
+| `dragonfly.standalone.persistence.size`         | Size of the persistence volume for standalone Dragonfly.                    | `512Mi`                                       |
+| `dragonfly.standalone.persistence.storageClass` | Storage class for standalone Dragonfly persistence.                         | `""`                                          |
+| `dragonfly.standalone.persistence.accessMode`   | Access mode for standalone Dragonfly persistence volume.                    | `ReadWriteOnce`                               |
+| `dragonfly.cluster.replicas`                    | Number of Dragonfly replicas in the cluster.                                | `2`                                           |
+| `dragonfly.cluster.image.repository`            | The Docker repository for Dragonfly cluster image.                          | `docker.dragonflydb.io/dragonflydb/dragonfly` |
+| `dragonfly.cluster.image.tag`                   | The image tag for Dragonfly cluster.                                        | `v1.25.2`                                     |
+| `dragonfly.cluster.resources`                   | Resource limits and requests for Dragonfly cluster.                         | `{}`                                          |
+| `dragonfly.cluster.persistence.enabled`         | Whether to enable persistence for Dragonfly cluster.                        | `true`                                        |
+| `dragonfly.cluster.persistence.size`            | Size of the persistence volume for Dragonfly cluster.                       | `512Mi`                                       |
+| `dragonfly.cluster.persistence.storageClass`    | Storage class for Dragonfly cluster persistence.                            | `""`                                          |
+| `dragonfly.cluster.persistence.accessMode`      | Access mode for Dragonfly cluster persistence volume.                       | `ReadWriteOnce`                               |
+| `dragonfly.cluster.snapshot.cron`               | Cron schedule for Dragonfly cluster snapshots.                              | `*/5 * * * *`                                 |
+| `dragonfly.external.host`                       | Hostname of external DragonflyDB/Redis (when mode is 'external').           | `""`                                          |
+| `dragonfly.external.port`                       | Port of external DragonflyDB/Redis.                                         | `6379`                                        |
+| `dragonfly.external.existingSecret`             | Secret name for external DragonflyDB/Redis password.                        | `""`                                          |
+| `dragonfly.external.secretKey`                  | Key in the secret for the password.                                         | `password`                                    |
+
+### Database parameters
+
+| Name                                        | Description                                                                  | Value                               |
+| ------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------- |
+| `postgres.enabled`                          | Whether to enable PostgreSQL database for Outline (default: true).           | `true`                              |
+| `postgres.mode`                             | The mode of PostgreSQL deployment (only 'cluster' is supported for Outline). | `cluster`                           |
+| `postgres.initSQL`                          | Array of SQL commands to run on database initialization.                     | `[]`                                |
+| `postgres.username`                         | Username for the database.                                                   | `outline`                           |
+| `postgres.database`                         | Database name for PostgreSQL.                                                | `outline`                           |
+| `postgres.password.secretName`              | Existing secret name for database password (leave empty to auto-create).     | `""`                                |
+| `postgres.password.secretKey`               | Key in the secret containing the password (default: password).               | `password`                          |
+| `postgres.cluster.instances`                | Number of PostgreSQL instances (replicas).                                   | `2`                                 |
+| `postgres.cluster.persistence.enabled`      | Enable persistence for cluster PostgreSQL.                                   | `true`                              |
+| `postgres.cluster.persistence.size`         | Size of the persistence volume.                                              | `512Mi`                             |
+| `postgres.cluster.persistence.storageClass` | Storage class for persistence.                                               | `""`                                |
+| `postgres.cluster.image.repository`         | PostgreSQL container image repository.                                       | `ghcr.io/cloudnative-pg/postgresql` |
+| `postgres.cluster.persistence.enabled`      | Enable persistence for cluster PostgreSQL.                                   | `true`                              |
+| `postgres.cluster.persistence.size`         | Size of the persistence volume.                                              | `512Mi`                             |
+| `postgres.cluster.persistence.storageClass` | Storage class for persistence.                                               | `""`                                |
+| `postgres.cluster.image.tag`                | PostgreSQL container image tag.                                              | `16`                                |
+
+### Redis parameters (DEPRECATED - use dragonfly instead)
 
 | Name                 | Description                                                   | Value        |
 | -------------------- | ------------------------------------------------------------- | ------------ |
 | `redis.architecture` | Redis deployment architecture: 'standalone' or 'replication'. | `standalone` |
 | `redis.auth.enabled` | Enable or disable authentication for Redis.                   | `false`      |
 
-### PostgreSQL parameters
+### PostgreSQL parameters (DEPRECATED - use database instead)
 
 | Name                               | Description                                                                                                                                         | Value        |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
@@ -206,6 +271,19 @@ The command removes all the Kubernetes components associated with the chart and 
 | `minio.s3Config.uploadBucketName` | Name of the S3 bucket for uploads.                                                                                                       | `outline`                                   |
 | `minio.s3Config.forcePathStyle`   | Whether to force path style URLs for S3.                                                                                                 | `true`                                      |
 | `minio.s3Config.acl`              | Default ACL for S3 objects.                                                                                                              | `private`                                   |
+
+### ArgoCD Image Updater parameters
+
+| Name                           | Description                                                                                           | Value    |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------- | -------- |
+| `imageUpdater.namespace`       | Namespace where the ImageUpdater CRD will be created.                                                 | `argocd` |
+| `imageUpdater.argocdNamespace` | Namespace where ArgoCD Applications are located.                                                      | `argocd` |
+| `imageUpdater.applicationName` | Name or pattern of the ArgoCD Application to update. Defaults to Release name.                        | `""`     |
+| `imageUpdater.imageAlias`      | Alias for the image in the ImageUpdater CRD. Defaults to Release name.                                | `""`     |
+| `imageUpdater.forceUpdate`     | Force update even if image is not currently deployed.                                                 | `false`  |
+| `imageUpdater.helm`            | Helm-specific configuration for parameter names (e.g., {name: "image.repository", tag: "image.tag"}). | `{}`     |
+| `imageUpdater.kustomize`       | Kustomize-specific configuration (e.g., {name: "original/image"}).                                    | `{}`     |
+| `imageUpdater.writeBackConfig` | Write-back configuration for GitOps.                                                                  | `{}`     |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 

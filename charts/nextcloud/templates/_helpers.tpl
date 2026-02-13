@@ -2,22 +2,37 @@
 PostgreSQL secret name
 */}}
 {{- define "nextcloud.postgresql.secretName" -}}
-{{- if eq .Values.database.mode "standalone" }}
-{{- if .Values.database.auth.existingSecret }}
-{{- .Values.database.auth.existingSecret }}
+{{- if .Values.postgres.password.secretName }}
+{{- .Values.postgres.password.secretName }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
 {{- end }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- if .Values.database.auth.existingSecret }}
-{{- .Values.database.auth.existingSecret }}
-{{- else }}
-{{- printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
 {{- end }}
-{{- else }}
-{{- if not .Values.database.auth.existingSecret }}
-{{- fail "database.auth.existingSecret is required when database.mode is 'external'" }}
+
+{{/*
+PostgreSQL secret key
+*/}}
+{{- define "nextcloud.postgresql.secretKey" -}}
+{{- .Values.postgres.password.secretKey | default "password" }}
 {{- end }}
-{{- .Values.database.auth.existingSecret }}
+
+{{/*
+PostgreSQL host
+*/}}
+{{- define "nextcloud.postgresql.host" -}}
+{{- printf "%s-nextcloud-db-rw" .Release.Name }}
 {{- end }}
+
+{{/*
+PostgreSQL database name
+*/}}
+{{- define "nextcloud.postgresql.database" -}}
+{{- .Values.postgres.database | default "nextcloud" }}
+{{- end }}
+
+{{/*
+PostgreSQL username
+*/}}
+{{- define "nextcloud.postgresql.username" -}}
+{{- .Values.postgres.username | default "nextcloud" }}
 {{- end }}

@@ -44,11 +44,11 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Global parameters
 
-| Name                       | Description                                                                                                                                                        | Value  |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| `global.postgresqlEnabled` | Whether to deploy the Bitnami PostgreSQL chart as subchart. Check [the official chart](https://artifacthub.io/packages/helm/bitnami/postgresql) for configuration. | `true` |
-| `global.redisEnabled`      | Whether to deploy the Bitnami Redis chart as subchart. Check [the official chart](https://artifacthub.io/packages/helm/bitnami/redis) for configuration.           | `true` |
-| `global.imagePullSecrets`  | Global Docker registry secret names as an array.                                                                                                                   | `[]`   |
+| Name                       | Description                                                                          | Value   |
+| -------------------------- | ------------------------------------------------------------------------------------ | ------- |
+| `global.imagePullSecrets`  | Global Docker registry secret names as an array.                                     | `[]`    |
+| `global.postgresqlEnabled` | (DEPRECATED) Legacy flag for Bitnami PostgreSQL subchart. Use database.mode instead. | `false` |
+| `global.redisEnabled`      | (DEPRECATED) Legacy flag for Bitnami Redis subchart. Use dragonfly.enabled instead.  | `false` |
 
 ### Common parameters
 
@@ -63,10 +63,16 @@ The command removes all the Kubernetes components associated with the chart and 
 | Name                                                        | Description                                                                                                                                                     | Value               |
 | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | `backend.image.repository`                                  | The Docker repository to pull the image from.                                                                                                                   | `penpotapp/backend` |
-| `backend.image.tag`                                         | The image tag to use.                                                                                                                                           | `2.2.1`             |
+| `backend.image.tag`                                         | The image tag to use.                                                                                                                                           | `2.12.1`            |
 | `backend.image.imagePullPolicy`                             | The image pull policy to use.                                                                                                                                   | `IfNotPresent`      |
+| `backend.image.autoupdate.enabled`                          | Enable automatic image updates for backend.                                                                                                                     | `false`             |
+| `backend.image.autoupdate.strategy`                         | Update strategy for backend image (semver, latest, newest-build, name, alphabetical, digest).                                                                   | `""`                |
+| `backend.image.autoupdate.allowTags`                        | Match function for allowed tags for backend image.                                                                                                              | `""`                |
+| `backend.image.autoupdate.ignoreTags`                       | List of glob patterns to ignore specific tags for backend image.                                                                                                | `[]`                |
+| `backend.image.autoupdate.pullSecret`                       | Reference to secret for private registry authentication for backend image.                                                                                      | `""`                |
+| `backend.image.autoupdate.platforms`                        | List of target platforms for backend image.                                                                                                                     | `[]`                |
 | `backend.replicaCount`                                      | The number of replicas to deploy.                                                                                                                               | `1`                 |
-| `backend.service.type`                                      | The service type to create.                                                                                                                                     | `ClusterIP`         |
+| `backend.service.type`                                      | The service type to create.                                                                                                                                     | `LoadBalancer`      |
 | `backend.service.port`                                      | The service port to use.                                                                                                                                        | `6060`              |
 | `backend.podSecurityContext.enabled`                        | Enabled Penpot pods' security context. Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod       | `true`              |
 | `backend.podSecurityContext.fsGroup`                        | Set Penpot pod's security context fsGroup                                                                                                                       | `1001`              |
@@ -84,33 +90,45 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Frontend parameters
 
-| Name                             | Description                                                                                                                             | Value                |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
-| `frontend.image.repository`      | The Docker repository to pull the image from.                                                                                           | `penpotapp/frontend` |
-| `frontend.image.tag`             | The image tag to use.                                                                                                                   | `2.2.1`              |
-| `frontend.image.imagePullPolicy` | The image pull policy to use.                                                                                                           | `IfNotPresent`       |
-| `frontend.replicaCount`          | The number of replicas to deploy.                                                                                                       | `1`                  |
-| `frontend.service.type`          | The service type to create.                                                                                                             | `ClusterIP`          |
-| `frontend.service.port`          | The service port to use. Don't change unless you plan to configure NGINX yourself.                                                      | `80`                 |
-| `frontend.ingress.enabled`       | Enable ingress record generation for Penpot frontend.                                                                                   | `false`              |
-| `frontend.ingress.annotations`   | Mapped annotations for the frontend ingress.                                                                                            | `{}`                 |
-| `frontend.ingress.hosts`         | Array style hosts for the frontend ingress.                                                                                             | `[]`                 |
-| `frontend.ingress.tls`           | Array style TLS secrets for the frontend ingress.                                                                                       | `[]`                 |
-| `frontend.affinity`              | Affinity for Penpot pods assignment. Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity | `{}`                 |
-| `frontend.nodeSelector`          | Node labels for Penpot pods assignment. Ref: https://kubernetes.io/docs/user-guide/node-selection/                                      | `{}`                 |
-| `frontend.tolerations`           | Tolerations for Penpot pods assignment. Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/                    | `[]`                 |
-| `frontend.resources.limits`      | The resources limits for the Penpot frontend containers. Ref: https://kubernetes.io/docs/user-guide/compute-resources/                  | `{}`                 |
-| `frontend.resources.requests`    | The requested resources for the Penpot frontend containers. Ref: https://kubernetes.io/docs/user-guide/compute-resources/               | `{}`                 |
+| Name                                   | Description                                                                                                                             | Value                |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| `frontend.image.repository`            | The Docker repository to pull the image from.                                                                                           | `penpotapp/frontend` |
+| `frontend.image.tag`                   | The image tag to use.                                                                                                                   | `2.12.1`             |
+| `frontend.image.imagePullPolicy`       | The image pull policy to use.                                                                                                           | `IfNotPresent`       |
+| `frontend.image.autoupdate.enabled`    | Enable automatic image updates for frontend.                                                                                            | `false`              |
+| `frontend.image.autoupdate.strategy`   | Update strategy for frontend image (semver, latest, newest-build, name, alphabetical, digest).                                          | `""`                 |
+| `frontend.image.autoupdate.allowTags`  | Match function for allowed tags for frontend image.                                                                                     | `""`                 |
+| `frontend.image.autoupdate.ignoreTags` | List of glob patterns to ignore specific tags for frontend image.                                                                       | `[]`                 |
+| `frontend.image.autoupdate.pullSecret` | Reference to secret for private registry authentication for frontend image.                                                             | `""`                 |
+| `frontend.image.autoupdate.platforms`  | List of target platforms for frontend image.                                                                                            | `[]`                 |
+| `frontend.replicaCount`                | The number of replicas to deploy.                                                                                                       | `1`                  |
+| `frontend.service.type`                | The service type to create.                                                                                                             | `LoadBalancer`       |
+| `frontend.service.port`                | The service port to use. Don't change unless you plan to configure NGINX yourself.                                                      | `80`                 |
+| `frontend.ingress.enabled`             | Enable ingress record generation for Penpot frontend.                                                                                   | `true`               |
+| `frontend.ingress.annotations`         | Mapped annotations for the frontend ingress.                                                                                            | `{}`                 |
+| `frontend.ingress.hosts`               | Array style hosts for the frontend ingress.                                                                                             | `[]`                 |
+| `frontend.ingress.tls`                 | Array style TLS secrets for the frontend ingress.                                                                                       | `[]`                 |
+| `frontend.affinity`                    | Affinity for Penpot pods assignment. Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity | `{}`                 |
+| `frontend.nodeSelector`                | Node labels for Penpot pods assignment. Ref: https://kubernetes.io/docs/user-guide/node-selection/                                      | `{}`                 |
+| `frontend.tolerations`                 | Tolerations for Penpot pods assignment. Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/                    | `[]`                 |
+| `frontend.resources.limits`            | The resources limits for the Penpot frontend containers. Ref: https://kubernetes.io/docs/user-guide/compute-resources/                  | `{}`                 |
+| `frontend.resources.requests`          | The requested resources for the Penpot frontend containers. Ref: https://kubernetes.io/docs/user-guide/compute-resources/               | `{}`                 |
 
 ### Exporter parameters
 
 | Name                                                         | Description                                                                                                                                                     | Value                |
 | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
 | `exporter.image.repository`                                  | The Docker repository to pull the image from.                                                                                                                   | `penpotapp/exporter` |
-| `exporter.image.tag`                                         | The image tag to use.                                                                                                                                           | `2.2.1`              |
+| `exporter.image.tag`                                         | The image tag to use.                                                                                                                                           | `2.12.1`             |
 | `exporter.image.imagePullPolicy`                             | The image pull policy to use.                                                                                                                                   | `IfNotPresent`       |
+| `exporter.image.autoupdate.enabled`                          | Enable automatic image updates for exporter.                                                                                                                    | `false`              |
+| `exporter.image.autoupdate.strategy`                         | Update strategy for exporter image (semver, latest, newest-build, name, alphabetical, digest).                                                                  | `""`                 |
+| `exporter.image.autoupdate.allowTags`                        | Match function for allowed tags for exporter image.                                                                                                             | `""`                 |
+| `exporter.image.autoupdate.ignoreTags`                       | List of glob patterns to ignore specific tags for exporter image.                                                                                               | `[]`                 |
+| `exporter.image.autoupdate.pullSecret`                       | Reference to secret for private registry authentication for exporter image.                                                                                     | `""`                 |
+| `exporter.image.autoupdate.platforms`                        | List of target platforms for exporter image.                                                                                                                    | `[]`                 |
 | `exporter.replicaCount`                                      | The number of replicas to deploy.                                                                                                                               | `1`                  |
-| `exporter.service.type`                                      | The service type to create.                                                                                                                                     | `ClusterIP`          |
+| `exporter.service.type`                                      | The service type to create.                                                                                                                                     | `LoadBalancer`       |
 | `exporter.service.port`                                      | The service port to use.                                                                                                                                        | `6061`               |
 | `exporter.podSecurityContext.enabled`                        | Enabled Penpot pods' security context. Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod       | `true`               |
 | `exporter.podSecurityContext.fsGroup`                        | Set Penpot pod's security context fsGroup                                                                                                                       | `1001`               |
@@ -128,14 +146,19 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Persistence parameters
 
-| Name                        | Description                                                                                                                                    | Value               |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| `persistence.enabled`       | Enable persistence using Persistent Volume Claims.                                                                                             | `false`             |
-| `persistence.storageClass`  | Persistent Volume storage class. If undefined (the default) or set to null, no storageClassName spec is set, choosing the default provisioner. | `""`                |
-| `persistence.size`          | Persistent Volume size.                                                                                                                        | `8Gi`               |
-| `persistence.existingClaim` | The name of an existing PVC to use for persistence.                                                                                            | `""`                |
-| `persistence.accessModes`   | Persistent Volume access modes.                                                                                                                | `["ReadWriteOnce"]` |
-| `persistence.annotations`   | Persistent Volume Claim annotations.                                                                                                           | `{}`                |
+| Name                               | Description                                                                                                                                    | Value               |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `persistence.enabled`              | Enable persistence using Persistent Volume Claims.                                                                                             | `true`              |
+| `persistence.storageClass`         | Persistent Volume storage class. If undefined (the default) or set to null, no storageClassName spec is set, choosing the default provisioner. | `ceph-rbd`          |
+| `persistence.size`                 | Persistent Volume size.                                                                                                                        | `512Mi`             |
+| `persistence.existingClaim`        | The name of an existing PVC to use for persistence.                                                                                            | `""`                |
+| `persistence.accessModes`          | Persistent Volume access modes.                                                                                                                | `["ReadWriteOnce"]` |
+| `persistence.annotations`          | Persistent Volume Claim annotations.                                                                                                           | `{}`                |
+| `persistence.backup.enabled`       | Whether to enable backup persistence.                                                                                                          | `true`              |
+| `persistence.backup.storageClass`  | The storage class to use for backup persistence.                                                                                               | `cephfs`            |
+| `persistence.backup.existingClaim` | The name of an existing claim to use for backup persistence.                                                                                   | `""`                |
+| `persistence.backup.accessModes`   | The access modes to use for backup persistence.                                                                                                | `["ReadWriteMany"]` |
+| `persistence.backup.size`          | The size to use for backup persistence.                                                                                                        | `512Mi`             |
 
 ### Penpot Configuration parameters
 
@@ -152,7 +175,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `config.postgresql.password`                        | The database username to use.                                                                                                                                                                                                       | `""`                                                                       |
 | `config.postgresql.existingSecret`                  | The name of an existing secret.                                                                                                                                                                                                     | `""`                                                                       |
 | `config.postgresql.secretKeys.usernameKey`          | The username key to use from an existing secret.                                                                                                                                                                                    | `""`                                                                       |
-| `config.postgresql.secretKeys.passwordKey`          | The password key to use from an existing secret.                                                                                                                                                                                    | `""`                                                                       |
+| `config.postgresql.secretKeys.secretKey`            | The password key to use from an existing secret.                                                                                                                                                                                    | `""`                                                                       |
 | `config.redis.host`                                 | The Redis host to connect to.                                                                                                                                                                                                       | `penpot-redis-headless.penpot.svc.cluster.local`                           |
 | `config.redis.port`                                 | The Redis host port to use.                                                                                                                                                                                                         | `6379`                                                                     |
 | `config.redis.database`                             | The Redis database to connect to.                                                                                                                                                                                                   | `0`                                                                        |
@@ -179,7 +202,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `config.smtp.ssl`                                   | Whether to use SSL for the SMTP connection.                                                                                                                                                                                         | `false`                                                                    |
 | `config.smtp.existingSecret`                        | The name of an existing secret.                                                                                                                                                                                                     | `""`                                                                       |
 | `config.smtp.secretKeys.usernameKey`                | The SMTP username to use from an existing secret.                                                                                                                                                                                   | `""`                                                                       |
-| `config.smtp.secretKeys.passwordKey`                | The SMTP password to use from an existing secret.                                                                                                                                                                                   | `""`                                                                       |
+| `config.smtp.secretKeys.secretKey`                  | The SMTP password to use from an existing secret.                                                                                                                                                                                   | `""`                                                                       |
 | `config.registrationDomainWhitelist`                | Comma separated list of allowed domains to register. Empty to allow all domains.                                                                                                                                                    | `""`                                                                       |
 | `config.providers.google.enabled`                   | Whether to enable Google configuration. To enable Google auth, add `enable-login-with-google` to the flags.                                                                                                                         | `false`                                                                    |
 | `config.providers.google.clientID`                  | The Google client ID to use. To enable Google auth, add `enable-login-with-google` to the flags.                                                                                                                                    | `""`                                                                       |
@@ -225,19 +248,97 @@ The command removes all the Kubernetes components associated with the chart and 
 | `config.providers.secretKeys.oidcClientIDKey`       | The OpenID Connect client ID key to use from an existing secret.                                                                                                                                                                    | `""`                                                                       |
 | `config.providers.secretKeys.oidcClientSecretKey`   | The OpenID Connect client secret key to use from an existing secret.                                                                                                                                                                | `""`                                                                       |
 
-### PostgreSQL configuration (Check for [more parameters here](https://artifacthub.io/packages/helm/bitnami/postgresql))
+### DragonflyDB parameters
 
-| Name                       | Description                             | Value            |
-| -------------------------- | --------------------------------------- | ---------------- |
-| `postgresql.auth.username` | Name for a custom user to create.       | `example`        |
-| `postgresql.auth.password` | Password for the custom user to create. | `secretpassword` |
-| `postgresql.auth.database` | Name for a custom database to create.   | `penpot`         |
+| Name                                            | Description                                                                 | Value                                         |
+| ----------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------- |
+| `dragonfly.enabled`                             | Whether to enable DragonflyDB/Redis for Penpot.                             | `true`                                        |
+| `dragonfly.mode`                                | The mode of DragonflyDB deployment: 'standalone', 'cluster', or 'external'. | `standalone`                                  |
+| `dragonfly.standalone.image.repository`         | The Docker repository for Dragonfly image.                                  | `docker.dragonflydb.io/dragonflydb/dragonfly` |
+| `dragonfly.standalone.image.tag`                | The image tag for Dragonfly.                                                | `v1.25.2`                                     |
+| `dragonfly.standalone.resources`                | Resource limits and requests for standalone Dragonfly.                      | `{}`                                          |
+| `dragonfly.standalone.persistence.enabled`      | Whether to enable persistence for standalone Dragonfly.                     | `true`                                        |
+| `dragonfly.standalone.persistence.size`         | Size of the persistence volume for standalone Dragonfly.                    | `512Mi`                                       |
+| `dragonfly.standalone.persistence.storageClass` | Storage class for standalone Dragonfly persistence.                         | `""`                                          |
+| `dragonfly.standalone.persistence.accessMode`   | Access mode for standalone Dragonfly persistence volume.                    | `ReadWriteOnce`                               |
+| `dragonfly.cluster.replicas`                    | Number of Dragonfly replicas in the cluster.                                | `2`                                           |
+| `dragonfly.cluster.image.repository`            | The Docker repository for Dragonfly cluster image.                          | `docker.dragonflydb.io/dragonflydb/dragonfly` |
+| `dragonfly.cluster.image.tag`                   | The image tag for Dragonfly cluster.                                        | `v1.25.2`                                     |
+| `dragonfly.cluster.resources`                   | Resource limits and requests for Dragonfly cluster.                         | `{}`                                          |
+| `dragonfly.cluster.persistence.enabled`         | Whether to enable persistence for Dragonfly cluster.                        | `true`                                        |
+| `dragonfly.cluster.persistence.size`            | Size of the persistence volume for Dragonfly cluster.                       | `512Mi`                                       |
+| `dragonfly.cluster.persistence.storageClass`    | Storage class for Dragonfly cluster persistence.                            | `""`                                          |
+| `dragonfly.cluster.persistence.accessMode`      | Access mode for Dragonfly cluster persistence volume.                       | `ReadWriteOnce`                               |
+| `dragonfly.cluster.snapshot.cron`               | Cron schedule for Dragonfly cluster snapshots.                              | `*/5 * * * *`                                 |
+| `dragonfly.external.host`                       | Hostname of external DragonflyDB/Redis (when mode is 'external').           | `""`                                          |
+| `dragonfly.external.port`                       | Port of external DragonflyDB/Redis.                                         | `6379`                                        |
+| `dragonfly.external.existingSecret`             | Secret name for external DragonflyDB/Redis password.                        | `""`                                          |
+| `dragonfly.external.secretKey`                  | Key in the secret for the password.                                         | `password`                                    |
 
-### Redis configuration (Check for [more parameters here](https://artifacthub.io/packages/helm/bitnami/redis))
+### Database parameters
+
+| Name                                                  | Description                                                                | Value                               |
+| ----------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------- |
+| `postgres.mode`                                       | The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'. | `standalone`                        |
+| `postgres.initSQL`                                    | Array of SQL commands to run on database initialization.                   | `[]`                                |
+| `postgres.username`                                   | Username for the database.                                                 | `penpot`                            |
+| `postgres.database`                                   | Database name for PostgreSQL.                                              | `penpot`                            |
+| `postgres.password.secretName`                        | Existing secret name for database password (leave empty to auto-create).   | `""`                                |
+| `postgres.password.secretKey`                         | Key in the secret containing the password (default: password).             | `password`                          |
+| `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                              | `true`                              |
+| `postgres.standalone.persistence.size`                | Size of the persistence volume.                                            | `512Mi`                             |
+| `postgres.standalone.persistence.storageClass`        | Storage class for persistence.                                             | `""`                                |
+| `postgres.standalone.persistence.existingClaim`       | Use an existing PVC.                                                       | `""`                                |
+| `postgres.standalone.image.repository`                | PostgreSQL image repository.                                               | `postgres`                          |
+| `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                              | `true`                              |
+| `postgres.standalone.persistence.size`                | Size of the persistence volume.                                            | `512Mi`                             |
+| `postgres.standalone.persistence.storageClass`        | Storage class for persistence.                                             | `""`                                |
+| `postgres.standalone.persistence.existingClaim`       | Use an existing PVC.                                                       | `""`                                |
+| `postgres.standalone.image.tag`                       | PostgreSQL image tag.                                                      | `16-alpine`                         |
+| `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                              | `true`                              |
+| `postgres.standalone.persistence.size`                | Size of the persistence volume.                                            | `512Mi`                             |
+| `postgres.standalone.persistence.storageClass`        | Storage class for persistence.                                             | `""`                                |
+| `postgres.standalone.persistence.existingClaim`       | Use an existing PVC.                                                       | `""`                                |
+| `postgres.standalone.image.autoupdate.enabled`        | Enable automatic image updates for standalone database (default: false).   | `false`                             |
+| `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                              | `true`                              |
+| `postgres.standalone.persistence.size`                | Size of the persistence volume.                                            | `512Mi`                             |
+| `postgres.standalone.persistence.storageClass`        | Storage class for persistence.                                             | `""`                                |
+| `postgres.standalone.persistence.existingClaim`       | Use an existing PVC.                                                       | `""`                                |
+| `postgres.standalone.image.autoupdate.updateStrategy` | Strategy for image updates (e.g., semver, latest).                         | `""`                                |
+| `postgres.standalone.resources`                       | Resource limits and requests for standalone PostgreSQL.                    | `{}`                                |
+| `postgres.cluster.instances`                          | Number of PostgreSQL instances (replicas).                                 | `2`                                 |
+| `postgres.cluster.persistence.enabled`                | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
+| `postgres.cluster.persistence.size`                   | Size of the persistence volume.                                            | `512Mi`                             |
+| `postgres.cluster.persistence.storageClass`           | Storage class for persistence.                                             | `""`                                |
+| `postgres.cluster.image.repository`                   | PostgreSQL container image repository.                                     | `ghcr.io/cloudnative-pg/postgresql` |
+| `postgres.cluster.persistence.enabled`                | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
+| `postgres.cluster.persistence.size`                   | Size of the persistence volume.                                            | `512Mi`                             |
+| `postgres.cluster.persistence.storageClass`           | Storage class for persistence.                                             | `""`                                |
+| `postgres.cluster.image.tag`                          | PostgreSQL container image tag.                                            | `16`                                |
+| `postgres.external.host`                              | Hostname of external PostgreSQL (when mode is 'external').                 | `""`                                |
+| `postgres.external.port`                              | Port of external PostgreSQL.                                               | `5432`                              |
+
+### PostgreSQL configuration (DEPRECATED - use database instead)
+
+| Name                       | Description                             | Value     |
+| -------------------------- | --------------------------------------- | --------- |
+| `postgresql.auth.username` | Name for a custom user to create.       | `example` |
+| `postgresql.auth.password` | Password for the custom user to create. | `""`      |
+| `postgresql.auth.database` | Name for a custom database to create.   | `penpot`  |
+
+### Redis configuration (DEPRECATED - use dragonfly instead)
 
 | Name                 | Description                                | Value   |
 | -------------------- | ------------------------------------------ | ------- |
 | `redis.auth.enabled` | Whether to enable password authentication. | `false` |
+
+### ArgoCD Image Updater parameters
+
+| Name                           | Description                                                                    | Value    |
+| ------------------------------ | ------------------------------------------------------------------------------ | -------- |
+| `imageUpdater.namespace`       | Namespace where the ImageUpdater CRD will be created.                          | `argocd` |
+| `imageUpdater.argocdNamespace` | Namespace where ArgoCD Applications are located.                               | `argocd` |
+| `imageUpdater.applicationName` | Name or pattern of the ArgoCD Application to update. Defaults to Release name. | `""`     |
 
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,

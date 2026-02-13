@@ -46,7 +46,7 @@ spec:
             - containerPort: {{ .Values.n8n.port }}
           env:
             - name: DB_TYPE
-              value: {{ .Values.database.type }}
+              value: {{ .Values.postgres.type }}
             - name: DB_POSTGRESDB_HOST
               value: {{ include "n8n.postgresql.host" . }}
             - name: DB_POSTGRESDB_PORT

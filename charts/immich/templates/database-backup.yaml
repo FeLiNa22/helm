@@ -1,8 +1,8 @@
-{{- if .Values.database.backup.enabled }}
+{{- if .Values.postgres.backup.enabled }}
 {{- $fullName := include "immich.fullname" . -}}
 {{- $secretName := include "immich.postgresql.secretName" . -}}
 {{- $secretKey := include "immich.postgresql.secretKey" . -}}
-{{- if and .Values.database.backup.persistence.enabled (not .Values.database.backup.persistence.existingClaim) }}
+{{- if and .Values.postgres.backup.persistence.enabled (not .Values.postgres.backup.persistence.existingClaim) }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -13,13 +13,13 @@ metadata:
     app.kubernetes.io/component: database-backup
 spec:
   accessModes:
-    - {{ .Values.database.backup.persistence.accessMode | default "ReadWriteOnce" }}
-  {{- if .Values.database.backup.persistence.storageClass }}
-  storageClassName: {{ .Values.database.backup.persistence.storageClass }}
+    - {{ .Values.postgres.backup.persistence.accessMode | default "ReadWriteOnce" }}
+  {{- if .Values.postgres.backup.persistence.storageClass }}
+  storageClassName: {{ .Values.postgres.backup.persistence.storageClass }}
   {{- end }}
   resources:
     requests:
-      storage: {{ .Values.database.backup.persistence.size | default "512Mi" }}
+      storage: {{ .Values.postgres.backup.persistence.size | default "512Mi" }}
 {{- end }}
 ---
 apiVersion: v1
@@ -34,8 +34,8 @@ data:
     #!/bin/bash
     set -e
 
-    BACKUP_DIR="{{ .Values.database.backup.path | default "/backups" }}"
-    RETENTION={{ .Values.database.backup.retention | default 30 }}
+    BACKUP_DIR="/backups"
+    RETENTION={{ .Values.postgres.backup.retention | default 30 }}
     TIMESTAMP=$(date +%Y%m%d_%H%M%S)
     BACKUP_FILE="${BACKUP_DIR}/immich_backup_${TIMESTAMP}.sql.gz"
 
@@ -83,7 +83,7 @@ metadata:
     {{- include "immich.labels" . | nindent 4 }}
     app.kubernetes.io/component: database-backup
 spec:
-  schedule: {{ .Values.database.backup.cron | default "0 2 * * *" | quote }}
+  schedule: {{ .Values.postgres.backup.cron | default "0 2 * * *" | quote }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
@@ -102,10 +102,10 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: backup
-            {{- if and .Values.database.backup.image.repository .Values.database.backup.image.tag }}
-            image: "{{ .Values.database.backup.image.repository }}:{{ .Values.database.backup.image.tag }}"
-            {{- else if eq .Values.database.mode "standalone" }}
-            image: "{{ .Values.database.standalone.image.repository }}:{{ .Values.database.standalone.image.tag }}"
+            {{- if and .Values.postgres.backup.image.repository .Values.postgres.backup.image.tag }}
+            image: "{{ .Values.postgres.backup.image.repository }}:{{ .Values.postgres.backup.image.tag }}"
+            {{- else if eq .Values.postgres.mode "standalone" }}
+            image: "{{ .Values.postgres.standalone.image.repository }}:{{ .Values.postgres.standalone.image.tag }}"
             {{- else }}
             image: "postgres:16-alpine"
             {{- end }}
@@ -131,16 +131,16 @@ spec:
             - name: backup-scripts
               mountPath: /scripts
             - name: backup-data
-              mountPath: {{ .Values.database.backup.path | default "/backups" }}
+              mountPath: /backups
           volumes:
           - name: backup-scripts
             configMap:
               name: {{ $fullName }}-db-backup-script
               defaultMode: 0755
           - name: backup-data
-            {{- if .Values.database.backup.persistence.enabled }}
+            {{- if .Values.postgres.backup.persistence.enabled }}
             persistentVolumeClaim:
-              claimName: {{ .Values.database.backup.persistence.existingClaim | default (printf "%s-db-backup" $fullName) }}
+              claimName: {{ .Values.postgres.backup.persistence.existingClaim | default (printf "%s-db-backup" $fullName) }}
             {{- else }}
             emptyDir: {}
             {{- end }}

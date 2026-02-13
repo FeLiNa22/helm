@@ -285,7 +285,7 @@ service:
 ## @param ingress.rules.host The host name that the Ingress will respond to.
 ## @param ingress.rules.http.paths[0].path URL path for the HTTP rule.
 ## @param ingress.rules.http.paths[0].pathType Type of path matching.
-## @param ingress.rules.http.paths[0].backend.service.name Name of the service that serves the specified path.
+## @param ingress.rules.http.paths[0].backend.service.secretName Name of the service that serves the specified path.
 ## @param ingress.rules.http.paths[0].backend.service.port.name Name of the service port.
 ##
 ingress:
@@ -304,7 +304,7 @@ ingress:
           pathType: Prefix
           backend:
             service:
-              name: ""
+              secretName: ""
               port:
                 name: web
 
@@ -332,7 +332,7 @@ ingress:
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
-## @param dragonfly.external.passwordKey Key in the secret for the password.
+## @param dragonfly.external.secretKey Key in the secret for the password.
 ##
 dragonfly:
   enabled: true
@@ -368,46 +368,48 @@ dragonfly:
     host: ""
     port: 6379
     existingSecret: ""
-    passwordKey: "password"
+    secretKey: "password"
 
 ## @section Database parameters
 ## PostgreSQL database is required for Outline
 ## Note: Outline only supports cluster mode (no standalone or external modes)
 
-## @param database.enabled Whether to enable PostgreSQL database for Outline (default: true).
-## @param database.mode The mode of PostgreSQL deployment (only 'cluster' is supported for Outline).
-## @param database.persistence.enabled Whether to enable persistence for the database (default: true).
-## @param database.persistence.size Size of the persistence volume (default: 10Gi).
-## @param database.persistence.storageClass Storage class for persistence.
-## @param database.persistence.existingClaim The name of an existing claim to use for persistence.
-## @param database.initSQL Array of SQL commands to run on database initialization.
-## @param database.auth.username Username for the database.
-## @param database.auth.password Password for the database user (leave empty to auto-generate).
-## @param database.auth.existingSecret Reference to an existing Kubernetes secret for auth.
-## @param database.cluster.name Name of the database cluster.
-## @param database.cluster.instances Number of PostgreSQL instances (replicas).
-## @param database.cluster.image.repository PostgreSQL container image repository.
-## @param database.cluster.image.tag PostgreSQL container image tag.
+## @param postgres.enabled Whether to enable PostgreSQL database for Outline (default: true).
+## @param postgres.mode The mode of PostgreSQL deployment (only 'cluster' is supported for Outline).
+## @param postgres.initSQL Array of SQL commands to run on database initialization.
+## @param postgres.username Username for the database.
+## @param postgres.database Database name for PostgreSQL.
+## @param postgres.password.secretName Existing secret name for database password (leave empty to auto-create).
+## @param postgres.password.secretKey Key in the secret containing the password (default: password).
+## @param postgres.cluster.instances Number of PostgreSQL instances (replicas).
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
+## @param postgres.cluster.image.repository PostgreSQL container image repository.
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
+## @param postgres.cluster.image.tag PostgreSQL container image tag.
 ##
-database:
+postgres:
   enabled: true
   mode: cluster
-
-  persistence:
-    enabled: true
-    size: 512Mi
-    storageClass: ""
-    existingClaim: ""
-
   initSQL: []
 
-  auth:
-    username: outline
-    password: ""
-    existingSecret: ""
+  username: outline
+  database: "outline"
+
+  # Secret configuration for database password
+  password:
+    secretName: ""  # Leave empty to auto-generate (defaults to <release>-postgresql)
+    secretKey: "password"  # Key in the secret containing the password
 
   cluster:
-    name: outline-db
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: ""
+
     instances: 2
     image:
       repository: ghcr.io/cloudnative-pg/postgresql

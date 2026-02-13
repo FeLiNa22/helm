@@ -125,6 +125,7 @@ tolerations: []
 affinity: {}
 
 ## Additional environment variables for the Immich server
+## @param env.TZ Timezone for the Immich server.
 ## Use map format: key: value
 env:
   TZ: "Europe/London"
@@ -237,7 +238,7 @@ velero:
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
-## @param dragonfly.external.passwordKey Key in the secret for the password.
+## @param dragonfly.external.secretKey Key in the secret for the password.
 ##
 dragonfly:
   # Mode options: 'standalone', 'cluster', or 'external'
@@ -288,77 +289,97 @@ dragonfly:
     host: ""
     port: 6379
     existingSecret: ""
-    passwordKey: "password"
+    secretKey: "password"
 
 ## @section Database parameters
 ## PostgreSQL with vectorchord extension is required for Immich
 
-## @param database.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
-## @param database.persistence.enabled Whether to enable persistence for the database (default: true).
-## @param database.persistence.size Size of the persistence volume (default: 100Mi).
-## @param database.persistence.storageClass Storage class for persistence.
-## @param database.persistence.existingClaim Use an existing PVC instead of creating a new one.
-## @param database.initSQL Array of SQL commands to run on database initialization.
-## @param database.auth.username Username for the database.
-## @param database.auth.password Password for the database user (leave empty to auto-generate).
-## @param database.secret.name Existing secret name for database password (leave empty to auto-create).
-## @param database.secret.passwordKey Key in the secret containing the password (default: password).
-## @param database.standalone.image.repository PostgreSQL image repository (with vectorchord extension).
-## @param database.standalone.image.tag PostgreSQL image tag.
-## @param database.standalone.image.autoupdate.enabled Enable automatic image updates for standalone database (default: false).
-## @param database.standalone.image.autoupdate.updateStrategy Strategy for image updates (e.g., semver, latest).
-## @param database.standalone.resources Resource limits and requests for standalone PostgreSQL.
-## @param database.cluster.name Name of the database cluster.
-## @param database.cluster.instances Number of PostgreSQL instances (replicas).
-## @param database.cluster.image.repository PostgreSQL container image repository (with vectorchord extension).
-## @param database.cluster.image.tag PostgreSQL container image tag.
-## @param database.cluster.pitrBackup.enabled Enable PITR backups for CNPG cluster (default: false).
-## @param database.cluster.pitrBackup.retentionPolicy Retention policy for PITR backups (default: "30d").
-## @param database.cluster.pitrBackup.objectStorage.destinationPath S3 destination path (e.g., s3://bucket/path).
-## @param database.cluster.pitrBackup.objectStorage.endpointURL S3 endpoint URL for non-AWS storage.
-## @param database.cluster.pitrBackup.objectStorage.secretName Secret name containing ACCESS_KEY_ID and ACCESS_SECRET_KEY.
-## @param database.cluster.pitrBackup.objectStorage.region S3 region (optional).
-## @param database.external.host Hostname of external PostgreSQL (when mode is 'external').
-## @param database.external.port Port of external PostgreSQL.
-## @param database.external.database Database name of external PostgreSQL.
-## @param database.external.username Username of external PostgreSQL.
-## @param database.backup.enabled Enable scheduled pg_dump backups for all database modes (default: false).
-## @param database.backup.cron Cron schedule for backups (default: "0 2 * * *" for 2am daily).
-## @param database.backup.retention Number of backups to retain (default: 30).
-## @param database.backup.path Path inside the container for backups (default: /backups).
-## @param database.backup.image.repository Custom image repository for backup job (optional).
-## @param database.backup.image.tag Custom image tag for backup job (optional).
-## @param database.backup.persistence.enabled Enable persistence for backups (default: true).
-## @param database.backup.persistence.size Backup volume size (default: 512Mi).
-## @param database.backup.persistence.storageClass Storage class for backup volume.
-## @param database.backup.persistence.accessMode Access mode for backup volume (default: ReadWriteOnce).
-## @param database.backup.persistence.existingClaim Use existing PVC for backups.
+## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
+## @param postgres.initSQL Array of SQL commands to run on database initialization.
+## @param postgres.username Username for the database.
+## @param postgres.database Database name for PostgreSQL.
+## @param postgres.password.secretName Existing secret name for database password (leave empty to auto-create).
+## @param postgres.password.secretKey Key in the secret containing the password (default: password).
+## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
+## @param postgres.standalone.persistence.size Size of the persistence volume.
+## @param postgres.standalone.persistence.storageClass Storage class for persistence.
+## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
+## @param postgres.standalone.image.repository PostgreSQL image repository (with vectorchord extension).
+## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
+## @param postgres.standalone.persistence.size Size of the persistence volume.
+## @param postgres.standalone.persistence.storageClass Storage class for persistence.
+## @param postgres.standalone.image.tag PostgreSQL image tag.
+## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
+## @param postgres.standalone.persistence.size Size of the persistence volume.
+## @param postgres.standalone.persistence.storageClass Storage class for persistence.
+## @param postgres.standalone.image.autoupdate.enabled Enable automatic image updates for standalone database (default: false).
+## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
+## @param postgres.standalone.persistence.size Size of the persistence volume.
+## @param postgres.standalone.persistence.storageClass Storage class for persistence.
+## @param postgres.standalone.image.autoupdate.updateStrategy Strategy for image updates (e.g., semver, latest).
+## @param postgres.standalone.resources Resource limits and requests for standalone PostgreSQL.
+## @param postgres.cluster.instances Number of PostgreSQL instances (replicas).
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
+## @param postgres.cluster.image.repository PostgreSQL container image repository (with vectorchord extension).
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
+## @param postgres.cluster.image.tag PostgreSQL container image tag.
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
+## @param postgres.cluster.pitrBackup.enabled Enable PITR backups for CNPG cluster (default: false).
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
+## @param postgres.cluster.pitrBackup.retentionPolicy Retention policy for PITR backups (default: "30d").
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
+## @param postgres.cluster.pitrBackup.objectStorage.destinationPath S3 destination path (e.g., s3://bucket/path).
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
+## @param postgres.cluster.pitrBackup.objectStorage.endpointURL S3 endpoint URL for non-AWS storage.
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
+## @param postgres.cluster.pitrBackup.objectStorage.secretName Secret name containing ACCESS_KEY_ID and ACCESS_SECRET_KEY.
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
+## @param postgres.cluster.pitrBackup.objectStorage.region S3 region (optional).
+## @param postgres.external.host Hostname of external PostgreSQL (when mode is 'external').
+## @param postgres.external.port Port of external PostgreSQL.
+## @param postgres.backup.enabled Enable scheduled pg_dump backups for all database modes (default: false).
+## @param postgres.backup.cron Cron schedule for backups (default: "0 2 * * *" for 2am daily).
+## @param postgres.backup.retention Number of backups to retain (default: 30).
+## @param postgres.backup.image.repository Custom image repository for backup job (optional).
+## @param postgres.backup.image.tag Custom image tag for backup job (optional).
+## @param postgres.backup.persistence.enabled Enable persistence for backups (default: true).
+## @param postgres.backup.persistence.size Backup volume size (default: 512Mi).
+## @param postgres.backup.persistence.storageClass Storage class for backup volume.
+## @param postgres.backup.persistence.accessMode Access mode for backup volume (default: ReadWriteOnce).
+## @param postgres.backup.persistence.existingClaim Use existing PVC for backups.
 ##
-database:
+postgres:
   # Mode options: 'standalone', 'cluster', or 'external'
   mode: standalone
-
-  # Common database configuration
-  persistence:
-    enabled: true
-    size: 512Mi
-    storageClass: ""
-    existingClaim: ""
-
   # SQL commands to initialize extensions (vectorchord for Immich)
   # Each line should be a complete SQL statement
   initSQL:
     - "CREATE EXTENSION IF NOT EXISTS vchord CASCADE;"
     - "CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;"
 
-  auth:
-    username: immich
-    password: ""  # Leave empty to auto-generate (persists across upgrades via secret lookup)
+  username: immich
+  database: "immich"  # Database name (used in all modes)
 
   # Secret configuration for database password
-  secret:
-    name: ""  # Leave empty to auto-generate (defaults to <release>-postgresql)
-    passwordKey: "password"  # Key in the secret containing the password
+  password:
+    secretName: ""  # Leave empty to auto-generate (defaults to <release>-postgresql)
+    secretKey: "password"  # Key in the secret containing the password
 
   # Standalone PostgreSQL deployment (using StatefulSet)
   standalone:
@@ -377,9 +398,19 @@ database:
       #   cpu: 100m
       #   memory: 256Mi
 
+
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: ""
+      existingClaim: ""
   # CloudNativePG Cluster deployment (using CNPG operator)
   cluster:
-    name: immich-db
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: ""
+
     instances: 2
     # Use PostgreSQL image with vectorchord extension for Immich
     image:
@@ -407,16 +438,13 @@ database:
   external:
     host: ""
     port: 5432
-    database: "immich"
-    username: "immich"
-    # Password is sourced from the secret configured in database.secret.name / database.secret.passwordKey
+    # Password is sourced from the secret configured in postgres.secret.name / postgres.secret.passwordKey
 
   # Scheduled database backups using pg_dump (works for all database modes)
   backup:
     enabled: false
     cron: "0 2 * * *"  # Daily at 2am
     retention: 30  # Number of backups to retain
-    path: /backups  # Path inside the container where backups are stored
     image:
       repository: ""  # Leave empty to use standalone image or postgres:16-alpine for external mode
       tag: ""

@@ -54,12 +54,12 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 PostgreSQL host
 */}}
 {{- define "n8n.postgresql.host" -}}
-{{- if eq .Values.database.mode "standalone" }}
+{{- if eq .Values.postgres.mode "standalone" }}
 {{- printf "%s-postgresql" (include "n8n.fullname" .) }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- printf "%s-%s-rw" .Release.Name .Values.database.cluster.name }}
+{{- else if eq .Values.postgres.mode "cluster" }}
+{{- printf "%s-n8n-db-rw" .Release.Name }}
 {{- else }}
-{{- .Values.database.external.host }}
+{{- .Values.postgres.external.host }}
 {{- end }}
 {{- end }}
 
@@ -67,8 +67,8 @@ PostgreSQL host
 PostgreSQL port
 */}}
 {{- define "n8n.postgresql.port" -}}
-{{- if eq .Values.database.mode "external" }}
-{{- .Values.database.external.port | default "5432" }}
+{{- if eq .Values.postgres.mode "external" }}
+{{- .Values.postgres.external.port | default "5432" }}
 {{- else }}
 {{- "5432" }}
 {{- end }}
@@ -78,30 +78,24 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "n8n.postgresql.database" -}}
-{{- .Values.database.auth.username }}
+{{- .Values.postgres.database | default "n8n" }}
 {{- end }}
 
 {{/*
 PostgreSQL username
 */}}
 {{- define "n8n.postgresql.username" -}}
-{{- .Values.database.auth.username }}
+{{- .Values.postgres.username | default "n8n" }}
 {{- end }}
 
 {{/*
 PostgreSQL secret name
 */}}
 {{- define "n8n.postgresql.secretName" -}}
-{{- if eq .Values.database.mode "standalone" }}
-{{- if .Values.database.auth.existingSecret }}
-{{- .Values.database.auth.existingSecret }}
+{{- if .Values.postgres.password.secretName }}
+{{- .Values.postgres.password.secretName }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
-{{- end }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
-{{- else }}
-{{- .Values.database.auth.existingSecret }}
 {{- end }}
 {{- end }}
 
@@ -109,5 +103,5 @@ PostgreSQL secret name
 PostgreSQL secret key
 */}}
 {{- define "n8n.postgresql.secretKey" -}}
-{{- "password" }}
+{{- .Values.postgres.password.secretKey | default "password" }}
 {{- end }}

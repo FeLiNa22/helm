@@ -171,7 +171,7 @@ env:
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
-## @param dragonfly.external.passwordKey Key in the secret for the password.
+## @param dragonfly.external.secretKey Key in the secret for the password.
 ##
 dragonfly:
   # Mode options: 'standalone', 'cluster', 'external', or 'disabled'
@@ -223,49 +223,62 @@ dragonfly:
     host: ""
     port: 6379
     existingSecret: ""
-    passwordKey: "password"
+    secretKey: "password"
 
 # Database configuration
-## @param database.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
-## @param database.persistence.enabled Whether to enable persistence for the database (default: true).
-## @param database.persistence.size Size of the persistence volume (default: 100Mi).
-## @param database.persistence.storageClass Storage class for persistence.
-## @param database.persistence.existingClaim Use an existing PVC instead of creating a new one.
-## @param database.initSQL Array of SQL commands to run on database initialization.
-## @param database.auth.username Username for the database.
-## @param database.auth.password Password for the database user (leave empty to auto-generate).
-## @param database.auth.existingSecret Reference to an existing Kubernetes secret for auth.
-## @param database.standalone.image.repository PostgreSQL image repository.
-## @param database.standalone.image.tag PostgreSQL image tag.
-## @param database.standalone.image.autoupdate.enabled Enable automatic image updates for standalone database (default: false).
-## @param database.standalone.image.autoupdate.updateStrategy Strategy for image updates (e.g., semver, latest).
-## @param database.standalone.resources Resource limits and requests for standalone PostgreSQL.
-## @param database.cluster.name Name of the database cluster.
-## @param database.cluster.instances Number of PostgreSQL instances (replicas).
-## @param database.cluster.image.repository PostgreSQL container image repository.
-## @param database.cluster.image.tag PostgreSQL container image tag.
-## @param database.external.host Hostname of external PostgreSQL (when mode is 'external').
-## @param database.external.port Port of external PostgreSQL.
+## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
+## @param postgres.initSQL Array of SQL commands to run on database initialization.
+## @param postgres.username Username for the database.
+## @param postgres.database Database name for PostgreSQL.
+## @param postgres.password.secretName Existing secret name for database password (leave empty to auto-create).
+## @param postgres.password.secretKey Key in the secret containing the password (default: password).
+## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
+## @param postgres.standalone.persistence.size Size of the persistence volume.
+## @param postgres.standalone.persistence.storageClass Storage class for persistence.
+## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
+## @param postgres.standalone.image.repository PostgreSQL image repository.
+## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
+## @param postgres.standalone.persistence.size Size of the persistence volume.
+## @param postgres.standalone.persistence.storageClass Storage class for persistence.
+## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
+## @param postgres.standalone.image.tag PostgreSQL image tag.
+## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
+## @param postgres.standalone.persistence.size Size of the persistence volume.
+## @param postgres.standalone.persistence.storageClass Storage class for persistence.
+## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
+## @param postgres.standalone.image.autoupdate.enabled Enable automatic image updates for standalone database (default: false).
+## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
+## @param postgres.standalone.persistence.size Size of the persistence volume.
+## @param postgres.standalone.persistence.storageClass Storage class for persistence.
+## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
+## @param postgres.standalone.image.autoupdate.updateStrategy Strategy for image updates (e.g., semver, latest).
+## @param postgres.standalone.resources Resource limits and requests for standalone PostgreSQL.
+## @param postgres.cluster.instances Number of PostgreSQL instances (replicas).
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
+## @param postgres.cluster.image.repository PostgreSQL container image repository.
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param postgres.cluster.persistence.size Size of the persistence volume.
+## @param postgres.cluster.persistence.storageClass Storage class for persistence.
+## @param postgres.cluster.image.tag PostgreSQL container image tag.
+## @param postgres.external.host Hostname of external PostgreSQL (when mode is 'external').
+## @param postgres.external.port Port of external PostgreSQL.
 ##
-database:
+postgres:
   # Mode options: 'standalone', 'cluster', or 'external'
   mode: cluster
-
-  # Common database configuration
-  persistence:
-    enabled: true
-    size: 512Mi
-    storageClass: "ceph-rbd"
-    existingClaim: ""
-
   # SQL commands to initialize the database
   # Each line should be a complete SQL statement
   initSQL: []
 
-  auth:
-    username: nextcloud
-    password: ""  # Leave empty to auto-generate (persists across upgrades via secret lookup)
-    existingSecret: ""
+  username: nextcloud
+  database: "nextcloud"
+
+  # Secret configuration for database password
+  password:
+    secretName: ""  # Leave empty to auto-generate (defaults to <release>-postgresql)
+    secretKey: "password"  # Key in the secret containing the password
 
   # Standalone PostgreSQL deployment (using StatefulSet)
   standalone:
@@ -283,9 +296,19 @@ database:
       #   cpu: 100m
       #   memory: 256Mi
 
+
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: "ceph-rbd"
+      existingClaim: ""
   # CloudNativePG Cluster deployment (using CNPG operator)
   cluster:
-    name: nextcloud-db
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: "ceph-rbd"
+
     instances: 2
     image:
       repository: ghcr.io/cloudnative-pg/postgresql

@@ -54,8 +54,8 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 PostgreSQL host
 */}}
 {{- define "outline.postgresql.host" -}}
-{{- if .Values.database.enabled }}
-{{- printf "%s-%s-rw" .Release.Name .Values.database.cluster.name }}
+{{- if .Values.postgres.enabled }}
+{{- printf "%s-outline-db-rw" .Release.Name }}
 {{- end }}
 {{- end }}
 
@@ -70,31 +70,24 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "outline.postgresql.database" -}}
-{{- "outline" }}
+{{- .Values.postgres.database | default "outline" }}
 {{- end }}
 
 {{/*
 PostgreSQL username
 */}}
 {{- define "outline.postgresql.username" -}}
-{{- .Values.database.auth.username }}
+{{- .Values.postgres.username | default "outline" }}
 {{- end }}
 
 {{/*
 PostgreSQL secret name
 */}}
 {{- define "outline.postgresql.secretName" -}}
-{{- if eq .Values.database.mode "cluster" }}
-{{- if .Values.database.auth.existingSecret }}
-{{- .Values.database.auth.existingSecret }}
+{{- if .Values.postgres.password.secretName }}
+{{- .Values.postgres.password.secretName }}
 {{- else }}
-{{- printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
-{{- end }}
-{{- else }}
-{{- if not .Values.database.auth.existingSecret }}
-{{- fail "database.auth.existingSecret is required when database.mode is 'external'" }}
-{{- end }}
-{{- .Values.database.auth.existingSecret }}
+{{- printf "%s-postgresql" .Release.Name }}
 {{- end }}
 {{- end }}
 
@@ -102,7 +95,7 @@ PostgreSQL secret name
 PostgreSQL secret key
 */}}
 {{- define "outline.postgresql.secretKey" -}}
-{{- "password" }}
+{{- .Values.postgres.password.secretKey | default "password" }}
 {{- end }}
 
 {{/*
