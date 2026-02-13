@@ -77,7 +77,7 @@ PostgreSQL database name
 PostgreSQL username
 */}}
 {{- define "outline.postgresql.username" -}}
-{{- .Values.postgres.auth.username }}
+{{- .Values.postgres.username }}
 {{- end }}
 
 {{/*

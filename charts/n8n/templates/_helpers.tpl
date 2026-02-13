@@ -78,14 +78,14 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "n8n.postgresql.database" -}}
-{{- .Values.postgres.auth.username }}
+{{- .Values.postgres.username }}
 {{- end }}
 
 {{/*
 PostgreSQL username
 */}}
 {{- define "n8n.postgresql.username" -}}
-{{- .Values.postgres.auth.username }}
+{{- .Values.postgres.username }}
 {{- end }}
 
 {{/*

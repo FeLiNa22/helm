@@ -78,14 +78,14 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "penpot.postgresql.database" -}}
-{{- .Values.postgres.auth.username }}
+{{- .Values.postgres.username }}
 {{- end }}
 
 {{/*
 PostgreSQL username
 */}}
 {{- define "penpot.postgresql.username" -}}
-{{- .Values.postgres.auth.username }}
+{{- .Values.postgres.username }}
 {{- end }}
 
 {{/*

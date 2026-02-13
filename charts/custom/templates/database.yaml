@@ -100,14 +100,14 @@ spec:
           protocol: TCP
         env:
         - name: POSTGRES_USER
-          value: {{ .Values.postgres.auth.username | quote }}
+          value: {{ .Values.postgres.username | quote }}
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ $secretName }}
               key: {{ $secretKey }}
         - name: POSTGRES_DB
-          value: {{ .Values.postgres.auth.username | quote }}
+          value: {{ .Values.postgres.username | quote }}
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
         volumeMounts:
@@ -126,7 +126,7 @@ spec:
             command:
             - /bin/sh
             - -c
-            - exec pg_isready -U {{ .Values.postgres.auth.username | quote }} -d {{ .Values.postgres.auth.username | quote }}
+            - exec pg_isready -U {{ .Values.postgres.username | quote }} -d {{ .Values.postgres.username | quote }}
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
@@ -136,7 +136,7 @@ spec:
             command:
             - /bin/sh
             - -c
-            - exec pg_isready -U {{ .Values.postgres.auth.username | quote }} -d {{ .Values.postgres.auth.username | quote }}
+            - exec pg_isready -U {{ .Values.postgres.username | quote }} -d {{ .Values.postgres.username | quote }}
           initialDelaySeconds: 5
           periodSeconds: 10
           timeoutSeconds: 5
@@ -189,8 +189,8 @@ spec:
 
   bootstrap:
     initdb:
-      database: {{ .Values.postgres.auth.username }}
-      owner: {{ .Values.postgres.auth.username }}
+      database: {{ .Values.postgres.username }}
+      owner: {{ .Values.postgres.username }}
       secret:
         name: {{ $secretName }}
       {{- if .Values.postgres.initSQL }}
@@ -200,7 +200,7 @@ spec:
 
   managed:
     roles:
-    - name: {{ .Values.postgres.auth.username }}
+    - name: {{ .Values.postgres.username }}
       ensure: present
       login: true
       superuser: true

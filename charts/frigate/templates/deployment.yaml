@@ -105,7 +105,7 @@ spec:
           env:
             {{- if and .Values.postgres.enabled (eq .Values.postgres.mode "cluster") }}
             - name: DB_USER
-              value: {{ .Values.postgres.auth.username }}
+              value: {{ .Values.postgres.username }}
             - name: DB_PASS
               valueFrom:
                 secretKeyRef:
@@ -114,7 +114,7 @@ spec:
             - name: DB_HOST
               value: {{ printf "%s-%s-rw" .Release.Name .Values.postgres.cluster.name }}
             - name: DB_NAME
-              value: {{ .Values.postgres.auth.username }}
+              value: {{ .Values.postgres.username }}
             - name: FRIGATE_DATABASE_URL
               value: "postgresql://$(DB_USER):$(DB_PASS)@$(DB_HOST):5432/$(DB_NAME)"
             {{- end }}

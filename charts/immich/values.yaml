@@ -296,7 +296,7 @@ dragonfly:
 
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
-## @param postgres.auth.username Username for the database.
+## @param postgres.username Username for the database.
 ## @param postgres.auth.password Password for the database user (leave empty to auto-generate).
 ## @param postgres.secret.name Existing secret name for database password (leave empty to auto-create).
 ## @param postgres.secret.passwordKey Key in the secret containing the password (default: password).
@@ -379,8 +379,7 @@ postgres:
     - "CREATE EXTENSION IF NOT EXISTS vchord CASCADE;"
     - "CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;"
 
-  auth:
-    username: immich
+  username: immich
 
   # Secret configuration for database password
   secret:

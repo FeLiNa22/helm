@@ -528,7 +528,7 @@ dragonfly:
 
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
-## @param postgres.auth.username Username for the database.
+## @param postgres.username Username for the database.
 ## @param postgres.secret.name Existing secret name for database password (leave empty to auto-create).
 ## @param postgres.secret.passwordKey Key in the secret containing the password (default: password).
 ## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
@@ -570,8 +570,7 @@ postgres:
   initSQL: []
     # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
 
-  auth:
-    username: penpot
+  username: penpot
 
   # Secret configuration for database password
   secret:

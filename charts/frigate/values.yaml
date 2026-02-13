@@ -43,7 +43,7 @@
 ## @param postgres.enabled Whether to enable PostgreSQL database for Frigate events (default: true).
 ## @param postgres.mode The mode of PostgreSQL deployment (only 'cluster' is supported for Frigate).
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
-## @param postgres.auth.username Username for the database.
+## @param postgres.username Username for the database.
 ## @param postgres.secret.name Existing secret name for database password (leave empty to auto-create).
 ## @param postgres.secret.passwordKey Key in the secret containing the password (default: password).
 ## @param postgres.cluster.name Name of the database cluster.
@@ -177,8 +177,7 @@ postgres:
   initSQL: []
     # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
 
-  auth:
-    username: frigate
+  username: frigate
 
   # Secret configuration for database password
   secret:

@@ -84,7 +84,7 @@ PostgreSQL database name
 {{- if eq .Values.postgres.mode "external" }}
 {{- .Values.postgres.external.database | default "custom" }}
 {{- else }}
-{{- .Values.postgres.auth.username }}
+{{- .Values.postgres.username }}
 {{- end }}
 {{- end }}
 
@@ -95,7 +95,7 @@ PostgreSQL username
 {{- if eq .Values.postgres.mode "external" }}
 {{- .Values.postgres.external.username | default "custom" }}
 {{- else }}
-{{- .Values.postgres.auth.username }}
+{{- .Values.postgres.username }}
 {{- end }}
 {{- end }}
 

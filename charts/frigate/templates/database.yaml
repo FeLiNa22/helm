@@ -49,8 +49,8 @@ spec:
 
   bootstrap:
     initdb:
-      database: {{ .Values.postgres.auth.username }}
-      owner: {{ .Values.postgres.auth.username }}
+      database: {{ .Values.postgres.username }}
+      owner: {{ .Values.postgres.username }}
       secret:
         name: {{ $secretName }}
       {{- if .Values.postgres.initSQL }}

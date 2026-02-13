@@ -89,9 +89,9 @@ spec:
             - name: POSTGRES_HOST
               value: {{ .Release.Name }}-nextcloud-postgresql
             - name: POSTGRES_DB
-              value: {{ .Values.postgres.auth.username }}
+              value: {{ .Values.postgres.username }}
             - name: POSTGRES_USER
-              value: {{ .Values.postgres.auth.username }}
+              value: {{ .Values.postgres.username }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -102,7 +102,7 @@ spec:
             - name: POSTGRES_HOST
               value: {{ .Release.Name }}-{{ .Values.postgres.cluster.name }}-rw
             - name: POSTGRES_DB
-              value: {{ .Values.postgres.auth.username }}
+              value: {{ .Values.postgres.username }}
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -118,9 +118,9 @@ spec:
             - name: POSTGRES_HOST
               value: {{ .Values.postgres.external.host }}:{{ .Values.postgres.external.port | default 5432 }}
             - name: POSTGRES_DB
-              value: {{ .Values.postgres.auth.username }}
+              value: {{ .Values.postgres.username }}
             - name: POSTGRES_USER
-              value: {{ .Values.postgres.auth.username }}
+              value: {{ .Values.postgres.username }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
