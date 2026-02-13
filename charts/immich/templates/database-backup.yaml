@@ -34,7 +34,7 @@ data:
     #!/bin/bash
     set -e
 
-    BACKUP_DIR="{{ .Values.postgres.backup.path | default "/backups" }}"
+    BACKUP_DIR="/backups"
     RETENTION={{ .Values.postgres.backup.retention | default 30 }}
     TIMESTAMP=$(date +%Y%m%d_%H%M%S)
     BACKUP_FILE="${BACKUP_DIR}/immich_backup_${TIMESTAMP}.sql.gz"
@@ -127,7 +127,7 @@ spec:
             - name: backup-scripts
               mountPath: /scripts
             - name: backup-data
-              mountPath: {{ .Values.postgres.backup.path | default "/backups" }}
+              mountPath: /backups
           volumes:
           - name: backup-scripts
             configMap:

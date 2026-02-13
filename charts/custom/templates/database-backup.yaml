@@ -62,7 +62,7 @@ spec:
             - -c
             - |
               set -e
-              BACKUP_FILE="{{ .Values.postgres.backup.path }}/backup-$(date +%Y%m%d-%H%M%S).sql.gz"
+              BACKUP_FILE="/backups/backup-$(date +%Y%m%d-%H%M%S).sql.gz"
               echo "Starting backup to $BACKUP_FILE"
               PGPASSWORD="$DB_PASSWORD" pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_DATABASE" | gzip > "$BACKUP_FILE"
               echo "Backup completed: $BACKUP_FILE"
@@ -71,7 +71,7 @@ spec:
               RETENTION={{ .Values.postgres.backup.retention }}
               if [ "$RETENTION" -gt 0 ]; then
                 echo "Keeping last $RETENTION backups"
-                cd {{ .Values.postgres.backup.path }}
+                cd /backups
                 if ls backup-*.sql.gz >/dev/null 2>&1; then
                   ls -t backup-*.sql.gz | tail -n +$((RETENTION + 1)) | xargs -r rm -f
                   echo "Cleanup completed"
@@ -82,7 +82,7 @@ spec:
               
               # List remaining backups
               echo "Current backups:"
-              cd {{ .Values.postgres.backup.path }} && ls -lh backup-*.sql.gz 2>/dev/null || echo "No backups found"
+              cd /backups && ls -lh backup-*.sql.gz 2>/dev/null || echo "No backups found"
             env:
             - name: DB_HOST
               value: {{ include "custom.postgresql.host" . }}
@@ -99,7 +99,7 @@ spec:
                   key: {{ $secretKey }}
             volumeMounts:
             - name: backup
-              mountPath: {{ .Values.postgres.backup.path }}
+              mountPath: /backups
           volumes:
           - name: backup
             {{- if .Values.postgres.backup.persistence.enabled }}
