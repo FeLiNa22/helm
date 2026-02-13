@@ -118,6 +118,8 @@ metadata:
     {{- include "immich.labels" . | nindent 4 }}
     app.kubernetes.io/component: dragonfly-cluster
 spec:
+  args:
+    - "--default_lua_flags=allow-undeclared-keys"
   replicas: {{ .Values.dragonfly.cluster.replicas }}
   image: "{{ .Values.dragonfly.cluster.image.repository }}:{{ .Values.dragonfly.cluster.image.tag }}"
   {{- if .Values.dragonfly.cluster.resources }}
