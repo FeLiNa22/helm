@@ -210,107 +210,205 @@ ingress:
 
 ### Immich Server parameters
 
-| Name | Description | Value |
-|------|-------------|-------|
-| `replicaCount` | Number of replicas for the server | `1` |
-| `image.repository` | Server image repository | `ghcr.io/immich-app/immich-server` |
-| `image.pullPolicy` | Image pull policy | `IfNotPresent` |
-| `image.tag` | Server image tag | `v2.4.1` |
-| `service.type` | Service type | `ClusterIP` |
-| `service.port` | Service port | `2283` |
-| `ingress.enabled` | Enable ingress | `false` |
-| `resources` | Resource limits and requests | `{}` |
-| `env` | Additional environment variables (map format) | `{ TZ: "Europe/London" }` |
+| Name                                            | Description                                                                            | Value                              |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------- |
+| `replicaCount`                                  | The number of replicas to deploy for the server.                                       | `1`                                |
+| `image.repository`                              | The Docker repository to pull the image from.                                          | `ghcr.io/immich-app/immich-server` |
+| `image.pullPolicy`                              | The logic of image pulling.                                                            | `IfNotPresent`                     |
+| `image.tag`                                     | The image tag to use.                                                                  | `v2.4.1`                           |
+| `image.autoupdate.enabled`                      | Enable automatic image updates via ArgoCD Image Updater.                               | `false`                            |
+| `image.autoupdate.strategy`                     | Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest). | `""`                               |
+| `image.autoupdate.allowTags`                    | Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").  | `""`                               |
+| `image.autoupdate.ignoreTags`                   | List of glob patterns to ignore specific tags.                                         | `[]`                               |
+| `image.autoupdate.pullSecret`                   | Reference to secret for private registry authentication.                               | `""`                               |
+| `image.autoupdate.platforms`                    | List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).                       | `[]`                               |
+| `imagePullSecrets`                              | The image pull secrets to use.                                                         | `[]`                               |
+| `deployment.strategy.type`                      | The deployment strategy to use.                                                        | `Recreate`                         |
+| `serviceAccount.create`                         | Whether to create a service account.                                                   | `true`                             |
+| `serviceAccount.annotations`                    | Additional annotations to add to the service account.                                  | `{}`                               |
+| `serviceAccount.name`                           | The name of the service account to use.                                                | `""`                               |
+| `podAnnotations`                                | Additional annotations to add to the pod.                                              | `{}`                               |
+| `podSecurityContext`                            | The security context to use for the pod.                                               | `{}`                               |
+| `securityContext`                               | The security context to use for the container.                                         | `{}`                               |
+| `initContainers`                                | Additional init containers to add to the pod.                                          | `[]`                               |
+| `service.type`                                  | The type of service to create.                                                         | `ClusterIP`                        |
+| `service.port`                                  | The port on which the service will run.                                                | `2283`                             |
+| `service.nodePort`                              | The nodePort to use for the service. Only used if service.type is NodePort.            | `""`                               |
+| `ingress.enabled`                               | Whether to create an ingress for the service.                                          | `false`                            |
+| `ingress.className`                             | The ingress class name to use.                                                         | `""`                               |
+| `ingress.annotations`                           | Additional annotations to add to the ingress.                                          | `{}`                               |
+| `ingress.hosts[0].host`                         | The host to use for the ingress.                                                       | `immich.local`                     |
+| `ingress.hosts[0].paths[0].path`                | The path to use for the ingress.                                                       | `/`                                |
+| `ingress.hosts[0].paths[0].pathType`            | The path type to use for the ingress.                                                  | `Prefix`                           |
+| `ingress.tls`                                   | The TLS configuration for the ingress.                                                 | `[]`                               |
+| `resources`                                     | The resources to use for the pod.                                                      | `{}`                               |
+| `autoscaling.enabled`                           | Whether to enable autoscaling.                                                         | `false`                            |
+| `autoscaling.minReplicas`                       | The minimum number of replicas to scale to.                                            | `1`                                |
+| `autoscaling.maxReplicas`                       | The maximum number of replicas to scale to.                                            | `10`                               |
+| `autoscaling.targetCPUUtilizationPercentage`    | The target CPU utilization percentage to use for autoscaling.                          | `80`                               |
+| `autoscaling.targetMemoryUtilizationPercentage` | The target memory utilization percentage to use for autoscaling.                       | `80`                               |
+| `nodeSelector`                                  | The node selector to use for the pod.                                                  | `{}`                               |
+| `tolerations`                                   | The tolerations to use for the pod.                                                    | `[]`                               |
+| `affinity`                                      | The affinity to use for the pod.                                                       | `{}`                               |
+| `env.TZ`                                        | Timezone for the Immich server.                                                        | `Europe/London`                    |
 
 ### Machine Learning parameters
 
-| Name | Description | Value |
-|------|-------------|-------|
-| `machineLearning.enabled` | Enable machine learning component | `true` |
-| `machineLearning.replicaCount` | Number of ML replicas | `1` |
-| `machineLearning.image.repository` | ML image repository | `ghcr.io/immich-app/immich-machine-learning` |
-| `machineLearning.image.tag` | ML image tag | `v2.4.1` |
-| `machineLearning.persistence.enabled` | Enable ML cache persistence | `true` |
-| `machineLearning.persistence.size` | ML cache volume size | `10Gi` |
+| Name                                                  | Description                                       | Value                                        |
+| ----------------------------------------------------- | ------------------------------------------------- | -------------------------------------------- |
+| `machineLearning.enabled`                             | Whether to enable the machine learning component. | `true`                                       |
+| `machineLearning.replicaCount`                        | The number of replicas for machine learning.      | `1`                                          |
+| `machineLearning.image.repository`                    | The Docker repository for machine learning image. | `ghcr.io/immich-app/immich-machine-learning` |
+| `machineLearning.image.pullPolicy`                    | The logic of image pulling.                       | `IfNotPresent`                               |
+| `machineLearning.image.tag`                           | The image tag to use for machine learning.        | `v2.4.1`                                     |
+| `machineLearning.env.MACHINE_LEARNING_WORKERS`        | Number of ML workers to run.                      | `1`                                          |
+| `machineLearning.env.MACHINE_LEARNING_WORKER_TIMEOUT` | ML worker timeout in seconds.                     | `120`                                        |
+| `machineLearning.resources`                           | The resources to use for machine learning pod.    | `{}`                                         |
+| `machineLearning.persistence.enabled`                 | Whether to enable persistence for ML cache.       | `true`                                       |
+| `machineLearning.persistence.storageClass`            | The storage class for ML cache.                   | `""`                                         |
+| `machineLearning.persistence.size`                    | The size of the ML cache volume.                  | `512Mi`                                      |
+| `machineLearning.persistence.accessMode`              | The access mode for the ML cache volume.          | `ReadWriteOnce`                              |
 
 ### Persistence parameters
 
-| Name | Description | Value |
-|------|-------------|-------|
-| `persistence.library.enabled` | Enable library persistence | `true` |
-| `persistence.library.storageClass` | Storage class | `""` |
-| `persistence.library.existingClaim` | Use existing PVC | `""` |
-| `persistence.library.accessMode` | Access mode | `ReadWriteOnce` |
-| `persistence.library.size` | Volume size | `100Gi` |
+| Name                                | Description                                           | Value           |
+| ----------------------------------- | ----------------------------------------------------- | --------------- |
+| `persistence.library.enabled`       | Whether to enable persistence for the library.        | `true`          |
+| `persistence.library.storageClass`  | The storage class to use for the library.             | `""`            |
+| `persistence.library.existingClaim` | The name of an existing claim to use for the library. | `""`            |
+| `persistence.library.accessMode`    | The access mode to use for the library.               | `ReadWriteOnce` |
+| `persistence.library.size`          | The size to use for the library.                      | `512Mi`         |
+| `persistence.additionalVolumes`     | Additional volumes to add to the pod.                 | `[]`            |
+| `persistence.additionalMounts`      | Additional volume mounts to add to the pod.           | `[]`            |
 
 ### Velero Backup Schedule parameters
 
-| Name | Description | Value |
-|------|-------------|-------|
-| `velero.enabled` | Enable Velero backup schedules | `false` |
-| `velero.schedule` | Cron schedule for backups (e.g., "0 2 * * *") | `0 2 * * *` |
-| `velero.ttl` | Time to live for backups (e.g., "720h" for 30 days) | `720h` |
-| `velero.snapshotVolumes` | Whether to take volume snapshots | `true` |
-| `velero.storageLocation` | Storage location for backups | `""` |
-
-**Note**: When `velero.enabled=true`, a Velero Schedule is created to backup only the Immich library PVC (labeled `velero.io/pvc-type: config`). Other PVCs such as database, Dragonfly, or machine learning cache volumes are not included by default and must be backed up via additional Velero configuration or appropriate PVC labels if needed.
+| Name                              | Description                                                                               | Value       |
+| --------------------------------- | ----------------------------------------------------------------------------------------- | ----------- |
+| `velero.enabled`                  | Whether to enable Velero backup schedules                                                 | `false`     |
+| `velero.namespace`                | The namespace where Velero is deployed (Schedule CRD must be created in Velero namespace) | `velero`    |
+| `velero.schedule`                 | The cron schedule for Velero backups (e.g., "0 2 * * *" for 2am daily)                    | `0 2 * * *` |
+| `velero.ttl`                      | Time to live for backups (e.g., "720h" for 30 days)                                       | `168h`      |
+| `velero.includeClusterResources`  | Whether to include cluster-scoped resources in backup                                     | `false`     |
+| `velero.snapshotVolumes`          | Whether to take volume snapshots                                                          | `true`      |
+| `velero.defaultVolumesToFsBackup` | Whether to use file system backup for volumes by default                                  | `false`     |
+| `velero.storageLocation`          | The storage location for backups (leave empty for default)                                | `""`        |
+| `velero.volumeSnapshotLocations`  | The volume snapshot locations (leave empty for default)                                   | `[]`        |
+| `velero.labelSelector`            | Additional label selector to filter resources (optional)                                  | `{}`        |
+| `velero.annotations`              | Additional annotations to add to the Velero Schedule resources                            | `{}`        |
 
 ### DragonflyDB parameters
 
-| Name | Description | Value |
-|------|-------------|-------|
-| `dragonfly.mode` | Deployment mode: `standalone`, `cluster`, or `external` | `standalone` |
-| `dragonfly.standalone.image.repository` | DragonflyDB image repository | `docker.dragonflydb.io/dragonflydb/dragonfly` |
-| `dragonfly.standalone.image.tag` | DragonflyDB image tag | `v1.25.2` |
-| `dragonfly.standalone.persistence.enabled` | Enable persistence | `true` |
-| `dragonfly.standalone.persistence.size` | Persistence volume size | `5Gi` |
-| `dragonfly.cluster.replicas` | Number of cluster replicas | `2` |
-| `dragonfly.external.host` | External Redis/DragonflyDB host | `""` |
-| `dragonfly.external.port` | External Redis/DragonflyDB port | `6379` |
+| Name                                            | Description                                                                 | Value                                         |
+| ----------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------- |
+| `dragonfly.mode`                                | The mode of DragonflyDB deployment: 'standalone', 'cluster', or 'external'. | `standalone`                                  |
+| `dragonfly.standalone.image.repository`         | The Docker repository for Dragonfly image.                                  | `docker.dragonflydb.io/dragonflydb/dragonfly` |
+| `dragonfly.standalone.image.tag`                | The image tag for Dragonfly.                                                | `v1.36.0`                                     |
+| `dragonfly.standalone.resources`                | Resource limits and requests for standalone Dragonfly.                      | `{}`                                          |
+| `dragonfly.standalone.persistence.enabled`      | Whether to enable persistence for standalone Dragonfly.                     | `true`                                        |
+| `dragonfly.standalone.persistence.size`         | Size of the persistence volume for standalone Dragonfly.                    | `512Mi`                                       |
+| `dragonfly.standalone.persistence.storageClass` | Storage class for standalone Dragonfly persistence.                         | `""`                                          |
+| `dragonfly.standalone.persistence.accessMode`   | Access mode for standalone Dragonfly persistence volume.                    | `ReadWriteOnce`                               |
+| `dragonfly.cluster.replicas`                    | Number of Dragonfly replicas in the cluster.                                | `2`                                           |
+| `dragonfly.cluster.image.repository`            | The Docker repository for Dragonfly cluster image.                          | `docker.dragonflydb.io/dragonflydb/dragonfly` |
+| `dragonfly.cluster.image.tag`                   | The image tag for Dragonfly cluster.                                        | `v1.36.0`                                     |
+| `dragonfly.cluster.resources`                   | Resource limits and requests for Dragonfly cluster.                         | `{}`                                          |
+| `dragonfly.cluster.persistence.enabled`         | Whether to enable persistence for Dragonfly cluster.                        | `true`                                        |
+| `dragonfly.cluster.persistence.size`            | Size of the persistence volume for Dragonfly cluster.                       | `512Mi`                                       |
+| `dragonfly.cluster.persistence.storageClass`    | Storage class for Dragonfly cluster persistence.                            | `""`                                          |
+| `dragonfly.cluster.persistence.accessMode`      | Access mode for Dragonfly cluster persistence volume.                       | `ReadWriteOnce`                               |
+| `dragonfly.cluster.snapshot.cron`               | Cron schedule for Dragonfly cluster snapshots.                              | `*/5 * * * *`                                 |
+| `dragonfly.external.host`                       | Hostname of external DragonflyDB/Redis (when mode is 'external').           | `""`                                          |
+| `dragonfly.external.port`                       | Port of external DragonflyDB/Redis.                                         | `6379`                                        |
+| `dragonfly.external.existingSecret`             | Secret name for external DragonflyDB/Redis password.                        | `""`                                          |
+| `dragonfly.external.secretKey`                  | Key in the secret for the password.                                         | `password`                                    |
 
 ### Database parameters
 
-| Name | Description | Value |
-|------|-------------|-------|
-| `database.mode` | Deployment mode: `standalone`, `cluster`, or `external` | `standalone` |
-| `database.auth.username` | Database username | `immich` |
-| `database.auth.password` | Database password (leave empty to auto-generate) | `""` |
-| `database.secret.name` | Existing secret name for database password (leave empty to auto-create) | `""` |
-| `database.secret.passwordKey` | Key in the secret containing the password | `password` |
-| `database.persistence.enabled` | Enable PostgreSQL persistence | `true` |
-| `database.persistence.size` | PostgreSQL volume size | `10Gi` |
-| `database.persistence.storageClass` | Storage class for PostgreSQL | `""` |
-| `database.standalone.image.repository` | PostgreSQL image with vectorchord | `tensorchord/vchord-postgres` |
-| `database.standalone.image.tag` | PostgreSQL image tag | `pg16-v0.3.0` |
-| `database.cluster.instances` | Number of PostgreSQL instances | `2` |
-| `database.cluster.image.repository` | PostgreSQL image with vectorchord | `tensorchord/cloudnative-vectorchord` |
-| `database.cluster.image.tag` | PostgreSQL image tag | `16-0.3.0` |
-| `database.cluster.pitrBackup.enabled` | Enable PITR backups for CNPG cluster | `false` |
-| `database.cluster.pitrBackup.retentionPolicy` | Retention policy for PITR backups | `30d` |
-| `database.cluster.pitrBackup.objectStorage.destinationPath` | S3 destination path (e.g., s3://bucket/path) | `""` |
-| `database.cluster.pitrBackup.objectStorage.endpointURL` | S3 endpoint URL for non-AWS storage | `""` |
-| `database.cluster.pitrBackup.objectStorage.secretName` | Secret containing ACCESS_KEY_ID and ACCESS_SECRET_KEY | `""` |
-| `database.cluster.pitrBackup.objectStorage.region` | S3 region (optional) | `""` |
-| `database.external.host` | External PostgreSQL host | `""` |
-| `database.external.port` | External PostgreSQL port | `5432` |
-| `database.external.database` | External database name | `immich` |
-| `database.external.username` | External database username | `immich` |
+| Name                                                        | Description                                                                | Value                                                                                                        |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `postgres.mode`                                             | The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'. | `standalone`                                                                                                 |
+| `postgres.initSQL`                                          | Array of SQL commands to run on database initialization.                   | `["CREATE EXTENSION IF NOT EXISTS vchord CASCADE;","CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;"]` |
+| `postgres.username`                                         | Username for the database.                                                 | `immich`                                                                                                     |
+| `postgres.database`                                         | Database name for PostgreSQL.                                              | `immich`                                                                                                     |
+| `postgres.password.secretName`                              | Existing secret name for database password (leave empty to auto-create).   | `""`                                                                                                         |
+| `postgres.password.secretKey`                               | Key in the secret containing the password (default: password).             | `password`                                                                                                   |
+| `postgres.standalone.persistence.enabled`                   | Enable persistence for standalone PostgreSQL.                              | `true`                                                                                                       |
+| `postgres.standalone.persistence.size`                      | Size of the persistence volume.                                            | `512Mi`                                                                                                      |
+| `postgres.standalone.persistence.storageClass`              | Storage class for persistence.                                             | `""`                                                                                                         |
+| `postgres.standalone.persistence.existingClaim`             | Use an existing PVC.                                                       | `""`                                                                                                         |
+| `postgres.standalone.image.repository`                      | PostgreSQL image repository (with vectorchord extension).                  | `tensorchord/vchord-postgres`                                                                                |
+| `postgres.standalone.persistence.enabled`                   | Enable persistence for standalone PostgreSQL.                              | `true`                                                                                                       |
+| `postgres.standalone.persistence.size`                      | Size of the persistence volume.                                            | `512Mi`                                                                                                      |
+| `postgres.standalone.persistence.storageClass`              | Storage class for persistence.                                             | `""`                                                                                                         |
+| `postgres.standalone.image.tag`                             | PostgreSQL image tag.                                                      | `pg16-v0.3.0`                                                                                                |
+| `postgres.standalone.persistence.enabled`                   | Enable persistence for standalone PostgreSQL.                              | `true`                                                                                                       |
+| `postgres.standalone.persistence.size`                      | Size of the persistence volume.                                            | `512Mi`                                                                                                      |
+| `postgres.standalone.persistence.storageClass`              | Storage class for persistence.                                             | `""`                                                                                                         |
+| `postgres.standalone.image.autoupdate.enabled`              | Enable automatic image updates for standalone database (default: false).   | `false`                                                                                                      |
+| `postgres.standalone.persistence.enabled`                   | Enable persistence for standalone PostgreSQL.                              | `true`                                                                                                       |
+| `postgres.standalone.persistence.size`                      | Size of the persistence volume.                                            | `512Mi`                                                                                                      |
+| `postgres.standalone.persistence.storageClass`              | Storage class for persistence.                                             | `""`                                                                                                         |
+| `postgres.standalone.image.autoupdate.updateStrategy`       | Strategy for image updates (e.g., semver, latest).                         | `""`                                                                                                         |
+| `postgres.standalone.resources`                             | Resource limits and requests for standalone PostgreSQL.                    | `{}`                                                                                                         |
+| `postgres.cluster.instances`                                | Number of PostgreSQL instances (replicas).                                 | `2`                                                                                                          |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                                                                                                       |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `512Mi`                                                                                                      |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                                                                                         |
+| `postgres.cluster.image.repository`                         | PostgreSQL container image repository (with vectorchord extension).        | `tensorchord/cloudnative-vectorchord`                                                                        |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                                                                                                       |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `512Mi`                                                                                                      |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                                                                                         |
+| `postgres.cluster.image.tag`                                | PostgreSQL container image tag.                                            | `16-0.3.0`                                                                                                   |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                                                                                                       |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `512Mi`                                                                                                      |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                                                                                         |
+| `postgres.cluster.pitrBackup.enabled`                       | Enable PITR backups for CNPG cluster (default: false).                     | `false`                                                                                                      |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                                                                                                       |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `512Mi`                                                                                                      |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                                                                                         |
+| `postgres.cluster.pitrBackup.retentionPolicy`               | Retention policy for PITR backups (default: "30d").                        | `30d`                                                                                                        |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                                                                                                       |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `512Mi`                                                                                                      |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                                                                                         |
+| `postgres.cluster.pitrBackup.objectStorage.destinationPath` | S3 destination path (e.g., s3://bucket/path).                              | `""`                                                                                                         |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                                                                                                       |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `512Mi`                                                                                                      |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                                                                                         |
+| `postgres.cluster.pitrBackup.objectStorage.endpointURL`     | S3 endpoint URL for non-AWS storage.                                       | `""`                                                                                                         |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                                                                                                       |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `512Mi`                                                                                                      |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                                                                                         |
+| `postgres.cluster.pitrBackup.objectStorage.secretName`      | Secret name containing ACCESS_KEY_ID and ACCESS_SECRET_KEY.                | `""`                                                                                                         |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                                                                                                       |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `512Mi`                                                                                                      |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                                                                                         |
+| `postgres.cluster.pitrBackup.objectStorage.region`          | S3 region (optional).                                                      | `""`                                                                                                         |
+| `postgres.external.host`                                    | Hostname of external PostgreSQL (when mode is 'external').                 | `""`                                                                                                         |
+| `postgres.external.port`                                    | Port of external PostgreSQL.                                               | `5432`                                                                                                       |
+| `postgres.backup.enabled`                                   | Enable scheduled pg_dump backups for all database modes (default: false).  | `false`                                                                                                      |
+| `postgres.backup.cron`                                      | Cron schedule for backups (default: "0 2 * * *" for 2am daily).            | `0 2 * * *`                                                                                                  |
+| `postgres.backup.retention`                                 | Number of backups to retain (default: 30).                                 | `30`                                                                                                         |
+| `postgres.backup.image.repository`                          | Custom image repository for backup job (optional).                         | `""`                                                                                                         |
+| `postgres.backup.image.tag`                                 | Custom image tag for backup job (optional).                                | `""`                                                                                                         |
+| `postgres.backup.persistence.enabled`                       | Enable persistence for backups (default: true).                            | `true`                                                                                                       |
+| `postgres.backup.persistence.size`                          | Backup volume size (default: 512Mi).                                       | `512Mi`                                                                                                      |
+| `postgres.backup.persistence.storageClass`                  | Storage class for backup volume.                                           | `""`                                                                                                         |
+| `postgres.backup.persistence.accessMode`                    | Access mode for backup volume (default: ReadWriteOnce).                    | `ReadWriteOnce`                                                                                              |
+| `postgres.backup.persistence.existingClaim`                 | Use existing PVC for backups.                                              | `""`                                                                                                         |
 
-### Database Backup parameters (pg_dump)
+### ArgoCD Image Updater parameters
 
-| Name | Description | Value |
-|------|-------------|-------|
-| `database.backup.enabled` | Enable scheduled pg_dump backups for all database modes | `false` |
-| `database.backup.cron` | Cron schedule for backups (e.g., "0 2 * * *" for 2am daily) | `0 2 * * *` |
-| `database.backup.retention` | Number of backups to retain | `30` |
-| `database.backup.path` | Path inside the container for backups | `/backups` |
-| `database.backup.image.repository` | Custom image for backup job (optional) | `""` |
-| `database.backup.image.tag` | Custom image tag for backup job (optional) | `""` |
-| `database.backup.persistence.enabled` | Enable persistence for backups | `true` |
-| `database.backup.persistence.size` | Backup volume size | `512Mi` |
-| `database.backup.persistence.storageClass` | Storage class for backup volume | `""` |
-| `database.backup.persistence.accessMode` | Access mode for backup volume | `ReadWriteOnce` |
-| `database.backup.persistence.existingClaim` | Use existing PVC for backups | `""` |
+| Name                           | Description                                                                                           | Value    |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------- | -------- |
+| `imageUpdater.namespace`       | Namespace where the ImageUpdater CRD will be created.                                                 | `argocd` |
+| `imageUpdater.argocdNamespace` | Namespace where ArgoCD Applications are located.                                                      | `argocd` |
+| `imageUpdater.applicationName` | Name or pattern of the ArgoCD Application to update. Defaults to Release name.                        | `""`     |
+| `imageUpdater.imageAlias`      | Alias for the image in the ImageUpdater CRD. Defaults to Release name.                                | `""`     |
+| `imageUpdater.forceUpdate`     | Force update even if image is not currently deployed.                                                 | `false`  |
+| `imageUpdater.helm`            | Helm-specific configuration for parameter names (e.g., {name: "image.repository", tag: "image.tag"}). | `{}`     |
+| `imageUpdater.kustomize`       | Kustomize-specific configuration (e.g., {name: "original/image"}).                                    | `{}`     |
+| `imageUpdater.writeBackConfig` | Write-back configuration for GitOps.                                                                  | `{}`     |
 
 ## Upgrading
 

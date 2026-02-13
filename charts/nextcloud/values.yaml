@@ -171,7 +171,7 @@ env:
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
-## @param dragonfly.external.passwordKey Key in the secret for the password.
+## @param dragonfly.external.secretKey Key in the secret for the password.
 ##
 dragonfly:
   # Mode options: 'standalone', 'cluster', 'external', or 'disabled'
@@ -229,8 +229,9 @@ dragonfly:
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.username Username for the database.
-## @param postgres.secret.name Existing secret name for database password (leave empty to auto-create).
-## @param postgres.secret.passwordKey Key in the secret containing the password (default: password).
+## @param postgres.database Database name for PostgreSQL.
+## @param postgres.password.secretName Existing secret name for database password (leave empty to auto-create).
+## @param postgres.password.secretKey Key in the secret containing the password (default: password).
 ## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
 ## @param postgres.standalone.persistence.size Size of the persistence volume.
 ## @param postgres.standalone.persistence.storageClass Storage class for persistence.
@@ -252,7 +253,6 @@ dragonfly:
 ## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
 ## @param postgres.standalone.image.autoupdate.updateStrategy Strategy for image updates (e.g., semver, latest).
 ## @param postgres.standalone.resources Resource limits and requests for standalone PostgreSQL.
-## @param postgres.cluster.name Name of the database cluster.
 ## @param postgres.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
 ## @param postgres.cluster.persistence.size Size of the persistence volume.

@@ -125,6 +125,7 @@ tolerations: []
 affinity: {}
 
 ## Additional environment variables for the Immich server
+## @param env.TZ Timezone for the Immich server.
 ## Use map format: key: value
 env:
   TZ: "Europe/London"
@@ -237,7 +238,7 @@ velero:
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
-## @param dragonfly.external.passwordKey Key in the secret for the password.
+## @param dragonfly.external.secretKey Key in the secret for the password.
 ##
 dragonfly:
   # Mode options: 'standalone', 'cluster', or 'external'
@@ -288,7 +289,7 @@ dragonfly:
     host: ""
     port: 6379
     existingSecret: ""
-    passwordKey: "password"
+    secretKey: "password"
 
 ## @section Database parameters
 ## PostgreSQL with vectorchord extension is required for Immich
@@ -296,9 +297,9 @@ dragonfly:
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.username Username for the database.
-## @param postgres.auth.password Password for the database user (leave empty to auto-generate).
-## @param postgres.secret.name Existing secret name for database password (leave empty to auto-create).
-## @param postgres.secret.passwordKey Key in the secret containing the password (default: password).
+## @param postgres.database Database name for PostgreSQL.
+## @param postgres.password.secretName Existing secret name for database password (leave empty to auto-create).
+## @param postgres.password.secretKey Key in the secret containing the password (default: password).
 ## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
 ## @param postgres.standalone.persistence.size Size of the persistence volume.
 ## @param postgres.standalone.persistence.storageClass Storage class for persistence.
@@ -307,20 +308,16 @@ dragonfly:
 ## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
 ## @param postgres.standalone.persistence.size Size of the persistence volume.
 ## @param postgres.standalone.persistence.storageClass Storage class for persistence.
-## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
 ## @param postgres.standalone.image.tag PostgreSQL image tag.
 ## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
 ## @param postgres.standalone.persistence.size Size of the persistence volume.
 ## @param postgres.standalone.persistence.storageClass Storage class for persistence.
-## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
 ## @param postgres.standalone.image.autoupdate.enabled Enable automatic image updates for standalone database (default: false).
 ## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
 ## @param postgres.standalone.persistence.size Size of the persistence volume.
 ## @param postgres.standalone.persistence.storageClass Storage class for persistence.
-## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
 ## @param postgres.standalone.image.autoupdate.updateStrategy Strategy for image updates (e.g., semver, latest).
 ## @param postgres.standalone.resources Resource limits and requests for standalone PostgreSQL.
-## @param postgres.cluster.name Name of the database cluster.
 ## @param postgres.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
 ## @param postgres.cluster.persistence.size Size of the persistence volume.
@@ -356,8 +353,6 @@ dragonfly:
 ## @param postgres.cluster.pitrBackup.objectStorage.region S3 region (optional).
 ## @param postgres.external.host Hostname of external PostgreSQL (when mode is 'external').
 ## @param postgres.external.port Port of external PostgreSQL.
-## @param postgres.external.database Database name of external PostgreSQL.
-## @param postgres.external.username Username of external PostgreSQL.
 ## @param postgres.backup.enabled Enable scheduled pg_dump backups for all database modes (default: false).
 ## @param postgres.backup.cron Cron schedule for backups (default: "0 2 * * *" for 2am daily).
 ## @param postgres.backup.retention Number of backups to retain (default: 30).

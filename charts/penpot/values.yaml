@@ -275,7 +275,7 @@ persistence:
 ## @param config.postgresql.password The database username to use.
 ## @param config.postgresql.existingSecret The name of an existing secret.
 ## @param config.postgresql.secretKeys.usernameKey The username key to use from an existing secret.
-## @param config.postgresql.secretKeys.passwordKey The password key to use from an existing secret.
+## @param config.postgresql.secretKeys.secretKey The password key to use from an existing secret.
 ## @param config.redis.host The Redis host to connect to.
 ## @param config.redis.port The Redis host port to use.
 ## @param config.redis.database The Redis database to connect to.
@@ -302,7 +302,7 @@ persistence:
 ## @param config.smtp.ssl Whether to use SSL for the SMTP connection.
 ## @param config.smtp.existingSecret The name of an existing secret.
 ## @param config.smtp.secretKeys.usernameKey The SMTP username to use from an existing secret.
-## @param config.smtp.secretKeys.passwordKey The SMTP password to use from an existing secret.
+## @param config.smtp.secretKeys.secretKey The SMTP password to use from an existing secret.
 ## @param config.registrationDomainWhitelist Comma separated list of allowed domains to register. Empty to allow all domains.
 ## @param config.providers.google.enabled Whether to enable Google configuration. To enable Google auth, add `enable-login-with-google` to the flags.
 ## @param config.providers.google.clientID The Google client ID to use. To enable Google auth, add `enable-login-with-google` to the flags.
@@ -485,7 +485,7 @@ config:
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
-## @param dragonfly.external.passwordKey Key in the secret for the password.
+## @param dragonfly.external.secretKey Key in the secret for the password.
 ##
 dragonfly:
   enabled: true
@@ -529,8 +529,9 @@ dragonfly:
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.username Username for the database.
-## @param postgres.secret.name Existing secret name for database password (leave empty to auto-create).
-## @param postgres.secret.passwordKey Key in the secret containing the password (default: password).
+## @param postgres.database Database name for PostgreSQL.
+## @param postgres.password.secretName Existing secret name for database password (leave empty to auto-create).
+## @param postgres.password.secretKey Key in the secret containing the password (default: password).
 ## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
 ## @param postgres.standalone.persistence.size Size of the persistence volume.
 ## @param postgres.standalone.persistence.storageClass Storage class for persistence.
@@ -552,7 +553,6 @@ dragonfly:
 ## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
 ## @param postgres.standalone.image.autoupdate.updateStrategy Strategy for image updates (e.g., semver, latest).
 ## @param postgres.standalone.resources Resource limits and requests for standalone PostgreSQL.
-## @param postgres.cluster.name Name of the database cluster.
 ## @param postgres.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
 ## @param postgres.cluster.persistence.size Size of the persistence volume.

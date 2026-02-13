@@ -302,38 +302,152 @@ initContainers:
 
 ## Parameters
 
-### Application Parameters
+### Application parameters
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `replicaCount` | Number of replicas | `1` |
-| `image.repository` | Docker image repository | `nginx` |
-| `image.tag` | Image tag (uses Chart.appVersion if not set) | `""` |
-| `image.pullPolicy` | Image pull policy | `IfNotPresent` |
-| `image.autoupdate.enabled` | Enable automatic image updates | `false` |
-| `image.autoupdate.strategy` | Update strategy (semver, latest, digest, etc.) | `""` |
-| `service.type` | Service type | `ClusterIP` |
-| `service.port` | Service port | `80` |
+| Name                                 | Description                                                                            | Value           |
+| ------------------------------------ | -------------------------------------------------------------------------------------- | --------------- |
+| `replicaCount`                       | The number of replicas to deploy for the application.                                  | `1`             |
+| `image.repository`                   | The Docker repository to pull the image from.                                          | `nginx`         |
+| `image.pullPolicy`                   | The logic of image pulling.                                                            | `IfNotPresent`  |
+| `image.tag`                          | The image tag to use.                                                                  | `""`            |
+| `image.autoupdate.enabled`           | Enable automatic image updates via ArgoCD Image Updater.                               | `false`         |
+| `image.autoupdate.strategy`          | Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest). | `""`            |
+| `image.autoupdate.allowTags`         | Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").  | `""`            |
+| `image.autoupdate.ignoreTags`        | List of glob patterns to ignore specific tags.                                         | `[]`            |
+| `image.autoupdate.pullSecret`        | Reference to secret for private registry authentication.                               | `""`            |
+| `image.autoupdate.platforms`         | List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).                       | `[]`            |
+| `imagePullSecrets`                   | The image pull secrets to use.                                                         | `[]`            |
+| `deployment.strategy.type`           | The deployment strategy to use.                                                        | `Recreate`      |
+| `serviceAccount.create`              | Whether to create a service account.                                                   | `true`          |
+| `serviceAccount.annotations`         | Additional annotations to add to the service account.                                  | `{}`            |
+| `serviceAccount.name`                | The name of the service account to use.                                                | `""`            |
+| `podAnnotations`                     | Additional annotations to add to the pod.                                              | `{}`            |
+| `podSecurityContext`                 | The security context to use for the pod.                                               | `{}`            |
+| `securityContext`                    | The security context to use for the container.                                         | `{}`            |
+| `initContainers`                     | Additional init containers to add to the pod.                                          | `[]`            |
+| `service.type`                       | The type of service to create.                                                         | `ClusterIP`     |
+| `service.port`                       | The port on which the service will run.                                                | `80`            |
+| `service.nodePort`                   | The nodePort to use for the service. Only used if service.type is NodePort.            | `""`            |
+| `ingress.enabled`                    | Whether to create an ingress for the service.                                          | `false`         |
+| `ingress.className`                  | The ingress class name to use.                                                         | `""`            |
+| `ingress.annotations`                | Additional annotations to add to the ingress.                                          | `{}`            |
+| `ingress.hosts[0].host`              | The host to use for the ingress.                                                       | `custom.local`  |
+| `ingress.hosts[0].paths[0].path`     | The path to use for the ingress.                                                       | `/`             |
+| `ingress.hosts[0].paths[0].pathType` | The path type to use for the ingress.                                                  | `Prefix`        |
+| `ingress.tls`                        | The TLS configuration for the ingress.                                                 | `[]`            |
+| `resources`                          | The resources to use for the pod.                                                      | `{}`            |
+| `nodeSelector`                       | The node selector to use for the pod.                                                  | `{}`            |
+| `tolerations`                        | The tolerations to use for the pod.                                                    | `[]`            |
+| `affinity`                           | The affinity to use for the pod.                                                       | `{}`            |
+| `env.TZ`                             | The timezone to use for the pod.                                                       | `Europe/London` |
 
-### Database Parameters
+### Persistence parameters
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `database.enabled` | Enable PostgreSQL database | `false` |
-| `database.mode` | Database mode: `standalone`, `cluster`, or `external` | `standalone` |
-| `database.auth.username` | Database username | `custom` |
-| `database.auth.password` | Database password (auto-generated if empty) | `""` |
-| `database.persistence.enabled` | Enable database persistence | `true` |
-| `database.persistence.size` | Database volume size | `1Gi` |
+| Name                             | Description                                        | Value           |
+| -------------------------------- | -------------------------------------------------- | --------------- |
+| `persistence.data.enabled`       | Whether to enable persistence for the data.        | `false`         |
+| `persistence.data.storageClass`  | The storage class to use for the data.             | `""`            |
+| `persistence.data.existingClaim` | The name of an existing claim to use for the data. | `""`            |
+| `persistence.data.accessMode`    | The access mode to use for the data.               | `ReadWriteOnce` |
+| `persistence.data.size`          | The size to use for the data.                      | `1Gi`           |
+| `persistence.data.mountPath`     | The mount path for the data volume.                | `/data`         |
+| `persistence.additionalVolumes`  | Additional volumes to add to the pod.              | `[]`            |
+| `persistence.additionalMounts`   | Additional volume mounts to add to the pod.        | `[]`            |
 
-### Persistence Parameters
+### Velero Backup Schedule parameters
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `persistence.data.enabled` | Enable data persistence | `false` |
-| `persistence.data.size` | Data volume size | `1Gi` |
-| `persistence.data.mountPath` | Mount path for data | `/data` |
-| `persistence.data.accessMode` | Access mode | `ReadWriteOnce` |
+| Name                              | Description                                                                               | Value       |
+| --------------------------------- | ----------------------------------------------------------------------------------------- | ----------- |
+| `velero.enabled`                  | Whether to enable Velero backup schedules                                                 | `false`     |
+| `velero.namespace`                | The namespace where Velero is deployed (Schedule CRD must be created in Velero namespace) | `velero`    |
+| `velero.schedule`                 | The cron schedule for Velero backups (e.g., "0 2 * * *" for 2am daily)                    | `0 2 * * *` |
+| `velero.ttl`                      | Time to live for backups (e.g., "720h" for 30 days)                                       | `168h`      |
+| `velero.includeClusterResources`  | Whether to include cluster-scoped resources in backup                                     | `false`     |
+| `velero.snapshotVolumes`          | Whether to take volume snapshots                                                          | `true`      |
+| `velero.defaultVolumesToFsBackup` | Whether to use file system backup for volumes by default                                  | `false`     |
+| `velero.storageLocation`          | The storage location for backups (leave empty for default)                                | `""`        |
+| `velero.volumeSnapshotLocations`  | The volume snapshot locations (leave empty for default)                                   | `[]`        |
+| `velero.labelSelector`            | Additional label selector to filter resources (optional)                                  | `{}`        |
+| `velero.annotations`              | Additional annotations to add to the Velero Schedule resources                            | `{}`        |
+
+### Database parameters
+
+| Name                                                        | Description                                                                | Value                               |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------- |
+| `postgres.enabled`                                          | Whether to enable PostgreSQL database.                                     | `false`                             |
+| `postgres.mode`                                             | The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'. | `standalone`                        |
+| `postgres.initSQL`                                          | Array of SQL commands to run on database initialization.                   | `[]`                                |
+| `postgres.username`                                         | Username for the database.                                                 | `custom`                            |
+| `postgres.database`                                         | Database name for PostgreSQL.                                              | `custom`                            |
+| `postgres.password.secretName`                              | Existing secret name for database password (leave empty to auto-create).   | `""`                                |
+| `postgres.password.secretKey`                               | Key in the secret containing the password (default: password).             | `password`                          |
+| `postgres.standalone.persistence.enabled`                   | Enable persistence for standalone PostgreSQL.                              | `true`                              |
+| `postgres.standalone.persistence.size`                      | Size of the persistence volume.                                            | `1Gi`                               |
+| `postgres.standalone.persistence.storageClass`              | Storage class for persistence.                                             | `""`                                |
+| `postgres.standalone.image.repository`                      | PostgreSQL image repository.                                               | `postgres`                          |
+| `postgres.standalone.persistence.enabled`                   | Enable persistence for standalone PostgreSQL.                              | `true`                              |
+| `postgres.standalone.persistence.size`                      | Size of the persistence volume.                                            | `1Gi`                               |
+| `postgres.standalone.persistence.storageClass`              | Storage class for persistence.                                             | `""`                                |
+| `postgres.standalone.image.tag`                             | PostgreSQL image tag.                                                      | `16-alpine`                         |
+| `postgres.standalone.resources`                             | Resource limits and requests for standalone PostgreSQL.                    | `{}`                                |
+| `postgres.cluster.instances`                                | Number of PostgreSQL instances (replicas).                                 | `2`                                 |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
+| `postgres.cluster.image.repository`                         | PostgreSQL container image repository.                                     | `ghcr.io/cloudnative-pg/postgresql` |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
+| `postgres.cluster.image.tag`                                | PostgreSQL container image tag.                                            | `16`                                |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
+| `postgres.cluster.pitrBackup.enabled`                       | Enable PITR backups for CNPG cluster (default: false).                     | `false`                             |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
+| `postgres.cluster.pitrBackup.retentionPolicy`               | Retention policy for PITR backups (default: "30d").                        | `30d`                               |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.destinationPath` | S3 destination path (e.g., s3://bucket/path).                              | `""`                                |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.endpointURL`     | S3 endpoint URL for non-AWS storage.                                       | `""`                                |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.secretName`      | Secret name containing ACCESS_KEY_ID and ACCESS_SECRET_KEY.                | `""`                                |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.region`          | S3 region (optional).                                                      | `""`                                |
+| `postgres.external.host`                                    | Hostname of external PostgreSQL (when mode is 'external').                 | `""`                                |
+| `postgres.external.port`                                    | Port of external PostgreSQL.                                               | `5432`                              |
+| `postgres.backup.enabled`                                   | Enable scheduled pg_dump backups for all database modes (default: false).  | `false`                             |
+| `postgres.backup.cron`                                      | Cron schedule for backups (default: "0 2 * * *" for 2am daily).            | `0 2 * * *`                         |
+| `postgres.backup.retention`                                 | Number of backups to retain (default: 30).                                 | `30`                                |
+| `postgres.backup.image.repository`                          | Custom image repository for backup job (optional).                         | `""`                                |
+| `postgres.backup.image.tag`                                 | Custom image tag for backup job (optional).                                | `""`                                |
+| `postgres.backup.persistence.enabled`                       | Enable persistence for backups (default: true).                            | `true`                              |
+| `postgres.backup.persistence.size`                          | Backup volume size (default: 512Mi).                                       | `512Mi`                             |
+| `postgres.backup.persistence.storageClass`                  | Storage class for backup volume.                                           | `""`                                |
+| `postgres.backup.persistence.accessMode`                    | Access mode for backup volume (default: ReadWriteOnce).                    | `ReadWriteOnce`                     |
+| `postgres.backup.persistence.existingClaim`                 | Use existing PVC for backups.                                              | `""`                                |
+
+### ArgoCD Image Updater parameters
+
+| Name                           | Description                                                                                           | Value    |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------- | -------- |
+| `imageUpdater.namespace`       | Namespace where the ImageUpdater CRD will be created.                                                 | `argocd` |
+| `imageUpdater.argocdNamespace` | Namespace where ArgoCD Applications are located.                                                      | `argocd` |
+| `imageUpdater.applicationName` | Name or pattern of the ArgoCD Application to update. Defaults to Release name.                        | `""`     |
+| `imageUpdater.imageAlias`      | Alias for the image in the ImageUpdater CRD. Defaults to Release name.                                | `""`     |
+| `imageUpdater.forceUpdate`     | Force update even if image is not currently deployed.                                                 | `false`  |
+| `imageUpdater.helm`            | Helm-specific configuration for parameter names (e.g., {name: "image.repository", tag: "image.tag"}). | `{}`     |
+| `imageUpdater.kustomize`       | Kustomize-specific configuration (e.g., {name: "original/image"}).                                    | `{}`     |
+| `imageUpdater.writeBackConfig` | Write-back configuration for GitOps.                                                                  | `{}`     |
 
 ## Upgrading
 
