@@ -99,7 +99,7 @@ database:
   mode: standalone
   auth:
     username: myapp
-    password: "your-password"  # Leave empty to auto-generate
+    password: "your-password"  # Leave empty to use default password 'p0stgres-passw0rd'
   persistence:
     enabled: true
     size: 10Gi
@@ -459,7 +459,7 @@ helm upgrade myapp ./custom -f custom-values.yaml
 
 ### Important Notes
 
-- Database passwords are auto-generated and stored in secrets if not provided
+- Database passwords use default static password 'p0stgres-passw0rd' if not provided
 - Secrets persist across upgrades via Kubernetes secret lookup
 - Always backup your data before upgrading
 - Review the changelog for breaking changes

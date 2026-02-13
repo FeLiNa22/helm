@@ -426,12 +426,12 @@ This version extends database backup support:
 This version adds:
 - Database backup CronJob support for scheduled PostgreSQL backups
 - New `database.secret.name` and `database.secret.passwordKey` values for flexible secret management
-- Auto-generation of random passwords when not provided
+- Default static password 'p0stgres-passw0rd' is used when not provided
 
 **Changes:**
 - `database.auth.existingSecret` is now `database.secret.name`
 - Added `database.secret.passwordKey` to customize the secret key
-- If `database.auth.password` is not provided and the secret doesn't exist, a random 32-character password is automatically generated
+- If `database.auth.password` is not provided and the secret doesn't exist, the default static password 'p0stgres-passw0rd' is used
 - New `database.backup.*` configuration section for scheduled database backups
 
 To migrate from version 1.5.x:
@@ -448,7 +448,7 @@ To migrate from version 1.5.x:
    database:
      auth:
        username: immich
-       password: "your-password"  # Or leave empty to auto-generate
+       password: "your-password"  # Or leave empty to use default password 'p0stgres-passw0rd'
      secret:
        name: ""  # Or reference an existing secret
        passwordKey: "password"
