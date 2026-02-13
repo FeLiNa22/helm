@@ -6,7 +6,7 @@
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- if not $existingSecret }}
 {{- $userPassword := "" }}
-{{- $oldCNPGSecretName := printf "%s-%s-app" .Release.Name .Values.postgres.cluster.name }}
+{{- $oldCNPGSecretName := printf "%s-outline-db-app" .Release.Name }}
 {{- $oldCNPGSecret := lookup "v1" "Secret" .Release.Namespace $oldCNPGSecretName }}
 {{- if $oldCNPGSecret }}
 {{- $userPassword = index $oldCNPGSecret.data "password" | b64dec }}
@@ -34,7 +34,7 @@ stringData:
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.postgres.cluster.name }}
+  name: {{ .Release.Name }}-outline-db
   labels:
     {{- include "outline.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
@@ -47,8 +47,8 @@ spec:
 
   bootstrap:
     initdb:
-      database: outline
-      owner: {{ .Values.postgres.username }}
+      database: {{ include "outline.postgresql.database" . }}
+      owner: {{ include "outline.postgresql.username" . }}
       secret:
         name: {{ $secretName }}
       {{- if .Values.postgres.initSQL }}
@@ -105,4 +105,5 @@ spec:
   affinity:
     {{- toYaml .Values.outline.affinity | nindent 4 }}
   {{- end }}
+{{- end }}
 {{- end }}

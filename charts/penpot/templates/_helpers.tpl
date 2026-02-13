@@ -57,7 +57,7 @@ PostgreSQL host
 {{- if eq .Values.postgres.mode "standalone" }}
 {{- printf "%s-postgresql" (include "penpot.fullname" .) }}
 {{- else if eq .Values.postgres.mode "cluster" }}
-{{- printf "%s-%s-rw" .Release.Name .Values.postgres.cluster.name }}
+{{- printf "%s-penpot-db-rw" .Release.Name }}
 {{- else }}
 {{- .Values.postgres.external.host }}
 {{- end }}
@@ -78,14 +78,14 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "penpot.postgresql.database" -}}
-{{- .Values.postgres.username }}
+{{- .Values.postgres.database | default "penpot" }}
 {{- end }}
 
 {{/*
 PostgreSQL username
 */}}
 {{- define "penpot.postgresql.username" -}}
-{{- .Values.postgres.username }}
+{{- .Values.postgres.username | default "penpot" }}
 {{- end }}
 
 {{/*

@@ -397,6 +397,7 @@ postgres:
   initSQL: []
 
   username: outline
+  database: "outline"
 
   # Secret configuration for database password
   secret:
@@ -404,8 +405,6 @@ postgres:
     passwordKey: "password"  # Key in the secret containing the password
 
   cluster:
-    name: outline-db
-
     persistence:
       enabled: true
       size: 512Mi

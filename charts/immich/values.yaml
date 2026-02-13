@@ -380,6 +380,7 @@ postgres:
     - "CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;"
 
   username: immich
+  database: "immich"  # Database name (used in all modes)
 
   # Secret configuration for database password
   secret:
@@ -411,8 +412,6 @@ postgres:
       existingClaim: ""
   # CloudNativePG Cluster deployment (using CNPG operator)
   cluster:
-    name: immich-db
-
     persistence:
       enabled: true
       size: 512Mi
@@ -445,9 +444,7 @@ postgres:
   external:
     host: ""
     port: 5432
-    database: "immich"
-    username: "immich"
-    # Password is sourced from the secret configured in database.secret.name / database.secret.passwordKey
+    # Password is sourced from the secret configured in postgres.secret.name / postgres.secret.passwordKey
 
   # Scheduled database backups using pg_dump (works for all database modes)
   backup:

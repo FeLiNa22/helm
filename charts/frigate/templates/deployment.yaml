@@ -112,9 +112,9 @@ spec:
                   name: {{ include "frigate.postgresql.secretName" . }}
                   key: password
             - name: DB_HOST
-              value: {{ printf "%s-%s-rw" .Release.Name .Values.postgres.cluster.name }}
+              value: {{ printf "%s-frigate-db-rw" .Release.Name }}
             - name: DB_NAME
-              value: {{ .Values.postgres.username }}
+              value: {{ .Values.postgres.database | default "frigate" }}
             - name: FRIGATE_DATABASE_URL
               value: "postgresql://$(DB_USER):$(DB_PASS)@$(DB_HOST):5432/$(DB_NAME)"
             {{- end }}

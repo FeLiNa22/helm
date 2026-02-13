@@ -571,6 +571,7 @@ postgres:
     # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
 
   username: penpot
+  database: "penpot"
 
   # Secret configuration for database password
   secret:
@@ -595,8 +596,6 @@ postgres:
       existingClaim: ""
   # CloudNativePG Cluster deployment
   cluster:
-    name: penpot-db
-
     persistence:
       enabled: true
       size: 512Mi

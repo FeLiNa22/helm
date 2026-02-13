@@ -57,7 +57,7 @@ PostgreSQL host
 {{- if eq .Values.postgres.mode "standalone" }}
 {{- printf "%s-postgresql" (include "n8n.fullname" .) }}
 {{- else if eq .Values.postgres.mode "cluster" }}
-{{- printf "%s-%s-rw" .Release.Name .Values.postgres.cluster.name }}
+{{- printf "%s-n8n-db-rw" .Release.Name }}
 {{- else }}
 {{- .Values.postgres.external.host }}
 {{- end }}
@@ -78,14 +78,14 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "n8n.postgresql.database" -}}
-{{- .Values.postgres.username }}
+{{- .Values.postgres.database | default "n8n" }}
 {{- end }}
 
 {{/*
 PostgreSQL username
 */}}
 {{- define "n8n.postgresql.username" -}}
-{{- .Values.postgres.username }}
+{{- .Values.postgres.username | default "n8n" }}
 {{- end }}
 
 {{/*

@@ -8,7 +8,7 @@
 {{- if not $existingSecret }}
 {{- $userPassword := "" }}
 {{- if eq .Values.postgres.mode "cluster" }}
-{{- $oldCNPGSecretName := printf "%s-%s-app" .Release.Name .Values.postgres.cluster.name }}
+{{- $oldCNPGSecretName := printf "%s-custom-db-app" .Release.Name }}
 {{- $oldCNPGSecret := lookup "v1" "Secret" .Release.Namespace $oldCNPGSecretName }}
 {{- if $oldCNPGSecret }}
 {{- $userPassword = index $oldCNPGSecret.data "password" | b64dec }}
@@ -176,7 +176,7 @@ spec:
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.postgres.cluster.name }}
+  name: {{ .Release.Name }}-custom-db
   labels:
     {{- include "custom.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
@@ -189,8 +189,8 @@ spec:
 
   bootstrap:
     initdb:
-      database: {{ .Values.postgres.username }}
-      owner: {{ .Values.postgres.username }}
+      database: {{ include "custom.postgresql.database" . }}
+      owner: {{ include "custom.postgresql.username" . }}
       secret:
         name: {{ $secretName }}
       {{- if .Values.postgres.initSQL }}
@@ -200,7 +200,7 @@ spec:
 
   managed:
     roles:
-    - name: {{ .Values.postgres.username }}
+    - name: {{ include "custom.postgresql.username" . }}
       ensure: present
       login: true
       superuser: true

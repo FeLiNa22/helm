@@ -178,6 +178,7 @@ postgres:
     # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
 
   username: frigate
+  database: "frigate"
 
   # Secret configuration for database password
   secret:
@@ -186,8 +187,6 @@ postgres:
 
   # CloudNativePG Cluster deployment
   cluster:
-    name: frigate-db
-
     persistence:
       enabled: true
       size: 512Mi

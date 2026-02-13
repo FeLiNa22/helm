@@ -273,6 +273,7 @@ postgres:
   initSQL: []
 
   username: nextcloud
+  database: "nextcloud"
 
   # Secret configuration for database password
   secret:
@@ -303,8 +304,6 @@ postgres:
       existingClaim: ""
   # CloudNativePG Cluster deployment (using CNPG operator)
   cluster:
-    name: nextcloud-db
-
     persistence:
       enabled: true
       size: 512Mi

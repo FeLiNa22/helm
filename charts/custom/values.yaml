@@ -245,6 +245,7 @@ postgres:
     # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
 
   username: custom
+  database: "custom"
 
   # Secret configuration for database password
   secret:
@@ -271,8 +272,6 @@ postgres:
       storageClass: ""
   # CloudNativePG Cluster deployment (using CNPG operator)
   cluster:
-    name: custom-db
-
     persistence:
       enabled: true
       size: 1Gi
@@ -304,9 +303,7 @@ postgres:
   external:
     host: ""
     port: 5432
-    database: "custom"
-    username: "custom"
-    # Password is sourced from the secret configured in database.secret.name / database.secret.passwordKey
+    # Password is sourced from the secret configured in postgres.secret.name / postgres.secret.passwordKey
 
   # Scheduled database backups using pg_dump (works for all database modes)
   backup:

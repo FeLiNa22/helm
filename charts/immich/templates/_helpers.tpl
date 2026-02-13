@@ -60,7 +60,7 @@ PostgreSQL host
 {{- if eq .Values.postgres.mode "standalone" }}
 {{- printf "%s-postgresql" (include "immich.fullname" .) }}
 {{- else if eq .Values.postgres.mode "cluster" }}
-{{- printf "%s-%s-rw" .Release.Name .Values.postgres.cluster.name }}
+{{- printf "%s-immich-db-rw" .Release.Name }}
 {{- else }}
 {{- .Values.postgres.external.host }}
 {{- end }}
@@ -81,22 +81,14 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "immich.postgresql.database" -}}
-{{- if eq .Values.postgres.mode "external" }}
-{{- .Values.postgres.external.database | default "immich" }}
-{{- else }}
-{{- .Values.postgres.username }}
-{{- end }}
+{{- .Values.postgres.database | default "immich" }}
 {{- end }}
 
 {{/*
 PostgreSQL username
 */}}
 {{- define "immich.postgresql.username" -}}
-{{- if eq .Values.postgres.mode "external" }}
-{{- .Values.postgres.external.username | default "immich" }}
-{{- else }}
-{{- .Values.postgres.username }}
-{{- end }}
+{{- .Values.postgres.username | default "immich" }}
 {{- end }}
 
 {{/*

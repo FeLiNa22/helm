@@ -55,7 +55,7 @@ PostgreSQL host
 */}}
 {{- define "outline.postgresql.host" -}}
 {{- if .Values.postgres.enabled }}
-{{- printf "%s-%s-rw" .Release.Name .Values.postgres.cluster.name }}
+{{- printf "%s-outline-db-rw" .Release.Name }}
 {{- end }}
 {{- end }}
 
@@ -70,14 +70,14 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "outline.postgresql.database" -}}
-{{- "outline" }}
+{{- .Values.postgres.database | default "outline" }}
 {{- end }}
 
 {{/*
 PostgreSQL username
 */}}
 {{- define "outline.postgresql.username" -}}
-{{- .Values.postgres.username }}
+{{- .Values.postgres.username | default "outline" }}
 {{- end }}
 
 {{/*

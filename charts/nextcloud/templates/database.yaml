@@ -6,7 +6,7 @@
 {{- if not $existingSecret }}
 {{- $userPassword := "" }}
 {{- if eq .Values.postgres.mode "cluster" }}
-{{- $oldCNPGSecretName := printf "%s-%s-app" .Release.Name .Values.postgres.cluster.name }}
+{{- $oldCNPGSecretName := printf "%s-nextcloud-db-app" .Release.Name }}
 {{- $oldCNPGSecret := lookup "v1" "Secret" .Release.Namespace $oldCNPGSecretName }}
 {{- if $oldCNPGSecret }}
 {{- $userPassword = index $oldCNPGSecret.data "password" | b64dec }}
@@ -190,7 +190,7 @@ spec:
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.postgres.cluster.name }}
+  name: {{ .Release.Name }}-nextcloud-db
   labels:
     app.kubernetes.io/name: nextcloud-database
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -205,8 +205,8 @@ spec:
 
   bootstrap:
     initdb:
-      database: {{ .Values.postgres.username }}
-      owner: {{ .Values.postgres.username }}
+      database: {{ .Values.postgres.database | default "nextcloud" }}
+      owner: {{ .Values.postgres.username | default "nextcloud" }}
       secret:
         name: {{ $secretName }}
       {{- if .Values.postgres.initSQL }}

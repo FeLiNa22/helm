@@ -60,7 +60,7 @@ PostgreSQL host
 {{- if eq .Values.postgres.mode "standalone" }}
 {{- printf "%s-postgresql" (include "custom.fullname" .) }}
 {{- else if eq .Values.postgres.mode "cluster" }}
-{{- printf "%s-%s-rw" .Release.Name .Values.postgres.cluster.name }}
+{{- printf "%s-custom-db-rw" .Release.Name }}
 {{- else }}
 {{- .Values.postgres.external.host }}
 {{- end }}
@@ -81,22 +81,14 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "custom.postgresql.database" -}}
-{{- if eq .Values.postgres.mode "external" }}
-{{- .Values.postgres.external.database | default "custom" }}
-{{- else }}
-{{- .Values.postgres.username }}
-{{- end }}
+{{- .Values.postgres.database | default "custom" }}
 {{- end }}
 
 {{/*
 PostgreSQL username
 */}}
 {{- define "custom.postgresql.username" -}}
-{{- if eq .Values.postgres.mode "external" }}
-{{- .Values.postgres.external.username | default "custom" }}
-{{- else }}
-{{- .Values.postgres.username }}
-{{- end }}
+{{- .Values.postgres.username | default "custom" }}
 {{- end }}
 
 {{/*
