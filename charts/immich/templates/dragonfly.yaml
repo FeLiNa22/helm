@@ -25,6 +25,7 @@ spec:
       containers:
         - name: dragonfly
           image: "{{ .Values.dragonfly.standalone.image.repository }}:{{ .Values.dragonfly.standalone.image.tag }}"
+          command: ["--default_lua_flags=allow-undeclared-keys"]
           imagePullPolicy: IfNotPresent
           ports:
             - name: redis
