@@ -84,43 +84,43 @@ spec:
               containerPort: 80
               protocol: TCP
           env:
-            {{- if eq .Values.database.mode "standalone" }}
+            {{- if eq .Values.postgres.mode "standalone" }}
             # Standalone PostgreSQL mode
             - name: POSTGRES_HOST
               value: {{ .Release.Name }}-nextcloud-postgresql
             - name: POSTGRES_DB
-              value: {{ .Values.database.auth.username }}
+              value: {{ .Values.postgres.auth.username }}
             - name: POSTGRES_USER
-              value: {{ .Values.database.auth.username }}
+              value: {{ .Values.postgres.auth.username }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "nextcloud.postgresql.secretName" . }}
                   key: password
-            {{- else if eq .Values.database.mode "cluster" }}
+            {{- else if eq .Values.postgres.mode "cluster" }}
             # CloudNativePG cluster mode
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-{{ .Values.database.cluster.name }}-rw
+              value: {{ .Release.Name }}-{{ .Values.postgres.cluster.name }}-rw
             - name: POSTGRES_DB
-              value: {{ .Values.database.auth.username }}
+              value: {{ .Values.postgres.auth.username }}
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
+                  name: {{ printf "%s-%s-app" .Release.Name .Values.postgres.cluster.name }}
                   key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "nextcloud.postgresql.secretName" . }}
                   key: password
-            {{- else if eq .Values.database.mode "external" }}
+            {{- else if eq .Values.postgres.mode "external" }}
             # External PostgreSQL mode
             - name: POSTGRES_HOST
-              value: {{ .Values.database.external.host }}:{{ .Values.database.external.port | default 5432 }}
+              value: {{ .Values.postgres.external.host }}:{{ .Values.postgres.external.port | default 5432 }}
             - name: POSTGRES_DB
-              value: {{ .Values.database.auth.username }}
+              value: {{ .Values.postgres.auth.username }}
             - name: POSTGRES_USER
-              value: {{ .Values.database.auth.username }}
+              value: {{ .Values.postgres.auth.username }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:

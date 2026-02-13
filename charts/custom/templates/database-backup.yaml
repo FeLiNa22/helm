@@ -1,18 +1,18 @@
-{{- if and .Values.database.enabled .Values.database.backup.enabled }}
+{{- if and .Values.postgres.enabled .Values.postgres.backup.enabled }}
 {{- $fullName := include "custom.fullname" . -}}
 {{- $secretName := include "custom.postgresql.secretName" . -}}
 {{- $secretKey := include "custom.postgresql.secretKey" . -}}
 
 {{- $backupImage := "" }}
-{{- if .Values.database.backup.image.repository }}
-{{- $backupImage = printf "%s:%s" .Values.database.backup.image.repository (.Values.database.backup.image.tag | default "latest") }}
-{{- else if eq .Values.database.mode "standalone" }}
-{{- $backupImage = printf "%s:%s" .Values.database.standalone.image.repository .Values.database.standalone.image.tag }}
+{{- if .Values.postgres.backup.image.repository }}
+{{- $backupImage = printf "%s:%s" .Values.postgres.backup.image.repository (.Values.postgres.backup.image.tag | default "latest") }}
+{{- else if eq .Values.postgres.mode "standalone" }}
+{{- $backupImage = printf "%s:%s" .Values.postgres.standalone.image.repository .Values.postgres.standalone.image.tag }}
 {{- else }}
 {{- $backupImage = "postgres:16-alpine" }}
 {{- end }}
 
-{{- if and .Values.database.backup.persistence.enabled (not .Values.database.backup.persistence.existingClaim) }}
+{{- if and .Values.postgres.backup.persistence.enabled (not .Values.postgres.backup.persistence.existingClaim) }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -23,13 +23,13 @@ metadata:
     app.kubernetes.io/component: database-backup
 spec:
   accessModes:
-    - {{ .Values.database.backup.persistence.accessMode }}
-  {{- if .Values.database.backup.persistence.storageClass }}
-  storageClassName: {{ .Values.database.backup.persistence.storageClass }}
+    - {{ .Values.postgres.backup.persistence.accessMode }}
+  {{- if .Values.postgres.backup.persistence.storageClass }}
+  storageClassName: {{ .Values.postgres.backup.persistence.storageClass }}
   {{- end }}
   resources:
     requests:
-      storage: {{ .Values.database.backup.persistence.size }}
+      storage: {{ .Values.postgres.backup.persistence.size }}
 {{- end }}
 ---
 apiVersion: batch/v1
@@ -40,7 +40,7 @@ metadata:
     {{- include "custom.labels" . | nindent 4 }}
     app.kubernetes.io/component: database-backup
 spec:
-  schedule: {{ .Values.database.backup.cron | quote }}
+  schedule: {{ .Values.postgres.backup.cron | quote }}
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   concurrencyPolicy: Forbid
@@ -62,16 +62,16 @@ spec:
             - -c
             - |
               set -e
-              BACKUP_FILE="{{ .Values.database.backup.path }}/backup-$(date +%Y%m%d-%H%M%S).sql.gz"
+              BACKUP_FILE="{{ .Values.postgres.backup.path }}/backup-$(date +%Y%m%d-%H%M%S).sql.gz"
               echo "Starting backup to $BACKUP_FILE"
               PGPASSWORD="$DB_PASSWORD" pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_DATABASE" | gzip > "$BACKUP_FILE"
               echo "Backup completed: $BACKUP_FILE"
               
               # Cleanup old backups
-              RETENTION={{ .Values.database.backup.retention }}
+              RETENTION={{ .Values.postgres.backup.retention }}
               if [ "$RETENTION" -gt 0 ]; then
                 echo "Keeping last $RETENTION backups"
-                cd {{ .Values.database.backup.path }}
+                cd {{ .Values.postgres.backup.path }}
                 if ls backup-*.sql.gz >/dev/null 2>&1; then
                   ls -t backup-*.sql.gz | tail -n +$((RETENTION + 1)) | xargs -r rm -f
                   echo "Cleanup completed"
@@ -82,7 +82,7 @@ spec:
               
               # List remaining backups
               echo "Current backups:"
-              cd {{ .Values.database.backup.path }} && ls -lh backup-*.sql.gz 2>/dev/null || echo "No backups found"
+              cd {{ .Values.postgres.backup.path }} && ls -lh backup-*.sql.gz 2>/dev/null || echo "No backups found"
             env:
             - name: DB_HOST
               value: {{ include "custom.postgresql.host" . }}
@@ -99,12 +99,12 @@ spec:
                   key: {{ $secretKey }}
             volumeMounts:
             - name: backup
-              mountPath: {{ .Values.database.backup.path }}
+              mountPath: {{ .Values.postgres.backup.path }}
           volumes:
           - name: backup
-            {{- if .Values.database.backup.persistence.enabled }}
+            {{- if .Values.postgres.backup.persistence.enabled }}
             persistentVolumeClaim:
-              claimName: {{ .Values.database.backup.persistence.existingClaim | default (printf "%s-db-backup" $fullName) }}
+              claimName: {{ .Values.postgres.backup.persistence.existingClaim | default (printf "%s-db-backup" $fullName) }}
             {{- else }}
             emptyDir: {}
             {{- end }}

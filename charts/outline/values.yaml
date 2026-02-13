@@ -374,22 +374,22 @@ dragonfly:
 ## PostgreSQL database is required for Outline
 ## Note: Outline only supports cluster mode (no standalone or external modes)
 
-## @param database.enabled Whether to enable PostgreSQL database for Outline (default: true).
-## @param database.mode The mode of PostgreSQL deployment (only 'cluster' is supported for Outline).
-## @param database.persistence.enabled Whether to enable persistence for the database (default: true).
-## @param database.persistence.size Size of the persistence volume (default: 10Gi).
-## @param database.persistence.storageClass Storage class for persistence.
-## @param database.persistence.existingClaim The name of an existing claim to use for persistence.
-## @param database.initSQL Array of SQL commands to run on database initialization.
-## @param database.auth.username Username for the database.
-## @param database.secret.name Existing secret name for database password (leave empty to auto-create).
-## @param database.secret.passwordKey Key in the secret containing the password (default: password).
-## @param database.cluster.name Name of the database cluster.
-## @param database.cluster.instances Number of PostgreSQL instances (replicas).
-## @param database.cluster.image.repository PostgreSQL container image repository.
-## @param database.cluster.image.tag PostgreSQL container image tag.
+## @param postgres.enabled Whether to enable PostgreSQL database for Outline (default: true).
+## @param postgres.mode The mode of PostgreSQL deployment (only 'cluster' is supported for Outline).
+## @param postgres.persistence.enabled Whether to enable persistence for the database (default: true).
+## @param postgres.persistence.size Size of the persistence volume (default: 10Gi).
+## @param postgres.persistence.storageClass Storage class for persistence.
+## @param postgres.persistence.existingClaim The name of an existing claim to use for persistence.
+## @param postgres.initSQL Array of SQL commands to run on database initialization.
+## @param postgres.auth.username Username for the database.
+## @param postgres.secret.name Existing secret name for database password (leave empty to auto-create).
+## @param postgres.secret.passwordKey Key in the secret containing the password (default: password).
+## @param postgres.cluster.name Name of the database cluster.
+## @param postgres.cluster.instances Number of PostgreSQL instances (replicas).
+## @param postgres.cluster.image.repository PostgreSQL container image repository.
+## @param postgres.cluster.image.tag PostgreSQL container image tag.
 ##
-database:
+postgres:
   enabled: true
   mode: cluster
 

@@ -57,12 +57,12 @@ Create the name of the service account to use
 PostgreSQL host
 */}}
 {{- define "custom.postgresql.host" -}}
-{{- if eq .Values.database.mode "standalone" }}
+{{- if eq .Values.postgres.mode "standalone" }}
 {{- printf "%s-postgresql" (include "custom.fullname" .) }}
-{{- else if eq .Values.database.mode "cluster" }}
-{{- printf "%s-%s-rw" .Release.Name .Values.database.cluster.name }}
+{{- else if eq .Values.postgres.mode "cluster" }}
+{{- printf "%s-%s-rw" .Release.Name .Values.postgres.cluster.name }}
 {{- else }}
-{{- .Values.database.external.host }}
+{{- .Values.postgres.external.host }}
 {{- end }}
 {{- end }}
 
@@ -70,8 +70,8 @@ PostgreSQL host
 PostgreSQL port
 */}}
 {{- define "custom.postgresql.port" -}}
-{{- if eq .Values.database.mode "external" }}
-{{- .Values.database.external.port | default "5432" }}
+{{- if eq .Values.postgres.mode "external" }}
+{{- .Values.postgres.external.port | default "5432" }}
 {{- else }}
 {{- "5432" }}
 {{- end }}
@@ -81,10 +81,10 @@ PostgreSQL port
 PostgreSQL database name
 */}}
 {{- define "custom.postgresql.database" -}}
-{{- if eq .Values.database.mode "external" }}
-{{- .Values.database.external.database | default "custom" }}
+{{- if eq .Values.postgres.mode "external" }}
+{{- .Values.postgres.external.database | default "custom" }}
 {{- else }}
-{{- .Values.database.auth.username }}
+{{- .Values.postgres.auth.username }}
 {{- end }}
 {{- end }}
 
@@ -92,10 +92,10 @@ PostgreSQL database name
 PostgreSQL username
 */}}
 {{- define "custom.postgresql.username" -}}
-{{- if eq .Values.database.mode "external" }}
-{{- .Values.database.external.username | default "custom" }}
+{{- if eq .Values.postgres.mode "external" }}
+{{- .Values.postgres.external.username | default "custom" }}
 {{- else }}
-{{- .Values.database.auth.username }}
+{{- .Values.postgres.auth.username }}
 {{- end }}
 {{- end }}
 
@@ -103,8 +103,8 @@ PostgreSQL username
 PostgreSQL secret name
 */}}
 {{- define "custom.postgresql.secretName" -}}
-{{- if .Values.database.secret.name }}
-{{- .Values.database.secret.name }}
+{{- if .Values.postgres.secret.name }}
+{{- .Values.postgres.secret.name }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
 {{- end }}
@@ -114,5 +114,5 @@ PostgreSQL secret name
 PostgreSQL secret key
 */}}
 {{- define "custom.postgresql.secretKey" -}}
-{{- .Values.database.secret.passwordKey | default "password" }}
+{{- .Values.postgres.secret.passwordKey | default "password" }}
 {{- end }}

@@ -1,12 +1,12 @@
 {{- $fullName := printf "%s-nextcloud" .Release.Name -}}
 {{- $secretName := include "nextcloud.postgresql.secretName" . -}}
 
-{{- if not .Values.database.secret.name }}
+{{- if not .Values.postgres.secret.name }}
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- if not $existingSecret }}
 {{- $userPassword := "" }}
-{{- if eq .Values.database.mode "cluster" }}
-{{- $oldCNPGSecretName := printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
+{{- if eq .Values.postgres.mode "cluster" }}
+{{- $oldCNPGSecretName := printf "%s-%s-app" .Release.Name .Values.postgres.cluster.name }}
 {{- $oldCNPGSecret := lookup "v1" "Secret" .Release.Namespace $oldCNPGSecretName }}
 {{- if $oldCNPGSecret }}
 {{- $userPassword = index $oldCNPGSecret.data "password" | b64dec }}
@@ -31,8 +31,8 @@ stringData:
   password: {{ $userPassword }}
 {{- end }}
 {{- end }}
-{{- if eq .Values.database.mode "standalone" }}
-{{- if .Values.database.initSQL }}
+{{- if eq .Values.postgres.mode "standalone" }}
+{{- if .Values.postgres.initSQL }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -48,7 +48,7 @@ data:
     #!/bin/bash
     set -e
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-      {{- range .Values.database.initSQL }}
+      {{- range .Values.postgres.initSQL }}
       {{ . }}
       {{- end }}
     EOSQL
@@ -101,7 +101,7 @@ spec:
     spec:
       containers:
       - name: postgresql
-        image: "{{ .Values.database.standalone.image.repository }}:{{ .Values.database.standalone.image.tag }}"
+        image: "{{ .Values.postgres.standalone.image.repository }}:{{ .Values.postgres.standalone.image.tag }}"
         imagePullPolicy: IfNotPresent
         ports:
         - name: postgresql
@@ -109,33 +109,33 @@ spec:
           protocol: TCP
         env:
         - name: POSTGRES_USER
-          value: {{ .Values.database.auth.username | quote }}
+          value: {{ .Values.postgres.auth.username | quote }}
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ $secretName }}
               key: password
         - name: POSTGRES_DB
-          value: {{ .Values.database.auth.username | quote }}
+          value: {{ .Values.postgres.auth.username | quote }}
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
-        {{- if .Values.database.initSQL }}
+        {{- if .Values.postgres.initSQL }}
         - name: init-scripts
           mountPath: /docker-entrypoint-initdb.d
         {{- end }}
-        {{- if .Values.database.standalone.resources }}
+        {{- if .Values.postgres.standalone.resources }}
         resources:
-          {{- toYaml .Values.database.standalone.resources | nindent 10 }}
+          {{- toYaml .Values.postgres.standalone.resources | nindent 10 }}
         {{- end }}
         livenessProbe:
           exec:
             command:
             - /bin/sh
             - -c
-            - exec pg_isready -U {{ .Values.database.auth.username | quote }} -d {{ .Values.database.auth.username | quote }}
+            - exec pg_isready -U {{ .Values.postgres.auth.username | quote }} -d {{ .Values.postgres.auth.username | quote }}
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
@@ -145,23 +145,23 @@ spec:
             command:
             - /bin/sh
             - -c
-            - exec pg_isready -U {{ .Values.database.auth.username | quote }} -d {{ .Values.database.auth.username | quote }}
+            - exec pg_isready -U {{ .Values.postgres.auth.username | quote }} -d {{ .Values.postgres.auth.username | quote }}
           initialDelaySeconds: 5
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 6
       volumes:
-      {{- if .Values.database.initSQL }}
+      {{- if .Values.postgres.initSQL }}
       - name: init-scripts
         configMap:
           name: {{ $fullName }}-postgresql-init
           defaultMode: 0755
       {{- end }}
-      {{- if not .Values.database.persistence.enabled }}
+      {{- if not .Values.postgres.persistence.enabled }}
       - name: data
         emptyDir: {}
       {{- end }}
-  {{- if .Values.database.persistence.enabled }}
+  {{- if .Values.postgres.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -173,51 +173,51 @@ spec:
     spec:
       accessModes:
         - ReadWriteOnce
-      {{- if .Values.database.persistence.storageClass }}
-      storageClassName: {{ .Values.database.persistence.storageClass }}
+      {{- if .Values.postgres.persistence.storageClass }}
+      storageClassName: {{ .Values.postgres.persistence.storageClass }}
       {{- end }}
-      {{- if .Values.database.persistence.existingClaim }}
-      volumeName: {{ .Values.database.persistence.existingClaim }}
+      {{- if .Values.postgres.persistence.existingClaim }}
+      volumeName: {{ .Values.postgres.persistence.existingClaim }}
       {{- end }}
       resources:
         requests:
-          storage: {{ .Values.database.persistence.size }}
+          storage: {{ .Values.postgres.persistence.size }}
   {{- end }}
-{{- else if eq .Values.database.mode "cluster" }}
+{{- else if eq .Values.postgres.mode "cluster" }}
 {{- $fullName := printf "%s-nextcloud" .Release.Name -}}
 {{- $secretName := include "nextcloud.postgresql.secretName" . -}}
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.database.cluster.name }}
+  name: {{ .Release.Name }}-{{ .Values.postgres.cluster.name }}
   labels:
     app.kubernetes.io/name: nextcloud-database
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: database
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
-  instances: {{ .Values.database.cluster.instances }}
+  instances: {{ .Values.postgres.cluster.instances }}
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: switchover
 
-  imageName: {{ .Values.database.cluster.image.repository }}:{{ .Values.database.cluster.image.tag }}
+  imageName: {{ .Values.postgres.cluster.image.repository }}:{{ .Values.postgres.cluster.image.tag }}
 
   bootstrap:
     initdb:
-      database: {{ .Values.database.auth.username }}
-      owner: {{ .Values.database.auth.username }}
+      database: {{ .Values.postgres.auth.username }}
+      owner: {{ .Values.postgres.auth.username }}
       secret:
         name: {{ $secretName }}
-      {{- if .Values.database.initSQL }}
+      {{- if .Values.postgres.initSQL }}
       postInitSQL:
-        {{- toYaml .Values.database.initSQL | nindent 8 }}
+        {{- toYaml .Values.postgres.initSQL | nindent 8 }}
       {{- end }}
 
   storage:
-    size: {{ .Values.database.persistence.size }}
-    {{- if .Values.database.persistence.storageClass }}
-    storageClass: {{ .Values.database.persistence.storageClass }}
+    size: {{ .Values.postgres.persistence.size }}
+    {{- if .Values.postgres.persistence.storageClass }}
+    storageClass: {{ .Values.postgres.persistence.storageClass }}
     {{- end }}
 
   postgresql:

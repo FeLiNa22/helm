@@ -54,8 +54,8 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 PostgreSQL host
 */}}
 {{- define "outline.postgresql.host" -}}
-{{- if .Values.database.enabled }}
-{{- printf "%s-%s-rw" .Release.Name .Values.database.cluster.name }}
+{{- if .Values.postgres.enabled }}
+{{- printf "%s-%s-rw" .Release.Name .Values.postgres.cluster.name }}
 {{- end }}
 {{- end }}
 
@@ -77,15 +77,15 @@ PostgreSQL database name
 PostgreSQL username
 */}}
 {{- define "outline.postgresql.username" -}}
-{{- .Values.database.auth.username }}
+{{- .Values.postgres.auth.username }}
 {{- end }}
 
 {{/*
 PostgreSQL secret name
 */}}
 {{- define "outline.postgresql.secretName" -}}
-{{- if .Values.database.secret.name }}
-{{- .Values.database.secret.name }}
+{{- if .Values.postgres.secret.name }}
+{{- .Values.postgres.secret.name }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
 {{- end }}
@@ -95,7 +95,7 @@ PostgreSQL secret name
 PostgreSQL secret key
 */}}
 {{- define "outline.postgresql.secretKey" -}}
-{{- .Values.database.secret.passwordKey | default "password" }}
+{{- .Values.postgres.secret.passwordKey | default "password" }}
 {{- end }}
 
 {{/*

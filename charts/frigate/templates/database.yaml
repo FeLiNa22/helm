@@ -1,11 +1,11 @@
-{{- if and .Values.enabled .Values.database.enabled }}
+{{- if and .Values.enabled .Values.postgres.enabled }}
 {{- $secretName := include "frigate.postgresql.secretName" . -}}
 
-{{- if and (not .Values.database.secret.name) (eq .Values.database.mode "cluster") }}
+{{- if and (not .Values.postgres.secret.name) (eq .Values.postgres.mode "cluster") }}
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- if not $existingSecret }}
 {{- $userPassword := "" }}
-{{- $oldCNPGSecretName := printf "%s-%s-app" .Release.Name .Values.database.cluster.name }}
+{{- $oldCNPGSecretName := printf "%s-%s-app" .Release.Name .Values.postgres.cluster.name }}
 {{- $oldCNPGSecret := lookup "v1" "Secret" .Release.Namespace $oldCNPGSecretName }}
 {{- if $oldCNPGSecret }}
 {{- $userPassword = index $oldCNPGSecret.data "password" | b64dec }}
@@ -28,40 +28,40 @@ stringData:
 {{- end }}
 {{- end }}
 
-{{- if eq .Values.database.mode "cluster" }}
+{{- if eq .Values.postgres.mode "cluster" }}
 ---
 {{- $secretName := include "frigate.postgresql.secretName" . -}}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.database.cluster.name }}
+  name: {{ .Release.Name }}-{{ .Values.postgres.cluster.name }}
   labels:
     app.kubernetes.io/name: frigate-database
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: database
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
-  instances: {{ .Values.database.cluster.instances }}
+  instances: {{ .Values.postgres.cluster.instances }}
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: switchover
 
-  imageName: {{ .Values.database.cluster.image.repository }}:{{ .Values.database.cluster.image.tag }}
+  imageName: {{ .Values.postgres.cluster.image.repository }}:{{ .Values.postgres.cluster.image.tag }}
 
   bootstrap:
     initdb:
-      database: {{ .Values.database.auth.username }}
-      owner: {{ .Values.database.auth.username }}
+      database: {{ .Values.postgres.auth.username }}
+      owner: {{ .Values.postgres.auth.username }}
       secret:
         name: {{ $secretName }}
-      {{- if .Values.database.initSQL }}
+      {{- if .Values.postgres.initSQL }}
       postInitSQL:
-        {{- toYaml .Values.database.initSQL | nindent 8 }}
+        {{- toYaml .Values.postgres.initSQL | nindent 8 }}
       {{- end }}
 
   storage:
-    size: {{ .Values.database.persistence.size }}
-    {{- if .Values.database.persistence.storageClass }}
-    storageClass: {{ .Values.database.persistence.storageClass }}
+    size: {{ .Values.postgres.persistence.size }}
+    {{- if .Values.postgres.persistence.storageClass }}
+    storageClass: {{ .Values.postgres.persistence.storageClass }}
     {{- end }}
 
   postgresql:

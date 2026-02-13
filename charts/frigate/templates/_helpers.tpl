@@ -2,8 +2,8 @@
 PostgreSQL secret name
 */}}
 {{- define "frigate.postgresql.secretName" -}}
-{{- if .Values.database.secret.name }}
-{{- .Values.database.secret.name }}
+{{- if .Values.postgres.secret.name }}
+{{- .Values.postgres.secret.name }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
 {{- end }}
@@ -13,5 +13,5 @@ PostgreSQL secret name
 PostgreSQL secret key
 */}}
 {{- define "frigate.postgresql.secretKey" -}}
-{{- .Values.database.secret.passwordKey | default "password" }}
+{{- .Values.postgres.secret.passwordKey | default "password" }}
 {{- end }}
