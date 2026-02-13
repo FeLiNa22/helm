@@ -377,7 +377,6 @@ postgres:
   database: "immich"  # Database name (used in all modes)
 
   # Secret configuration for database password
-  # Secret configuration for database password
   # You must provide EITHER secretName (to use existing secret) OR value (to create new secret with password)
   password:
     secretName: ""  # Name of existing secret containing the password
