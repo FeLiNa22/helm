@@ -48,7 +48,7 @@ spec:
     spec:
       template:
         metadata:
-          {{- if and .Values.velero.enabled .Values.database.backup.persistence.enabled }}
+          {{- if and .Values.velero.enabled .Values.postgres.backup.persistence.enabled }}
           annotations:
             backup.velero.io/backup-volumes: backup
           {{- end }}
