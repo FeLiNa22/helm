@@ -91,6 +91,10 @@ spec:
     spec:
       template:
         metadata:
+          {{- if and .Values.velero.enabled .Values.database.backup.persistence.enabled }}
+          annotations:
+            backup.velero.io/backup-volumes: backup-data
+          {{- end }}
           labels:
             {{- include "immich.selectorLabels" . | nindent 12 }}
             app.kubernetes.io/component: database-backup
