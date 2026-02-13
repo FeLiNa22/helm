@@ -3,18 +3,7 @@
 {{- if not .Values.postgres.secret.name }}
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- if not $existingSecret }}
-{{- $userPassword := "" }}
-{{- if eq .Values.postgres.mode "cluster" }}
-{{- $oldCNPGSecretName := printf "%s-n8n-db-app" .Release.Name }}
-{{- $oldCNPGSecret := lookup "v1" "Secret" .Release.Namespace $oldCNPGSecretName }}
-{{- if $oldCNPGSecret }}
-{{- $userPassword = index $oldCNPGSecret.data "password" | b64dec }}
-{{- else }}
-{{- $userPassword = randAlphaNum 32 }}
-{{- end }}
-{{- else }}
-{{- $userPassword = randAlphaNum 32 }}
-{{- end }}
+{{- $userPassword := randAlphaNum 32 }}
 ---
 apiVersion: v1
 kind: Secret
