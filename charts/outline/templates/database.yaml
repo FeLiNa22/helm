@@ -2,7 +2,7 @@
 {{- $fullName := include "outline.fullname" . -}}
 {{- $secretName := include "outline.postgresql.secretName" . -}}
 
-{{- if not .Values.postgres.secret.name }}
+{{- if not .Values.postgres.password.secretName }}
 {{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
 {{- if not $existingSecret }}
 {{- $userPassword := randAlphaNum 32 }}

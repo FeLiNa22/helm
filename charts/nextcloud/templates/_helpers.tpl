@@ -2,8 +2,8 @@
 PostgreSQL secret name
 */}}
 {{- define "nextcloud.postgresql.secretName" -}}
-{{- if .Values.postgres.secret.name }}
-{{- .Values.postgres.secret.name }}
+{{- if .Values.postgres.password.secretName }}
+{{- .Values.postgres.password.secretName }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
 {{- end }}
@@ -13,7 +13,7 @@ PostgreSQL secret name
 PostgreSQL secret key
 */}}
 {{- define "nextcloud.postgresql.secretKey" -}}
-{{- .Values.postgres.secret.passwordKey | default "password" }}
+{{- .Values.postgres.password.secretKey | default "password" }}
 {{- end }}
 
 {{/*

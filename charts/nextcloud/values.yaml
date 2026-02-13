@@ -223,7 +223,7 @@ dragonfly:
     host: ""
     port: 6379
     existingSecret: ""
-    passwordKey: "password"
+    secretKey: "password"
 
 # Database configuration
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
@@ -276,9 +276,9 @@ postgres:
   database: "nextcloud"
 
   # Secret configuration for database password
-  secret:
-    name: ""  # Leave empty to auto-generate (defaults to <release>-postgresql)
-    passwordKey: "password"  # Key in the secret containing the password
+  password:
+    secretName: ""  # Leave empty to auto-generate (defaults to <release>-postgresql)
+    secretKey: "password"  # Key in the secret containing the password
 
   # Standalone PostgreSQL deployment (using StatefulSet)
   standalone:

@@ -181,9 +181,9 @@ postgres:
   database: "frigate"
 
   # Secret configuration for database password
-  secret:
-    name: ""  # Leave empty to auto-generate (defaults to <release>-postgresql)
-    passwordKey: "password"  # Key in the secret containing the password
+  password:
+    secretName: ""  # Leave empty to auto-generate (defaults to <release>-postgresql)
+    secretKey: "password"  # Key in the secret containing the password
 
   # CloudNativePG Cluster deployment
   cluster:

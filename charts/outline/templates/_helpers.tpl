@@ -84,8 +84,8 @@ PostgreSQL username
 PostgreSQL secret name
 */}}
 {{- define "outline.postgresql.secretName" -}}
-{{- if .Values.postgres.secret.name }}
-{{- .Values.postgres.secret.name }}
+{{- if .Values.postgres.password.secretName }}
+{{- .Values.postgres.password.secretName }}
 {{- else }}
 {{- printf "%s-postgresql" .Release.Name }}
 {{- end }}
@@ -95,7 +95,7 @@ PostgreSQL secret name
 PostgreSQL secret key
 */}}
 {{- define "outline.postgresql.secretKey" -}}
-{{- .Values.postgres.secret.passwordKey | default "password" }}
+{{- .Values.postgres.password.secretKey | default "password" }}
 {{- end }}
 
 {{/*

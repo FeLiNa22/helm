@@ -363,7 +363,7 @@ config:
     existingSecret: ""
     secretKeys:
       usernameKey: ""
-      passwordKey: ""
+      secretKey: ""
 
   redis:
     host: "penpot-redis-headless.penpot.svc.cluster.local"
@@ -401,7 +401,7 @@ config:
     existingSecret: ""
     secretKeys:
       usernameKey: ""
-      passwordKey: ""
+      secretKey: ""
 
   registrationDomainWhitelist: ""
 
@@ -521,7 +521,7 @@ dragonfly:
     host: ""
     port: 6379
     existingSecret: ""
-    passwordKey: "password"
+    secretKey: "password"
 
 ## @section Database parameters
 ## PostgreSQL database is required for Penpot
@@ -574,9 +574,9 @@ postgres:
   database: "penpot"
 
   # Secret configuration for database password
-  secret:
-    name: ""  # Leave empty to auto-generate (defaults to <release>-postgresql)
-    passwordKey: "password"  # Key in the secret containing the password
+  password:
+    secretName: ""  # Leave empty to auto-generate (defaults to <release>-postgresql)
+    secretKey: "password"  # Key in the secret containing the password
 
   # Standalone PostgreSQL deployment (using StatefulSet)
   standalone:
