@@ -305,6 +305,24 @@ entries:
   custom:
   - apiVersion: v2
     appVersion: latest
+    created: "2026-02-14T01:39:15.651735919Z"
+    description: A Helm chart for deploying a generic Docker image with optional PostgreSQL
+      database
+    digest: a81f31ad940022d6146d1fd1f684477f891b5b2a4d702c92595ab82d31186762
+    keywords:
+    - custom
+    - docker
+    - postgres
+    - generic
+    maintainers:
+    - name: FeLiNa22
+    name: custom
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/custom-0.4.2/custom-0.4.2.tgz
+    version: 0.4.2
+  - apiVersion: v2
+    appVersion: latest
     created: "2026-02-14T01:22:01.322194902Z"
     description: A Helm chart for deploying a generic Docker image with optional PostgreSQL
       database
@@ -476,6 +494,29 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/excalidraw-1.0.1/excalidraw-1.0.1.tgz
     version: 1.0.1
   frigate:
+  - apiVersion: v2
+    appVersion: 0.14.1
+    created: "2026-02-14T01:39:15.853915904Z"
+    description: Frigate NVR Helm Chart
+    digest: 6b23348948e00788facbd6f550f30b74f51a9c54c71c643b71979fe950133040
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/frigate
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - frigate
+    - nvr
+    - security
+    - cameras
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: frigate
+    sources:
+    - https://github.com/blakeblackshear/frigate
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/frigate-1.3.2/frigate-1.3.2.tgz
+    version: 1.3.2
   - apiVersion: v2
     appVersion: 0.14.1
     created: "2026-02-14T01:22:01.432320493Z"
@@ -989,6 +1030,28 @@ entries:
   immich:
   - apiVersion: v2
     appVersion: v2.4.1
+    created: "2026-02-14T01:39:16.063023589Z"
+    description: A Helm chart for Immich - High performance self-hosted photo and
+      video management solution
+    digest: 77976e83a8232cd2ff4373c0aeef5299b809aba7241ab7563dffcff79431a417
+    home: https://immich.app
+    keywords:
+    - immich
+    - photos
+    - videos
+    - media
+    - self-hosted
+    maintainers:
+    - name: FeLiNa22
+    name: immich
+    sources:
+    - https://github.com/immich-app/immich
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/immich-1.6.2/immich-1.6.2.tgz
+    version: 1.6.2
+  - apiVersion: v2
+    appVersion: v2.4.1
     created: "2026-02-14T01:22:01.57242358Z"
     description: A Helm chart for Immich - High performance self-hosted photo and
       video management solution
@@ -1469,6 +1532,27 @@ entries:
   n8n:
   - apiVersion: v2
     appVersion: latest
+    created: "2026-02-14T01:39:16.260955669Z"
+    description: n8n workflow automation Helm Chart
+    digest: c720f7c5dbdec439beb214985fabcecf6c76842570a05687de89bacd9b8a8bc1
+    home: https://github.com/FeLiNa22/helm/tree/main/charts/n8n
+    icon: https://n8n.io/favicon.ico
+    keywords:
+    - kubernetes
+    - n8n
+    - workflow
+    - automation
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: n8n
+    sources:
+    - https://github.com/n8n-io/n8n
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/n8n-1.2.2/n8n-1.2.2.tgz
+    version: 1.2.2
+  - apiVersion: v2
+    appVersion: latest
     created: "2026-02-14T01:22:01.709423787Z"
     description: n8n workflow automation Helm Chart
     digest: 1b51fe9bc8f927924919959aeefb2402f8a6b9633ac4e90cc96de85e6c8bc83d
@@ -1594,6 +1678,28 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/n8n-1.1.2/n8n-1.1.2.tgz
     version: 1.1.2
   nextcloud:
+  - apiVersion: v2
+    appVersion: 32.0.3
+    created: "2026-02-14T01:39:16.438472935Z"
+    description: Nextcloud Helm Chart
+    digest: 21e70afaea79b3b7c27308a4e254c8fc7a613a3e8e5af3a7542979e1f4eca831
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/nextcloud
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - nextcloud
+    - cloud
+    - storage
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: nextcloud
+    sources:
+    - https://github.com/nextcloud/server
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/nextcloud-1.4.2/nextcloud-1.4.2.tgz
+    version: 1.4.2
   - apiVersion: v2
     appVersion: 32.0.3
     created: "2026-02-14T01:22:01.826193324Z"
@@ -1927,6 +2033,32 @@ entries:
   outline:
   - apiVersion: v2
     appVersion: 0.87.4
+    created: "2026-02-14T01:39:16.736320864Z"
+    dependencies:
+    - condition: global.minioEnabled
+      name: minio
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.x.x
+    description: Raul Outline Wiki Helm Chart
+    digest: 801652bf518f724b4a12694e4a5df44aa79bfc23161423f180013b486433afde
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/outline
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - outline
+    - wiki
+    - docs
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: outline
+    sources:
+    - https://github.com/outline/outline
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/outline-1.5.2/outline-1.5.2.tgz
+    version: 1.5.2
+  - apiVersion: v2
+    appVersion: 0.87.4
     created: "2026-02-14T01:22:01.978166227Z"
     dependencies:
     - condition: global.minioEnabled
@@ -2218,6 +2350,27 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/outline-1.0.1/outline-1.0.1.tgz
     version: 1.0.1
   penpot:
+  - apiVersion: v2
+    appVersion: 2.12.1
+    created: "2026-02-14T01:39:16.947849955Z"
+    description: Raul Penpot Helm Chart
+    digest: e5584cbcdaef3ae9063520b03b95a4322d4e7c89b7e169e0e52800c4248e15d9
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/penpot
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - penpot
+    - penpotapp
+    - design
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: penpot
+    sources:
+    - https://github.com/penpot/penpot
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/penpot-1.5.2/penpot-1.5.2.tgz
+    version: 1.5.2
   - apiVersion: v2
     appVersion: 2.12.1
     created: "2026-02-14T01:22:02.089721396Z"
@@ -4472,4 +4625,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-02-14T01:22:02.090317066Z"
+generated: "2026-02-14T01:39:16.948257056Z"
