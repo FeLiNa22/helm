@@ -59,7 +59,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "n8n.postgresql.secretName" . }}
-                  key: {{ include "n8n.postgresql.secretKey" . }}
+                  key: password
             - name: N8N_PROTOCOL
               value: {{ .Values.n8n.protocol }}
             - name: N8N_PORT

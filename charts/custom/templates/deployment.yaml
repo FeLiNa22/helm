@@ -80,7 +80,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "custom.postgresql.secretName" . }}
-                  key: {{ include "custom.postgresql.secretKey" . }}
+                  key: password
             {{- end }}
             # Additional environment variables
             {{- range $k, $v := .Values.env }}
