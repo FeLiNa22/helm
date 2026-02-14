@@ -17,10 +17,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ $fullName }}-db-backup
+  name: {{ $fullName }}-postgres-backup
   labels:
     {{- include "custom.labels" . | nindent 4 }}
-    app.kubernetes.io/component: database-backup
+    app.kubernetes.io/component: postgres-backup
 spec:
   accessModes:
     - {{ .Values.postgres.backup.persistence.accessMode }}
@@ -35,10 +35,10 @@ spec:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ $fullName }}-db-backup
+  name: {{ $fullName }}-postgres-backup
   labels:
     {{- include "custom.labels" . | nindent 4 }}
-    app.kubernetes.io/component: database-backup
+    app.kubernetes.io/component: postgres-backup
 spec:
   schedule: {{ .Values.postgres.backup.cron | quote }}
   successfulJobsHistoryLimit: 3
@@ -54,7 +54,7 @@ spec:
           {{- end }}
           labels:
             {{- include "custom.selectorLabels" . | nindent 12 }}
-            app.kubernetes.io/component: database-backup
+            app.kubernetes.io/component: postgres-backup
         spec:
           restartPolicy: OnFailure
           containers:
@@ -108,7 +108,7 @@ spec:
           - name: backup
             {{- if .Values.postgres.backup.persistence.enabled }}
             persistentVolumeClaim:
-              claimName: {{ .Values.postgres.backup.persistence.existingClaim | default (printf "%s-db-backup" $fullName) }}
+              claimName: {{ .Values.postgres.backup.persistence.existingClaim | default (printf "%s-postgres-backup" $fullName) }}
             {{- else }}
             emptyDir: {}
             {{- end }}
