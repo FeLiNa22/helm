@@ -103,7 +103,7 @@ spec:
               containerPort: 8555
               protocol: TCP
           env:
-            {{- if and .Values.postgres.enabled (eq .Values.postgres.mode "cluster") }}
+            {{- if eq .Values.postgres.mode "cluster" }}
             - name: DB_USER
               value: {{ .Values.postgres.username }}
             - name: DB_PASS

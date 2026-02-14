@@ -1,4 +1,3 @@
-{{- if .Values.postgres.enabled }}
 {{- $fullName := printf "%s-nextcloud" .Release.Name -}}
 {{- $secretName := include "nextcloud.postgresql.secretName" . -}}
 
@@ -242,5 +241,4 @@ spec:
   affinity:
     {{- toYaml .Values.affinity | nindent 4 }}
   {{- end }}
-{{- end }}
 {{- end }}

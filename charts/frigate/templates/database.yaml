@@ -1,4 +1,4 @@
-{{- if and .Values.enabled .Values.postgres.enabled }}
+{{- if .Values.enabled }}
 {{- $secretName := include "frigate.postgresql.secretName" . -}}
 
 {{- if .Values.postgres.password.value }}

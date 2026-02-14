@@ -1,4 +1,3 @@
-{{- if .Values.postgres.enabled }}
 {{- $fullName := include "outline.fullname" . -}}
 {{- $secretName := include "outline.postgresql.secretName" . -}}
 
@@ -96,5 +95,4 @@ spec:
   affinity:
     {{- toYaml .Values.outline.affinity | nindent 4 }}
   {{- end }}
-{{- end }}
 {{- end }}
