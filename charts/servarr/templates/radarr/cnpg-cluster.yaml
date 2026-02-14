@@ -18,9 +18,9 @@ spec:
     initdb:
       database: {{ .Values.radarr.database.external.mainDatabase }}
       owner: {{ .Values.radarr.database.auth.username | default "radarr" }}
-      {{- if .Values.radarr.database.auth.existingSecret }}
+      {{- if or .Values.radarr.database.auth.existingSecret .Values.radarr.database.auth.password }}
       secret:
-        name: {{ .Values.radarr.database.auth.existingSecret }}
+        name: {{ .Values.radarr.database.auth.existingSecret | default (printf "%s-radarr-db-secret" .Release.Name) }}
       {{- end }}
       {{- if .Values.radarr.database.initSQL }}
       postInitSQL:

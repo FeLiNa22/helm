@@ -18,9 +18,9 @@ spec:
     initdb:
       database: {{ .Values.seerr.database.external.mainDatabase }}
       owner: {{ .Values.seerr.database.auth.username | default "seerr" }}
-      {{- if .Values.seerr.database.auth.existingSecret }}
+      {{- if or .Values.seerr.database.auth.existingSecret .Values.seerr.database.auth.password }}
       secret:
-        name: {{ .Values.seerr.database.auth.existingSecret }}
+        name: {{ .Values.seerr.database.auth.existingSecret | default (printf "%s-seerr-db-secret" .Release.Name) }}
       {{- end }}
       {{- if .Values.seerr.database.initSQL }}
       postInitSQL:

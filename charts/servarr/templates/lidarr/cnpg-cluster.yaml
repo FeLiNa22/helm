@@ -18,9 +18,9 @@ spec:
     initdb:
       database: {{ .Values.lidarr.database.external.mainDatabase }}
       owner: {{ .Values.lidarr.database.auth.username | default "lidarr" }}
-      {{- if .Values.lidarr.database.auth.existingSecret }}
+      {{- if or .Values.lidarr.database.auth.existingSecret .Values.lidarr.database.auth.password }}
       secret:
-        name: {{ .Values.lidarr.database.auth.existingSecret }}
+        name: {{ .Values.lidarr.database.auth.existingSecret | default (printf "%s-lidarr-db-secret" .Release.Name) }}
       {{- end }}
       {{- if .Values.lidarr.database.initSQL }}
       postInitSQL:
