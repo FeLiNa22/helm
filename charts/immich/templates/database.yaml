@@ -10,6 +10,7 @@ metadata:
   name: {{ $secretName }}
   labels:
     {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
 type: Opaque
 stringData:
   {{ $secretKey }}: {{ .Values.postgres.password.value | b64enc }}
