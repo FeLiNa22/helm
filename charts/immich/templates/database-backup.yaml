@@ -126,7 +126,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ $secretName }}
-                  key: {{ $secretKey }}
+                  key: password
             volumeMounts:
             - name: backup-scripts
               mountPath: /scripts

@@ -379,9 +379,11 @@ postgres:
 
   # Secret configuration for database password
   # You must provide EITHER secretName (to use existing secret) OR value (to create new secret with password)
+  # For cluster mode (CNPG), existing secrets MUST contain both 'username' and 'password' keys
+  # and use type: kubernetes.io/basic-auth (or Opaque)
   password:
-    secretName: ""  # Name of existing secret containing the password
-    secretKey: "password"  # Key in the secret containing the password
+    secretName: ""  # Name of existing secret containing the password (and username for cluster mode)
+    secretKey: "password"  # Key in the secret containing the password (deprecated, always uses 'password' key)
     value: ""  # Direct password value (if secretName is empty, this must be provided)
 
   # Standalone PostgreSQL deployment (using StatefulSet)
