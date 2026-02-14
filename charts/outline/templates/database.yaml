@@ -12,9 +12,8 @@ metadata:
     app.kubernetes.io/component: database
 type: Opaque
 stringData:
+  username: {{ include "outline.postgresql.username" . }}
   password: {{ .Values.postgres.password.value }}
-{{- else if not .Values.postgres.password.secretName }}
-{{- fail "Either postgres.password.value or postgres.password.secretName must be provided" }}
 {{- end }}
 
 {{- if eq .Values.postgres.mode "cluster" }}
@@ -39,8 +38,10 @@ spec:
     initdb:
       database: {{ include "outline.postgresql.database" . }}
       owner: {{ include "outline.postgresql.username" . }}
+      {{- if or .Values.postgres.password.value .Values.postgres.password.secretName }}
       secret:
         name: {{ $secretName }}
+      {{- end }}
       {{- if .Values.postgres.initSQL }}
       postInitSQL:
         {{- range .Values.postgres.initSQL }}
