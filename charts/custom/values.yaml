@@ -167,8 +167,9 @@ velero:
   annotations: {}
 
 ## @section Database parameters
-## PostgreSQL database configuration - standalone, cluster, or external
+## PostgreSQL database configuration - can be disabled, standalone, cluster, or external
 
+## @param postgres.enabled Whether to enable PostgreSQL database.
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.username Username for the database.
@@ -232,6 +233,7 @@ velero:
 ## @param postgres.backup.persistence.existingClaim Use existing PVC for backups.
 ##
 postgres:
+  enabled: false
   # Mode options: 'standalone', 'cluster', or 'external'
   mode: standalone
   # SQL commands to initialize the database
