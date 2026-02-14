@@ -372,70 +372,70 @@ initContainers:
 
 ### Database parameters
 
-| Name                                                        | Description                                                                | Value                               |
-| ----------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------- |
-| `postgres.enabled`                                          | Whether to enable PostgreSQL database.                                     | `false`                             |
-| `postgres.mode`                                             | The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'. | `standalone`                        |
-| `postgres.initSQL`                                          | Array of SQL commands to run on database initialization.                   | `[]`                                |
-| `postgres.username`                                         | Username for the database.                                                 | `custom`                            |
-| `postgres.database`                                         | Database name for PostgreSQL.                                              | `custom`                            |
-| `postgres.password.secretName`                              | Existing secret name for database password (mutually exclusive with value).| `""`                                |
-| `postgres.password.secretKey`                               | Key in the secret containing the password (default: password).             | `password`                          |
-| `postgres.password.value`                                   | Direct password value (used when secretName is empty, REQUIRED).           | `""`                                |
-| `postgres.standalone.persistence.enabled`                   | Enable persistence for standalone PostgreSQL.                              | `true`                              |
-| `postgres.standalone.persistence.size`                      | Size of the persistence volume.                                            | `1Gi`                               |
-| `postgres.standalone.persistence.storageClass`              | Storage class for persistence.                                             | `""`                                |
-| `postgres.standalone.image.repository`                      | PostgreSQL image repository.                                               | `postgres`                          |
-| `postgres.standalone.persistence.enabled`                   | Enable persistence for standalone PostgreSQL.                              | `true`                              |
-| `postgres.standalone.persistence.size`                      | Size of the persistence volume.                                            | `1Gi`                               |
-| `postgres.standalone.persistence.storageClass`              | Storage class for persistence.                                             | `""`                                |
-| `postgres.standalone.image.tag`                             | PostgreSQL image tag.                                                      | `16-alpine`                         |
-| `postgres.standalone.resources`                             | Resource limits and requests for standalone PostgreSQL.                    | `{}`                                |
-| `postgres.cluster.instances`                                | Number of PostgreSQL instances (replicas).                                 | `2`                                 |
-| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
-| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
-| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
-| `postgres.cluster.image.repository`                         | PostgreSQL container image repository.                                     | `ghcr.io/cloudnative-pg/postgresql` |
-| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
-| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
-| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
-| `postgres.cluster.image.tag`                                | PostgreSQL container image tag.                                            | `16`                                |
-| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
-| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
-| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
-| `postgres.cluster.pitrBackup.enabled`                       | Enable PITR backups for CNPG cluster (default: false).                     | `false`                             |
-| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
-| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
-| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
-| `postgres.cluster.pitrBackup.retentionPolicy`               | Retention policy for PITR backups (default: "30d").                        | `30d`                               |
-| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
-| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
-| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
-| `postgres.cluster.pitrBackup.objectStorage.destinationPath` | S3 destination path (e.g., s3://bucket/path).                              | `""`                                |
-| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
-| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
-| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
-| `postgres.cluster.pitrBackup.objectStorage.endpointURL`     | S3 endpoint URL for non-AWS storage.                                       | `""`                                |
-| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
-| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
-| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
-| `postgres.cluster.pitrBackup.objectStorage.secretName`      | Secret name containing ACCESS_KEY_ID and ACCESS_SECRET_KEY.                | `""`                                |
-| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
-| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                            | `1Gi`                               |
-| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                             | `""`                                |
-| `postgres.cluster.pitrBackup.objectStorage.region`          | S3 region (optional).                                                      | `""`                                |
-| `postgres.external.host`                                    | Hostname of external PostgreSQL (when mode is 'external').                 | `""`                                |
-| `postgres.external.port`                                    | Port of external PostgreSQL.                                               | `5432`                              |
-| `postgres.backup.enabled`                                   | Enable scheduled pg_dump backups for all database modes (default: false).  | `false`                             |
-| `postgres.backup.cron`                                      | Cron schedule for backups (default: "0 2 * * *" for 2am daily).            | `0 2 * * *`                         |
-| `postgres.backup.retention`                                 | Number of backups to retain (default: 30).                                 | `30`                                |
-| `postgres.backup.image.repository`                          | Custom image repository for backup job (optional).                         | `""`                                |
-| `postgres.backup.image.tag`                                 | Custom image tag for backup job (optional).                                | `""`                                |
-| `postgres.backup.persistence.enabled`                       | Enable persistence for backups (default: true).                            | `true`                              |
-| `postgres.backup.persistence.size`                          | Backup volume size (default: 512Mi).                                       | `512Mi`                             |
-| `postgres.backup.persistence.storageClass`                  | Storage class for backup volume.                                           | `""`                                |
-| `postgres.backup.persistence.accessMode`                    | Access mode for backup volume (default: ReadWriteOnce).                    | `ReadWriteOnce`                     |
-| `postgres.backup.persistence.existingClaim`                 | Use existing PVC for backups.                                              | `""`                                |
+| Name                                                        | Description                                                                    | Value                               |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------- |
+| `postgres.enabled`                                          | Whether to enable PostgreSQL database.                                         | `false`                             |
+| `postgres.mode`                                             | The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.     | `standalone`                        |
+| `postgres.initSQL`                                          | Array of SQL commands to run on database initialization.                       | `[]`                                |
+| `postgres.username`                                         | Username for the database.                                                     | `custom`                            |
+| `postgres.database`                                         | Database name for PostgreSQL.                                                  | `custom`                            |
+| `postgres.password.secretName`                              | Existing secret name for database password (mutually exclusive with value).    | `""`                                |
+| `postgres.password.secretKey`                               | Key in the secret containing the password (default: password).                 | `password`                          |
+| `postgres.password.value`                                   | Direct password value to create a secret (mutually exclusive with secretName). | `""`                                |
+| `postgres.standalone.persistence.enabled`                   | Enable persistence for standalone PostgreSQL.                                  | `true`                              |
+| `postgres.standalone.persistence.size`                      | Size of the persistence volume.                                                | `1Gi`                               |
+| `postgres.standalone.persistence.storageClass`              | Storage class for persistence.                                                 | `""`                                |
+| `postgres.standalone.image.repository`                      | PostgreSQL image repository.                                                   | `postgres`                          |
+| `postgres.standalone.persistence.enabled`                   | Enable persistence for standalone PostgreSQL.                                  | `true`                              |
+| `postgres.standalone.persistence.size`                      | Size of the persistence volume.                                                | `1Gi`                               |
+| `postgres.standalone.persistence.storageClass`              | Storage class for persistence.                                                 | `""`                                |
+| `postgres.standalone.image.tag`                             | PostgreSQL image tag.                                                          | `16-alpine`                         |
+| `postgres.standalone.resources`                             | Resource limits and requests for standalone PostgreSQL.                        | `{}`                                |
+| `postgres.cluster.instances`                                | Number of PostgreSQL instances (replicas).                                     | `2`                                 |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                     | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                                | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                                 | `""`                                |
+| `postgres.cluster.image.repository`                         | PostgreSQL container image repository.                                         | `ghcr.io/cloudnative-pg/postgresql` |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                     | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                                | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                                 | `""`                                |
+| `postgres.cluster.image.tag`                                | PostgreSQL container image tag.                                                | `16`                                |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                     | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                                | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                                 | `""`                                |
+| `postgres.cluster.pitrBackup.enabled`                       | Enable PITR backups for CNPG cluster (default: false).                         | `false`                             |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                     | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                                | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                                 | `""`                                |
+| `postgres.cluster.pitrBackup.retentionPolicy`               | Retention policy for PITR backups (default: "30d").                            | `30d`                               |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                     | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                                | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                                 | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.destinationPath` | S3 destination path (e.g., s3://bucket/path).                                  | `""`                                |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                     | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                                | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                                 | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.endpointURL`     | S3 endpoint URL for non-AWS storage.                                           | `""`                                |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                     | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                                | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                                 | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.secretName`      | Secret name containing ACCESS_KEY_ID and ACCESS_SECRET_KEY.                    | `""`                                |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster PostgreSQL.                                     | `true`                              |
+| `postgres.cluster.persistence.size`                         | Size of the persistence volume.                                                | `1Gi`                               |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for persistence.                                                 | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.region`          | S3 region (optional).                                                          | `""`                                |
+| `postgres.external.host`                                    | Hostname of external PostgreSQL (when mode is 'external').                     | `""`                                |
+| `postgres.external.port`                                    | Port of external PostgreSQL.                                                   | `5432`                              |
+| `postgres.backup.enabled`                                   | Enable scheduled pg_dump backups for all database modes (default: false).      | `false`                             |
+| `postgres.backup.cron`                                      | Cron schedule for backups (default: "0 2 * * *" for 2am daily).                | `0 2 * * *`                         |
+| `postgres.backup.retention`                                 | Number of backups to retain (default: 30).                                     | `30`                                |
+| `postgres.backup.image.repository`                          | Custom image repository for backup job (optional).                             | `""`                                |
+| `postgres.backup.image.tag`                                 | Custom image tag for backup job (optional).                                    | `""`                                |
+| `postgres.backup.persistence.enabled`                       | Enable persistence for backups (default: true).                                | `true`                              |
+| `postgres.backup.persistence.size`                          | Backup volume size (default: 512Mi).                                           | `512Mi`                             |
+| `postgres.backup.persistence.storageClass`                  | Storage class for backup volume.                                               | `""`                                |
+| `postgres.backup.persistence.accessMode`                    | Access mode for backup volume (default: ReadWriteOnce).                        | `ReadWriteOnce`                     |
+| `postgres.backup.persistence.existingClaim`                 | Use existing PVC for backups.                                                  | `""`                                |
 
 ### ArgoCD Image Updater parameters
 

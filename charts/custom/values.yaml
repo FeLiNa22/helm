@@ -174,8 +174,9 @@ velero:
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.username Username for the database.
 ## @param postgres.database Database name for PostgreSQL.
-## @param postgres.password.secretName Existing secret name for database password (leave empty to auto-create).
+## @param postgres.password.secretName Existing secret name for database password (mutually exclusive with value).
 ## @param postgres.password.secretKey Key in the secret containing the password (default: password).
+## @param postgres.password.value Direct password value to create a secret (mutually exclusive with secretName).
 ## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
 ## @param postgres.standalone.persistence.size Size of the persistence volume.
 ## @param postgres.standalone.persistence.storageClass Storage class for persistence.
