@@ -87,7 +87,7 @@ PostgreSQL secret name
 {{- if .Values.postgres.password.secretName }}
 {{- .Values.postgres.password.secretName }}
 {{- else }}
-{{- printf "%s-postgresql" .Release.Name }}
+{{- printf "%s-postgres-secret" .Release.Name }}
 {{- end }}
 {{- end }}
 
