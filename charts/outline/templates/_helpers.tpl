@@ -54,9 +54,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 PostgreSQL host
 */}}
 {{- define "outline.postgresql.host" -}}
-{{- if .Values.postgres.enabled }}
 {{- printf "%s-outline-db-rw" .Release.Name }}
-{{- end }}
 {{- end }}
 
 {{/*

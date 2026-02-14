@@ -374,7 +374,6 @@ dragonfly:
 ## PostgreSQL database is required for Outline
 ## Note: Outline only supports cluster mode (no standalone or external modes)
 
-## @param postgres.enabled Whether to enable PostgreSQL database for Outline (default: true).
 ## @param postgres.mode The mode of PostgreSQL deployment (only 'cluster' is supported for Outline).
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.username Username for the database.
@@ -393,7 +392,6 @@ dragonfly:
 ## @param postgres.cluster.image.tag PostgreSQL container image tag.
 ##
 postgres:
-  enabled: true
   mode: cluster
   initSQL: []
 

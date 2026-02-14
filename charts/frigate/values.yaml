@@ -40,7 +40,6 @@
 ## @param tolerations The tolerations to use for the pod.
 ## @param affinity The affinity to use for the pod.
 ## @param env.TZ The timezone to use for the pod.
-## @param postgres.enabled Whether to enable PostgreSQL database for Frigate events (default: true).
 ## @param postgres.mode The mode of PostgreSQL deployment (only 'cluster' is supported for Frigate).
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.username Username for the database.
@@ -173,7 +172,6 @@ env:
 # Database configuration using CloudNativePG
 # Note: Frigate only supports cluster mode (no standalone or external modes)
 postgres:
-  enabled: true  # PostgreSQL enabled by default for events
   mode: cluster  # Only cluster mode supported for Frigate
   initSQL: []
     # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"

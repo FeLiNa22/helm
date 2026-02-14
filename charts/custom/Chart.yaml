@@ -2,7 +2,7 @@ apiVersion: v2
 name: custom
 description: A Helm chart for deploying a generic Docker image with optional PostgreSQL database
 type: application
-version: 0.4.1
+version: 0.4.2
 appVersion: "latest"
 keywords:
   - custom

@@ -1,4 +1,3 @@
-{{- if .Values.postgres.enabled }}
 {{- $fullName := include "penpot.fullname" . -}}
 {{- $secretName := include "penpot.postgresql.secretName" . -}}
 
@@ -198,5 +197,4 @@ spec:
   affinity:
     {{- toYaml .Values.affinity | nindent 4 }}
   {{- end }}
-{{- end }}
 {{- end }}
