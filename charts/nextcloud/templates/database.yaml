@@ -172,9 +172,9 @@ spec:
           storage: {{ .Values.postgres.standalone.persistence.size }}
   {{- end }}
 {{- else if eq .Values.postgres.mode "cluster" }}
+---
 {{- $fullName := printf "%s-nextcloud" .Release.Name -}}
 {{- $secretName := include "nextcloud.postgresql.secretName" . -}}
----
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
