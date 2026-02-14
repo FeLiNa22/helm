@@ -7,10 +7,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ $fullName }}-db-backup
+  name: {{ $fullName }}-postgres-backup
   labels:
     {{- include "immich.labels" . | nindent 4 }}
-    app.kubernetes.io/component: database-backup
+    app.kubernetes.io/component: postgres-backup
 spec:
   accessModes:
     - {{ .Values.postgres.backup.persistence.accessMode | default "ReadWriteOnce" }}
@@ -25,10 +25,10 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $fullName }}-db-backup-script
+  name: {{ $fullName }}-postgres-backup-script
   labels:
     {{- include "immich.labels" . | nindent 4 }}
-    app.kubernetes.io/component: database-backup
+    app.kubernetes.io/component: postgres-backup
 data:
   backup.sh: |
     #!/bin/bash
@@ -78,10 +78,10 @@ data:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ $fullName }}-db-backup
+  name: {{ $fullName }}-postgres-backup
   labels:
     {{- include "immich.labels" . | nindent 4 }}
-    app.kubernetes.io/component: database-backup
+    app.kubernetes.io/component: postgres-backup
 spec:
   schedule: {{ .Values.postgres.backup.cron | default "0 2 * * *" | quote }}
   concurrencyPolicy: Forbid
@@ -97,7 +97,7 @@ spec:
           {{- end }}
           labels:
             {{- include "immich.selectorLabels" . | nindent 12 }}
-            app.kubernetes.io/component: database-backup
+            app.kubernetes.io/component: postgres-backup
         spec:
           restartPolicy: OnFailure
           containers:
@@ -135,12 +135,12 @@ spec:
           volumes:
           - name: backup-scripts
             configMap:
-              name: {{ $fullName }}-db-backup-script
+              name: {{ $fullName }}-postgres-backup-script
               defaultMode: 0755
           - name: backup-data
             {{- if .Values.postgres.backup.persistence.enabled }}
             persistentVolumeClaim:
-              claimName: {{ .Values.postgres.backup.persistence.existingClaim | default (printf "%s-db-backup" $fullName) }}
+              claimName: {{ .Values.postgres.backup.persistence.existingClaim | default (printf "%s-postgres-backup" $fullName) }}
             {{- else }}
             emptyDir: {}
             {{- end }}
