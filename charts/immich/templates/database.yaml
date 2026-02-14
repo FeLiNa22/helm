@@ -2,7 +2,7 @@
 {{- $secretName := include "immich.postgresql.secretName" . -}}
 {{- $secretKey := include "immich.postgresql.secretKey" . -}}
 
-{{- if .Values.postgres.password.value }} 
+{{- if .Values.postgres.password.value }}
 ---
 apiVersion: v1
 kind: Secret
