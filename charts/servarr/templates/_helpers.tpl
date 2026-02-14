@@ -54,7 +54,7 @@ Seerr Database Secret Name
 {{- if .Values.seerr.database.auth.existingSecret }}
 {{- .Values.seerr.database.auth.existingSecret }}
 {{- else }}
-{{- printf "%s-%s-app" .Release.Name (.Values.seerr.database.cluster.name | default "seerr-db") }}
+{{- printf "%s-app" (.Values.seerr.database.cluster.name | default (printf "%s-seerr-db" .Release.Name)) }}
 {{- end }}
 {{- else }}
 {{- if not .Values.seerr.database.auth.existingSecret }}
