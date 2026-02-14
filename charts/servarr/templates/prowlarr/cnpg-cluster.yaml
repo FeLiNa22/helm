@@ -18,9 +18,9 @@ spec:
     initdb:
       database: {{ .Values.prowlarr.database.external.mainDatabase }}
       owner: {{ .Values.prowlarr.database.auth.username | default "prowlarr" }}
-      {{- if .Values.prowlarr.database.auth.existingSecret }}
+      {{- if or .Values.prowlarr.database.auth.existingSecret .Values.prowlarr.database.auth.password }}
       secret:
-        name: {{ .Values.prowlarr.database.auth.existingSecret }}
+        name: {{ .Values.prowlarr.database.auth.existingSecret | default (printf "%s-prowlarr-db-secret" .Release.Name) }}
       {{- end }}
       {{- if .Values.prowlarr.database.initSQL }}
       postInitSQL:

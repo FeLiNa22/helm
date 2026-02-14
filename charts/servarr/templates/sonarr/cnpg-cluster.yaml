@@ -18,9 +18,9 @@ spec:
     initdb:
       database: {{ .Values.sonarr.database.external.mainDatabase }}
       owner: {{ .Values.sonarr.database.auth.username | default "sonarr" }}
-      {{- if .Values.sonarr.database.auth.existingSecret }}
+      {{- if or .Values.sonarr.database.auth.existingSecret .Values.sonarr.database.auth.password }}
       secret:
-        name: {{ .Values.sonarr.database.auth.existingSecret }}
+        name: {{ .Values.sonarr.database.auth.existingSecret | default (printf "%s-sonarr-db-secret" .Release.Name) }}
       {{- end }}
       {{- if .Values.sonarr.database.initSQL }}
       postInitSQL:
