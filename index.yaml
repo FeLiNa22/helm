@@ -305,6 +305,24 @@ entries:
   custom:
   - apiVersion: v2
     appVersion: latest
+    created: "2026-02-14T22:52:08.589989958Z"
+    description: A Helm chart for deploying a generic Docker image with optional PostgreSQL
+      database
+    digest: 01dd938a395af95f60ec3c39035a5cfae5ef04abb251d0cb96c50c6f5b656aa9
+    keywords:
+    - custom
+    - docker
+    - postgres
+    - generic
+    maintainers:
+    - name: FeLiNa22
+    name: custom
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/custom-0.4.4/custom-0.4.4.tgz
+    version: 0.4.4
+  - apiVersion: v2
+    appVersion: latest
     created: "2026-02-14T03:09:33.449163371Z"
     description: A Helm chart for deploying a generic Docker image with optional PostgreSQL
       database
@@ -1071,6 +1089,28 @@ entries:
   immich:
   - apiVersion: v2
     appVersion: v2.4.1
+    created: "2026-02-14T22:52:08.712216726Z"
+    description: A Helm chart for Immich - High performance self-hosted photo and
+      video management solution
+    digest: 057c7d65a916eced41c47211e9ad01bace5911068087d97dd869ba9a4c494c65
+    home: https://immich.app
+    keywords:
+    - immich
+    - photos
+    - videos
+    - media
+    - self-hosted
+    maintainers:
+    - name: FeLiNa22
+    name: immich
+    sources:
+    - https://github.com/immich-app/immich
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/immich-1.6.4/immich-1.6.4.tgz
+    version: 1.6.4
+  - apiVersion: v2
+    appVersion: v2.4.1
     created: "2026-02-14T03:09:33.6970253Z"
     description: A Helm chart for Immich - High performance self-hosted photo and
       video management solution
@@ -1762,6 +1802,28 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/n8n-1.1.2/n8n-1.1.2.tgz
     version: 1.1.2
   nextcloud:
+  - apiVersion: v2
+    appVersion: 32.0.3
+    created: "2026-02-14T22:52:08.854632681Z"
+    description: Nextcloud Helm Chart
+    digest: 417933facb36c959f88e08fe71aefd8cc436ca97b5227d7c002803dcec24e12b
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/nextcloud
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - nextcloud
+    - cloud
+    - storage
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: nextcloud
+    sources:
+    - https://github.com/nextcloud/server
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/nextcloud-1.4.4/nextcloud-1.4.4.tgz
+    version: 1.4.4
   - apiVersion: v2
     appVersion: 32.0.3
     created: "2026-02-14T03:09:33.95491802Z"
@@ -4778,4 +4840,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-02-14T03:09:34.250775347Z"
+generated: "2026-02-14T22:52:08.85511067Z"
