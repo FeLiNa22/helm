@@ -214,24 +214,25 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Database parameters
 
-| Name                                        | Description                                                                  | Value                               |
-| ------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------- |
-| `postgres.enabled`                          | Whether to enable PostgreSQL database for Outline (default: true).           | `true`                              |
-| `postgres.mode`                             | The mode of PostgreSQL deployment (only 'cluster' is supported for Outline). | `cluster`                           |
-| `postgres.initSQL`                          | Array of SQL commands to run on database initialization.                     | `[]`                                |
-| `postgres.username`                         | Username for the database.                                                   | `outline`                           |
-| `postgres.database`                         | Database name for PostgreSQL.                                                | `outline`                           |
-| `postgres.password.secretName`              | Existing secret name for database password (leave empty to auto-create).     | `""`                                |
-| `postgres.password.secretKey`               | Key in the secret containing the password (default: password).               | `password`                          |
-| `postgres.cluster.instances`                | Number of PostgreSQL instances (replicas).                                   | `2`                                 |
-| `postgres.cluster.persistence.enabled`      | Enable persistence for cluster PostgreSQL.                                   | `true`                              |
-| `postgres.cluster.persistence.size`         | Size of the persistence volume.                                              | `512Mi`                             |
-| `postgres.cluster.persistence.storageClass` | Storage class for persistence.                                               | `""`                                |
-| `postgres.cluster.image.repository`         | PostgreSQL container image repository.                                       | `ghcr.io/cloudnative-pg/postgresql` |
-| `postgres.cluster.persistence.enabled`      | Enable persistence for cluster PostgreSQL.                                   | `true`                              |
-| `postgres.cluster.persistence.size`         | Size of the persistence volume.                                              | `512Mi`                             |
-| `postgres.cluster.persistence.storageClass` | Storage class for persistence.                                               | `""`                                |
-| `postgres.cluster.image.tag`                | PostgreSQL container image tag.                                              | `16`                                |
+| Name                                        | Description                                                                    | Value                               |
+| ------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------- |
+| `postgres.enabled`                          | Whether to enable PostgreSQL database for Outline (default: true).             | `true`                              |
+| `postgres.mode`                             | The mode of PostgreSQL deployment (only 'cluster' is supported for Outline).   | `cluster`                           |
+| `postgres.initSQL`                          | Array of SQL commands to run on database initialization.                       | `[]`                                |
+| `postgres.username`                         | Username for the database.                                                     | `outline`                           |
+| `postgres.database`                         | Database name for PostgreSQL.                                                  | `outline`                           |
+| `postgres.password.secretName`              | Existing secret name for database password (mutually exclusive with value).    | `""`                                |
+| `postgres.password.secretKey`               | Key in the secret containing the password (default: password).                 | `password`                          |
+| `postgres.password.value`                   | Direct password value to create a secret (mutually exclusive with secretName). | `""`                                |
+| `postgres.cluster.instances`                | Number of PostgreSQL instances (replicas).                                     | `2`                                 |
+| `postgres.cluster.persistence.enabled`      | Enable persistence for cluster PostgreSQL.                                     | `true`                              |
+| `postgres.cluster.persistence.size`         | Size of the persistence volume.                                                | `512Mi`                             |
+| `postgres.cluster.persistence.storageClass` | Storage class for persistence.                                                 | `""`                                |
+| `postgres.cluster.image.repository`         | PostgreSQL container image repository.                                         | `ghcr.io/cloudnative-pg/postgresql` |
+| `postgres.cluster.persistence.enabled`      | Enable persistence for cluster PostgreSQL.                                     | `true`                              |
+| `postgres.cluster.persistence.size`         | Size of the persistence volume.                                                | `512Mi`                             |
+| `postgres.cluster.persistence.storageClass` | Storage class for persistence.                                                 | `""`                                |
+| `postgres.cluster.image.tag`                | PostgreSQL container image tag.                                                | `16`                                |
 
 ### Redis parameters (DEPRECATED - use dragonfly instead)
 

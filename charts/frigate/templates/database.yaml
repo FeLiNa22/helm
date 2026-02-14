@@ -1,10 +1,7 @@
 {{- if and .Values.enabled .Values.postgres.enabled }}
 {{- $secretName := include "frigate.postgresql.secretName" . -}}
 
-{{- if not .Values.postgres.password.secretName }}
-{{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
-{{- if not $existingSecret }}
-{{- $userPassword := randAlphaNum 32 }}
+{{- if .Values.postgres.password.value }}
 ---
 apiVersion: v1
 kind: Secret
@@ -17,8 +14,9 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 type: Opaque
 stringData:
-  password: {{ $userPassword }}
-{{- end }}
+  password: {{ .Values.postgres.password.value }}
+{{- else if not .Values.postgres.password.secretName }}
+{{- fail "Either postgres.password.value or postgres.password.secretName must be provided" }}
 {{- end }}
 
 {{- if eq .Values.postgres.mode "cluster" }}

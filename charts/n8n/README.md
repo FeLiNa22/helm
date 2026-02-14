@@ -123,47 +123,48 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Database parameters
 
-| Name                                                  | Description                                                                | Value                               |
-| ----------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------- |
-| `postgres.mode`                                       | The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'. | `standalone`                        |
-| `postgres.type`                                       | Database type (postgresdb, postgres, mysql, mariadb, sqlite).              | `postgresdb`                        |
-| `postgres.initSQL`                                    | Array of SQL commands to run on database initialization.                   | `[]`                                |
-| `postgres.username`                                   | Username for the database.                                                 | `n8n`                               |
-| `postgres.database`                                   | Database name for PostgreSQL.                                              | `n8n`                               |
-| `postgres.password.secretName`                        | Existing secret name for database password (leave empty to auto-create).   | `""`                                |
-| `postgres.password.secretKey`                         | Key in the secret containing the password (default: password).             | `password`                          |
-| `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                              | `true`                              |
-| `postgres.standalone.persistence.size`                | Size of the persistence volume.                                            | `512Mi`                             |
-| `postgres.standalone.persistence.storageClass`        | Storage class for persistence.                                             | `""`                                |
-| `postgres.standalone.persistence.existingClaim`       | Use an existing PVC.                                                       | `""`                                |
-| `postgres.standalone.image.repository`                | PostgreSQL image repository.                                               | `postgres`                          |
-| `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                              | `true`                              |
-| `postgres.standalone.persistence.size`                | Size of the persistence volume.                                            | `512Mi`                             |
-| `postgres.standalone.persistence.storageClass`        | Storage class for persistence.                                             | `""`                                |
-| `postgres.standalone.persistence.existingClaim`       | Use an existing PVC.                                                       | `""`                                |
-| `postgres.standalone.image.tag`                       | PostgreSQL image tag.                                                      | `16-alpine`                         |
-| `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                              | `true`                              |
-| `postgres.standalone.persistence.size`                | Size of the persistence volume.                                            | `512Mi`                             |
-| `postgres.standalone.persistence.storageClass`        | Storage class for persistence.                                             | `""`                                |
-| `postgres.standalone.persistence.existingClaim`       | Use an existing PVC.                                                       | `""`                                |
-| `postgres.standalone.image.autoupdate.enabled`        | Enable automatic image updates for standalone database (default: false).   | `false`                             |
-| `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                              | `true`                              |
-| `postgres.standalone.persistence.size`                | Size of the persistence volume.                                            | `512Mi`                             |
-| `postgres.standalone.persistence.storageClass`        | Storage class for persistence.                                             | `""`                                |
-| `postgres.standalone.persistence.existingClaim`       | Use an existing PVC.                                                       | `""`                                |
-| `postgres.standalone.image.autoupdate.updateStrategy` | Strategy for image updates (e.g., semver, latest).                         | `""`                                |
-| `postgres.standalone.resources`                       | Resource limits and requests for standalone PostgreSQL.                    | `{}`                                |
-| `postgres.cluster.instances`                          | Number of PostgreSQL instances (replicas).                                 | `2`                                 |
-| `postgres.cluster.persistence.enabled`                | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
-| `postgres.cluster.persistence.size`                   | Size of the persistence volume.                                            | `512Mi`                             |
-| `postgres.cluster.persistence.storageClass`           | Storage class for persistence.                                             | `""`                                |
-| `postgres.cluster.image.repository`                   | PostgreSQL container image repository.                                     | `ghcr.io/cloudnative-pg/postgresql` |
-| `postgres.cluster.persistence.enabled`                | Enable persistence for cluster PostgreSQL.                                 | `true`                              |
-| `postgres.cluster.persistence.size`                   | Size of the persistence volume.                                            | `512Mi`                             |
-| `postgres.cluster.persistence.storageClass`           | Storage class for persistence.                                             | `""`                                |
-| `postgres.cluster.image.tag`                          | PostgreSQL container image tag.                                            | `16`                                |
-| `postgres.external.host`                              | Hostname of external PostgreSQL (when mode is 'external').                 | `""`                                |
-| `postgres.external.port`                              | Port of external PostgreSQL.                                               | `5432`                              |
+| Name                                                  | Description                                                                    | Value                               |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------- |
+| `postgres.mode`                                       | The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.     | `standalone`                        |
+| `postgres.type`                                       | Database type (postgresdb, postgres, mysql, mariadb, sqlite).                  | `postgresdb`                        |
+| `postgres.initSQL`                                    | Array of SQL commands to run on database initialization.                       | `[]`                                |
+| `postgres.username`                                   | Username for the database.                                                     | `n8n`                               |
+| `postgres.database`                                   | Database name for PostgreSQL.                                                  | `n8n`                               |
+| `postgres.password.secretName`                        | Existing secret name for database password (mutually exclusive with value).    | `""`                                |
+| `postgres.password.secretKey`                         | Key in the secret containing the password (default: password).                 | `password`                          |
+| `postgres.password.value`                             | Direct password value to create a secret (mutually exclusive with secretName). | `""`                                |
+| `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                                  | `true`                              |
+| `postgres.standalone.persistence.size`                | Size of the persistence volume.                                                | `512Mi`                             |
+| `postgres.standalone.persistence.storageClass`        | Storage class for persistence.                                                 | `""`                                |
+| `postgres.standalone.persistence.existingClaim`       | Use an existing PVC.                                                           | `""`                                |
+| `postgres.standalone.image.repository`                | PostgreSQL image repository.                                                   | `postgres`                          |
+| `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                                  | `true`                              |
+| `postgres.standalone.persistence.size`                | Size of the persistence volume.                                                | `512Mi`                             |
+| `postgres.standalone.persistence.storageClass`        | Storage class for persistence.                                                 | `""`                                |
+| `postgres.standalone.persistence.existingClaim`       | Use an existing PVC.                                                           | `""`                                |
+| `postgres.standalone.image.tag`                       | PostgreSQL image tag.                                                          | `16-alpine`                         |
+| `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                                  | `true`                              |
+| `postgres.standalone.persistence.size`                | Size of the persistence volume.                                                | `512Mi`                             |
+| `postgres.standalone.persistence.storageClass`        | Storage class for persistence.                                                 | `""`                                |
+| `postgres.standalone.persistence.existingClaim`       | Use an existing PVC.                                                           | `""`                                |
+| `postgres.standalone.image.autoupdate.enabled`        | Enable automatic image updates for standalone database (default: false).       | `false`                             |
+| `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                                  | `true`                              |
+| `postgres.standalone.persistence.size`                | Size of the persistence volume.                                                | `512Mi`                             |
+| `postgres.standalone.persistence.storageClass`        | Storage class for persistence.                                                 | `""`                                |
+| `postgres.standalone.persistence.existingClaim`       | Use an existing PVC.                                                           | `""`                                |
+| `postgres.standalone.image.autoupdate.updateStrategy` | Strategy for image updates (e.g., semver, latest).                             | `""`                                |
+| `postgres.standalone.resources`                       | Resource limits and requests for standalone PostgreSQL.                        | `{}`                                |
+| `postgres.cluster.instances`                          | Number of PostgreSQL instances (replicas).                                     | `2`                                 |
+| `postgres.cluster.persistence.enabled`                | Enable persistence for cluster PostgreSQL.                                     | `true`                              |
+| `postgres.cluster.persistence.size`                   | Size of the persistence volume.                                                | `512Mi`                             |
+| `postgres.cluster.persistence.storageClass`           | Storage class for persistence.                                                 | `""`                                |
+| `postgres.cluster.image.repository`                   | PostgreSQL container image repository.                                         | `ghcr.io/cloudnative-pg/postgresql` |
+| `postgres.cluster.persistence.enabled`                | Enable persistence for cluster PostgreSQL.                                     | `true`                              |
+| `postgres.cluster.persistence.size`                   | Size of the persistence volume.                                                | `512Mi`                             |
+| `postgres.cluster.persistence.storageClass`           | Storage class for persistence.                                                 | `""`                                |
+| `postgres.cluster.image.tag`                          | PostgreSQL container image tag.                                                | `16`                                |
+| `postgres.external.host`                              | Hostname of external PostgreSQL (when mode is 'external').                     | `""`                                |
+| `postgres.external.port`                              | Port of external PostgreSQL.                                                   | `5432`                              |
 
 ### ArgoCD Image Updater parameters
 
@@ -183,12 +184,27 @@ The command removes all the Kubernetes components associated with the chart and 
 ### Using Standalone PostgreSQL (Default)
 
 ```yaml
-database:
+postgres:
   mode: standalone
+  password:
+    value: "your-secure-password-here"  # Required: provide database password
   standalone:
     persistence:
       enabled: true
       size: 10Gi
+```
+
+### Using Existing Secret for Password
+
+```yaml
+postgres:
+  mode: standalone
+  password:
+    secretName: my-postgres-secret  # Reference existing secret
+    secretKey: password              # Key in secret (default: password)
+  standalone:
+    persistence:
+      enabled: true
 ```
 
 ### Using External PostgreSQL
