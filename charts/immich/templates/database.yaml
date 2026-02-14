@@ -93,7 +93,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ $secretName }}
-              key: password
+              key: {{ $secretKey }}
         - name: POSTGRES_DB
           value: {{ .Values.postgres.username | quote }}
         - name: PGDATA
