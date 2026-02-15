@@ -214,10 +214,11 @@ Then configure the transport in your Traefik static configuration:
 
 ```yaml
 # Traefik static config (traefik.yaml or ConfigMap)
-transport:
-  respondingTimeouts:
-    readTimeout: 600s
-    idleTimeout: 600s
+serversTransports:
+  immich-transport:
+    respondingTimeouts:
+      readTimeout: 600s
+      idleTimeout: 600s
 ```
 
 These timeout settings are important for Immich to handle large file uploads and downloads without connection timeouts.

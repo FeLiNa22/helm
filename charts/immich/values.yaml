@@ -89,8 +89,9 @@ service:
   nodePort: ""
   annotations: {}
     # For Traefik with MetalLB, configure transport timeouts:
+    # Option 1: Use a named transport (requires Traefik static config with serversTransports definition)
     # traefik.ingress.kubernetes.io/service.serversTransport: immich-transport@file
-    # Or using direct annotations (Traefik 2.x):
+    # Option 2: Direct timeout annotations (Traefik 2.x+)
     # traefik.ingress.kubernetes.io/service.respondingtimeouts.readtimeout: "600s"
     # traefik.ingress.kubernetes.io/service.respondingtimeouts.idletimeout: "600s"
 
