@@ -219,6 +219,10 @@ velero:
 ## DragonflyDB is a Redis-compatible in-memory data store used for Immich's job queue and caching
 
 ## @param dragonfly.mode The mode of DragonflyDB deployment: 'standalone', 'cluster', or 'external'.
+## @param dragonfly.username Username for DragonflyDB authentication (default: "default").
+## @param dragonfly.password.secretName Name of existing secret containing the password (mutually exclusive with value).
+## @param dragonfly.password.secretKey Key in the secret containing the password (only used when secretName is provided).
+## @param dragonfly.password.value Direct password value (mutually exclusive with secretName).
 ## @param dragonfly.standalone.image.repository The Docker repository for Dragonfly image.
 ## @param dragonfly.standalone.image.tag The image tag for Dragonfly.
 ## @param dragonfly.standalone.resources Resource limits and requests for standalone Dragonfly.
@@ -237,8 +241,6 @@ velero:
 ## @param dragonfly.cluster.snapshot.cron Cron schedule for Dragonfly cluster snapshots.
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
-## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
-## @param dragonfly.external.passwordKey Key in the secret for the password.
 ##
 dragonfly:
   # Mode options: 'standalone', 'cluster', or 'external'
