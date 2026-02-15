@@ -84,6 +84,17 @@ spec:
               containerPort: 80
               protocol: TCP
           env:
+            {{- if or (eq .Values.database.mode "cluster") (eq .Values.database.mode "external") }}
+            # Database password for constructing DATABASE_URL
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "vaultwarden.postgresql.secretName" . }}
+                  key: password
+            # PostgreSQL connection URL
+            - name: DATABASE_URL
+              value: {{ include "vaultwarden.postgresql.databaseUrl" . | quote }}
+            {{- end }}
             {{- range $k,$v := .Values.env }}
             - name: {{ $k }}
               value: {{ $v | quote }}

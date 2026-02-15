@@ -1,0 +1,89 @@
+{{- if and .Values.database.backup.enabled (or (eq .Values.database.mode "cluster") (eq .Values.database.mode "external")) }}
+{{- $fullName := include "vaultwarden.fullname" . -}}
+{{- $secretName := include "vaultwarden.postgresql.secretName" . -}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $fullName }}-db-backup
+  labels:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: database-backup
+spec:
+  accessModes:
+    - {{ .Values.database.backup.persistence.accessMode }}
+  {{- if .Values.database.backup.persistence.storageClass }}
+  storageClassName: {{ .Values.database.backup.persistence.storageClass }}
+  {{- end }}
+  {{- if .Values.database.backup.persistence.existingClaim }}
+  volumeName: {{ .Values.database.backup.persistence.existingClaim }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.database.backup.persistence.size }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $fullName }}-db-backup
+  labels:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: database-backup
+spec:
+  schedule: {{ .Values.database.backup.cron | quote }}
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: vaultwarden
+            app.kubernetes.io/instance: {{ .Release.Name | quote }}
+            app.kubernetes.io/component: database-backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            image: postgres:16-alpine
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              BACKUP_FILE="/backups/vaultwarden-backup-$(date +%Y%m%d-%H%M%S).sql"
+              echo "Starting backup to $BACKUP_FILE"
+              pg_dump -h {{ include "vaultwarden.postgresql.host" . }} \
+                      -p {{ include "vaultwarden.postgresql.port" . }} \
+                      -U {{ include "vaultwarden.postgresql.username" . }} \
+                      -d {{ include "vaultwarden.postgresql.database" . }} \
+                      -F c -b -v -f "$BACKUP_FILE"
+              echo "Backup completed successfully"
+              
+              # Clean up old backups
+              echo "Cleaning up old backups (keeping last {{ .Values.database.backup.retention }} backups)"
+              cd /backups
+              ls -t vaultwarden-backup-*.sql 2>/dev/null | tail -n +{{ add1 .Values.database.backup.retention }} | xargs -r rm -f
+              echo "Backup retention cleanup completed"
+              
+              # List remaining backups
+              echo "Current backups:"
+              ls -lh vaultwarden-backup-*.sql 2>/dev/null || echo "No backups found"
+            env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: password
+            volumeMounts:
+            - name: backup
+              mountPath: /backups
+          volumes:
+          - name: backup
+            persistentVolumeClaim:
+              claimName: {{ $fullName }}-db-backup
+{{- end }}

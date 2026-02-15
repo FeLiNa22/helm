@@ -157,6 +157,102 @@ persistence:
   additionalVolumes: []
   additionalMounts: []
 
+## @section Database parameters
+## PostgreSQL database configuration for Vaultwarden
+
+## @param database.mode The mode of database deployment: 'standalone' (internal SQLite), 'cluster' (CloudNativePG), or 'external' (existing PostgreSQL).
+## @param database.username Username for the PostgreSQL database.
+## @param database.database Database name for PostgreSQL.
+## @param database.password.secretName Existing secret name for database password (mutually exclusive with value).
+## @param database.password.value Direct password value to create a secret (mutually exclusive with secretName).
+## @param database.cluster.instances Number of PostgreSQL instances (replicas).
+## @param database.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
+## @param database.cluster.persistence.size Size of the persistence volume.
+## @param database.cluster.persistence.storageClass Storage class for persistence.
+## @param database.cluster.image.repository PostgreSQL container image repository.
+## @param database.cluster.image.tag PostgreSQL container image tag.
+## @param database.cluster.pitrBackup.enabled Enable PITR backups for CNPG cluster (default: false).
+## @param database.cluster.pitrBackup.retentionPolicy Retention policy for PITR backups (default: "30d").
+## @param database.cluster.pitrBackup.objectStorage.destinationPath S3 destination path (e.g., s3://bucket/path).
+## @param database.cluster.pitrBackup.objectStorage.endpointURL S3 endpoint URL for non-AWS storage.
+## @param database.cluster.pitrBackup.objectStorage.secretName Secret name containing ACCESS_KEY_ID and ACCESS_SECRET_KEY.
+## @param database.cluster.pitrBackup.objectStorage.region S3 region (optional).
+## @param database.external.host Hostname of external PostgreSQL (when mode is 'external').
+## @param database.external.port Port of external PostgreSQL.
+## @param database.backup.enabled Enable scheduled pg_dump backups for cluster and external modes (default: false).
+## @param database.backup.cron Cron schedule for backups (default: "0 2 * * *" for 2am daily).
+## @param database.backup.retention Number of backups to retain (default: 30).
+## @param database.backup.persistence.enabled Enable persistence for backups (default: true).
+## @param database.backup.persistence.size Backup volume size (default: 512Mi).
+## @param database.backup.persistence.storageClass Storage class for backup volume.
+## @param database.backup.persistence.accessMode Access mode for backup volume (default: ReadWriteOnce).
+## @param database.backup.persistence.existingClaim Use existing PVC for backups.
+##
+database:
+  # Mode options: 'standalone' (internal SQLite, no PostgreSQL deployed), 'cluster' (CNPG), or 'external'
+  mode: standalone
+
+  username: vaultwarden
+  database: "vaultwarden"  # Database name (used in cluster and external modes)
+
+  # Secret configuration for database password
+  # You must provide EITHER secretName (to use existing secret) OR value (to create new secret with password)
+  # For cluster mode (CNPG), existing secrets MUST contain both 'username' and 'password' keys
+  # and use type: kubernetes.io/basic-auth (or Opaque)
+  # When creating a new secret (using password.value), the secret will use type kubernetes.io/basic-auth
+  # with keys 'username' and 'password'
+  password:
+    secretName: ""  # Name of existing secret containing the password (and username for cluster mode)
+    value: ""  # Direct password value (if secretName is empty, this must be provided when using cluster/external mode)
+
+  # CloudNativePG Cluster deployment (using CNPG operator)
+  cluster:
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: ""
+
+    instances: 2
+    # Use standard PostgreSQL image for Vaultwarden
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: "16"
+    # PITR (Point-in-Time Recovery) backup configuration for CNPG
+    # This is in addition to pg_dump backups configured in database.backup
+    pitrBackup:
+      enabled: false
+      # Retention policy for PITR backups
+      retentionPolicy: "30d"
+      # Object storage configuration (S3-compatible)
+      objectStorage:
+        # S3 bucket destination path (e.g., s3://bucket-name/path/to/backups)
+        destinationPath: ""
+        # S3 endpoint URL (for non-AWS S3-compatible storage)
+        endpointURL: ""
+        # Name of the secret containing S3 credentials
+        # Secret should contain ACCESS_KEY_ID and ACCESS_SECRET_KEY
+        secretName: ""
+        # S3 region (optional)
+        region: ""
+
+  # External PostgreSQL configuration (used when mode is 'external')
+  external:
+    host: ""
+    port: 5432
+    # Password is sourced from the secret configured in database.password.secretName / database.password.value
+
+  # Scheduled database backups using pg_dump (works for cluster and external modes only)
+  backup:
+    enabled: false
+    cron: "0 2 * * *"  # Daily at 2am
+    retention: 30  # Number of backups to retain
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: ""
+      accessMode: ReadWriteOnce
+      existingClaim: ""
+
 ## @section Velero Backup Schedule parameters
 
 ## @param velero.enabled Whether to enable Velero backup schedules
