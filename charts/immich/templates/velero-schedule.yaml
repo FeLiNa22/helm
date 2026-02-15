@@ -37,7 +37,6 @@ spec:
     {{- end }}
     metadata:
       labels:
-        {{- include "immich.labels" . | nindent 8 }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
         velero.io/backup-type: scheduled
-        velero.io/pvc-target: config
 {{- end }}
