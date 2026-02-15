@@ -197,10 +197,9 @@ dragonfly:
     image:
       repository: docker.dragonflydb.io/dragonflydb/dragonfly
       tag: "v1.25.2"
-    resources: {}
-      # limits:
-      #   cpu: 1000m
-      #   memory: 2Gi
+    resources:
+      limits:
+        memory: 512Mi
       # requests:
       #   cpu: 100m
       #   memory: 256Mi
@@ -216,13 +215,12 @@ dragonfly:
     image:
       repository: docker.dragonflydb.io/dragonflydb/dragonfly
       tag: "v1.25.2"
-    resources: {}
-      # limits:
-      #   cpu: 2000m
-      #   memory: 4Gi
+    resources:
+      limits:
+        memory: 512Mi
       # requests:
       #   cpu: 500m
-      #   memory: 512Mi
+      #   memory: 256Mi
     persistence:
       enabled: true
       size: 512Mi

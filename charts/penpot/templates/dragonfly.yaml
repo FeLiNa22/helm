@@ -54,7 +54,6 @@ spec:
             - "--dbfilename=dump.rdb"
             {{- end }}
             - "--requirepass=$(DRAGONFLY_PASSWORD)"
-            - "--maxmemory=512mb"
           env:
             - name: DRAGONFLY_PASSWORD
               valueFrom:
@@ -157,8 +156,6 @@ spec:
     passwordFromSecret:
       name: {{ include "penpot.dragonfly.secretName" . }}
       key: {{ include "penpot.dragonfly.passwordKey" . }}
-  args:
-    - "--maxmemory=512mb"
   replicas: {{ .Values.dragonfly.cluster.replicas }}
   image: "{{ .Values.dragonfly.cluster.image.repository }}:{{ .Values.dragonfly.cluster.image.tag }}"
   {{- if .Values.dragonfly.cluster.resources }}

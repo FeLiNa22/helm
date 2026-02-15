@@ -50,7 +50,6 @@ spec:
             - "dragonfly"
             - "--default_lua_flags=allow-undeclared-keys"
             - "--requirepass=$(DRAGONFLY_PASSWORD)"
-            - "--maxmemory=512mb"
           imagePullPolicy: IfNotPresent
           env:
             - name: DRAGONFLY_PASSWORD
@@ -152,7 +151,6 @@ metadata:
 spec:
   args:
     - "--default_lua_flags=allow-undeclared-keys"
-    - "--maxmemory=512mb"
   authentication:
     passwordFromSecret:
       name: {{ include "immich.dragonfly.secretName" . }}

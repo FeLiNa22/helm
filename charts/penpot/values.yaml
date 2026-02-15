@@ -509,7 +509,9 @@ dragonfly:
     image:
       repository: docker.dragonflydb.io/dragonflydb/dragonfly
       tag: "v1.25.2"
-    resources: {}
+    resources:
+      limits:
+        memory: 512Mi
     persistence:
       enabled: true
       size: 512Mi
@@ -521,7 +523,9 @@ dragonfly:
     image:
       repository: docker.dragonflydb.io/dragonflydb/dragonfly
       tag: "v1.25.2"
-    resources: {}
+    resources:
+      limits:
+        memory: 512Mi
     persistence:
       enabled: true
       size: 512Mi
