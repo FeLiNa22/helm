@@ -31,3 +31,52 @@ PostgreSQL username
 {{- define "nextcloud.postgresql.username" -}}
 {{- .Values.postgres.username | default "nextcloud" }}
 {{- end }}
+
+{{/*
+DragonflyDB/Redis secret name
+*/}}
+{{- define "nextcloud.dragonfly.secretName" -}}
+{{- if .Values.dragonfly.password.secretName }}
+{{- .Values.dragonfly.password.secretName }}
+{{- else }}
+{{- printf "%s-dragonfly-secret" .Release.Name }}
+{{- end }}
+{{- end }}
+
+{{/*
+DragonflyDB/Redis password key
+*/}}
+{{- define "nextcloud.dragonfly.passwordKey" -}}
+{{- .Values.dragonfly.password.secretKey | default "password" }}
+{{- end }}
+
+{{/*
+DragonflyDB/Redis username
+*/}}
+{{- define "nextcloud.dragonfly.username" -}}
+{{- .Values.dragonfly.username | default "default" }}
+{{- end }}
+
+{{/*
+DragonflyDB/Redis host
+*/}}
+{{- define "nextcloud.dragonfly.host" -}}
+{{- if eq .Values.dragonfly.mode "standalone" }}
+{{- printf "%s-dragonfly" .Release.Name }}
+{{- else if eq .Values.dragonfly.mode "cluster" }}
+{{- printf "%s-dragonfly-cluster" .Release.Name }}
+{{- else if eq .Values.dragonfly.mode "external" }}
+{{- .Values.dragonfly.external.host }}
+{{- end }}
+{{- end }}
+
+{{/*
+DragonflyDB/Redis port
+*/}}
+{{- define "nextcloud.dragonfly.port" -}}
+{{- if eq .Values.dragonfly.mode "external" }}
+{{- .Values.dragonfly.external.port | default "6379" }}
+{{- else }}
+{{- "6379" }}
+{{- end }}
+{{- end }}

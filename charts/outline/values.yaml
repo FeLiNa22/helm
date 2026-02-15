@@ -313,6 +313,10 @@ ingress:
 
 ## @param dragonfly.enabled Whether to enable DragonflyDB/Redis for Outline.
 ## @param dragonfly.mode The mode of DragonflyDB deployment: 'standalone', 'cluster', or 'external'.
+## @param dragonfly.username Username for DragonflyDB authentication (default: "default").
+## @param dragonfly.password.secretName Name of existing secret containing the password (mutually exclusive with value).
+## @param dragonfly.password.secretKey Key in the secret containing the password (only used when secretName is provided).
+## @param dragonfly.password.value Direct password value (mutually exclusive with secretName).
 ## @param dragonfly.standalone.image.repository The Docker repository for Dragonfly image.
 ## @param dragonfly.standalone.image.tag The image tag for Dragonfly.
 ## @param dragonfly.standalone.resources Resource limits and requests for standalone Dragonfly.
@@ -331,12 +335,22 @@ ingress:
 ## @param dragonfly.cluster.snapshot.cron Cron schedule for Dragonfly cluster snapshots.
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
-## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
-## @param dragonfly.external.passwordKey Key in the secret for the password.
 ##
 dragonfly:
   enabled: true
   mode: standalone
+
+  # Username for DragonflyDB authentication
+  username: "default"
+
+  # Secret configuration for DragonflyDB password
+  # You must provide EITHER secretName (to use existing secret) OR value (to create new secret with password)
+  # When creating a new secret (using password.value), the secret will use type kubernetes.io/basic-auth
+  # with keys 'username' and 'password' (secretKey is ignored in this case)
+  password:
+    secretName: ""  # Name of existing secret containing the password
+    secretKey: "password"  # Key in the secret containing the password (only used when secretName is provided)
+    value: ""  # Direct password value (if secretName is empty, password will be auto-generated)
 
   standalone:
     image:
@@ -367,8 +381,7 @@ dragonfly:
   external:
     host: ""
     port: 6379
-    existingSecret: ""
-    passwordKey: "password"
+    # Password is sourced from the secret configured in dragonfly.password.secretName / dragonfly.password.secretKey
 
 ## @section Database parameters
 ## PostgreSQL database is required for Outline

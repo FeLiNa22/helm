@@ -1,4 +1,25 @@
 {{- $fullName := include "penpot.fullname" . -}}
+{{- $secretName := include "penpot.dragonfly.secretName" . -}}
+
+{{- if and .Values.dragonfly.enabled (or (eq .Values.dragonfly.mode "standalone") (eq .Values.dragonfly.mode "cluster")) }}
+{{- if .Values.dragonfly.password.value }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  labels:
+    {{- include "penpot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly
+type: kubernetes.io/basic-auth
+stringData:
+  username: {{ include "penpot.dragonfly.username" . }}
+  password: {{ .Values.dragonfly.password.value }}
+{{- else if not .Values.dragonfly.password.secretName }}
+{{- fail "Either dragonfly.password.value or dragonfly.password.secretName must be provided" }}
+{{- end }}
+{{- end }}
+
 {{- if and .Values.dragonfly.enabled (eq .Values.dragonfly.mode "standalone") }}
 ---
 apiVersion: apps/v1
@@ -26,14 +47,24 @@ spec:
         - name: dragonfly
           image: "{{ .Values.dragonfly.standalone.image.repository }}:{{ .Values.dragonfly.standalone.image.tag }}"
           imagePullPolicy: IfNotPresent
+          command:
+            - "dragonfly"
+            {{- if .Values.dragonfly.standalone.persistence.enabled }}
+            - "--dir=/data"
+            - "--dbfilename=dump.rdb"
+            {{- end }}
+            - "--requirepass=$(DRAGONFLY_PASSWORD)"
+          env:
+            - name: DRAGONFLY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "penpot.dragonfly.secretName" . }}
+                  key: {{ include "penpot.dragonfly.passwordKey" . }}
           ports:
             - name: redis
               containerPort: 6379
               protocol: TCP
           {{- if .Values.dragonfly.standalone.persistence.enabled }}
-          args:
-            - --dir=/data
-            - --dbfilename=dump.rdb
           volumeMounts:
             - name: data
               mountPath: /data
@@ -121,6 +152,10 @@ metadata:
     {{- include "penpot.labels" . | nindent 4 }}
     app.kubernetes.io/component: dragonfly-cluster
 spec:
+  authentication:
+    passwordFromSecret:
+      name: {{ include "penpot.dragonfly.secretName" . }}
+      key: {{ include "penpot.dragonfly.passwordKey" . }}
   replicas: {{ .Values.dragonfly.cluster.replicas }}
   image: "{{ .Values.dragonfly.cluster.image.repository }}:{{ .Values.dragonfly.cluster.image.tag }}"
   {{- if .Values.dragonfly.cluster.resources }}

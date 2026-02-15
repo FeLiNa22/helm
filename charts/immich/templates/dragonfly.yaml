@@ -1,4 +1,25 @@
 {{- $fullName := include "immich.fullname" . -}}
+{{- $secretName := include "immich.dragonfly.secretName" . -}}
+
+{{- if or (eq .Values.dragonfly.mode "standalone") (eq .Values.dragonfly.mode "cluster") }}
+{{- if .Values.dragonfly.password.value }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly
+type: kubernetes.io/basic-auth
+stringData:
+  username: {{ include "immich.dragonfly.username" . }}
+  password: {{ .Values.dragonfly.password.value }}
+{{- else if not .Values.dragonfly.password.secretName }}
+{{- fail "Either dragonfly.password.value or dragonfly.password.secretName must be provided" }}
+{{- end }}
+{{- end }}
+
 {{- if eq .Values.dragonfly.mode "standalone" }}
 ---
 apiVersion: apps/v1
@@ -25,8 +46,17 @@ spec:
       containers:
         - name: dragonfly
           image: "{{ .Values.dragonfly.standalone.image.repository }}:{{ .Values.dragonfly.standalone.image.tag }}"
-          command: ["--default_lua_flags=allow-undeclared-keys"]
+          command: 
+            - "dragonfly"
+            - "--default_lua_flags=allow-undeclared-keys"
+            - "--requirepass=$(DRAGONFLY_PASSWORD)"
           imagePullPolicy: IfNotPresent
+          env:
+            - name: DRAGONFLY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "immich.dragonfly.secretName" . }}
+                  key: {{ include "immich.dragonfly.passwordKey" . }}
           ports:
             - name: redis
               containerPort: 6379
@@ -121,6 +151,10 @@ metadata:
 spec:
   args:
     - "--default_lua_flags=allow-undeclared-keys"
+  authentication:
+    passwordFromSecret:
+      name: {{ include "immich.dragonfly.secretName" . }}
+      key: {{ include "immich.dragonfly.passwordKey" . }}
   replicas: {{ .Values.dragonfly.cluster.replicas }}
   image: "{{ .Values.dragonfly.cluster.image.repository }}:{{ .Values.dragonfly.cluster.image.tag }}"
   {{- if .Values.dragonfly.cluster.resources }}

@@ -90,13 +90,11 @@ spec:
               value: {{ include "immich.dragonfly.host" . }}
             - name: REDIS_PORT
               value: {{ include "immich.dragonfly.port" . | quote }}
-            {{- if and (eq .Values.dragonfly.mode "external") .Values.dragonfly.external.existingSecret }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "immich.dragonfly.secretName" . }}
                   key: {{ include "immich.dragonfly.passwordKey" . }}
-            {{- end }}
             {{- if .Values.machineLearning.enabled }}
             # Machine Learning connection
             - name: IMMICH_MACHINE_LEARNING_URL

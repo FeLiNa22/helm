@@ -119,10 +119,10 @@ DragonflyDB/Redis port
 DragonflyDB/Redis secret name (for password if enabled)
 */}}
 {{- define "outline.dragonfly.secretName" -}}
-{{- if eq .Values.dragonfly.mode "external" }}
-{{- .Values.dragonfly.external.existingSecret }}
+{{- if .Values.dragonfly.password.secretName }}
+{{- .Values.dragonfly.password.secretName }}
 {{- else }}
-{{- "" }}
+{{- printf "%s-dragonfly-secret" .Release.Name }}
 {{- end }}
 {{- end }}
 
@@ -130,9 +130,12 @@ DragonflyDB/Redis secret name (for password if enabled)
 DragonflyDB/Redis password key
 */}}
 {{- define "outline.dragonfly.passwordKey" -}}
-{{- if eq .Values.dragonfly.mode "external" }}
-{{- .Values.dragonfly.external.passwordKey | default "password" }}
-{{- else }}
-{{- "password" }}
+{{- .Values.dragonfly.password.secretKey | default "password" }}
 {{- end }}
+
+{{/*
+DragonflyDB/Redis username
+*/}}
+{{- define "outline.dragonfly.username" -}}
+{{- .Values.dragonfly.username | default "default" }}
 {{- end }}
