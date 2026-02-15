@@ -380,7 +380,6 @@ initContainers:
 | `postgres.username`                                         | Username for the database.                                                     | `custom`                            |
 | `postgres.database`                                         | Database name for PostgreSQL.                                                  | `custom`                            |
 | `postgres.password.secretName`                              | Existing secret name for database password (mutually exclusive with value).    | `""`                                |
-| `postgres.password.secretKey`                               | Key in the secret containing the password (default: password).                 | `password`                          |
 | `postgres.password.value`                                   | Direct password value to create a secret (mutually exclusive with secretName). | `""`                                |
 | `postgres.standalone.persistence.enabled`                   | Enable persistence for standalone PostgreSQL.                                  | `true`                              |
 | `postgres.standalone.persistence.size`                      | Size of the persistence volume.                                                | `1Gi`                               |

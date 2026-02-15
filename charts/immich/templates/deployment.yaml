@@ -84,7 +84,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "immich.postgresql.secretName" . }}
-                  key: {{ include "immich.postgresql.secretKey" . }}
+                  key: password
             # DragonflyDB/Redis connection
             - name: REDIS_HOSTNAME
               value: {{ include "immich.dragonfly.host" . }}

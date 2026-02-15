@@ -332,7 +332,7 @@ ingress:
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
-## @param dragonfly.external.secretKey Key in the secret for the password.
+## @param dragonfly.external.passwordKey Key in the secret for the password.
 ##
 dragonfly:
   enabled: true
@@ -368,7 +368,7 @@ dragonfly:
     host: ""
     port: 6379
     existingSecret: ""
-    secretKey: "password"
+    passwordKey: "password"
 
 ## @section Database parameters
 ## PostgreSQL database is required for Outline
@@ -379,7 +379,6 @@ dragonfly:
 ## @param postgres.username Username for the database.
 ## @param postgres.database Database name for PostgreSQL.
 ## @param postgres.password.secretName Existing secret name for database password (mutually exclusive with value).
-## @param postgres.password.secretKey Key in the secret containing the password (default: password).
 ## @param postgres.password.value Direct password value to create a secret (mutually exclusive with secretName).
 ## @param postgres.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
@@ -402,7 +401,6 @@ postgres:
   # You must provide EITHER secretName (to use existing secret) OR value (to create new secret with password)
   password:
     secretName: ""  # Name of existing secret containing the password
-    secretKey: "password"  # Key in the secret containing the password
     value: ""  # Direct password value (if secretName is empty, this must be provided)
 
   cluster:

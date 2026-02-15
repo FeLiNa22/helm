@@ -238,7 +238,7 @@ velero:
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
-## @param dragonfly.external.secretKey Key in the secret for the password.
+## @param dragonfly.external.passwordKey Key in the secret for the password.
 ##
 dragonfly:
   # Mode options: 'standalone', 'cluster', or 'external'
@@ -289,7 +289,7 @@ dragonfly:
     host: ""
     port: 6379
     existingSecret: ""
-    secretKey: "password"
+    passwordKey: "password"
 
 ## @section Database parameters
 ## PostgreSQL with vectorchord extension is required for Immich
@@ -299,7 +299,6 @@ dragonfly:
 ## @param postgres.username Username for the database.
 ## @param postgres.database Database name for PostgreSQL.
 ## @param postgres.password.secretName Existing secret name for database password (mutually exclusive with value).
-## @param postgres.password.secretKey Key in the secret containing the password (default: password).
 ## @param postgres.password.value Direct password value to create a secret (mutually exclusive with secretName).
 ## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
 ## @param postgres.standalone.persistence.size Size of the persistence volume.
@@ -382,10 +381,9 @@ postgres:
   # For cluster mode (CNPG), existing secrets MUST contain both 'username' and 'password' keys
   # and use type: kubernetes.io/basic-auth (or Opaque)
   # When creating a new secret (using password.value), the secret will use type kubernetes.io/basic-auth
-  # with keys 'username' and 'password' (secretKey is ignored in this case)
+  # with keys 'username' and 'password'
   password:
     secretName: ""  # Name of existing secret containing the password (and username for cluster mode)
-    secretKey: "password"  # Key in the secret containing the password (only used when secretName is provided)
     value: ""  # Direct password value (if secretName is empty, this must be provided)
 
   # Standalone PostgreSQL deployment (using StatefulSet)

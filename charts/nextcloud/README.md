@@ -237,13 +237,12 @@ ingress:
 | `dragonfly.external.host`                             | Hostname of external DragonflyDB/Redis (when mode is 'external').                       | `""`                                          |
 | `dragonfly.external.port`                             | Port of external DragonflyDB/Redis.                                                     | `6379`                                        |
 | `dragonfly.external.existingSecret`                   | Secret name for external DragonflyDB/Redis password.                                    | `""`                                          |
-| `dragonfly.external.secretKey`                        | Key in the secret for the password.                                                     | `password`                                    |
+| `dragonfly.external.passwordKey`                      | Key in the secret for the password.                                                     | `password`                                    |
 | `postgres.mode`                                       | The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.              | `cluster`                                     |
 | `postgres.initSQL`                                    | Array of SQL commands to run on database initialization.                                | `[]`                                          |
 | `postgres.username`                                   | Username for the database.                                                              | `nextcloud`                                   |
 | `postgres.database`                                   | Database name for PostgreSQL.                                                           | `nextcloud`                                   |
 | `postgres.password.secretName`                        | Existing secret name for database password (mutually exclusive with value).             | `""`                                          |
-| `postgres.password.secretKey`                         | Key in the secret containing the password (default: password).                          | `password`                                    |
 | `postgres.password.value`                             | Direct password value to create a secret (mutually exclusive with secretName).          | `""`                                          |
 | `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                                           | `true`                                        |
 | `postgres.standalone.persistence.size`                | Size of the persistence volume.                                                         | `512Mi`                                       |

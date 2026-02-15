@@ -1,7 +1,6 @@
 {{- if .Values.postgres.backup.enabled }}
 {{- $fullName := include "immich.fullname" . -}}
 {{- $secretName := include "immich.postgresql.secretName" . -}}
-{{- $secretKey := include "immich.postgresql.secretKey" . -}}
 {{- if and .Values.postgres.backup.persistence.enabled (not .Values.postgres.backup.persistence.existingClaim) }}
 ---
 apiVersion: v1
@@ -126,7 +125,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ $secretName }}
-                  key: {{ $secretKey }}
+                  key: password
             volumeMounts:
             - name: backup-scripts
               mountPath: /scripts
