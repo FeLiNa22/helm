@@ -27,7 +27,7 @@ metadata:
 type: kubernetes.io/basic-auth
 stringData:
   username: {{ include "penpot.dragonfly.username" . }}
-  password: {{ randAlphaNum 32 | b64enc }}
+  password: {{ randAlphaNum 32 }}
 {{- end }}
 {{- end }}
 
