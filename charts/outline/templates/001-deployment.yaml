@@ -77,7 +77,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "outline.postgresql.secretName" . }}
-                  key: {{ include "outline.postgresql.secretKey" . }}
+                  key: password
             - name: DATABASE_URL
               value: "postgres://{{ include "outline.postgresql.username" . }}:$(POSTGRES_PASSWORD)@{{ include "outline.postgresql.host" . }}:{{ include "outline.postgresql.port" . }}/{{ include "outline.postgresql.database" . }}"
             - name: DATABASE_URL_TEST

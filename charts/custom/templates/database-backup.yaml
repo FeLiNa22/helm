@@ -1,7 +1,6 @@
 {{- if and .Values.postgres.enabled .Values.postgres.backup.enabled }}
 {{- $fullName := include "custom.fullname" . -}}
 {{- $secretName := include "custom.postgresql.secretName" . -}}
-{{- $secretKey := include "custom.postgresql.secretKey" . -}}
 
 {{- $backupImage := "" }}
 {{- if .Values.postgres.backup.image.repository }}

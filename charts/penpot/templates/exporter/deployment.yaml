@@ -69,7 +69,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "penpot.postgresql.secretName" . }}
-                  key: {{ include "penpot.postgresql.secretKey" . }}
+                  key: password
             {{- else if not .Values.config.postgresql.secretKeys.passwordKey }}
               value: {{ .Values.config.postgresql.password | quote }}
             {{- else }}

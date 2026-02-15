@@ -131,7 +131,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `postgres.username`                                   | Username for the database.                                                     | `n8n`                               |
 | `postgres.database`                                   | Database name for PostgreSQL.                                                  | `n8n`                               |
 | `postgres.password.secretName`                        | Existing secret name for database password (mutually exclusive with value).    | `""`                                |
-| `postgres.password.secretKey`                         | Key in the secret containing the password (default: password).                 | `password`                          |
 | `postgres.password.value`                             | Direct password value to create a secret (mutually exclusive with secretName). | `""`                                |
 | `postgres.standalone.persistence.enabled`             | Enable persistence for standalone PostgreSQL.                                  | `true`                              |
 | `postgres.standalone.persistence.size`                | Size of the persistence volume.                                                | `512Mi`                             |
