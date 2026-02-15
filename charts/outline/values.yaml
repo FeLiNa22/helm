@@ -338,16 +338,17 @@ dragonfly:
   enabled: true
   mode: standalone
 
-  # Authentication configuration (applies to standalone and cluster modes)
-  auth:
-    enabled: true
-    username: "default"
-    password:
-      # Leave empty to auto-generate a random password
-      value: ""
-      # Use existing secret (mutually exclusive with value)
-      secretName: ""
-      secretKey: "password"
+  # Username for DragonflyDB authentication
+  username: "default"
+
+  # Secret configuration for DragonflyDB password
+  # You must provide EITHER secretName (to use existing secret) OR value (to create new secret with password)
+  # When creating a new secret (using password.value), the secret will use type kubernetes.io/basic-auth
+  # with keys 'username' and 'password' (secretKey is ignored in this case)
+  password:
+    secretName: ""  # Name of existing secret containing the password
+    secretKey: "password"  # Key in the secret containing the password (only used when secretName is provided)
+    value: ""  # Direct password value (if secretName is empty, password will be auto-generated)
 
   standalone:
     image:
@@ -378,8 +379,7 @@ dragonfly:
   external:
     host: ""
     port: 6379
-    existingSecret: ""
-    secretKey: "password"
+    # Password is sourced from the secret configured in dragonfly.password.secretName / dragonfly.password.secretKey
 
 ## @section Database parameters
 ## PostgreSQL database is required for Outline

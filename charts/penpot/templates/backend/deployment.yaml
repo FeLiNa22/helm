@@ -97,7 +97,7 @@ spec:
                   name: {{ .Values.config.postgresql.existingSecret }}
                   key: {{ .Values.config.postgresql.secretKeys.passwordKey }}
             {{- end }}
-            {{- if or (and (or (eq .Values.dragonfly.mode "standalone") (eq .Values.dragonfly.mode "cluster")) .Values.dragonfly.auth.enabled) (and (eq .Values.dragonfly.mode "external") .Values.dragonfly.external.existingSecret) }}
+            {{- if .Values.dragonfly.enabled }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -106,11 +106,7 @@ spec:
             {{- end }}
             - name: PENPOT_REDIS_URI
             {{- if .Values.dragonfly.enabled }}
-              {{- if or (and (or (eq .Values.dragonfly.mode "standalone") (eq .Values.dragonfly.mode "cluster")) .Values.dragonfly.auth.enabled) (and (eq .Values.dragonfly.mode "external") .Values.dragonfly.external.existingSecret) }}
               value: "redis://:$(REDIS_PASSWORD)@{{ include "penpot.dragonfly.host" . }}:{{ include "penpot.dragonfly.port" . }}/0"
-              {{- else }}
-              value: "redis://{{ include "penpot.dragonfly.host" . }}:{{ include "penpot.dragonfly.port" . }}/0"
-              {{- end }}
             {{- else }}
               value: "redis://{{ .Values.config.redis.host }}:{{ .Values.config.redis.port }}/{{ .Values.config.redis.database }}"
             {{- end }}
