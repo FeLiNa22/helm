@@ -35,7 +35,6 @@
 ## @param autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param autoscaling.maxReplicas The maximum number of replicas to scale to.
 ## @param autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
-## @param autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
 ## @param nodeSelector The node selector to use for the pod.
 ## @param tolerations The tolerations to use for the pod.
 ## @param affinity The affinity to use for the pod.
@@ -135,7 +134,6 @@ affinity: {}
 ## @param worker.autoscaling.minReplicas The minimum number of replicas to scale to.
 ## @param worker.autoscaling.maxReplicas The maximum number of replicas to scale to.
 ## @param worker.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
-## @param worker.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
 ## @param worker.nodeSelector The node selector to use for the worker pod.
 ## @param worker.tolerations The tolerations to use for the worker pod.
 ## @param worker.affinity The affinity to use for the worker pod.
@@ -165,6 +163,7 @@ worker:
 ## @section Environment Variables
 
 ## @param env Environment variables in map format (key: value). Common variables include TZ for timezone.
+## @param env.TZ Timezone for the application.
 ##
 env:
   TZ: "Europe/London"
@@ -235,6 +234,8 @@ persistence:
 ## @param postgres.persistence.existingClaim Use an existing PVC for the database.
 ## @param postgres.standalone.image.repository PostgreSQL image repository for standalone mode.
 ## @param postgres.standalone.image.tag PostgreSQL image tag for standalone mode.
+## @param postgres.standalone.image.autoupdate.enabled Enable automatic image updates for standalone PostgreSQL.
+## @param postgres.standalone.image.autoupdate.strategy Strategy for image updates for standalone PostgreSQL.
 ## @param postgres.standalone.resources Resource limits for standalone database.
 ## @param postgres.cluster.name Name of the CloudNativePG cluster.
 ## @param postgres.cluster.instances Number of instances in the cluster.
