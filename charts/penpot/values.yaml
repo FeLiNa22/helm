@@ -472,7 +472,7 @@ config:
 ## @param dragonfly.password.value Direct password value (mutually exclusive with secretName).
 ## @param dragonfly.standalone.image.repository The Docker repository for Dragonfly image.
 ## @param dragonfly.standalone.image.tag The image tag for Dragonfly.
-## @param dragonfly.standalone.resources Resource limits and requests for standalone Dragonfly.
+## @param dragonfly.standalone.resources.limits.memory Memory limit for standalone Dragonfly.
 ## @param dragonfly.standalone.persistence.enabled Whether to enable persistence for standalone Dragonfly.
 ## @param dragonfly.standalone.persistence.size Size of the persistence volume for standalone Dragonfly.
 ## @param dragonfly.standalone.persistence.storageClass Storage class for standalone Dragonfly persistence.
@@ -480,7 +480,7 @@ config:
 ## @param dragonfly.cluster.replicas Number of Dragonfly replicas in the cluster.
 ## @param dragonfly.cluster.image.repository The Docker repository for Dragonfly cluster image.
 ## @param dragonfly.cluster.image.tag The image tag for Dragonfly cluster.
-## @param dragonfly.cluster.resources Resource limits and requests for Dragonfly cluster.
+## @param dragonfly.cluster.resources.limits.memory Memory limit for Dragonfly cluster.
 ## @param dragonfly.cluster.persistence.enabled Whether to enable persistence for Dragonfly cluster.
 ## @param dragonfly.cluster.persistence.size Size of the persistence volume for Dragonfly cluster.
 ## @param dragonfly.cluster.persistence.storageClass Storage class for Dragonfly cluster persistence.
