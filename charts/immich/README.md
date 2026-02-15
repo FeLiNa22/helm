@@ -262,7 +262,7 @@ ingress:
 | `service.type`                                  | The type of service to create.                                                         | `ClusterIP`                        |
 | `service.port`                                  | The port on which the service will run.                                                | `2283`                             |
 | `service.nodePort`                              | The nodePort to use for the service. Only used if service.type is NodePort.            | `""`                               |
-| `service.annotations`                           | Additional annotations to add to the service. Useful for configuring LoadBalancer behavior (e.g., Traefik timeout settings). | `{}`                               |
+| `service.annotations`                           | Additional annotations to add to the service. Useful for configuring LoadBalancer behavior (e.g., MetalLB IP allocation). | `{}`                               |
 | `ingress.enabled`                               | Whether to create an ingress for the service.                                          | `false`                            |
 | `ingress.className`                             | The ingress class name to use.                                                         | `""`                               |
 | `ingress.annotations`                           | Additional annotations to add to the ingress.                                          | `{}`                               |
