@@ -9,11 +9,6 @@ This Helm chart deploys [authentik](https://goauthentik.io/), an open-source Ide
   - **Standalone**: Single PostgreSQL instance using StatefulSet
   - **Cluster**: High-availability PostgreSQL using CloudNativePG operator
   - **External**: Connect to an existing external database
-- **Redis Cache** (via DragonflyDB):
-  - **Standalone**: Single DragonflyDB instance
-  - **Cluster**: Multi-node DragonflyDB cluster
-  - **External**: Connect to external Redis-compatible cache
-  - **Disabled**: Run without cache (not recommended)
 - **Automated Backups**: pg_dump-based database backups with configurable retention
 - **Velero Integration**: Full application backup schedules
 - **ArgoCD Image Updater**: Automated image updates via GitOps
@@ -41,7 +36,6 @@ helm install authentik ./authentik
 
 This deploys authentik with:
 - Standalone PostgreSQL database
-- Standalone DragonflyDB cache
 - Persistent storage for media files
 - Default configuration
 
@@ -117,43 +111,6 @@ postgres:
     port: 5432
   secret:
     name: "authentik-db-secret"  # Optional: use existing secret
-    passwordKey: "password"
-```
-
-### Cache Modes (DragonflyDB/Redis)
-
-#### Standalone Mode (Default)
-```yaml
-dragonfly:
-  mode: standalone
-  standalone:
-    image:
-      repository: docker.dragonflydb.io/dragonflydb/dragonfly
-      tag: "v1.36.0"
-    persistence:
-      enabled: true
-      size: 512Mi
-```
-
-#### Cluster Mode
-```yaml
-dragonfly:
-  mode: cluster
-  cluster:
-    replicas: 3
-    persistence:
-      enabled: true
-      size: 512Mi
-```
-
-#### External Mode
-```yaml
-dragonfly:
-  mode: external
-  external:
-    host: "redis.example.com"
-    port: 6379
-    existingSecret: "redis-password"
     passwordKey: "password"
 ```
 
@@ -237,12 +194,6 @@ postgres:
   mode: cluster
   cluster:
     instances: 3
-
-# Cache cluster
-dragonfly:
-  mode: cluster
-  cluster:
-    replicas: 3
 ```
 
 ### Resource Limits
@@ -298,14 +249,6 @@ worker:
 | `postgres.persistence.enabled` | Enable database persistence | `true` |
 | `postgres.persistence.size` | Database PVC size | `5Gi` |
 
-### Cache Parameters
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `dragonfly.mode` | Cache mode: standalone, cluster, external, disabled | `standalone` |
-| `dragonfly.standalone.persistence.enabled` | Enable cache persistence | `true` |
-| `dragonfly.standalone.persistence.size` | Cache PVC size | `512Mi` |
-
 ### Authentik Configuration
 
 | Parameter | Description | Default |
@@ -333,7 +276,6 @@ If migrating from the official authentik Helm chart:
 
 2. Map the values to this chart's structure (main differences):
    - Database configuration is under `postgres.*` instead of `postgresql.*`
-   - Cache is DragonflyDB instead of Redis by default
    - Environment variables use map format instead of array
 
 3. Backup your database before migrating
@@ -374,12 +316,11 @@ Check worker logs:
 kubectl logs -l app.kubernetes.io/component=worker
 ```
 
-### Cache connection issues
+### Check authentik configuration
 
-Check cache status:
+View the current configuration:
 ```bash
-kubectl get pods -l app.kubernetes.io/component=dragonfly
-kubectl logs -l app.kubernetes.io/component=dragonfly
+kubectl exec -it deployment/authentik-server -- ak dump_config
 ```
 
 ## Support

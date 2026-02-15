@@ -121,52 +121,6 @@ PostgreSQL secret name
 {{- end }}
 
 {{/*
-DragonflyDB/Redis host
-*/}}
-{{- define "authentik.dragonfly.host" -}}
-{{- if eq .Values.dragonfly.mode "standalone" }}
-{{- printf "%s-dragonfly" (include "authentik.fullname" .) }}
-{{- else if eq .Values.dragonfly.mode "cluster" }}
-{{- printf "%s-dragonfly-cluster" (include "authentik.fullname" .) }}
-{{- else if eq .Values.dragonfly.mode "external" }}
-{{- .Values.dragonfly.external.host }}
-{{- end }}
-{{- end }}
-
-{{/*
-DragonflyDB/Redis port
-*/}}
-{{- define "authentik.dragonfly.port" -}}
-{{- if eq .Values.dragonfly.mode "external" }}
-{{- .Values.dragonfly.external.port | default "6379" }}
-{{- else }}
-{{- "6379" }}
-{{- end }}
-{{- end }}
-
-{{/*
-DragonflyDB/Redis secret name (for password if enabled)
-*/}}
-{{- define "authentik.dragonfly.secretName" -}}
-{{- if eq .Values.dragonfly.mode "external" }}
-{{- .Values.dragonfly.external.existingSecret }}
-{{- else }}
-{{- "" }}
-{{- end }}
-{{- end }}
-
-{{/*
-DragonflyDB/Redis password key
-*/}}
-{{- define "authentik.dragonfly.passwordKey" -}}
-{{- if eq .Values.dragonfly.mode "external" }}
-{{- .Values.dragonfly.external.passwordKey | default "password" }}
-{{- else }}
-{{- "password" }}
-{{- end }}
-{{- end }}
-
-{{/*
 Authentik secret key - generate random if not provided
 */}}
 {{- define "authentik.secretKey" -}}
