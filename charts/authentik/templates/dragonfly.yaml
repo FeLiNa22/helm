@@ -1,0 +1,212 @@
+{{- $fullName := include "authentik.fullname" . -}}
+{{- if eq .Values.dragonfly.mode "standalone" }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullName }}-dragonfly
+  labels:
+    {{- include "authentik.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "authentik.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: dragonfly
+  template:
+    metadata:
+      labels:
+        {{- include "authentik.labels" . | nindent 8 }}
+        app.kubernetes.io/component: dragonfly
+    spec:
+      containers:
+        - name: dragonfly
+          image: "{{ .Values.dragonfly.standalone.image.repository }}:{{ .Values.dragonfly.standalone.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          {{- if .Values.dragonfly.standalone.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- end }}
+          livenessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.dragonfly.standalone.resources | nindent 12 }}
+      {{- if .Values.dragonfly.standalone.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-dragonfly
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-dragonfly
+  labels:
+    {{- include "authentik.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: redis
+      protocol: TCP
+      name: redis
+  selector:
+    {{- include "authentik.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly
+{{- if .Values.dragonfly.standalone.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $fullName }}-dragonfly
+  labels:
+    {{- include "authentik.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.dragonfly.standalone.persistence.storageClass }}
+  storageClassName: {{ .Values.dragonfly.standalone.persistence.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.dragonfly.standalone.persistence.size }}
+{{- end }}
+{{- else if eq .Values.dragonfly.mode "cluster" }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $fullName }}-dragonfly-cluster
+  labels:
+    {{- include "authentik.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly
+spec:
+  serviceName: {{ $fullName }}-dragonfly-cluster
+  replicas: {{ .Values.dragonfly.cluster.replicas }}
+  selector:
+    matchLabels:
+      {{- include "authentik.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: dragonfly
+  template:
+    metadata:
+      labels:
+        {{- include "authentik.labels" . | nindent 8 }}
+        app.kubernetes.io/component: dragonfly
+    spec:
+      containers:
+        - name: dragonfly
+          image: "{{ .Values.dragonfly.cluster.image.repository }}:{{ .Values.dragonfly.cluster.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          command:
+            - dragonfly
+            - --cluster_mode=emulated
+            - --snapshot_cron=*/5 * * * *
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          {{- if .Values.dragonfly.cluster.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- end }}
+          livenessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.dragonfly.cluster.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- if .Values.dragonfly.cluster.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          {{- include "authentik.labels" . | nindent 10 }}
+          app.kubernetes.io/component: dragonfly
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- if .Values.dragonfly.cluster.persistence.storageClass }}
+        storageClassName: {{ .Values.dragonfly.cluster.persistence.storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.dragonfly.cluster.persistence.size }}
+  {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-dragonfly-cluster
+  labels:
+    {{- include "authentik.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 6379
+      targetPort: redis
+      protocol: TCP
+      name: redis
+  selector:
+    {{- include "authentik.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: dragonfly
+{{- end }}

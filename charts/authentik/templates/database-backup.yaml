@@ -1,0 +1,156 @@
+{{- if .Values.postgres.backup.enabled }}
+{{- $fullName := include "authentik.fullname" . -}}
+{{- $secretName := include "authentik.postgresql.secretName" . -}}
+{{- if and .Values.postgres.backup.persistence.enabled (not .Values.postgres.backup.persistence.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $fullName }}-postgres-backup
+  labels:
+    {{- include "authentik.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres-backup
+spec:
+  accessModes:
+    - {{ .Values.postgres.backup.persistence.accessMode | default "ReadWriteOnce" }}
+  {{- if .Values.postgres.backup.persistence.storageClass }}
+  storageClassName: {{ .Values.postgres.backup.persistence.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.postgres.backup.persistence.size | default "512Mi" }}
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullName }}-postgres-backup-script
+  labels:
+    {{- include "authentik.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres-backup
+data:
+  backup.sh: |
+    #!/bin/bash
+    set -e
+
+    BACKUP_DIR="/backups"
+    RETENTION={{ .Values.postgres.backup.retention | default 30 }}
+    TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+    BACKUP_FILE="${BACKUP_DIR}/authentik_backup_${TIMESTAMP}.sql.gz"
+
+    echo "Starting database backup at $(date)"
+    echo "Backup file: ${BACKUP_FILE}"
+
+    # Create backup directory if it doesn't exist
+    mkdir -p "${BACKUP_DIR}"
+
+    # Perform the backup using pg_dump
+    PGPASSWORD="${POSTGRES_PASSWORD}" pg_dump \
+      -h "${POSTGRES_HOST}" \
+      -p "${POSTGRES_PORT:-5432}" \
+      -U "${POSTGRES_USER}" \
+      -d "${POSTGRES_DB}" \
+      --no-owner \
+      --no-acl \
+      | gzip > "${BACKUP_FILE}"
+
+    # Verify backup was created
+    if [ -f "${BACKUP_FILE}" ]; then
+      BACKUP_SIZE=$(du -h "${BACKUP_FILE}" | cut -f1)
+      echo "Backup completed successfully: ${BACKUP_FILE} (${BACKUP_SIZE})"
+    else
+      echo "ERROR: Backup file was not created!"
+      exit 1
+    fi
+
+    # Clean up old backups (keep only the last RETENTION backups)
+    echo "Cleaning up old backups (keeping last ${RETENTION})..."
+    cd "${BACKUP_DIR}"
+    ls -t authentik_backup_*.sql.gz 2>/dev/null | tail -n +$((RETENTION + 1)) | xargs -r rm -f
+
+    # List remaining backups
+    echo "Current backups:"
+    ls -lh "${BACKUP_DIR}"/authentik_backup_*.sql.gz 2>/dev/null || echo "No backups found"
+
+    echo "Backup process completed at $(date)"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $fullName }}-postgres-backup
+  labels:
+    {{- include "authentik.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres-backup
+spec:
+  schedule: {{ .Values.postgres.backup.cron | default "0 2 * * *" | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          {{- if and .Values.velero.enabled .Values.postgres.backup.persistence.enabled }}
+          annotations:
+            backup.velero.io/backup-volumes: backup-data
+          {{- end }}
+          labels:
+            {{- include "authentik.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: postgres-backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            {{- if eq .Values.postgres.mode "standalone" }}
+            image: "{{ .Values.postgres.standalone.image.repository }}:{{ .Values.postgres.standalone.image.tag }}"
+            {{- else }}
+            image: "postgres:16-alpine"
+            {{- end }}
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/bash
+            - /scripts/backup.sh
+            env:
+            - name: POSTGRES_HOST
+              value: {{ include "authentik.postgresql.host" . }}
+            - name: POSTGRES_PORT
+              value: {{ include "authentik.postgresql.port" . | quote }}
+            - name: POSTGRES_USER
+              value: {{ include "authentik.postgresql.username" . | quote }}
+            - name: POSTGRES_DB
+              value: {{ include "authentik.postgresql.database" . | quote }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ .Values.postgres.secret.passwordKey }}
+            volumeMounts:
+            - name: backup-scripts
+              mountPath: /scripts
+            - name: backup-data
+              mountPath: /backups
+          volumes:
+          - name: backup-scripts
+            configMap:
+              name: {{ $fullName }}-postgres-backup-script
+              defaultMode: 0755
+          - name: backup-data
+            {{- if .Values.postgres.backup.persistence.enabled }}
+            persistentVolumeClaim:
+              claimName: {{ .Values.postgres.backup.persistence.existingClaim | default (printf "%s-postgres-backup" $fullName) }}
+            {{- else }}
+            emptyDir: {}
+            {{- end }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}
