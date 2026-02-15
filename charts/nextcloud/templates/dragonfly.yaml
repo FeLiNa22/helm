@@ -17,20 +17,7 @@ stringData:
   username: {{ include "nextcloud.dragonfly.username" . }}
   password: {{ .Values.dragonfly.password.value }}
 {{- else if not .Values.dragonfly.password.secretName }}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ $secretName }}
-  labels:
-    app.kubernetes.io/name: nextcloud-dragonfly
-    app.kubernetes.io/instance: {{ .Release.Name | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-    app.kubernetes.io/component: cache
-type: kubernetes.io/basic-auth
-stringData:
-  username: {{ include "nextcloud.dragonfly.username" . }}
-  password: {{ randAlphaNum 32 }}
+{{- fail "Either dragonfly.password.value or dragonfly.password.secretName must be provided" }}
 {{- end }}
 {{- end }}
 {{- end }}

@@ -16,18 +16,7 @@ stringData:
   username: {{ include "penpot.dragonfly.username" . }}
   password: {{ .Values.dragonfly.password.value }}
 {{- else if not .Values.dragonfly.password.secretName }}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ $secretName }}
-  labels:
-    {{- include "penpot.labels" . | nindent 4 }}
-    app.kubernetes.io/component: dragonfly
-type: kubernetes.io/basic-auth
-stringData:
-  username: {{ include "penpot.dragonfly.username" . }}
-  password: {{ randAlphaNum 32 }}
+{{- fail "Either dragonfly.password.value or dragonfly.password.secretName must be provided" }}
 {{- end }}
 {{- end }}
 
