@@ -185,6 +185,43 @@ stringData:
 
 **Note:** PITR backups are in addition to the pg_dump backups. You can enable both for comprehensive backup coverage.
 
+### LoadBalancer Service
+
+When using a LoadBalancer service type (e.g., with MetalLB), you can configure service-specific annotations. This is particularly useful when using Traefik as the ingress controller, where you may need to configure transport timeouts for proper handling of long-running uploads and downloads:
+
+```yaml
+service:
+  type: LoadBalancer
+  port: 2283
+  annotations:
+    # Traefik transport timeout configuration
+    # Note: The exact annotation format depends on your Traefik version and configuration
+    traefik.ingress.kubernetes.io/service.respondingtimeouts.readtimeout: "600s"
+    traefik.ingress.kubernetes.io/service.respondingtimeouts.idletimeout: "600s"
+```
+
+For Traefik with file-based configuration, you may also use a named transport:
+
+```yaml
+service:
+  type: LoadBalancer
+  port: 2283
+  annotations:
+    traefik.ingress.kubernetes.io/service.serversTransport: immich-transport@file
+```
+
+Then configure the transport in your Traefik static configuration:
+
+```yaml
+# Traefik static config (traefik.yaml or ConfigMap)
+transport:
+  respondingTimeouts:
+    readTimeout: 600s
+    idleTimeout: 600s
+```
+
+These timeout settings are important for Immich to handle large file uploads and downloads without connection timeouts.
+
 ### Ingress
 
 Enable ingress to expose Immich externally:
@@ -234,6 +271,7 @@ ingress:
 | `service.type`                                  | The type of service to create.                                                         | `ClusterIP`                        |
 | `service.port`                                  | The port on which the service will run.                                                | `2283`                             |
 | `service.nodePort`                              | The nodePort to use for the service. Only used if service.type is NodePort.            | `""`                               |
+| `service.annotations`                           | Additional annotations to add to the service. Useful for configuring LoadBalancer behavior (e.g., Traefik timeout settings). | `{}`                               |
 | `ingress.enabled`                               | Whether to create an ingress for the service.                                          | `false`                            |
 | `ingress.className`                             | The ingress class name to use.                                                         | `""`                               |
 | `ingress.annotations`                           | Additional annotations to add to the ingress.                                          | `{}`                               |

@@ -22,6 +22,7 @@
 ## @param service.type The type of service to create.
 ## @param service.port The port on which the service will run.
 ## @param service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param service.annotations Additional annotations to add to the service. Useful for configuring LoadBalancer behavior (e.g., Traefik timeout settings).
 ## @param ingress.enabled Whether to create an ingress for the service.
 ## @param ingress.className The ingress class name to use.
 ## @param ingress.annotations Additional annotations to add to the ingress.
@@ -86,6 +87,12 @@ service:
   type: ClusterIP
   port: 2283
   nodePort: ""
+  annotations: {}
+    # For Traefik with MetalLB, configure transport timeouts:
+    # traefik.ingress.kubernetes.io/service.serversTransport: immich-transport@file
+    # Or using direct annotations (Traefik 2.x):
+    # traefik.ingress.kubernetes.io/service.respondingtimeouts.readtimeout: "600s"
+    # traefik.ingress.kubernetes.io/service.respondingtimeouts.idletimeout: "600s"
 
 ingress:
   enabled: false
