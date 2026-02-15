@@ -218,9 +218,13 @@ ingress:
 | Name                                                  | Description                                                                             | Value                                         |
 | ----------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------- |
 | `dragonfly.mode`                                      | The mode of DragonflyDB deployment: 'standalone', 'cluster', 'external', or 'disabled'. | `disabled`                                    |
+| `dragonfly.username`                                  | Username for DragonflyDB authentication (default: "default").                           | `default`                                     |
+| `dragonfly.password.secretName`                       | Name of existing secret containing the password (mutually exclusive with value).        | `""`                                          |
+| `dragonfly.password.secretKey`                        | Key in the secret containing the password (only used when secretName is provided).      | `password`                                    |
+| `dragonfly.password.value`                            | Direct password value (mutually exclusive with secretName).                             | `""`                                          |
 | `dragonfly.standalone.image.repository`               | The Docker repository for Dragonfly image.                                              | `docker.dragonflydb.io/dragonflydb/dragonfly` |
 | `dragonfly.standalone.image.tag`                      | The image tag for Dragonfly.                                                            | `v1.25.2`                                     |
-| `dragonfly.standalone.resources`                      | Resource limits and requests for standalone Dragonfly.                                  | `{}`                                          |
+| `dragonfly.standalone.resources.limits.memory`        | Memory limit for standalone Dragonfly.                                                  | `512Mi`                                       |
 | `dragonfly.standalone.persistence.enabled`            | Whether to enable persistence for standalone Dragonfly.                                 | `true`                                        |
 | `dragonfly.standalone.persistence.size`               | Size of the persistence volume for standalone Dragonfly.                                | `512Mi`                                       |
 | `dragonfly.standalone.persistence.storageClass`       | Storage class for standalone Dragonfly persistence.                                     | `""`                                          |
@@ -228,7 +232,7 @@ ingress:
 | `dragonfly.cluster.replicas`                          | Number of Dragonfly replicas in the cluster.                                            | `2`                                           |
 | `dragonfly.cluster.image.repository`                  | The Docker repository for Dragonfly cluster image.                                      | `docker.dragonflydb.io/dragonflydb/dragonfly` |
 | `dragonfly.cluster.image.tag`                         | The image tag for Dragonfly cluster.                                                    | `v1.25.2`                                     |
-| `dragonfly.cluster.resources`                         | Resource limits and requests for Dragonfly cluster.                                     | `{}`                                          |
+| `dragonfly.cluster.resources.limits.memory`           | Memory limit for Dragonfly cluster.                                                     | `512Mi`                                       |
 | `dragonfly.cluster.persistence.enabled`               | Whether to enable persistence for Dragonfly cluster.                                    | `true`                                        |
 | `dragonfly.cluster.persistence.size`                  | Size of the persistence volume for Dragonfly cluster.                                   | `512Mi`                                       |
 | `dragonfly.cluster.persistence.storageClass`          | Storage class for Dragonfly cluster persistence.                                        | `""`                                          |
@@ -236,8 +240,6 @@ ingress:
 | `dragonfly.cluster.snapshot.cron`                     | Cron schedule for Dragonfly cluster snapshots.                                          | `*/5 * * * *`                                 |
 | `dragonfly.external.host`                             | Hostname of external DragonflyDB/Redis (when mode is 'external').                       | `""`                                          |
 | `dragonfly.external.port`                             | Port of external DragonflyDB/Redis.                                                     | `6379`                                        |
-| `dragonfly.external.existingSecret`                   | Secret name for external DragonflyDB/Redis password.                                    | `""`                                          |
-| `dragonfly.external.passwordKey`                      | Key in the secret for the password.                                                     | `password`                                    |
 | `postgres.mode`                                       | The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.              | `cluster`                                     |
 | `postgres.initSQL`                                    | Array of SQL commands to run on database initialization.                                | `[]`                                          |
 | `postgres.username`                                   | Username for the database.                                                              | `nextcloud`                                   |
