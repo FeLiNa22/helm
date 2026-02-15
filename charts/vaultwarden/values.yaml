@@ -161,6 +161,7 @@ persistence:
 ## PostgreSQL database configuration for Vaultwarden
 
 ## @param database.mode The mode of database deployment: 'standalone' (internal SQLite), 'cluster' (CloudNativePG), or 'external' (existing PostgreSQL).
+## @param database.initSQL Array of SQL commands to run on database initialization (for cluster mode).
 ## @param database.username Username for the PostgreSQL database.
 ## @param database.database Database name for PostgreSQL.
 ## @param database.password.secretName Existing secret name for database password (mutually exclusive with value).
@@ -191,6 +192,12 @@ persistence:
 database:
   # Mode options: 'standalone' (internal SQLite, no PostgreSQL deployed), 'cluster' (CNPG), or 'external'
   mode: standalone
+
+  # SQL commands to initialize the database (for cluster mode only)
+  # Each line should be a complete SQL statement
+  initSQL: []
+    # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+    # - "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
 
   username: vaultwarden
   database: "vaultwarden"  # Database name (used in cluster and external modes)

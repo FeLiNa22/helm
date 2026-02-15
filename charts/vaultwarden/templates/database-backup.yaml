@@ -1,7 +1,7 @@
 {{- if and .Values.database.backup.enabled (or (eq .Values.database.mode "cluster") (eq .Values.database.mode "external")) }}
 {{- $fullName := include "vaultwarden.fullname" . -}}
 {{- $secretName := include "vaultwarden.postgresql.secretName" . -}}
-{{- if not .Values.database.backup.persistence.existingClaim }}
+{{- if and .Values.database.backup.persistence.enabled (not .Values.database.backup.persistence.existingClaim) }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -54,7 +54,7 @@ spec:
             - -c
             - |
               set -e
-              BACKUP_FILE="/backups/vaultwarden-backup-$(date +%Y%m%d-%H%M%S).sql"
+              BACKUP_FILE="/backups/vaultwarden-backup-$(date +%Y%m%d-%H%M%S).dump"
               echo "Starting backup to $BACKUP_FILE"
               pg_dump -h {{ include "vaultwarden.postgresql.host" . }} \
                       -p {{ include "vaultwarden.postgresql.port" . }} \
@@ -66,12 +66,12 @@ spec:
               # Clean up old backups
               echo "Cleaning up old backups (keeping last {{ .Values.database.backup.retention }} backups)"
               cd /backups
-              ls -t vaultwarden-backup-*.sql 2>/dev/null | tail -n +$(({{ .Values.database.backup.retention }} + 1)) | xargs -r rm -f
+              ls -t vaultwarden-backup-*.dump 2>/dev/null | tail -n +$(({{ .Values.database.backup.retention }} + 1)) | xargs -r rm -f
               echo "Backup retention cleanup completed"
               
               # List remaining backups
               echo "Current backups:"
-              ls -lh vaultwarden-backup-*.sql 2>/dev/null || echo "No backups found"
+              ls -lh vaultwarden-backup-*.dump 2>/dev/null || echo "No backups found"
             env:
             - name: PGPASSWORD
               valueFrom:

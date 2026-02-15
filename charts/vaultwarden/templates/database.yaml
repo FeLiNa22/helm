@@ -1,6 +1,10 @@
 {{- $fullName := include "vaultwarden.fullname" . -}}
 {{- $secretName := include "vaultwarden.postgresql.secretName" . -}}
 
+{{- if and (eq .Values.database.mode "external") (not .Values.database.external.host) }}
+{{- fail "database.external.host must be provided when using external database mode" }}
+{{- end }}
+
 {{- if and (or (eq .Values.database.mode "cluster") (eq .Values.database.mode "external")) .Values.database.password.value }}
 ---
 apiVersion: v1
@@ -42,6 +46,10 @@ spec:
       owner: {{ include "vaultwarden.postgresql.username" . }}
       secret:
         name: {{ $secretName }}
+      {{- if .Values.database.initSQL }}
+      postInitSQL:
+        {{- toYaml .Values.database.initSQL | nindent 8 }}
+      {{- end }}
 
   managed:
     roles:
