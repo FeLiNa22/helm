@@ -237,7 +237,7 @@ ingress:
 | `dragonfly.external.host`                             | Hostname of external DragonflyDB/Redis (when mode is 'external').                       | `""`                                          |
 | `dragonfly.external.port`                             | Port of external DragonflyDB/Redis.                                                     | `6379`                                        |
 | `dragonfly.external.existingSecret`                   | Secret name for external DragonflyDB/Redis password.                                    | `""`                                          |
-| `dragonfly.external.secretKey`                        | Key in the secret for the password.                                                     | `password`                                    |
+| `dragonfly.external.passwordKey`                      | Key in the secret for the password.                                                     | `password`                                    |
 | `postgres.mode`                                       | The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.              | `cluster`                                     |
 | `postgres.initSQL`                                    | Array of SQL commands to run on database initialization.                                | `[]`                                          |
 | `postgres.username`                                   | Username for the database.                                                              | `nextcloud`                                   |

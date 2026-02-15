@@ -210,7 +210,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `dragonfly.external.host`                       | Hostname of external DragonflyDB/Redis (when mode is 'external').           | `""`                                          |
 | `dragonfly.external.port`                       | Port of external DragonflyDB/Redis.                                         | `6379`                                        |
 | `dragonfly.external.existingSecret`             | Secret name for external DragonflyDB/Redis password.                        | `""`                                          |
-| `dragonfly.external.secretKey`                  | Key in the secret for the password.                                         | `password`                                    |
+| `dragonfly.external.passwordKey`                | Key in the secret for the password.                                         | `password`                                    |
 
 ### Database parameters
 

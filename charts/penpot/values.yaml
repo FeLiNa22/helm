@@ -485,7 +485,7 @@ config:
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
-## @param dragonfly.external.secretKey Key in the secret for the password.
+## @param dragonfly.external.passwordKey Key in the secret for the password.
 ##
 dragonfly:
   enabled: true
@@ -521,7 +521,7 @@ dragonfly:
     host: ""
     port: 6379
     existingSecret: ""
-    secretKey: "password"
+    passwordKey: "password"
 
 ## @section Database parameters
 ## PostgreSQL database is required for Penpot

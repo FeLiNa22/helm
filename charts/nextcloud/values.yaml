@@ -171,7 +171,7 @@ env:
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ## @param dragonfly.external.existingSecret Secret name for external DragonflyDB/Redis password.
-## @param dragonfly.external.secretKey Key in the secret for the password.
+## @param dragonfly.external.passwordKey Key in the secret for the password.
 ##
 dragonfly:
   # Mode options: 'standalone', 'cluster', 'external', or 'disabled'
@@ -223,7 +223,7 @@ dragonfly:
     host: ""
     port: 6379
     existingSecret: ""
-    secretKey: "password"
+    passwordKey: "password"
 
 # Database configuration
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
