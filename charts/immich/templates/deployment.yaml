@@ -90,7 +90,7 @@ spec:
               value: {{ include "immich.dragonfly.host" . }}
             - name: REDIS_PORT
               value: {{ include "immich.dragonfly.port" . | quote }}
-            {{- if and (eq .Values.dragonfly.mode "external") .Values.dragonfly.external.existingSecret }}
+            {{- if or (and (or (eq .Values.dragonfly.mode "standalone") (eq .Values.dragonfly.mode "cluster")) .Values.dragonfly.auth.enabled) (and (eq .Values.dragonfly.mode "external") .Values.dragonfly.external.existingSecret) }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:

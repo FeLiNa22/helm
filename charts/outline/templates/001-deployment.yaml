@@ -91,8 +91,18 @@ spec:
               value: "{{ .Values.outline.database.sslMode }}"
 
           {{- if .Values.dragonfly.enabled }}
+            {{- if or (and (or (eq .Values.dragonfly.mode "standalone") (eq .Values.dragonfly.mode "cluster")) .Values.dragonfly.auth.enabled) (and (eq .Values.dragonfly.mode "external") .Values.dragonfly.external.existingSecret) }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "outline.dragonfly.secretName" . }}
+                  key: {{ include "outline.dragonfly.passwordKey" . }}
+            - name: REDIS_URL
+              value: "redis://:$(REDIS_PASSWORD)@{{ include "outline.dragonfly.host" . }}:{{ include "outline.dragonfly.port" . }}"
+            {{- else }}
             - name: REDIS_URL
               value: "redis://{{ include "outline.dragonfly.host" . }}:{{ include "outline.dragonfly.port" . }}"
+            {{- end }}
           {{- else if .Values.global.redisEnabled }}
             - name: REDIS_URL
               value: "redis://{{ .Release.Name }}-redis-master:6379"

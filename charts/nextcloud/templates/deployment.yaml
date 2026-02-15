@@ -130,25 +130,15 @@ spec:
             {{- if and (ne .Values.dragonfly.mode "disabled") (ne .Values.dragonfly.mode "") }}
             # DragonflyDB/Redis connection for caching
             - name: REDIS_HOST
-              {{- if eq .Values.dragonfly.mode "standalone" }}
-              value: {{ .Release.Name }}-dragonfly
-              {{- else if eq .Values.dragonfly.mode "cluster" }}
-              value: {{ .Release.Name }}-dragonfly-cluster
-              {{- else if eq .Values.dragonfly.mode "external" }}
-              value: {{ .Values.dragonfly.external.host }}
-              {{- end }}
+              value: {{ include "nextcloud.dragonfly.host" . }}
             - name: REDIS_HOST_PORT
-              {{- if eq .Values.dragonfly.mode "external" }}
-              value: {{ .Values.dragonfly.external.port | default "6379" | quote }}
-              {{- else }}
-              value: "6379"
-              {{- end }}
-            {{- if and (eq .Values.dragonfly.mode "external") .Values.dragonfly.external.existingSecret }}
+              value: {{ include "nextcloud.dragonfly.port" . | quote }}
+            {{- if or (and (or (eq .Values.dragonfly.mode "standalone") (eq .Values.dragonfly.mode "cluster")) .Values.dragonfly.auth.enabled) (and (eq .Values.dragonfly.mode "external") .Values.dragonfly.external.existingSecret) }}
             - name: REDIS_HOST_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.dragonfly.external.existingSecret }}
-                  key: {{ .Values.dragonfly.external.passwordKey | default "password" }}
+                  name: {{ include "nextcloud.dragonfly.secretName" . }}
+                  key: {{ include "nextcloud.dragonfly.passwordKey" . }}
             {{- end }}
             {{- end }}
             {{- range $k,$v := .Values.env }}

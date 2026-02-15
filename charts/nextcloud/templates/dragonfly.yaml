@@ -1,4 +1,41 @@
 {{- if .Values.enabled }}
+{{- if and (or (eq .Values.dragonfly.mode "standalone") (eq .Values.dragonfly.mode "cluster")) .Values.dragonfly.auth.enabled }}
+{{- $secretName := include "nextcloud.dragonfly.secretName" . -}}
+{{- if .Values.dragonfly.auth.password.value }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  labels:
+    app.kubernetes.io/name: nextcloud-dragonfly
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/component: cache
+type: kubernetes.io/basic-auth
+stringData:
+  username: {{ include "nextcloud.dragonfly.username" . }}
+  password: {{ .Values.dragonfly.auth.password.value }}
+{{- else if not .Values.dragonfly.auth.password.secretName }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  labels:
+    app.kubernetes.io/name: nextcloud-dragonfly
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/component: cache
+type: kubernetes.io/basic-auth
+stringData:
+  username: {{ include "nextcloud.dragonfly.username" . }}
+  password: {{ randAlphaNum 32 | b64enc }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- if .Values.enabled }}
 {{- if and (eq .Values.dragonfly.mode "standalone") .Values.dragonfly.standalone.enabled }}
 ---
 apiVersion: apps/v1
@@ -32,14 +69,30 @@ spec:
         - name: dragonfly
           image: "{{ .Values.dragonfly.standalone.image.repository }}:{{ .Values.dragonfly.standalone.image.tag }}"
           imagePullPolicy: IfNotPresent
+          {{- if .Values.dragonfly.auth.enabled }}
+          command:
+            - "dragonfly"
+            {{- if .Values.dragonfly.standalone.persistence.enabled }}
+            - "--dir=/data"
+            - "--dbfilename=dump.rdb"
+            {{- end }}
+            - "--requirepass=$(DRAGONFLY_PASSWORD)"
+          env:
+            - name: DRAGONFLY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nextcloud.dragonfly.secretName" . }}
+                  key: {{ include "nextcloud.dragonfly.passwordKey" . }}
+          {{- else if .Values.dragonfly.standalone.persistence.enabled }}
+          args:
+            - --dir=/data
+            - --dbfilename=dump.rdb
+          {{- end }}
           ports:
             - name: redis
               containerPort: 6379
               protocol: TCP
           {{- if .Values.dragonfly.standalone.persistence.enabled }}
-          args:
-            - --dir=/data
-            - --dbfilename=dump.rdb
           volumeMounts:
             - name: data
               mountPath: /data
@@ -135,6 +188,12 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/component: cache
 spec:
+  {{- if .Values.dragonfly.auth.enabled }}
+  authentication:
+    passwordFromSecret:
+      name: {{ include "nextcloud.dragonfly.secretName" . }}
+      key: {{ include "nextcloud.dragonfly.passwordKey" . }}
+  {{- end }}
   replicas: {{ .Values.dragonfly.cluster.replicas }}
   image: "{{ .Values.dragonfly.cluster.image.repository }}:{{ .Values.dragonfly.cluster.image.tag }}"
   {{- if .Values.dragonfly.cluster.resources }}

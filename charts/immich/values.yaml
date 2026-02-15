@@ -244,6 +244,17 @@ dragonfly:
   # Mode options: 'standalone', 'cluster', or 'external'
   mode: standalone
 
+  # Authentication configuration (applies to standalone and cluster modes)
+  auth:
+    enabled: true
+    username: "default"
+    password:
+      # Leave empty to auto-generate a random password
+      value: ""
+      # Use existing secret (mutually exclusive with value)
+      secretName: ""
+      secretKey: "password"
+
   # Standalone Dragonfly deployment (simple single-instance)
   standalone:
     image:
