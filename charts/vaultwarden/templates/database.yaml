@@ -48,7 +48,6 @@ spec:
     - name: {{ .Values.database.username }}
       ensure: present
       login: true
-      superuser: true
 
   storage:
     size: {{ .Values.database.cluster.persistence.size }}

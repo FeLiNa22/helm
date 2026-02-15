@@ -1,6 +1,7 @@
 {{- if and .Values.database.backup.enabled (or (eq .Values.database.mode "cluster") (eq .Values.database.mode "external")) }}
 {{- $fullName := include "vaultwarden.fullname" . -}}
 {{- $secretName := include "vaultwarden.postgresql.secretName" . -}}
+{{- if not .Values.database.backup.persistence.existingClaim }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -16,12 +17,10 @@ spec:
   {{- if .Values.database.backup.persistence.storageClass }}
   storageClassName: {{ .Values.database.backup.persistence.storageClass }}
   {{- end }}
-  {{- if .Values.database.backup.persistence.existingClaim }}
-  volumeName: {{ .Values.database.backup.persistence.existingClaim }}
-  {{- end }}
   resources:
     requests:
       storage: {{ .Values.database.backup.persistence.size }}
+{{- end }}
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -67,7 +66,7 @@ spec:
               # Clean up old backups
               echo "Cleaning up old backups (keeping last {{ .Values.database.backup.retention }} backups)"
               cd /backups
-              ls -t vaultwarden-backup-*.sql 2>/dev/null | tail -n +{{ add1 .Values.database.backup.retention }} | xargs -r rm -f
+              ls -t vaultwarden-backup-*.sql 2>/dev/null | tail -n +$(({{ .Values.database.backup.retention }} + 1)) | xargs -r rm -f
               echo "Backup retention cleanup completed"
               
               # List remaining backups
@@ -85,5 +84,5 @@ spec:
           volumes:
           - name: backup
             persistentVolumeClaim:
-              claimName: {{ $fullName }}-db-backup
+              claimName: {{ .Values.database.backup.persistence.existingClaim | default (printf "%s-db-backup" $fullName) }}
 {{- end }}

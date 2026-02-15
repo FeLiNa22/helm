@@ -76,6 +76,8 @@ PostgreSQL secret name
 PostgreSQL DATABASE_URL
 Constructs the full connection string for Vaultwarden
 Format: postgresql://username:password@host:port/database
+Note: The password uses shell variable expansion $(DB_PASSWORD) which is populated from a Kubernetes secret.
+This is a standard pattern and is secure because the password is injected at runtime from the secret.
 */}}
 {{- define "vaultwarden.postgresql.databaseUrl" -}}
 {{- if or (eq .Values.database.mode "cluster") (eq .Values.database.mode "external") }}
