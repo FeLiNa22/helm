@@ -87,13 +87,13 @@ service:
   type: ClusterIP
   port: 2283
   nodePort: ""
+  # Additional annotations for the service (useful for LoadBalancer configuration)
   annotations: {}
-    # For Traefik with MetalLB, configure transport timeouts:
-    # Option 1: Use a named transport (requires Traefik static config with serversTransports definition)
-    # traefik.ingress.kubernetes.io/service.serversTransport: immich-transport@file
-    # Option 2: Direct timeout annotations (Traefik 2.x+)
-    # traefik.ingress.kubernetes.io/service.respondingtimeouts.readtimeout: "600s"
-    # traefik.ingress.kubernetes.io/service.respondingtimeouts.idletimeout: "600s"
+  # Examples:
+  # MetalLB IP allocation:
+  #   metallb.universe.tf/loadBalancerIPs: "192.168.1.100"
+  # AWS LoadBalancer settings:
+  #   service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
 
 ingress:
   enabled: false

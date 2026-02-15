@@ -187,41 +187,31 @@ stringData:
 
 ### LoadBalancer Service
 
-When using a LoadBalancer service type (e.g., with MetalLB), you can configure service-specific annotations. This is particularly useful when using Traefik as the ingress controller, where you may need to configure transport timeouts for proper handling of long-running uploads and downloads:
+When using a LoadBalancer service type (e.g., with MetalLB and Traefik), you can configure service-specific annotations. This is particularly useful for setting transport timeouts to properly handle large file uploads and downloads:
 
 ```yaml
 service:
   type: LoadBalancer
   port: 2283
   annotations:
-    # Traefik transport timeout configuration
-    # Note: The exact annotation format depends on your Traefik version and configuration
-    traefik.ingress.kubernetes.io/service.respondingtimeouts.readtimeout: "600s"
-    traefik.ingress.kubernetes.io/service.respondingtimeouts.idletimeout: "600s"
+    # Add any custom annotations needed for your LoadBalancer/Ingress controller
+    # For example, MetalLB-specific annotations:
+    metallb.universe.tf/loadBalancerIPs: "192.168.1.100"
 ```
 
-For Traefik with file-based configuration, you may also use a named transport:
+For Traefik users: If you need to configure transport timeouts for Immich, set them in your Traefik EntryPoint configuration:
 
 ```yaml
-service:
-  type: LoadBalancer
-  port: 2283
-  annotations:
-    traefik.ingress.kubernetes.io/service.serversTransport: immich-transport@file
+# Traefik static configuration (traefik.yaml or Helm values)
+entryPoints:
+  websecure:
+    transport:
+      respondingTimeouts:
+        readTimeout: 600s
+        idleTimeout: 600s
 ```
 
-Then configure the transport in your Traefik static configuration:
-
-```yaml
-# Traefik static config (traefik.yaml or ConfigMap)
-serversTransports:
-  immich-transport:
-    respondingTimeouts:
-      readTimeout: 600s
-      idleTimeout: 600s
-```
-
-These timeout settings are important for Immich to handle large file uploads and downloads without connection timeouts.
+These timeout settings are important for Immich to handle large file uploads and downloads without connection timeouts. The service annotations field can be used for LoadBalancer-specific settings like IP allocation.
 
 ### Ingress
 
