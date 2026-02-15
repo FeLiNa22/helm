@@ -222,7 +222,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `postgres.username`                         | Username for the database.                                                     | `outline`                           |
 | `postgres.database`                         | Database name for PostgreSQL.                                                  | `outline`                           |
 | `postgres.password.secretName`              | Existing secret name for database password (mutually exclusive with value).    | `""`                                |
-| `postgres.password.secretKey`               | Key in the secret containing the password (default: password).                 | `password`                          |
 | `postgres.password.value`                   | Direct password value to create a secret (mutually exclusive with secretName). | `""`                                |
 | `postgres.cluster.instances`                | Number of PostgreSQL instances (replicas).                                     | `2`                                 |
 | `postgres.cluster.persistence.enabled`      | Enable persistence for cluster PostgreSQL.                                     | `true`                              |

@@ -9,12 +9,7 @@ PostgreSQL secret name
 {{- end }}
 {{- end }}
 
-{{/*
-PostgreSQL secret key
-*/}}
-{{- define "nextcloud.postgresql.secretKey" -}}
-{{- .Values.postgres.password.secretKey | default "password" }}
-{{- end }}
+
 
 {{/*
 PostgreSQL host

@@ -146,7 +146,6 @@ ingress:
 ## @param postgres.username Username for the database.
 ## @param postgres.database Database name for PostgreSQL.
 ## @param postgres.password.secretName Existing secret name for database password (mutually exclusive with value).
-## @param postgres.password.secretKey Key in the secret containing the password (default: password).
 ## @param postgres.password.value Direct password value to create a secret (mutually exclusive with secretName).
 ## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
 ## @param postgres.standalone.persistence.size Size of the persistence volume.
@@ -194,7 +193,6 @@ postgres:
   # You must provide EITHER secretName (to use existing secret) OR value (to create new secret with password)
   password:
     secretName: ""  # Name of existing secret containing the password
-    secretKey: "password"  # Key in the secret containing the password
     value: ""  # Direct password value (if secretName is empty, this must be provided)
 
   # Standalone PostgreSQL deployment (using StatefulSet)

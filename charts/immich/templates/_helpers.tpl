@@ -102,12 +102,7 @@ PostgreSQL secret name
 {{- end }}
 {{- end }}
 
-{{/*
-PostgreSQL secret key
-*/}}
-{{- define "immich.postgresql.secretKey" -}}
-{{- .Values.postgres.password.secretKey | default "password" }}
-{{- end }}
+
 
 {{/*
 DragonflyDB/Redis host

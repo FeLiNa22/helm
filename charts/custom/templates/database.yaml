@@ -1,7 +1,6 @@
 {{- if .Values.postgres.enabled }}
 {{- $fullName := include "custom.fullname" . -}}
 {{- $secretName := include "custom.postgresql.secretName" . -}}
-{{- $secretKey := include "custom.postgresql.secretKey" . -}}
 
 {{- if .Values.postgres.password.value }}
 ---

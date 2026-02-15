@@ -102,9 +102,4 @@ PostgreSQL secret name
 {{- end }}
 {{- end }}
 
-{{/*
-PostgreSQL secret key
-*/}}
-{{- define "custom.postgresql.secretKey" -}}
-{{- .Values.postgres.password.secretKey | default "password" }}
-{{- end }}
+
