@@ -162,7 +162,7 @@ worker:
 
 ## @section Environment Variables
 
-## @param env Environment variables in map format (key: value). Common variables include TZ for timezone.
+## Environment variables in map format (key: value)
 ## @param env.TZ Timezone for the application.
 ##
 env:
