@@ -1,11 +1,7 @@
 {{- $fullName := include "vaultwarden.fullname" . -}}
 {{- $secretName := include "vaultwarden.postgresql.secretName" . -}}
 
-{{- if and (eq .Values.database.mode "external") (not .Values.database.external.host) }}
-{{- fail "database.external.host must be provided when using external database mode" }}
-{{- end }}
-
-{{- if and (or (eq .Values.database.mode "cluster") (eq .Values.database.mode "external")) .Values.database.password.value }}
+{{- if .Values.postgres.password.value }}
 ---
 apiVersion: v1
 kind: Secret
@@ -18,13 +14,163 @@ metadata:
 type: kubernetes.io/basic-auth
 stringData:
   username: {{ include "vaultwarden.postgresql.username" . }}
-  password: {{ .Values.database.password.value }}
-{{- else if and (or (eq .Values.database.mode "cluster") (eq .Values.database.mode "external")) (not .Values.database.password.secretName) }}
-{{- fail "Either database.password.value or database.password.secretName must be provided when using cluster or external database mode" }}
+  password: {{ .Values.postgres.password.value }}
+{{- else if not .Values.postgres.password.secretName }}
+{{- fail "Either postgres.password.value or postgres.password.secretName must be provided" }}
 {{- end }}
 
-{{- if eq .Values.database.mode "cluster" }}
+{{- if eq .Values.postgres.mode "standalone" }}
+{{- if .Values.postgres.initSQL }}
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullName }}-postgresql-init
+  labels:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: database
+data:
+  init-extensions.sh: |
+    #!/bin/bash
+    set -e
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+      {{- range .Values.postgres.initSQL }}
+      {{ . }}
+      {{- end }}
+    EOSQL
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-postgresql
+  labels:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: postgresql
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: database
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $fullName }}-postgresql
+  labels:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: database
+spec:
+  serviceName: {{ $fullName }}-postgresql
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vaultwarden
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+      app.kubernetes.io/component: database
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vaultwarden
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        app.kubernetes.io/component: database
+    spec:
+      containers:
+      - name: postgresql
+        image: "{{ .Values.postgres.standalone.image.repository }}:{{ .Values.postgres.standalone.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: postgresql
+          containerPort: 5432
+          protocol: TCP
+        env:
+        - name: POSTGRES_USER
+          value: {{ .Values.postgres.username | quote }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secretName }}
+              key: password
+        - name: POSTGRES_DB
+          value: {{ .Values.postgres.username | quote }}
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+        {{- if .Values.postgres.initSQL }}
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d
+        {{- end }}
+        {{- if .Values.postgres.standalone.resources }}
+        resources:
+          {{- toYaml .Values.postgres.standalone.resources | nindent 10 }}
+        {{- end }}
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U {{ .Values.postgres.username | quote }} -d {{ .Values.postgres.username | quote }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U {{ .Values.postgres.username | quote }} -d {{ .Values.postgres.username | quote }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+      volumes:
+      {{- if .Values.postgres.initSQL }}
+      - name: init-scripts
+        configMap:
+          name: {{ $fullName }}-postgresql-init
+          defaultMode: 0755
+      {{- end }}
+      {{- if not .Values.postgres.standalone.persistence.enabled }}
+      - name: data
+        emptyDir: {}
+      {{- end }}
+  {{- if .Values.postgres.standalone.persistence.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        app.kubernetes.io/name: vaultwarden
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        app.kubernetes.io/component: database
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      {{- if .Values.postgres.standalone.persistence.storageClass }}
+      storageClassName: {{ .Values.postgres.standalone.persistence.storageClass }}
+      {{- end }}
+      {{- if .Values.postgres.standalone.persistence.existingClaim }}
+      volumeName: {{ .Values.postgres.standalone.persistence.existingClaim }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.postgres.standalone.persistence.size }}
+  {{- end }}
+{{- else if eq .Values.postgres.mode "cluster" }}
+---
+{{- $fullName := include "vaultwarden.fullname" . -}}
+{{- $secretName := include "vaultwarden.postgresql.secretName" . -}}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -34,11 +180,11 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
     app.kubernetes.io/component: database
 spec:
-  instances: {{ .Values.database.cluster.instances }}
+  instances: {{ .Values.postgres.cluster.instances }}
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: switchover
 
-  imageName: {{ .Values.database.cluster.image.repository }}:{{ .Values.database.cluster.image.tag }}
+  imageName: {{ .Values.postgres.cluster.image.repository }}:{{ .Values.postgres.cluster.image.tag }}
 
   bootstrap:
     initdb:
@@ -46,21 +192,21 @@ spec:
       owner: {{ include "vaultwarden.postgresql.username" . }}
       secret:
         name: {{ $secretName }}
-      {{- if .Values.database.initSQL }}
+      {{- if .Values.postgres.initSQL }}
       postInitSQL:
-        {{- toYaml .Values.database.initSQL | nindent 8 }}
+        {{- toYaml .Values.postgres.initSQL | nindent 8 }}
       {{- end }}
 
   managed:
     roles:
-    - name: {{ .Values.database.username }}
+    - name: {{ .Values.postgres.username }}
       ensure: present
       login: true
 
   storage:
-    size: {{ .Values.database.cluster.persistence.size }}
-    {{- if .Values.database.cluster.persistence.storageClass }}
-    storageClass: {{ .Values.database.cluster.persistence.storageClass }}
+    size: {{ .Values.postgres.cluster.persistence.size }}
+    {{- if .Values.postgres.cluster.persistence.storageClass }}
+    storageClass: {{ .Values.postgres.cluster.persistence.storageClass }}
     {{- end }}
 
   postgresql:
@@ -83,31 +229,31 @@ spec:
   monitoring:
     enablePodMonitor: false
 
-  {{- if .Values.database.cluster.pitrBackup.enabled }}
+  {{- if .Values.postgres.cluster.pitrBackup.enabled }}
   backup:
     barmanObjectStore:
-      destinationPath: {{ .Values.database.cluster.pitrBackup.objectStorage.destinationPath }}
-      {{- if .Values.database.cluster.pitrBackup.objectStorage.endpointURL }}
-      endpointURL: {{ .Values.database.cluster.pitrBackup.objectStorage.endpointURL }}
+      destinationPath: {{ .Values.postgres.cluster.pitrBackup.objectStorage.destinationPath }}
+      {{- if .Values.postgres.cluster.pitrBackup.objectStorage.endpointURL }}
+      endpointURL: {{ .Values.postgres.cluster.pitrBackup.objectStorage.endpointURL }}
       {{- end }}
-      {{- if .Values.database.cluster.pitrBackup.objectStorage.secretName }}
+      {{- if .Values.postgres.cluster.pitrBackup.objectStorage.secretName }}
       s3Credentials:
         accessKeyId:
-          name: {{ .Values.database.cluster.pitrBackup.objectStorage.secretName }}
+          name: {{ .Values.postgres.cluster.pitrBackup.objectStorage.secretName }}
           key: ACCESS_KEY_ID
         secretAccessKey:
-          name: {{ .Values.database.cluster.pitrBackup.objectStorage.secretName }}
+          name: {{ .Values.postgres.cluster.pitrBackup.objectStorage.secretName }}
           key: ACCESS_SECRET_KEY
-        {{- if .Values.database.cluster.pitrBackup.objectStorage.region }}
+        {{- if .Values.postgres.cluster.pitrBackup.objectStorage.region }}
         region:
-          value: {{ .Values.database.cluster.pitrBackup.objectStorage.region }}
+          value: {{ .Values.postgres.cluster.pitrBackup.objectStorage.region }}
         {{- end }}
       {{- end }}
       wal:
         compression: gzip
       data:
         compression: gzip
-    retentionPolicy: {{ .Values.database.cluster.pitrBackup.retentionPolicy | default "30d" | quote }}
+    retentionPolicy: {{ .Values.postgres.cluster.pitrBackup.retentionPolicy | default "30d" | quote }}
   {{- end }}
 
   {{- if .Values.nodeSelector }}
