@@ -169,8 +169,6 @@ spec:
   {{- end }}
 {{- else if eq .Values.postgres.mode "cluster" }}
 ---
-{{- $fullName := include "vaultwarden.fullname" . -}}
-{{- $secretName := include "vaultwarden.postgresql.secretName" . -}}
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
