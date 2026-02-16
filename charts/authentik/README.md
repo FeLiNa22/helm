@@ -217,45 +217,7 @@ worker:
       memory: 512Mi
 ```
 
-## Configuration Parameters
-
-### Server Parameters
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `replicaCount` | Number of server replicas | `1` |
-| `image.repository` | Server image repository | `ghcr.io/goauthentik/server` |
-| `image.tag` | Server image tag | `2025.12.4` |
-| `image.pullPolicy` | Image pull policy | `IfNotPresent` |
-| `service.type` | Service type | `ClusterIP` |
-| `service.port` | Service HTTP port | `9000` |
-| `service.httpsPort` | Service HTTPS port | `9443` |
-
-### Worker Parameters
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `worker.enabled` | Enable worker deployment | `true` |
-| `worker.replicaCount` | Number of worker replicas | `1` |
-
-### Database Parameters
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `postgres.mode` | Database mode: standalone, cluster, external | `standalone` |
-| `postgres.database` | Database name | `authentik` |
-| `postgres.username` | Database username | `authentik` |
-| `postgres.password` | Database password (auto-generated if empty) | `""` |
-| `postgres.persistence.enabled` | Enable database persistence | `true` |
-| `postgres.persistence.size` | Database PVC size | `5Gi` |
-
-### Authentik Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `authentik.secretKey` | Secret key (auto-generated if empty) | `""` |
-| `authentik.logLevel` | Log level | `info` |
-| `authentik.errorReporting.enabled` | Enable error reporting | `false` |
+## Parameters
 
 ## Upgrading
 
