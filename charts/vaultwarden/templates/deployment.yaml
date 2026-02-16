@@ -25,7 +25,7 @@ spec:
         backup.velero.io/backup-volumes: data
       {{- end }}
       {{- with .Values.podAnnotations }}
-      {{- if not (and $.Values.velero.enabled .Values.persistence.enabled) }}
+      {{- if not (and $.Values.velero.enabled $.Values.persistence.enabled) }}
       annotations:
       {{- end }}
         {{- toYaml . | nindent 8 }}
