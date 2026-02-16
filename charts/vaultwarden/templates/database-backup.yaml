@@ -1,7 +1,7 @@
-{{- if and .Values.database.backup.enabled (or (eq .Values.database.mode "cluster") (eq .Values.database.mode "external")) }}
+{{- if and .Values.postgres.backup.enabled (or (eq .Values.postgres.mode "cluster") (eq .Values.postgres.mode "external")) }}
 {{- $fullName := include "vaultwarden.fullname" . -}}
 {{- $secretName := include "vaultwarden.postgresql.secretName" . -}}
-{{- if and .Values.database.backup.persistence.enabled (not .Values.database.backup.persistence.existingClaim) }}
+{{- if and .Values.postgres.backup.persistence.enabled (not .Values.postgres.backup.persistence.existingClaim) }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -13,13 +13,13 @@ metadata:
     app.kubernetes.io/component: database-backup
 spec:
   accessModes:
-    - {{ .Values.database.backup.persistence.accessMode }}
-  {{- if .Values.database.backup.persistence.storageClass }}
-  storageClassName: {{ .Values.database.backup.persistence.storageClass }}
+    - {{ .Values.postgres.backup.persistence.accessMode }}
+  {{- if .Values.postgres.backup.persistence.storageClass }}
+  storageClassName: {{ .Values.postgres.backup.persistence.storageClass }}
   {{- end }}
   resources:
     requests:
-      storage: {{ .Values.database.backup.persistence.size }}
+      storage: {{ .Values.postgres.backup.persistence.size }}
 {{- end }}
 ---
 apiVersion: batch/v1
@@ -31,7 +31,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
     app.kubernetes.io/component: database-backup
 spec:
-  schedule: {{ .Values.database.backup.cron | quote }}
+  schedule: {{ .Values.postgres.backup.cron | quote }}
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   concurrencyPolicy: Forbid
@@ -64,9 +64,9 @@ spec:
               echo "Backup completed successfully"
               
               # Clean up old backups
-              echo "Cleaning up old backups (keeping last {{ .Values.database.backup.retention }} backups)"
+              echo "Cleaning up old backups (keeping last {{ .Values.postgres.backup.retention }} backups)"
               cd /backups
-              ls -t vaultwarden-backup-*.dump 2>/dev/null | tail -n +$(({{ .Values.database.backup.retention }} + 1)) | xargs -r rm -f
+              ls -t vaultwarden-backup-*.dump 2>/dev/null | tail -n +$(({{ .Values.postgres.backup.retention }} + 1)) | xargs -r rm -f
               echo "Backup retention cleanup completed"
               
               # List remaining backups
@@ -84,5 +84,5 @@ spec:
           volumes:
           - name: backup
             persistentVolumeClaim:
-              claimName: {{ .Values.database.backup.persistence.existingClaim | default (printf "%s-db-backup" $fullName) }}
+              claimName: {{ .Values.postgres.backup.persistence.existingClaim | default (printf "%s-db-backup" $fullName) }}
 {{- end }}

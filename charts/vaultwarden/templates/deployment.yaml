@@ -84,7 +84,7 @@ spec:
               containerPort: 80
               protocol: TCP
           env:
-            {{- if or (eq .Values.database.mode "cluster") (eq .Values.database.mode "external") }}
+            {{- if or (eq .Values.postgres.mode "cluster") (eq .Values.postgres.mode "external") }}
             # Database password for constructing DATABASE_URL
             - name: DB_PASSWORD
               valueFrom:

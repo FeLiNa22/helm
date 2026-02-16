@@ -21,7 +21,7 @@ Vaultwarden supports three database modes:
 Uses Vaultwarden's built-in SQLite database. No external database is deployed.
 
 ```yaml
-database:
+postgres:
   mode: standalone
 ```
 
@@ -30,7 +30,7 @@ database:
 Deploys a PostgreSQL cluster using CloudNativePG operator for high availability.
 
 ```yaml
-database:
+postgres:
   mode: cluster
   password:
     value: "your-secure-password"  # Or use secretName for existing secret
@@ -47,7 +47,7 @@ database:
 Connects to an existing external PostgreSQL database.
 
 ```yaml
-database:
+postgres:
   mode: external
   external:
     host: "postgres.example.com"
@@ -61,7 +61,7 @@ database:
 Enable scheduled pg_dump backups for cluster and external modes:
 
 ```yaml
-database:
+postgres:
   backup:
     enabled: true
     cron: "0 2 * * *"  # Daily at 2am
@@ -75,16 +75,16 @@ database:
 | Name | Description | Value |
 |------|-------------|-------|
 | `replicaCount` | Number of replicas | `1` |
-| `database.mode` | Database mode: standalone, cluster, or external | `standalone` |
-| `database.username` | PostgreSQL username | `vaultwarden` |
-| `database.database` | PostgreSQL database name | `vaultwarden` |
-| `database.password.value` | Direct password value (creates secret) | `""` |
-| `database.password.secretName` | Use existing secret for password | `""` |
-| `database.cluster.instances` | Number of PostgreSQL instances (cluster mode) | `2` |
-| `database.cluster.persistence.size` | Persistent volume size for database | `512Mi` |
-| `database.external.host` | External PostgreSQL hostname | `""` |
-| `database.external.port` | External PostgreSQL port | `5432` |
-| `database.backup.enabled` | Enable scheduled backups | `false` |
-| `database.backup.cron` | Backup schedule (cron format) | `"0 2 * * *"` |
-| `database.backup.retention` | Number of backups to retain | `30` |
+| `postgres.mode` | Database mode: standalone, cluster, or external | `standalone` |
+| `postgres.username` | PostgreSQL username | `vaultwarden` |
+| `postgres.database` | PostgreSQL database name | `vaultwarden` |
+| `postgres.password.value` | Direct password value (creates secret) | `""` |
+| `postgres.password.secretName` | Use existing secret for password | `""` |
+| `postgres.cluster.instances` | Number of PostgreSQL instances (cluster mode) | `2` |
+| `postgres.cluster.persistence.size` | Persistent volume size for database (cluster mode) | `512Mi` |
+| `postgres.external.host` | External PostgreSQL hostname | `""` |
+| `postgres.external.port` | External PostgreSQL port | `5432` |
+| `postgres.backup.enabled` | Enable scheduled backups | `false` |
+| `postgres.backup.cron` | Backup schedule (cron format) | `"0 2 * * *"` |
+| `postgres.backup.retention` | Number of backups to retain | `30` |
 
