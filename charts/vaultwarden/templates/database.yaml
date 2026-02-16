@@ -1,0 +1,127 @@
+{{- $fullName := include "vaultwarden.fullname" . -}}
+{{- $secretName := include "vaultwarden.postgresql.secretName" . -}}
+
+{{- if and (eq .Values.database.mode "external") (not .Values.database.external.host) }}
+{{- fail "database.external.host must be provided when using external database mode" }}
+{{- end }}
+
+{{- if and (or (eq .Values.database.mode "cluster") (eq .Values.database.mode "external")) .Values.database.password.value }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  labels:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: database
+type: kubernetes.io/basic-auth
+stringData:
+  username: {{ include "vaultwarden.postgresql.username" . }}
+  password: {{ .Values.database.password.value }}
+{{- else if and (or (eq .Values.database.mode "cluster") (eq .Values.database.mode "external")) (not .Values.database.password.secretName) }}
+{{- fail "Either database.password.value or database.password.secretName must be provided when using cluster or external database mode" }}
+{{- end }}
+
+{{- if eq .Values.database.mode "cluster" }}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Release.Name }}-vaultwarden-db
+  labels:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: database
+spec:
+  instances: {{ .Values.database.cluster.instances }}
+  primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
+
+  imageName: {{ .Values.database.cluster.image.repository }}:{{ .Values.database.cluster.image.tag }}
+
+  bootstrap:
+    initdb:
+      database: {{ include "vaultwarden.postgresql.database" . }}
+      owner: {{ include "vaultwarden.postgresql.username" . }}
+      secret:
+        name: {{ $secretName }}
+      {{- if .Values.database.initSQL }}
+      postInitSQL:
+        {{- toYaml .Values.database.initSQL | nindent 8 }}
+      {{- end }}
+
+  managed:
+    roles:
+    - name: {{ .Values.database.username }}
+      ensure: present
+      login: true
+
+  storage:
+    size: {{ .Values.database.cluster.persistence.size }}
+    {{- if .Values.database.cluster.persistence.storageClass }}
+    storageClass: {{ .Values.database.cluster.persistence.storageClass }}
+    {{- end }}
+
+  postgresql:
+    parameters:
+      max_connections: "200"
+      shared_buffers: "256MB"
+      effective_cache_size: "1GB"
+      maintenance_work_mem: "64MB"
+      checkpoint_completion_target: "0.9"
+      wal_buffers: "16MB"
+      default_statistics_target: "100"
+      random_page_cost: "1.1"
+      effective_io_concurrency: "200"
+      work_mem: "1310kB"
+      min_wal_size: "1GB"
+      max_wal_size: "4GB"
+    pg_hba:
+      - host all all all scram-sha-256
+
+  monitoring:
+    enablePodMonitor: false
+
+  {{- if .Values.database.cluster.pitrBackup.enabled }}
+  backup:
+    barmanObjectStore:
+      destinationPath: {{ .Values.database.cluster.pitrBackup.objectStorage.destinationPath }}
+      {{- if .Values.database.cluster.pitrBackup.objectStorage.endpointURL }}
+      endpointURL: {{ .Values.database.cluster.pitrBackup.objectStorage.endpointURL }}
+      {{- end }}
+      {{- if .Values.database.cluster.pitrBackup.objectStorage.secretName }}
+      s3Credentials:
+        accessKeyId:
+          name: {{ .Values.database.cluster.pitrBackup.objectStorage.secretName }}
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: {{ .Values.database.cluster.pitrBackup.objectStorage.secretName }}
+          key: ACCESS_SECRET_KEY
+        {{- if .Values.database.cluster.pitrBackup.objectStorage.region }}
+        region:
+          value: {{ .Values.database.cluster.pitrBackup.objectStorage.region }}
+        {{- end }}
+      {{- end }}
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: {{ .Values.database.cluster.pitrBackup.retentionPolicy | default "30d" | quote }}
+  {{- end }}
+
+  {{- if .Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml .Values.nodeSelector | nindent 4 }}
+  {{- end }}
+
+  {{- if .Values.tolerations }}
+  tolerations:
+    {{- toYaml .Values.tolerations | nindent 4 }}
+  {{- end }}
+
+  {{- if .Values.affinity }}
+  affinity:
+    {{- toYaml .Values.affinity | nindent 4 }}
+  {{- end }}
+{{- end }}
