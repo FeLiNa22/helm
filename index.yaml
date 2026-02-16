@@ -5077,6 +5077,27 @@ entries:
   vaultwarden:
   - apiVersion: v2
     appVersion: 1.35.1
+    created: "2026-02-16T23:58:31.511139563Z"
+    description: Vaultwarden Helm Chart
+    digest: c394ff8c8f2ab1883cb4cfcafaaa67c739c62ca86569174203619f3cd8ef6592
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/vaultwarden
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - vaultwarden
+    - bitwarden
+    - password-manager
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: vaultwarden
+    sources:
+    - https://github.com/dani-garcia/vaultwarden
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.4.1/vaultwarden-1.4.1.tgz
+    version: 1.4.1
+  - apiVersion: v2
+    appVersion: 1.35.1
     created: "2026-02-16T23:27:14.55540324Z"
     description: Vaultwarden Helm Chart
     digest: 990400173de53ff506f044c9306e07c96c8a88af7b5c5407cff6d9b39525cc34
@@ -5243,4 +5264,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-02-16T23:27:14.555964598Z"
+generated: "2026-02-16T23:58:31.511539098Z"
