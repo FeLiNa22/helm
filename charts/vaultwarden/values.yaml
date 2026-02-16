@@ -160,21 +160,12 @@ persistence:
 ## @section Database parameters
 ## PostgreSQL database configuration for Vaultwarden
 
-## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
-## @param postgres.initSQL Array of SQL commands to run on database initialization.
-## @param postgres.username Username for the database.
+## @param postgres.mode The mode of database deployment: 'standalone' (internal SQLite), 'cluster' (CloudNativePG), or 'external' (existing PostgreSQL).
+## @param postgres.initSQL Array of SQL commands to run on database initialization (for cluster mode).
+## @param postgres.username Username for the PostgreSQL database.
 ## @param postgres.database Database name for PostgreSQL.
 ## @param postgres.password.secretName Existing secret name for database password (mutually exclusive with value).
 ## @param postgres.password.value Direct password value to create a secret (mutually exclusive with secretName).
-## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
-## @param postgres.standalone.persistence.size Size of the persistence volume.
-## @param postgres.standalone.persistence.storageClass Storage class for persistence.
-## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
-## @param postgres.standalone.image.repository PostgreSQL image repository.
-## @param postgres.standalone.image.tag PostgreSQL image tag.
-## @param postgres.standalone.image.autoupdate.enabled Enable automatic image updates for standalone database.
-## @param postgres.standalone.image.autoupdate.updateStrategy Strategy for image updates (e.g., semver, latest).
-## @param postgres.standalone.resources Resource limits and requests for standalone PostgreSQL.
 ## @param postgres.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
 ## @param postgres.cluster.persistence.size Size of the persistence volume.
@@ -189,11 +180,9 @@ persistence:
 ## @param postgres.cluster.pitrBackup.objectStorage.region S3 region (optional).
 ## @param postgres.external.host Hostname of external PostgreSQL (when mode is 'external').
 ## @param postgres.external.port Port of external PostgreSQL.
-## @param postgres.backup.enabled Enable scheduled pg_dump backups for all database modes (default: false).
+## @param postgres.backup.enabled Enable scheduled pg_dump backups for cluster and external modes (default: false).
 ## @param postgres.backup.cron Cron schedule for backups (default: "0 2 * * *" for 2am daily).
 ## @param postgres.backup.retention Number of backups to retain (default: 30).
-## @param postgres.backup.image.repository Custom image repository for backup job (optional).
-## @param postgres.backup.image.tag Custom image tag for backup job (optional).
 ## @param postgres.backup.persistence.enabled Enable persistence for backups (default: true).
 ## @param postgres.backup.persistence.size Backup volume size (default: 512Mi).
 ## @param postgres.backup.persistence.storageClass Storage class for backup volume.
@@ -201,16 +190,17 @@ persistence:
 ## @param postgres.backup.persistence.existingClaim Use existing PVC for backups.
 ##
 postgres:
-  # Mode options: 'standalone', 'cluster', or 'external'
+  # Mode options: 'standalone' (internal SQLite, no PostgreSQL deployed), 'cluster' (CNPG), or 'external'
   mode: standalone
-  # SQL commands to initialize the database
+
+  # SQL commands to initialize the database (for cluster mode only)
   # Each line should be a complete SQL statement
   initSQL: []
     # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
     # - "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
 
   username: vaultwarden
-  database: "vaultwarden"  # Database name (used in all modes)
+  database: "vaultwarden"  # Database name (used in cluster and external modes)
 
   # Secret configuration for database password
   # You must provide EITHER secretName (to use existing secret) OR value (to create new secret with password)
@@ -220,31 +210,8 @@ postgres:
   # with keys 'username' and 'password'
   password:
     secretName: ""  # Name of existing secret containing the password (and username for cluster mode)
-    value: ""  # Direct password value (if secretName is empty, this must be provided)
+    value: ""  # Direct password value (if secretName is empty, this must be provided when using cluster/external mode)
 
-  # Standalone PostgreSQL deployment (using StatefulSet)
-  standalone:
-    # Use standard PostgreSQL image for Vaultwarden
-    image:
-      repository: postgres
-      tag: "16-alpine"
-      autoupdate:
-        enabled: false
-        updateStrategy: ""
-    resources: {}
-      # limits:
-      #   cpu: 1000m
-      #   memory: 2Gi
-      # requests:
-      #   cpu: 100m
-      #   memory: 256Mi
-
-
-    persistence:
-      enabled: true
-      size: 512Mi
-      storageClass: ""
-      existingClaim: ""
   # CloudNativePG Cluster deployment (using CNPG operator)
   cluster:
     persistence:
@@ -281,14 +248,11 @@ postgres:
     port: 5432
     # Password is sourced from the secret configured in postgres.password.secretName / postgres.password.value
 
-  # Scheduled database backups using pg_dump (works for all database modes)
+  # Scheduled database backups using pg_dump (works for cluster and external modes only)
   backup:
     enabled: false
     cron: "0 2 * * *"  # Daily at 2am
     retention: 30  # Number of backups to retain
-    image:
-      repository: ""  # Leave empty to use standalone image or postgres:16-alpine for external mode
-      tag: ""
     persistence:
       enabled: true
       size: 512Mi

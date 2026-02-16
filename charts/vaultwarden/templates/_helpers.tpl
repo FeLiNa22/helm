@@ -25,12 +25,12 @@ Create a default fully qualified app name.
 PostgreSQL host
 */}}
 {{- define "vaultwarden.postgresql.host" -}}
-{{- if eq .Values.postgres.mode "standalone" }}
-{{- printf "%s-postgresql" (include "vaultwarden.fullname" .) }}
-{{- else if eq .Values.postgres.mode "cluster" }}
+{{- if eq .Values.postgres.mode "cluster" }}
 {{- printf "%s-vaultwarden-db-rw" .Release.Name }}
-{{- else }}
+{{- else if eq .Values.postgres.mode "external" }}
 {{- .Values.postgres.external.host }}
+{{- else }}
+{{- "" }}
 {{- end }}
 {{- end }}
 
@@ -40,8 +40,10 @@ PostgreSQL port
 {{- define "vaultwarden.postgresql.port" -}}
 {{- if eq .Values.postgres.mode "external" }}
 {{- .Values.postgres.external.port | default "5432" }}
-{{- else }}
+{{- else if eq .Values.postgres.mode "cluster" }}
 {{- "5432" }}
+{{- else }}
+{{- "" }}
 {{- end }}
 {{- end }}
 
@@ -78,9 +80,13 @@ Note: The password uses shell variable expansion $(DB_PASSWORD) which is populat
 This is a standard pattern and is secure because the password is injected at runtime from the secret.
 */}}
 {{- define "vaultwarden.postgresql.databaseUrl" -}}
+{{- if or (eq .Values.postgres.mode "cluster") (eq .Values.postgres.mode "external") }}
 {{- $host := include "vaultwarden.postgresql.host" . }}
 {{- $port := include "vaultwarden.postgresql.port" . }}
 {{- $database := include "vaultwarden.postgresql.database" . }}
 {{- $username := include "vaultwarden.postgresql.username" . }}
 {{- printf "postgresql://%s:$(DB_PASSWORD)@%s:%s/%s" $username $host $port $database }}
+{{- else }}
+{{- "" }}
+{{- end }}
 {{- end }}

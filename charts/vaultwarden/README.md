@@ -18,20 +18,11 @@ Vaultwarden supports three database modes:
 
 ### Standalone Mode (Default)
 
-Deploys a PostgreSQL database using a StatefulSet for simple single-instance deployments.
+Uses Vaultwarden's built-in SQLite database. No external database is deployed.
 
 ```yaml
 postgres:
   mode: standalone
-  password:
-    value: "your-secure-password"  # Or use secretName for existing secret
-  standalone:
-    image:
-      repository: postgres
-      tag: "16-alpine"
-    persistence:
-      enabled: true
-      size: 512Mi
 ```
 
 ### Cluster Mode
@@ -67,7 +58,7 @@ postgres:
 
 ### Database Backups
 
-Enable scheduled pg_dump backups for all database modes:
+Enable scheduled pg_dump backups for cluster and external modes:
 
 ```yaml
 postgres:
@@ -89,9 +80,6 @@ postgres:
 | `postgres.database` | PostgreSQL database name | `vaultwarden` |
 | `postgres.password.value` | Direct password value (creates secret) | `""` |
 | `postgres.password.secretName` | Use existing secret for password | `""` |
-| `postgres.standalone.image.repository` | PostgreSQL image repository (standalone mode) | `postgres` |
-| `postgres.standalone.image.tag` | PostgreSQL image tag (standalone mode) | `16-alpine` |
-| `postgres.standalone.persistence.size` | Persistent volume size for database (standalone mode) | `512Mi` |
 | `postgres.cluster.instances` | Number of PostgreSQL instances (cluster mode) | `2` |
 | `postgres.cluster.persistence.size` | Persistent volume size for database (cluster mode) | `512Mi` |
 | `postgres.external.host` | External PostgreSQL hostname | `""` |
