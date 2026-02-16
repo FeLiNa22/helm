@@ -1,0 +1,33 @@
+{{- if .Values.velero.enabled }}
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: {{ include "authentik.fullname" . }}-backup
+  namespace: {{ .Values.velero.namespace }}
+  labels:
+    {{- include "authentik.labels" . | nindent 4 }}
+  {{- with .Values.velero.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  schedule: {{ .Values.velero.schedule | quote }}
+  template:
+    ttl: {{ .Values.velero.ttl }}
+    includeClusterResources: {{ .Values.velero.includeClusterResources }}
+    snapshotVolumes: {{ .Values.velero.snapshotVolumes }}
+    defaultVolumesToFsBackup: {{ .Values.velero.defaultVolumesToFsBackup }}
+    {{- if .Values.velero.storageLocation }}
+    storageLocation: {{ .Values.velero.storageLocation }}
+    {{- end }}
+    {{- if .Values.velero.volumeSnapshotLocations }}
+    volumeSnapshotLocations:
+      {{- toYaml .Values.velero.volumeSnapshotLocations | nindent 6 }}
+    {{- end }}
+    includedNamespaces:
+      - {{ .Release.Namespace }}
+    {{- if .Values.velero.labelSelector }}
+    labelSelector:
+      {{- toYaml .Values.velero.labelSelector | nindent 6 }}
+    {{- end }}
+{{- end }}

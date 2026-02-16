@@ -1,0 +1,389 @@
+## @section Authentik Server parameters
+
+## @param replicaCount The number of replicas to deploy for the server.
+## @param image.repository The Docker repository to pull the image from.
+## @param image.pullPolicy The logic of image pulling.
+## @param image.tag The image tag to use.
+## @param image.autoupdate.enabled Enable automatic image updates via ArgoCD Image Updater.
+## @param image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param image.autoupdate.pullSecret Reference to secret for private registry authentication.
+## @param image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
+## @param imagePullSecrets The image pull secrets to use.
+## @param deployment.strategy.type The deployment strategy to use.
+## @param serviceAccount.create Whether to create a service account.
+## @param serviceAccount.annotations Additional annotations to add to the service account.
+## @param serviceAccount.name The name of the service account to use.
+## @param podAnnotations Additional annotations to add to the pod.
+## @param podSecurityContext The security context to use for the pod.
+## @param securityContext The security context to use for the container.
+## @param initContainers Additional init containers to add to the pod.
+## @param service.type The type of service to create.
+## @param service.port The port on which the service will run.
+## @param service.httpsPort The HTTPS port on which the service will run.
+## @param service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
+## @param ingress.enabled Whether to create an ingress for the service.
+## @param ingress.className The ingress class name to use.
+## @param ingress.annotations Additional annotations to add to the ingress.
+## @param ingress.hosts[0].host The host to use for the ingress.
+## @param ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param ingress.tls The TLS configuration for the ingress.
+## @param resources The resources to use for the pod.
+## @param autoscaling.enabled Whether to enable autoscaling.
+## @param autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param nodeSelector The node selector to use for the pod.
+## @param tolerations The tolerations to use for the pod.
+## @param affinity The affinity to use for the pod.
+##
+replicaCount: 1
+
+image:
+  repository: ghcr.io/goauthentik/server
+  pullPolicy: IfNotPresent
+  tag: "2025.12.4"
+  autoupdate:
+    enabled: false
+    strategy: ""
+    allowTags: ""
+    ignoreTags: []
+    pullSecret: ""
+    platforms: []
+
+imagePullSecrets: []
+
+deployment:
+  strategy:
+    type: Recreate
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+initContainers: []
+  # - name: init-container
+  #   image: busybox
+  #   command: ['sh', '-c', 'echo "this is an init container"']
+
+service:
+  type: ClusterIP
+  port: 9000
+  httpsPort: 9443
+  nodePort: ""
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: authentik.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: authentik-tls
+  #    hosts:
+  #      - authentik.local
+
+resources: {}
+  # limits:
+  #   cpu: 1000m
+  #   memory: 2Gi
+  # requests:
+  #   cpu: 100m
+  #   memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+## @section Authentik Worker parameters
+
+## @param worker.enabled Enable the worker deployment.
+## @param worker.replicaCount The number of replicas to deploy for the worker.
+## @param worker.resources The resources to use for the worker pod.
+## @param worker.autoscaling.enabled Whether to enable autoscaling for the worker.
+## @param worker.autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param worker.autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param worker.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param worker.nodeSelector The node selector to use for the worker pod.
+## @param worker.tolerations The tolerations to use for the worker pod.
+## @param worker.affinity The affinity to use for the worker pod.
+##
+worker:
+  enabled: true
+  replicaCount: 1
+  resources: {}
+    # limits:
+    #   cpu: 1000m
+    #   memory: 2Gi
+    # requests:
+    #   cpu: 100m
+    #   memory: 256Mi
+  
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+## @section Environment Variables
+
+## Environment variables in map format (key: value)
+## @param env.TZ Timezone for the application.
+##
+env:
+  TZ: "Europe/London"
+
+## @section Authentik Configuration
+
+## @param authentik.secretKey Secret key used for cookie signing and unique user IDs. Generated if empty.
+## @param authentik.errorReporting.enabled Enable anonymous error reporting to sentry.
+## @param authentik.logLevel Log level (debug, info, warning, error, critical).
+## @param authentik.email.host SMTP server hostname.
+## @param authentik.email.port SMTP server port.
+## @param authentik.email.username SMTP username.
+## @param authentik.email.password SMTP password.
+## @param authentik.email.useTLS Use STARTTLS for SMTP.
+## @param authentik.email.useSSL Use SSL for SMTP.
+## @param authentik.email.timeout SMTP connection timeout.
+## @param authentik.email.from Email from address.
+##
+authentik:
+  # Secret key for cookie signing - leave empty to auto-generate
+  secretKey: ""
+  
+  errorReporting:
+    enabled: false
+  
+  logLevel: info
+  
+  email:
+    host: ""
+    port: 587
+    username: ""
+    password: ""
+    useTLS: false
+    useSSL: false
+    timeout: 30
+    from: ""
+
+## @section Persistence Configuration
+
+## @param persistence.enabled Enable persistence for media files.
+## @param persistence.storageClass Storage class for the PVC.
+## @param persistence.size Size of the PVC.
+## @param persistence.accessMode Access mode for the PVC.
+## @param persistence.existingClaim Use an existing PVC instead of creating one.
+## @param persistence.additionalVolumes Additional volumes to mount.
+## @param persistence.additionalMounts Additional mount paths for volumes.
+##
+persistence:
+  enabled: true
+  storageClass: ""
+  size: 5Gi
+  accessMode: ReadWriteOnce
+  existingClaim: ""
+  additionalVolumes: []
+  additionalMounts: []
+
+## @section PostgreSQL Configuration
+
+## @param postgres.mode Database deployment mode: 'standalone', 'cluster', or 'external'.
+## @param postgres.database Database name.
+## @param postgres.username Database username.
+## @param postgres.password Database password (auto-generated if empty).
+## @param postgres.secret.name Name of existing secret containing database password.
+## @param postgres.secret.passwordKey Key in the secret containing the password.
+## @param postgres.persistence.enabled Enable persistence for database.
+## @param postgres.persistence.storageClass Storage class for database PVC.
+## @param postgres.persistence.size Size of the database PVC.
+## @param postgres.persistence.existingClaim Use an existing PVC for the database.
+## @param postgres.standalone.image.repository PostgreSQL image repository for standalone mode.
+## @param postgres.standalone.image.tag PostgreSQL image tag for standalone mode.
+## @param postgres.standalone.image.autoupdate.enabled Enable automatic image updates for standalone PostgreSQL.
+## @param postgres.standalone.image.autoupdate.strategy Strategy for image updates for standalone PostgreSQL.
+## @param postgres.standalone.resources Resource limits for standalone database.
+## @param postgres.cluster.name Name of the CloudNativePG cluster.
+## @param postgres.cluster.instances Number of instances in the cluster.
+## @param postgres.cluster.image.repository PostgreSQL image repository for cluster mode.
+## @param postgres.cluster.image.tag PostgreSQL image tag for cluster mode.
+## @param postgres.cluster.pitrBackup.enabled Enable point-in-time recovery backups.
+## @param postgres.cluster.pitrBackup.retentionPolicy Retention policy for PITR backups.
+## @param postgres.cluster.pitrBackup.objectStorage.destinationPath S3 path for backups.
+## @param postgres.cluster.pitrBackup.objectStorage.endpointURL S3 endpoint URL.
+## @param postgres.cluster.pitrBackup.objectStorage.secretName Secret containing S3 credentials.
+## @param postgres.cluster.pitrBackup.objectStorage.region S3 region.
+## @param postgres.external.host External database hostname.
+## @param postgres.external.port External database port.
+## @param postgres.backup.enabled Enable scheduled pg_dump backups.
+## @param postgres.backup.cron Cron schedule for backups.
+## @param postgres.backup.retention Number of backups to retain.
+## @param postgres.backup.path Path to store backups.
+## @param postgres.backup.persistence.enabled Enable persistence for backups.
+## @param postgres.backup.persistence.size Size of the backup PVC.
+## @param postgres.backup.persistence.storageClass Storage class for backup PVC.
+## @param postgres.backup.persistence.accessMode Access mode for backup PVC.
+## @param postgres.backup.persistence.existingClaim Use an existing PVC for backups.
+##
+postgres:
+  # Mode: 'standalone', 'cluster', or 'external'
+  mode: standalone
+  
+  # Database configuration
+  database: authentik
+  username: authentik
+  password: ""
+  
+  # Secret configuration
+  secret:
+    # Leave empty to auto-generate
+    name: ""
+    passwordKey: "password"
+  
+  # Persistence for database
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: 5Gi
+    existingClaim: ""
+  
+  # Standalone mode - single PostgreSQL instance
+  standalone:
+    image:
+      repository: postgres
+      tag: "16-alpine"
+      autoupdate:
+        enabled: false
+        strategy: ""
+    resources: {}
+      # limits:
+      #   cpu: 1000m
+      #   memory: 2Gi
+      # requests:
+      #   cpu: 100m
+      #   memory: 256Mi
+  
+  # Cluster mode - CloudNativePG
+  cluster:
+    name: authentik-db
+    instances: 2
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: "16"
+    pitrBackup:
+      enabled: false
+      retentionPolicy: "30d"
+      objectStorage:
+        destinationPath: ""
+        endpointURL: ""
+        secretName: ""
+        region: ""
+  
+  # External database
+  external:
+    host: ""
+    port: 5432
+  
+  # Database backups (pg_dump)
+  backup:
+    enabled: false
+    cron: "0 2 * * *"
+    retention: 30
+    path: /backups
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: ""
+      accessMode: ReadWriteOnce
+      existingClaim: ""
+
+## @section Velero Backup Configuration
+
+## @param velero.enabled Enable Velero backup schedules.
+## @param velero.namespace Namespace where Velero is installed.
+## @param velero.schedule Cron schedule for backups.
+## @param velero.ttl Time to live for backups.
+## @param velero.includeClusterResources Include cluster-scoped resources.
+## @param velero.snapshotVolumes Enable volume snapshots.
+## @param velero.defaultVolumesToFsBackup Use filesystem backup instead of snapshots.
+## @param velero.storageLocation Backup storage location.
+## @param velero.volumeSnapshotLocations Volume snapshot locations.
+## @param velero.labelSelector Label selector for resources to backup.
+## @param velero.annotations Additional annotations for the schedule.
+##
+velero:
+  enabled: false
+  namespace: "velero"
+  schedule: "0 2 * * *"
+  ttl: "168h"
+  includeClusterResources: false
+  snapshotVolumes: true
+  defaultVolumesToFsBackup: false
+  storageLocation: ""
+  volumeSnapshotLocations: []
+  labelSelector: {}
+  annotations: {}
+
+## @section ArgoCD Image Updater Configuration
+
+## @param imageUpdater.namespace Namespace for ArgoCD Image Updater.
+## @param imageUpdater.argocdNamespace Namespace where ArgoCD is installed.
+## @param imageUpdater.applicationName Name of the ArgoCD application.
+## @param imageUpdater.imageAlias Alias for the image.
+## @param imageUpdater.forceUpdate Force update the image.
+## @param imageUpdater.helm Helm-specific configuration.
+## @param imageUpdater.kustomize Kustomize-specific configuration.
+## @param imageUpdater.writeBackConfig Write-back configuration.
+##
+imageUpdater:
+  namespace: argocd
+  argocdNamespace: argocd
+  applicationName: ""
+  imageAlias: ""
+  forceUpdate: false
+  helm: {}
+  kustomize: {}
+  writeBackConfig: {}
+
+## @section Blueprints Configuration
+
+## @param blueprints.configMaps List of ConfigMaps containing blueprints.
+## @param blueprints.secrets List of Secrets containing blueprints.
+##
+blueprints:
+  configMaps: []
+  secrets: []

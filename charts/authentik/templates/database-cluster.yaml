@@ -1,0 +1,100 @@
+{{- if eq .Values.postgres.mode "cluster" }}
+{{- $fullName := include "authentik.fullname" . -}}
+{{- $secretName := include "authentik.postgresql.secretName" . -}}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.postgres.cluster.name }}
+  labels:
+    {{- include "authentik.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  instances: {{ .Values.postgres.cluster.instances }}
+  primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
+
+  imageName: {{ .Values.postgres.cluster.image.repository }}:{{ .Values.postgres.cluster.image.tag }}
+
+  bootstrap:
+    initdb:
+      database: {{ include "authentik.postgresql.database" . }}
+      owner: {{ include "authentik.postgresql.username" . }}
+      secret:
+        name: {{ $secretName }}
+
+  managed:
+    roles:
+    - name: {{ include "authentik.postgresql.username" . }}
+      ensure: present
+      login: true
+      superuser: true
+
+  storage:
+    size: {{ .Values.postgres.persistence.size }}
+    {{- if .Values.postgres.persistence.storageClass }}
+    storageClass: {{ .Values.postgres.persistence.storageClass }}
+    {{- end }}
+
+  postgresql:
+    parameters:
+      max_connections: "200"
+      shared_buffers: "256MB"
+      effective_cache_size: "1GB"
+      maintenance_work_mem: "64MB"
+      checkpoint_completion_target: "0.9"
+      wal_buffers: "16MB"
+      default_statistics_target: "100"
+      random_page_cost: "1.1"
+      effective_io_concurrency: "200"
+      work_mem: "1310kB"
+      min_wal_size: "1GB"
+      max_wal_size: "4GB"
+    pg_hba:
+      - host all all all scram-sha-256
+
+  monitoring:
+    enablePodMonitor: false
+
+  {{- if .Values.postgres.cluster.pitrBackup.enabled }}
+  backup:
+    barmanObjectStore:
+      destinationPath: {{ .Values.postgres.cluster.pitrBackup.objectStorage.destinationPath }}
+      {{- if .Values.postgres.cluster.pitrBackup.objectStorage.endpointURL }}
+      endpointURL: {{ .Values.postgres.cluster.pitrBackup.objectStorage.endpointURL }}
+      {{- end }}
+      {{- if .Values.postgres.cluster.pitrBackup.objectStorage.secretName }}
+      s3Credentials:
+        accessKeyId:
+          name: {{ .Values.postgres.cluster.pitrBackup.objectStorage.secretName }}
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: {{ .Values.postgres.cluster.pitrBackup.objectStorage.secretName }}
+          key: ACCESS_SECRET_KEY
+        {{- if .Values.postgres.cluster.pitrBackup.objectStorage.region }}
+        region:
+          value: {{ .Values.postgres.cluster.pitrBackup.objectStorage.region }}
+        {{- end }}
+      {{- end }}
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: {{ .Values.postgres.cluster.pitrBackup.retentionPolicy | default "30d" | quote }}
+  {{- end }}
+
+  {{- if .Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml .Values.nodeSelector | nindent 4 }}
+  {{- end }}
+
+  {{- if .Values.tolerations }}
+  tolerations:
+    {{- toYaml .Values.tolerations | nindent 4 }}
+  {{- end }}
+
+  {{- if .Values.affinity }}
+  affinity:
+    {{- toYaml .Values.affinity | nindent 4 }}
+  {{- end }}
+{{- end }}

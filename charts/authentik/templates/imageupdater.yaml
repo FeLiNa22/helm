@@ -1,0 +1,44 @@
+{{- if .Values.image.autoupdate.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "authentik.fullname" . }}-imageupdater
+  namespace: {{ .Values.imageUpdater.namespace }}
+  labels:
+    {{- include "authentik.labels" . | nindent 4 }}
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: {{ .Values.imageUpdater.imageAlias | default "authentik" }}={{ .Values.image.repository }}
+    argocd-image-updater.argoproj.io/{{ .Values.imageUpdater.imageAlias | default "authentik" }}.update-strategy: {{ .Values.image.autoupdate.strategy }}
+    {{- if .Values.image.autoupdate.allowTags }}
+    argocd-image-updater.argoproj.io/{{ .Values.imageUpdater.imageAlias | default "authentik" }}.allow-tags: {{ .Values.image.autoupdate.allowTags }}
+    {{- end }}
+    {{- if .Values.image.autoupdate.ignoreTags }}
+    argocd-image-updater.argoproj.io/{{ .Values.imageUpdater.imageAlias | default "authentik" }}.ignore-tags: {{ join "," .Values.image.autoupdate.ignoreTags }}
+    {{- end }}
+    {{- if .Values.image.autoupdate.pullSecret }}
+    argocd-image-updater.argoproj.io/{{ .Values.imageUpdater.imageAlias | default "authentik" }}.pull-secret: {{ .Values.image.autoupdate.pullSecret }}
+    {{- end }}
+    {{- if .Values.image.autoupdate.platforms }}
+    argocd-image-updater.argoproj.io/{{ .Values.imageUpdater.imageAlias | default "authentik" }}.platforms: {{ join "," .Values.image.autoupdate.platforms }}
+    {{- end }}
+    {{- if .Values.imageUpdater.forceUpdate }}
+    argocd-image-updater.argoproj.io/{{ .Values.imageUpdater.imageAlias | default "authentik" }}.force-update: "true"
+    {{- end }}
+    {{- if .Values.imageUpdater.helm }}
+    {{- range $key, $value := .Values.imageUpdater.helm }}
+    argocd-image-updater.argoproj.io/{{ $.Values.imageUpdater.imageAlias | default "authentik" }}.helm.{{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.imageUpdater.kustomize }}
+    {{- range $key, $value := .Values.imageUpdater.kustomize }}
+    argocd-image-updater.argoproj.io/{{ $.Values.imageUpdater.imageAlias | default "authentik" }}.kustomize.{{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.imageUpdater.writeBackConfig }}
+    {{- range $key, $value := .Values.imageUpdater.writeBackConfig }}
+    argocd-image-updater.argoproj.io/write-back-method: {{ $value | quote }}
+    {{- end }}
+    {{- end }}
+data:
+  application: {{ .Values.imageUpdater.applicationName | default .Release.Name }}
+{{- end }}
