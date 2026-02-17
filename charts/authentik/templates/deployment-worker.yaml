@@ -39,10 +39,10 @@ spec:
         {{- toYaml .Values.initContainers | nindent 8 }}
       {{- end }}
       volumes:
-        - name: media
+        - name: data
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-media" $fullName) }}
+            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" $fullName) }}
           {{- else }}
           emptyDir: {}
           {{- end }}
@@ -57,8 +57,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["worker"]
           volumeMounts:
-            - mountPath: /media
-              name: media
+            - mountPath: /data
+              name: data
             {{- if .Values.persistence.additionalMounts }}
             {{- toYaml .Values.persistence.additionalMounts | nindent 12 }}
             {{- end }}

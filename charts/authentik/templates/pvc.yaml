@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ $fullName }}-media
+  name: {{ $fullName }}-data
   labels:
     {{- include "authentik.labels" . | nindent 4 }}
 spec:

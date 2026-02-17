@@ -203,7 +203,7 @@ authentik:
 
 ## @section Persistence Configuration
 
-## @param persistence.enabled Enable persistence for media files.
+## @param persistence.enabled Enable persistence for data files.
 ## @param persistence.storageClass Storage class for the PVC.
 ## @param persistence.size Size of the PVC.
 ## @param persistence.accessMode Access mode for the PVC.
