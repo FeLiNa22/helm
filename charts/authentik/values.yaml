@@ -214,8 +214,8 @@ authentik:
 persistence:
   enabled: true
   storageClass: ""
-  size: 5Gi
-  accessMode: ReadWriteOnce
+  size: 512Mi
+  accessMode: ReadWriteMany
   existingClaim: ""
   additionalVolumes: []
   additionalMounts: []
@@ -305,7 +305,7 @@ postgres:
     persistence:
       enabled: true
       storageClass: ""
-      size: 5Gi
+      size: 512Mi
       existingClaim: ""
   
   # Cluster mode - CloudNativePG
@@ -318,7 +318,7 @@ postgres:
     persistence:
       enabled: true
       storageClass: ""
-      size: 5Gi
+      size: 512Mi
     pitrBackup:
       enabled: false
       retentionPolicy: "30d"
