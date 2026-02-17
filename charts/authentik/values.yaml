@@ -223,22 +223,25 @@ persistence:
 ## @section PostgreSQL Configuration
 
 ## @param postgres.mode Database deployment mode: 'standalone', 'cluster', or 'external'.
+## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.database Database name.
 ## @param postgres.username Database username.
-## @param postgres.password Database password (auto-generated if empty).
-## @param postgres.secret.name Name of existing secret containing database password.
-## @param postgres.secret.passwordKey Key in the secret containing the password.
-## @param postgres.persistence.enabled Enable persistence for database.
-## @param postgres.persistence.storageClass Storage class for database PVC.
-## @param postgres.persistence.size Size of the database PVC.
-## @param postgres.persistence.existingClaim Use an existing PVC for the database.
+## @param postgres.password.secretName Existing secret name for database password (mutually exclusive with value).
+## @param postgres.password.value Direct password value to create a secret (mutually exclusive with secretName).
+## @param postgres.standalone.persistence.enabled Enable persistence for standalone database.
+## @param postgres.standalone.persistence.storageClass Storage class for standalone database PVC.
+## @param postgres.standalone.persistence.size Size of the standalone database PVC.
+## @param postgres.standalone.persistence.existingClaim Use an existing PVC for standalone database.
 ## @param postgres.standalone.image.repository PostgreSQL image repository for standalone mode.
 ## @param postgres.standalone.image.tag PostgreSQL image tag for standalone mode.
 ## @param postgres.standalone.image.autoupdate.enabled Enable automatic image updates for standalone PostgreSQL.
-## @param postgres.standalone.image.autoupdate.strategy Strategy for image updates for standalone PostgreSQL.
+## @param postgres.standalone.image.autoupdate.updateStrategy Strategy for image updates for standalone PostgreSQL.
 ## @param postgres.standalone.resources Resource limits for standalone database.
 ## @param postgres.cluster.name Name of the CloudNativePG cluster.
 ## @param postgres.cluster.instances Number of instances in the cluster.
+## @param postgres.cluster.persistence.enabled Enable persistence for cluster database.
+## @param postgres.cluster.persistence.storageClass Storage class for cluster database PVC.
+## @param postgres.cluster.persistence.size Size of the cluster database PVC.
 ## @param postgres.cluster.image.repository PostgreSQL image repository for cluster mode.
 ## @param postgres.cluster.image.tag PostgreSQL image tag for cluster mode.
 ## @param postgres.cluster.pitrBackup.enabled Enable point-in-time recovery backups.
@@ -252,7 +255,8 @@ persistence:
 ## @param postgres.backup.enabled Enable scheduled pg_dump backups.
 ## @param postgres.backup.cron Cron schedule for backups.
 ## @param postgres.backup.retention Number of backups to retain.
-## @param postgres.backup.path Path to store backups.
+## @param postgres.backup.image.repository Custom image repository for backup job (optional).
+## @param postgres.backup.image.tag Custom image tag for backup job (optional).
 ## @param postgres.backup.persistence.enabled Enable persistence for backups.
 ## @param postgres.backup.persistence.size Size of the backup PVC.
 ## @param postgres.backup.persistence.storageClass Storage class for backup PVC.
@@ -263,23 +267,25 @@ postgres:
   # Mode: 'standalone', 'cluster', or 'external'
   mode: standalone
   
+  # SQL commands to initialize database (e.g., creating extensions)
+  # Each line should be a complete SQL statement
+  initSQL: []
+    # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+    # - "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
+  
   # Database configuration
   database: authentik
   username: authentik
-  password: ""
   
-  # Secret configuration
-  secret:
-    # Leave empty to auto-generate
-    name: ""
-    passwordKey: "password"
-  
-  # Persistence for database
-  persistence:
-    enabled: true
-    storageClass: ""
-    size: 5Gi
-    existingClaim: ""
+  # Secret configuration for database password
+  # You must provide EITHER secretName (to use existing secret) OR value (to create new secret with password)
+  # For cluster mode (CNPG), existing secrets MUST contain both 'username' and 'password' keys
+  # and use type: kubernetes.io/basic-auth (or Opaque)
+  # When creating a new secret (using password.value), the secret will use type kubernetes.io/basic-auth
+  # with keys 'username' and 'password'
+  password:
+    secretName: ""  # Name of existing secret containing the password (and username for cluster mode)
+    value: ""  # Direct password value (if secretName is empty, this must be provided)
   
   # Standalone mode - single PostgreSQL instance
   standalone:
@@ -288,7 +294,7 @@ postgres:
       tag: "16-alpine"
       autoupdate:
         enabled: false
-        strategy: ""
+        updateStrategy: ""
     resources: {}
       # limits:
       #   cpu: 1000m
@@ -296,6 +302,11 @@ postgres:
       # requests:
       #   cpu: 100m
       #   memory: 256Mi
+    persistence:
+      enabled: true
+      storageClass: ""
+      size: 5Gi
+      existingClaim: ""
   
   # Cluster mode - CloudNativePG
   cluster:
@@ -304,6 +315,10 @@ postgres:
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: "16"
+    persistence:
+      enabled: true
+      storageClass: ""
+      size: 5Gi
     pitrBackup:
       enabled: false
       retentionPolicy: "30d"
@@ -323,7 +338,9 @@ postgres:
     enabled: false
     cron: "0 2 * * *"
     retention: 30
-    path: /backups
+    image:
+      repository: ""  # Leave empty to use standalone image or postgres:16-alpine for external mode
+      tag: ""
     persistence:
       enabled: true
       size: 512Mi
