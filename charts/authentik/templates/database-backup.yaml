@@ -101,7 +101,9 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: backup
-            {{- if eq .Values.postgres.mode "standalone" }}
+            {{- if and .Values.postgres.backup.image.repository .Values.postgres.backup.image.tag }}
+            image: "{{ .Values.postgres.backup.image.repository }}:{{ .Values.postgres.backup.image.tag }}"
+            {{- else if eq .Values.postgres.mode "standalone" }}
             image: "{{ .Values.postgres.standalone.image.repository }}:{{ .Values.postgres.standalone.image.tag }}"
             {{- else }}
             image: "postgres:16-alpine"
@@ -123,7 +125,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ $secretName }}
-                  key: {{ .Values.postgres.secret.passwordKey }}
+                  key: password
             volumeMounts:
             - name: backup-scripts
               mountPath: /scripts

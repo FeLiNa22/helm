@@ -113,8 +113,8 @@ PostgreSQL username
 PostgreSQL secret name
 */}}
 {{- define "authentik.postgresql.secretName" -}}
-{{- if .Values.postgres.secret.name }}
-{{- .Values.postgres.secret.name }}
+{{- if .Values.postgres.password.secretName }}
+{{- .Values.postgres.password.secretName }}
 {{- else }}
 {{- printf "%s-postgres-secret" .Release.Name }}
 {{- end }}
