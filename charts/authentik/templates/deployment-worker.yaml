@@ -78,7 +78,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "authentik.postgresql.secretName" . }}
-                  key: {{ .Values.postgres.secret.passwordKey }}
+                  key: password
           envFrom:
             - secretRef:
                 name: {{ include "authentik.fullname" . }}-config

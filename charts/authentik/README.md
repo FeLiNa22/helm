@@ -61,15 +61,24 @@ postgres:
   mode: standalone
   database: authentik
   username: authentik
-  password: ""  # Auto-generated if empty
-  persistence:
-    enabled: true
-    size: 5Gi
+  # SQL commands to initialize database (optional)
+  initSQL:
+    - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+    - "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
+  # Password configuration - provide EITHER value OR secretName
+  password:
+    value: ""  # Direct password value (leave empty to be prompted)
+    secretName: ""  # OR use existing secret
   standalone:
     image:
       repository: postgres
       tag: "16-alpine"
     resources: {}
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: ""
+      existingClaim: ""
 ```
 
 #### Cluster Mode (High Availability)
@@ -80,20 +89,31 @@ postgres:
   mode: cluster
   database: authentik
   username: authentik
-  password: ""  # Auto-generated if empty
+  # SQL commands to initialize database (optional)
+  initSQL:
+    - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+  # For cluster mode, existing secrets MUST contain both 'username' and 'password' keys
+  # and use type: kubernetes.io/basic-auth (or Opaque)
+  password:
+    value: ""  # Direct password value (creates kubernetes.io/basic-auth secret)
+    secretName: ""  # OR use existing secret
   cluster:
     name: authentik-db
     instances: 3  # Number of replicas
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: "16"
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: ""
     pitrBackup:
       enabled: true
       retentionPolicy: "30d"
       objectStorage:
         destinationPath: "s3://my-bucket/authentik-backups"
         endpointURL: "https://s3.amazonaws.com"
-        secretName: "s3-credentials"
+        secretName: "s3-credentials"  # Must contain ACCESS_KEY_ID and ACCESS_SECRET_KEY
         region: "us-east-1"
 ```
 
@@ -105,13 +125,33 @@ postgres:
   mode: external
   database: authentik
   username: authentik
-  password: "your-password"
+  password:
+    value: "your-password"  # Direct password value
+    secretName: ""  # OR use existing secret
   external:
     host: "postgres.example.com"
     port: 5432
-  secret:
-    name: "authentik-db-secret"  # Optional: use existing secret
-    passwordKey: "password"
+```
+
+### Database Backups
+
+The chart supports scheduled pg_dump backups for all database modes:
+
+```yaml
+postgres:
+  backup:
+    enabled: true
+    cron: "0 2 * * *"  # Daily at 2am
+    retention: 30  # Number of backups to retain
+    image:
+      repository: ""  # Optional: custom backup image
+      tag: ""
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: ""
+      accessMode: ReadWriteOnce
+      existingClaim: ""
 ```
 
 ### Ingress Configuration
