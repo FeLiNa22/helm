@@ -1,0 +1,33 @@
+{{- if .Values.rbac.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "authentik.fullname" . }}
+  labels:
+    {{- include "authentik.labels" . | nindent 4 }}
+rules:
+  # Secrets - Required for outpost configuration and credentials
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "create", "update", "patch", "delete"]
+  # Services - Required for outpost service exposure
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list", "create", "update", "patch", "delete"]
+  # ConfigMaps - Required for outpost configuration
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "create", "update", "patch", "delete"]
+  # Deployments - Required for outpost pod management
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "create", "update", "patch", "delete"]
+  # ReplicaSets - Required for deployment management
+  - apiGroups: ["apps"]
+    resources: ["replicasets"]
+    verbs: ["get", "list"]
+  # Pods - Required for outpost status monitoring
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+{{- end }}
