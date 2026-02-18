@@ -64,6 +64,11 @@ serviceAccount:
   annotations: {}
   name: ""
 
+## @param rbac.create Whether to create RBAC resources for outpost deployment.
+##
+rbac:
+  create: true
+
 podAnnotations: {}
 
 podSecurityContext: {}

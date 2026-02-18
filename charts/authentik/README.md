@@ -26,6 +26,26 @@ This Helm chart deploys [authentik](https://goauthentik.io/), an open-source Ide
 - **Velero** (for backup schedules)
 - **ArgoCD** (for automated image updates)
 
+## RBAC Permissions
+
+This chart creates RBAC (Role-Based Access Control) resources to enable authentik to deploy and manage Kubernetes outposts. The service account is granted permissions to manage the following resources within the namespace:
+
+- **Secrets**: For outpost configuration and credentials
+- **Services**: For outpost service exposure
+- **ConfigMaps**: For outpost configuration
+- **Deployments**: For outpost pod management
+- **ReplicaSets**: For deployment management
+- **Pods**: For outpost status monitoring
+
+RBAC can be disabled if you don't plan to use Kubernetes outposts:
+
+```yaml
+rbac:
+  create: false
+```
+
+**Note**: If you disable RBAC, authentik will not be able to deploy Kubernetes outposts and will return 403 Forbidden errors when attempting to do so.
+
 ## Installation
 
 ### Basic Installation (Standalone Mode)
