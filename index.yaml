@@ -3,6 +3,31 @@ entries:
   authentik:
   - apiVersion: v2
     appVersion: 2025.12.4
+    created: "2026-02-18T21:24:13.280046997Z"
+    description: A Helm chart for authentik - an open-source Identity Provider focused
+      on flexibility and versatility
+    digest: 9247bd6f6e08e54e5656c8e23c20c3c40058fb3c32489f1098d8039b6ff0d493
+    home: https://goauthentik.io
+    keywords:
+    - authentik
+    - authentication
+    - identity
+    - sso
+    - saml
+    - oauth
+    - oidc
+    - ldap
+    maintainers:
+    - name: FeLiNa22
+    name: authentik
+    sources:
+    - https://github.com/goauthentik/authentik
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/authentik-1.0.7/authentik-1.0.7.tgz
+    version: 1.0.7
+  - apiVersion: v2
+    appVersion: 2025.12.4
     created: "2026-02-18T21:19:34.645734273Z"
     description: A Helm chart for authentik - an open-source Identity Provider focused
       on flexibility and versatility
@@ -5414,4 +5439,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-02-18T21:19:34.646143716Z"
+generated: "2026-02-18T21:24:13.280310649Z"
