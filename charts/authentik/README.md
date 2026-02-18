@@ -28,7 +28,10 @@ This Helm chart deploys [authentik](https://goauthentik.io/), an open-source Ide
 
 ## RBAC Permissions
 
-This chart creates RBAC (Role-Based Access Control) resources to enable authentik to deploy and manage Kubernetes outposts. The service account is granted permissions to manage the following resources within the namespace:
+This chart creates RBAC (Role-Based Access Control) resources to enable authentik to deploy and manage Kubernetes outposts. 
+
+### Namespace-scoped permissions (Role)
+The service account is granted permissions to manage the following resources within the namespace:
 
 - **Secrets**: For outpost configuration and credentials
 - **Services**: For outpost service exposure
@@ -36,6 +39,11 @@ This chart creates RBAC (Role-Based Access Control) resources to enable authenti
 - **Deployments**: For outpost pod management
 - **ReplicaSets**: For deployment management
 - **Pods**: For outpost status monitoring
+
+### Cluster-scoped permissions (ClusterRole)
+The service account is granted read-only permissions for the following cluster-scoped resources:
+
+- **CustomResourceDefinitions**: To check if ServiceMonitor CRDs exist for monitoring integration
 
 RBAC can be disabled if you don't plan to use Kubernetes outposts:
 
