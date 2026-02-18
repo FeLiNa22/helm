@@ -1,0 +1,13 @@
+{{- if .Values.rbac.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "authentik.fullname" . }}
+  labels:
+    {{- include "authentik.labels" . | nindent 4 }}
+rules:
+  # CustomResourceDefinitions - Required to check if ServiceMonitor CRDs exist
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["get", "list"]
+{{- end }}
