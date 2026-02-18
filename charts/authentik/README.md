@@ -100,6 +100,10 @@ postgres:
   cluster:
     name: authentik-db
     instances: 3  # Number of replicas
+    # Enable read replicas for load distribution (default: true)
+    # When enabled, authentik will use the CNPG read-only service endpoint for read operations
+    readReplicas:
+      enabled: true
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: "16"
@@ -115,6 +119,26 @@ postgres:
         endpointURL: "https://s3.amazonaws.com"
         secretName: "s3-credentials"  # Must contain ACCESS_KEY_ID and ACCESS_SECRET_KEY
         region: "us-east-1"
+```
+
+**Read Replicas in Cluster Mode:**
+
+When using cluster mode with `postgres.cluster.readReplicas.enabled: true` (default), authentik is configured to use CloudNativePG's read-only service endpoint (`<cluster-name>-ro`) for read operations. This distributes read queries across replica instances, improving performance and reducing load on the primary database.
+
+The chart automatically configures the following environment variables:
+- `AUTHENTIK_POSTGRESQL__READ_REPLICAS__0__HOST`: Points to the CNPG read-only service
+- `AUTHENTIK_POSTGRESQL__READ_REPLICAS__0__PORT`: Database port (5432)
+- `AUTHENTIK_POSTGRESQL__READ_REPLICAS__0__NAME`: Database name
+- `AUTHENTIK_POSTGRESQL__READ_REPLICAS__0__USER`: Database username
+- `AUTHENTIK_POSTGRESQL__READ_REPLICAS__0__PASSWORD`: Database password (from secret)
+
+To disable read replicas (all queries go to primary):
+```yaml
+postgres:
+  mode: cluster
+  cluster:
+    readReplicas:
+      enabled: false
 ```
 
 #### External Mode
