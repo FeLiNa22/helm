@@ -36,7 +36,7 @@ helm install authentik ./authentik
 
 This deploys authentik with:
 - Standalone PostgreSQL database
-- Persistent storage for media files
+- EmptyDir storage for media files (ephemeral)
 - Default configuration
 
 ### Custom Installation

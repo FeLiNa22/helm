@@ -212,7 +212,7 @@ authentik:
 ## @param persistence.additionalMounts Additional mount paths for volumes.
 ##
 persistence:
-  enabled: true
+  enabled: false
   storageClass: ""
   size: 512Mi
   accessMode: ReadWriteMany
