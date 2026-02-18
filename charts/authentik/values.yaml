@@ -170,7 +170,7 @@ env:
 
 ## @section Authentik Configuration
 
-## @param authentik.secretKey Secret key used for cookie signing and unique user IDs. Generated if empty.
+## @param authentik.secretKey Secret key used for cookie signing and unique user IDs. Must be provided - never leave empty.
 ## @param authentik.errorReporting.enabled Enable anonymous error reporting to sentry.
 ## @param authentik.logLevel Log level (debug, info, warning, error, critical).
 ## @param authentik.email.host SMTP server hostname.
@@ -183,7 +183,7 @@ env:
 ## @param authentik.email.from Email from address.
 ##
 authentik:
-  # Secret key for cookie signing - leave empty to auto-generate
+  # Secret key for cookie signing - MUST be provided (never leave empty)
   secretKey: ""
   
   errorReporting:

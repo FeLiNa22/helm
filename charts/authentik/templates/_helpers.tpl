@@ -121,12 +121,11 @@ PostgreSQL secret name
 {{- end }}
 
 {{/*
-Authentik secret key - generate random if not provided
+Authentik secret key - must be provided
 */}}
 {{- define "authentik.secretKey" -}}
-{{- if .Values.authentik.secretKey }}
-{{- .Values.authentik.secretKey }}
-{{- else }}
-{{- randAlphaNum 50 }}
+{{- if not .Values.authentik.secretKey }}
+{{- fail "authentik.secretKey must be provided - it should never be empty or auto-generated" }}
 {{- end }}
+{{- .Values.authentik.secretKey }}
 {{- end }}

@@ -173,6 +173,29 @@ ingress:
         - authentik.example.com
 ```
 
+### Authentik Configuration
+
+#### Secret Key (Required)
+
+The `authentik.secretKey` is a required parameter used for cookie signing and unique user IDs. It must be provided and should never be left empty.
+
+**Important**: This secret key should be:
+- Generated once and stored securely
+- Never changed after initial deployment (will invalidate user sessions)
+- At least 50 characters long for security
+- Kept secret and not committed to version control
+
+Example generation using OpenSSL:
+```bash
+openssl rand -base64 60
+```
+
+Configuration:
+```yaml
+authentik:
+  secretKey: "your-generated-secret-key-here"  # REQUIRED - must be provided
+```
+
 ### Email Configuration
 
 ```yaml
