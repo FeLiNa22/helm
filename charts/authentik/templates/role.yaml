@@ -30,4 +30,8 @@ rules:
   - apiGroups: [""]
     resources: ["pods"]
     verbs: ["get", "list"]
+  # ServiceMonitors - Required for outpost monitoring configuration
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["servicemonitors"]
+    verbs: ["get", "list", "create", "update", "patch", "delete"]
 {{- end }}
