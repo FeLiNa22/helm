@@ -85,6 +85,15 @@ PostgreSQL host
 {{- end }}
 
 {{/*
+PostgreSQL read-only host (for read replicas)
+*/}}
+{{- define "authentik.postgresql.readHost" -}}
+{{- if eq .Values.postgres.mode "cluster" }}
+{{- printf "%s-%s-ro" .Release.Name .Values.postgres.cluster.name }}
+{{- end }}
+{{- end }}
+
+{{/*
 PostgreSQL port
 */}}
 {{- define "authentik.postgresql.port" -}}
