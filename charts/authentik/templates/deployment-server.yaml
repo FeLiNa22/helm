@@ -82,6 +82,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "authentik.postgresql.secretName" . }}
                   key: password
+            {{- if and (eq .Values.postgres.mode "cluster") .Values.postgres.cluster.readReplicas.enabled }}
+            - name: AUTHENTIK_POSTGRESQL__READ_REPLICAS__0__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "authentik.postgresql.secretName" . }}
+                  key: password
+            {{- end }}
           envFrom:
             - secretRef:
                 name: {{ include "authentik.fullname" . }}-config

@@ -244,6 +244,7 @@ persistence:
 ## @param postgres.standalone.resources Resource limits for standalone database.
 ## @param postgres.cluster.name Name of the CloudNativePG cluster.
 ## @param postgres.cluster.instances Number of instances in the cluster.
+## @param postgres.cluster.readReplicas.enabled Enable read replicas configuration for authentik (uses CNPG read-only service).
 ## @param postgres.cluster.persistence.enabled Enable persistence for cluster database.
 ## @param postgres.cluster.persistence.storageClass Storage class for cluster database PVC.
 ## @param postgres.cluster.persistence.size Size of the cluster database PVC.
@@ -317,6 +318,10 @@ postgres:
   cluster:
     name: authentik-db
     instances: 2
+    # Enable read replicas for load distribution
+    # When enabled, authentik will use the read-only service endpoint for read operations
+    readReplicas:
+      enabled: true
     image:
       repository: ghcr.io/cloudnative-pg/postgresql
       tag: "16"
