@@ -1,5 +1,6 @@
 {{- if and .Values.seerr.enabled .Values.seerr.ingress.enabled }}
 {{- $fullName := printf "%s-seerr" .Release.Name -}}
+{{- $svcName := "seerr" -}}
 {{- $svcPort := .Values.seerr.service.port -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -39,7 +40,7 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ $fullName }}
+                name: {{ $svcName }}
                 port:
                   number: {{ $svcPort }}
           {{- end }}

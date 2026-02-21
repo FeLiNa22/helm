@@ -1,0 +1,36 @@
+{{- if and .Values.dispatcharr.enabled .Values.dispatcharr.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-dispatcharr
+  labels:
+    app.kubernetes.io/name: dispatcharr
+    app.kubernetes.io/instance: {{ .Release.Name }}-dispatcharr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-dispatcharr
+  minReplicas: {{ .Values.dispatcharr.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.dispatcharr.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.dispatcharr.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.dispatcharr.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.dispatcharr.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.dispatcharr.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,61 @@
+{{- if .Values.dispatcharr.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: dispatcharr
+  labels:
+    app.kubernetes.io/name: dispatcharr
+    app.kubernetes.io/instance: {{ .Release.Name }}-dispatcharr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  type: {{ .Values.dispatcharr.service.type | default "ClusterIP" }}
+  ports:
+    # HTTP port (always enabled)
+    - port: {{ .Values.dispatcharr.service.http.port | default 6878 }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if (and (eq .Values.dispatcharr.service.type "NodePort") (not (empty .Values.dispatcharr.service.http.nodePort))) }}
+      nodePort: {{ .Values.dispatcharr.service.http.nodePort }}
+      {{- end }}
+    # UDP port (always enabled)
+    - port: {{ .Values.dispatcharr.service.udp.port | default 8621 }}
+      targetPort: udp
+      protocol: UDP
+      name: udp
+      {{- if (and (eq .Values.dispatcharr.service.type "NodePort") (not (empty .Values.dispatcharr.service.udp.nodePort))) }}
+      nodePort: {{ .Values.dispatcharr.service.udp.nodePort }}
+      {{- end }}
+    # Dispatcharr port (always enabled)
+    - port: {{ .Values.dispatcharr.service.dispatcharr.port | default 9191 }}
+      targetPort: dispatcharr
+      protocol: TCP
+      name: dispatcharr
+      {{- if (and (eq .Values.dispatcharr.service.type "NodePort") (not (empty .Values.dispatcharr.service.dispatcharr.nodePort))) }}
+      nodePort: {{ .Values.dispatcharr.service.dispatcharr.nodePort }}
+      {{- end }}
+    {{- if and .Values.dispatcharr.gluetun.enabled .Values.dispatcharr.gluetun.httpProxy.enabled }}
+    # Gluetun HTTP proxy port
+    - port: {{ .Values.dispatcharr.gluetun.httpProxy.port | default 8888 }}
+      targetPort: http-proxy
+      protocol: TCP
+      name: http-proxy
+    {{- end }}
+    {{- if and .Values.dispatcharr.gluetun.enabled .Values.dispatcharr.gluetun.shadowsocksProxy.enabled }}
+    # Gluetun Shadowsocks TCP port
+    - port: {{ .Values.dispatcharr.gluetun.shadowsocksProxy.port | default 8388 }}
+      targetPort: shadowsocks-tcp
+      protocol: TCP
+      name: shadowsocks-tcp
+    # Gluetun Shadowsocks UDP port
+    - port: {{ .Values.dispatcharr.gluetun.shadowsocksProxy.port | default 8388 }}
+      targetPort: shadowsocks-udp
+      protocol: UDP
+      name: shadowsocks-udp
+    {{- end }}
+  selector:
+    app.kubernetes.io/name: dispatcharr
+    app.kubernetes.io/instance: {{ .Release.Name }}-dispatcharr
+{{- end }}

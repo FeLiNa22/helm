@@ -1,0 +1,243 @@
+{{- if .Values.dispatcharr.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-dispatcharr
+  labels:
+    app.kubernetes.io/name: dispatcharr
+    app.kubernetes.io/instance: {{ .Release.Name }}-dispatcharr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  {{- if not .Values.dispatcharr.autoscaling.enabled }}
+  replicas: {{ .Values.dispatcharr.replicaCount }}
+  {{- end }}
+  strategy:
+    {{- .Values.dispatcharr.deployment.strategy | toYaml | nindent 4 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dispatcharr
+      app.kubernetes.io/instance: {{ .Release.Name }}-dispatcharr
+  template:
+    metadata:
+      annotations:
+       {{- if and $.Values.velero.enabled (or .Values.dispatcharr.persistence.enabled .Values.dispatcharr.persistence.backup.enabled) }}
+      annotations:
+        backup.velero.io/backup-volumes: {{ if .Values.dispatcharr.persistence.backup.enabled }}backup{{ else }}config{{ end }}
+      {{- end }}
+      {{- with .Values.dispatcharr.podAnnotations }}
+      {{- if not (and $.Values.velero.enabled (or $.Values.dispatcharr.persistence.enabled $.Values.dispatcharr.persistence.backup.enabled)) }}
+      annotations:
+      {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: dispatcharr
+        app.kubernetes.io/instance: {{ .Release.Name }}-dispatcharr
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    spec:
+      {{- with .Values.dispatcharr.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.dispatcharr.serviceAccount.name | default (printf "%s-dispatcharr" .Release.Name) }}
+      securityContext:
+        {{- toYaml .Values.dispatcharr.podSecurityContext | nindent 8 }}
+      {{- if .Values.dispatcharr.initContainers }}
+      initContainers:
+        {{- toYaml .Values.dispatcharr.initContainers | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          {{- if .Values.dispatcharr.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.dispatcharr.persistence.existingClaim | default (printf "%s-dispatcharr" .Release.Name) }}
+          {{- else }}
+          emptyDir: { }
+          {{- end }}
+        {{- if .Values.dispatcharr.persistence.backup.enabled }}
+        - name: backup
+          persistentVolumeClaim:
+            claimName: {{ .Values.dispatcharr.persistence.backup.existingClaim | default (printf "%s-dispatcharr-backup" .Release.Name) }}
+        {{- end }}
+        {{- if .Values.dispatcharr.persistence.additionalVolumes }}
+          {{- .Values.dispatcharr.persistence.additionalVolumes | toYaml | nindent 8}}
+        {{- end }}
+        {{- if and .Values.dispatcharr.gluetun.enabled .Values.dispatcharr.gluetun.portForwarding.enabled }}
+        - name: gluetun-shared
+          emptyDir: {}
+        {{- end }}
+      containers:
+      {{- if .Values.dispatcharr.gluetun.enabled }}
+        - name: gluetun
+          image: "{{ .Values.dispatcharr.gluetun.image.repository }}:{{ .Values.dispatcharr.gluetun.image.tag }}"
+          imagePullPolicy: {{ .Values.dispatcharr.gluetun.image.pullPolicy }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "(ip rule del table 51820; ip -6 rule del table 51820) || true"]
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          env:
+            {{- range $k,$v := .Values.dispatcharr.gluetun.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            - name: DNS_KEEP_NAMESERVER
+              value: "on"
+            - name: FIREWALL_OUTBOUND_SUBNETS
+              value: 10.43.0.0/16
+            - name: FIREWALL_INPUT_PORTS
+              value: "6878,8621,9191"
+            {{- if .Values.dispatcharr.gluetun.httpProxy.enabled }}
+            - name: HTTPPROXY
+              value: "on"
+            - name: HTTPPROXY_LISTENING_ADDRESS
+              value: ":{{ .Values.dispatcharr.gluetun.httpProxy.port | default 8888 }}"
+            {{- end }}
+            {{- if .Values.dispatcharr.gluetun.shadowsocksProxy.enabled }}
+            - name: SHADOWSOCKS
+              value: "on"
+            - name: SHADOWSOCKS_LISTENING_ADDRESS
+              value: ":{{ .Values.dispatcharr.gluetun.shadowsocksProxy.port | default 8388 }}"
+            {{- end }}
+            {{- if .Values.dispatcharr.gluetun.portForwarding.enabled }}
+            - name: VPN_PORT_FORWARDING
+              value: "on"
+            {{- if .Values.dispatcharr.gluetun.portForwarding.provider }}
+            - name: VPN_PORT_FORWARDING_PROVIDER
+              value: {{ .Values.dispatcharr.gluetun.portForwarding.provider | quote }}
+            {{- end }}
+            # Write the forwarded port to a shared volume so dispatcharr can use it with --port argument
+            - name: VPN_PORT_FORWARDING_UP_COMMAND
+              value: '/bin/sh -c "echo {{ "{{PORT}}" }} > /gluetun-shared/forwarded_port"'
+            {{- end }}
+          {{- if .Values.dispatcharr.gluetun.portForwarding.enabled }}
+          volumeMounts:
+            - name: gluetun-shared
+              mountPath: /gluetun-shared
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 6878
+              protocol: TCP
+            - name: udp
+              containerPort: 8621
+              protocol: UDP
+            - name: dispatcharr
+              containerPort: 9191
+              protocol: TCP
+            {{- if .Values.dispatcharr.gluetun.httpProxy.enabled }}
+            - name: http-proxy
+              containerPort: {{ .Values.dispatcharr.gluetun.httpProxy.port | default 8888 }}
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.dispatcharr.gluetun.shadowsocksProxy.enabled }}
+            - name: shadowsocks-tcp
+              containerPort: {{ .Values.dispatcharr.gluetun.shadowsocksProxy.port | default 8388 }}
+              protocol: TCP
+            - name: shadowsocks-udp
+              containerPort: {{ .Values.dispatcharr.gluetun.shadowsocksProxy.port | default 8388 }}
+              protocol: UDP
+            {{- end }}
+          resources:
+            {{- toYaml .Values.dispatcharr.gluetun.resources | nindent 12 }}
+      {{- end }}
+        - name: acestream-engine
+          securityContext:
+            {{- toYaml .Values.dispatcharr.securityContext | nindent 12 }}
+          image: "{{ .Values.dispatcharr.image.repository }}:{{ .Values.dispatcharr.image.tag }}"
+          imagePullPolicy: {{ .Values.dispatcharr.image.pullPolicy }}
+          {{- if and .Values.dispatcharr.gluetun.enabled .Values.dispatcharr.gluetun.portForwarding.enabled }}
+          # Override command to wait for forwarded port and start dispatcharr with --port argument
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Waiting for VPN forwarded port (timeout: 5 minutes)..."
+              TIMEOUT=150
+              COUNT=0
+              while [ ! -f /gluetun-shared/forwarded_port ]; do
+                sleep 2
+                COUNT=$((COUNT + 1))
+                if [ $COUNT -ge $TIMEOUT ]; then
+                  echo "Error: Timeout waiting for forwarded port file"
+                  exit 1
+                fi
+              done
+              PORT=$(cat /gluetun-shared/forwarded_port)
+              echo "Starting acestream engine with port $PORT"
+              exec /srv/ace/start-engine --client-console --bind-all --port "$PORT"
+          volumeMounts:
+            - name: gluetun-shared
+              mountPath: /gluetun-shared
+          {{- end }}
+        {{- if not .Values.dispatcharr.gluetun.enabled }}
+          ports:
+            - name: http
+              containerPort: 6878
+              protocol: TCP
+            - name: udp
+              containerPort: 8621
+              protocol: UDP
+        {{- end }}
+          {{- if .Values.dispatcharr.env }}
+          env:
+            {{- range $k,$v := .Values.dispatcharr.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.dispatcharr.resources | nindent 12 }}
+        - name: dispatcharr
+          securityContext:
+            {{- toYaml .Values.dispatcharr.securityContext | nindent 12 }}
+          image: "{{ .Values.dispatcharr.dispatcharr.image.repository }}:{{ .Values.dispatcharr.dispatcharr.image.tag }}"
+          imagePullPolicy: {{ .Values.dispatcharr.dispatcharr.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /data
+              name: config
+            {{- if .Values.dispatcharr.persistence.backup.enabled }}
+            - mountPath: /data/backups
+              name: backup
+            {{- end }}
+          {{- if .Values.dispatcharr.persistence.additionalMounts }}
+            {{- .Values.dispatcharr.persistence.additionalMounts | toYaml | nindent 12 }}
+          {{- end }}
+        {{- if not .Values.dispatcharr.gluetun.enabled }}
+          ports:
+            - name: dispatcharr
+              containerPort: 9191
+              protocol: TCP
+        {{- end }}
+          {{- if .Values.dispatcharr.dispatcharr.env }}
+          env:
+            {{- range $k,$v := .Values.dispatcharr.dispatcharr.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.dispatcharr.dispatcharr.resources | nindent 12 }}
+      {{- if .Values.dispatcharr.runtimeClassName }}
+      runtimeClassName: {{ .Values.dispatcharr.runtimeClassName | quote }}
+      {{- end }}
+      {{- with .Values.dispatcharr.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.dispatcharr.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.dispatcharr.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

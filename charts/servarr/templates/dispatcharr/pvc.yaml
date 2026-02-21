@@ -1,0 +1,45 @@
+{{- if and .Values.dispatcharr.enabled .Values.dispatcharr.persistence.enabled (not .Values.dispatcharr.persistence.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-dispatcharr
+  labels:
+    app.kubernetes.io/name: dispatcharr
+    app.kubernetes.io/instance: {{ .Release.Name }}-dispatcharr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+spec:
+  accessModes:
+    - {{ .Values.dispatcharr.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.dispatcharr.persistence.size }}
+  {{- if .Values.dispatcharr.persistence.storageClass }}
+  storageClassName: {{ .Values.dispatcharr.persistence.storageClass | quote }}
+  {{- end }}
+{{- end }}
+
+---
+{{- if and .Values.dispatcharr.enabled .Values.dispatcharr.persistence.backup.enabled (not .Values.dispatcharr.persistence.backup.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-dispatcharr-backup
+  labels:
+    app.kubernetes.io/name: dispatcharr
+    app.kubernetes.io/instance: {{ .Release.Name }}-dispatcharr
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/part-of: {{ .Release.Name | quote }}
+    app.kubernetes.io/pvc-type: backup
+spec:
+  accessModes:
+    - {{ .Values.dispatcharr.persistence.backup.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.dispatcharr.persistence.backup.size | quote }}
+  {{- if .Values.dispatcharr.persistence.backup.storageClass }}
+  storageClassName: {{ .Values.dispatcharr.persistence.backup.storageClass | quote }}
+  {{- end }}
+{{- end }}

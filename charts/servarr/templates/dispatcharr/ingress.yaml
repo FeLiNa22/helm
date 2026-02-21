@@ -1,25 +1,25 @@
-{{- if and .Values.acestream.enabled .Values.acestream.ingress.enabled }}
+{{- if and .Values.dispatcharr.enabled .Values.dispatcharr.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-acestream
+  name: {{ .Release.Name }}-dispatcharr
   labels:
-    app.kubernetes.io/name: acestream
-    app.kubernetes.io/instance: {{ .Release.Name }}-acestream
+    app.kubernetes.io/name: dispatcharr
+    app.kubernetes.io/instance: {{ .Release.Name }}-dispatcharr
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/part-of: {{ .Release.Name | quote }}
-  {{- with .Values.acestream.ingress.annotations }}
+  {{- with .Values.dispatcharr.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if .Values.acestream.ingress.className }}
-  ingressClassName: {{ .Values.acestream.ingress.className }}
+  {{- if .Values.dispatcharr.ingress.className }}
+  ingressClassName: {{ .Values.dispatcharr.ingress.className }}
   {{- end }}
-  {{- if .Values.acestream.ingress.tls }}
+  {{- if .Values.dispatcharr.ingress.tls }}
   tls:
-    {{- range .Values.acestream.ingress.tls }}
+    {{- range .Values.dispatcharr.ingress.tls }}
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
@@ -28,7 +28,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.acestream.ingress.hosts }}
+    {{- range .Values.dispatcharr.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
@@ -37,9 +37,9 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ $.Release.Name }}-acestream
+                name: dispatcharr
                 port:
-                  number: {{ $.Values.acestream.service.dispatcharr.port | default 9191 }}
+                  number: {{ $.Values.dispatcharr.service.dispatcharr.port | default 9191 }}
           {{- end }}
     {{- end }}
 {{- end }}

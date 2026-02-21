@@ -2803,98 +2803,98 @@ emby:
     additionalVolumes: []
     additionalMounts: []
 
-## @section Acestream parameters
+## @section Dispatcharr parameters
 
-## @param acestream.enabled Whether to enable Acestream Engine.
-## @param acestream.replicaCount The number of replicas to deploy.
-## @param acestream.image.repository The Docker repository to pull the Acestream Engine image from.
-## @param acestream.image.tag The image tag to use for Acestream Engine.
-## @param acestream.image.pullPolicy The logic of image pulling for Acestream Engine.
-## @param acestream.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
-## @param acestream.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
-## @param acestream.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
-## @param acestream.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
-## @param acestream.image.autoupdate.pullSecret Pull secret name for private registries.
-## @param acestream.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
-## @param acestream.imagePullSecrets The image pull secrets to use.
-## @param acestream.deployment.strategy.type The deployment strategy to use.
-## @param acestream.serviceAccount.create Whether to create a service account.
-## @param acestream.serviceAccount.annotations Additional annotations to add to the service account.
-## @param acestream.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
-## @param acestream.podAnnotations Additional annotations to add to the pod.
-## @param acestream.podSecurityContext.fsGroup The group ID to use for the pod.
-## @param acestream.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
-## @param acestream.securityContext.privileged Whether to run the acestream-engine container in privileged mode to allow multicast operations.
-## @param acestream.initContainers Additional init containers to add to the pod.
-## @param acestream.env Additional environment variables to add to the acestream engine container.
-## @param acestream.dispatcharr.image.repository The Docker repository to pull the Dispatcharr image from.
-## @param acestream.dispatcharr.image.tag The image tag to use for Dispatcharr.
-## @param acestream.dispatcharr.image.pullPolicy The logic of image pulling for Dispatcharr.
-## @param acestream.dispatcharr.env.PUID User ID for Dispatcharr process.
-## @param acestream.dispatcharr.env.PGID Group ID for Dispatcharr process.
-## @param acestream.dispatcharr.env.TZ Timezone for Dispatcharr.
-## @param acestream.dispatcharr.env.UMASK File creation mask for Dispatcharr.
-## @param acestream.dispatcharr.resources Resource limits and requests for the Dispatcharr container.
-## @param acestream.service.type The type of service to create (applies to all ports).
-## @param acestream.service.http.port The port on which the Acestream HTTP service will run.
-## @param acestream.service.http.nodePort The nodePort to use for the Acestream HTTP service. Only used if service.type is NodePort.
-## @param acestream.service.udp.port The port on which the Acestream UDP service will run.
-## @param acestream.service.udp.nodePort The nodePort to use for the Acestream UDP service. Only used if service.type is NodePort.
-## @param acestream.service.dispatcharr.port The port on which the Dispatcharr service will run.
-## @param acestream.service.dispatcharr.nodePort The nodePort to use for the Dispatcharr service. Only used if service.type is NodePort.
-## @param acestream.ingress.enabled Whether to create an ingress for the service.
-## @param acestream.ingress.className The ingress class name to use.
-## @param acestream.ingress.annotations Additional annotations to add to the ingress.
-## @param acestream.ingress.hosts[0].host The host to use for the ingress.
-## @param acestream.ingress.hosts[0].paths[0].path The path to use for the ingress.
-## @param acestream.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
-## @param acestream.ingress.tls The TLS configuration for the ingress.
-## @param acestream.resources The resources to use for the acestream engine container.
-## @param acestream.runtimeClassName The runtime class to use for the pod.
-## @param acestream.autoscaling.enabled Whether to enable autoscaling.
-## @param acestream.autoscaling.minReplicas The minimum number of replicas to scale to.
-## @param acestream.autoscaling.maxReplicas The maximum number of replicas to scale to.
-## @param acestream.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
-## @param acestream.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
-## @param acestream.nodeSelector The node selector to use for the pod.
-## @param acestream.tolerations The tolerations to use for the pod.
-## @param acestream.affinity The affinity to use for the pod.
-## @param acestream.persistence.enabled Whether to enable persistence.
-## @param acestream.persistence.storageClass The storage class to use for the persistence.
-## @param acestream.persistence.existingClaim The name of an existing claim to use for the persistence.
-## @param acestream.persistence.accessMode The access mode to use for the persistence.
-## @param acestream.persistence.size The size to use for the persistence.
-## @param acestream.persistence.backup.enabled Whether to enable backup persistence for Dispatcharr.
-## @param acestream.persistence.backup.storageClass The storage class to use for the backup persistence.
-## @param acestream.persistence.backup.existingClaim The name of an existing claim to use for the backup persistence.
-## @param acestream.persistence.backup.accessMode The access mode to use for the backup persistence.
-## @param acestream.persistence.backup.size The size to use for the backup persistence.
-## @param acestream.persistence.additionalVolumes Additional volumes to add to the pod.
-## @param acestream.persistence.additionalMounts Additional volume mounts to add to the pod.
-## @param acestream.gluetun.enabled Whether to enable Gluetun VPN sidecar for routing acestream traffic through a VPN.
-## @param acestream.gluetun.image.repository The Docker repository to pull the Gluetun image from.
-## @param acestream.gluetun.image.tag The image tag to use for Gluetun.
-## @param acestream.gluetun.image.pullPolicy The logic of image pulling for Gluetun.
-## @param acestream.gluetun.image.autoupdate.enabled Whether to enable autoupdate for the Gluetun image.
-## @param acestream.gluetun.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
-## @param acestream.gluetun.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
-## @param acestream.gluetun.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
-## @param acestream.gluetun.image.autoupdate.pullSecret Pull secret name for private registries.
-## @param acestream.gluetun.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
-## @param acestream.gluetun.env.VPN_SERVICE_PROVIDER The VPN service provider (e.g., nordvpn, expressvpn, mullvad, etc.).
-## @param acestream.gluetun.env.VPN_TYPE The type of VPN protocol to use (openvpn or wireguard).
-## @param acestream.gluetun.env.OPENVPN_USER Username for OpenVPN authentication (if using OpenVPN).
-## @param acestream.gluetun.env.OPENVPN_PASSWORD Password for OpenVPN authentication (if using OpenVPN).
-## @param acestream.gluetun.env.SERVER_REGIONS Region for server selection (e.g., for VPN providers that use regions instead of countries).
-## @param acestream.gluetun.httpProxy.enabled Whether to enable HTTP proxy server in Gluetun.
-## @param acestream.gluetun.httpProxy.port The port on which the HTTP proxy server will listen.
-## @param acestream.gluetun.shadowsocksProxy.enabled Whether to enable Shadowsocks proxy server in Gluetun.
-## @param acestream.gluetun.shadowsocksProxy.port The port on which the Shadowsocks proxy server will listen.
-## @param acestream.gluetun.portForwarding.enabled Whether to enable VPN port forwarding for acestream (starts acestream with --port set to the forwarded port).
-## @param acestream.gluetun.portForwarding.provider The VPN port forwarding provider (e.g., protonvpn, private internet access). Leave empty to use VPN_SERVICE_PROVIDER.
-## @param acestream.gluetun.resources Resource limits and requests for the Gluetun container.
+## @param dispatcharr.enabled Whether to enable Dispatcharr.
+## @param dispatcharr.replicaCount The number of replicas to deploy.
+## @param dispatcharr.image.repository The Docker repository to pull the Acestream Engine image from.
+## @param dispatcharr.image.tag The image tag to use for Acestream Engine.
+## @param dispatcharr.image.pullPolicy The logic of image pulling for Acestream Engine.
+## @param dispatcharr.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
+## @param dispatcharr.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param dispatcharr.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param dispatcharr.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param dispatcharr.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param dispatcharr.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
+## @param dispatcharr.imagePullSecrets The image pull secrets to use.
+## @param dispatcharr.deployment.strategy.type The deployment strategy to use.
+## @param dispatcharr.serviceAccount.create Whether to create a service account.
+## @param dispatcharr.serviceAccount.annotations Additional annotations to add to the service account.
+## @param dispatcharr.serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
+## @param dispatcharr.podAnnotations Additional annotations to add to the pod.
+## @param dispatcharr.podSecurityContext.fsGroup The group ID to use for the pod.
+## @param dispatcharr.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
+## @param dispatcharr.securityContext.privileged Whether to run the acestream-engine container in privileged mode to allow multicast operations.
+## @param dispatcharr.initContainers Additional init containers to add to the pod.
+## @param dispatcharr.env Additional environment variables to add to the acestream engine container.
+## @param dispatcharr.dispatcharr.image.repository The Docker repository to pull the Dispatcharr image from.
+## @param dispatcharr.dispatcharr.image.tag The image tag to use for Dispatcharr.
+## @param dispatcharr.dispatcharr.image.pullPolicy The logic of image pulling for Dispatcharr.
+## @param dispatcharr.dispatcharr.env.PUID User ID for Dispatcharr process.
+## @param dispatcharr.dispatcharr.env.PGID Group ID for Dispatcharr process.
+## @param dispatcharr.dispatcharr.env.TZ Timezone for Dispatcharr.
+## @param dispatcharr.dispatcharr.env.UMASK File creation mask for Dispatcharr.
+## @param dispatcharr.dispatcharr.resources Resource limits and requests for the Dispatcharr container.
+## @param dispatcharr.service.type The type of service to create (applies to all ports).
+## @param dispatcharr.service.http.port The port on which the Acestream HTTP service will run.
+## @param dispatcharr.service.http.nodePort The nodePort to use for the Acestream HTTP service. Only used if service.type is NodePort.
+## @param dispatcharr.service.udp.port The port on which the Acestream UDP service will run.
+## @param dispatcharr.service.udp.nodePort The nodePort to use for the Acestream UDP service. Only used if service.type is NodePort.
+## @param dispatcharr.service.dispatcharr.port The port on which the Dispatcharr service will run.
+## @param dispatcharr.service.dispatcharr.nodePort The nodePort to use for the Dispatcharr service. Only used if service.type is NodePort.
+## @param dispatcharr.ingress.enabled Whether to create an ingress for the service.
+## @param dispatcharr.ingress.className The ingress class name to use.
+## @param dispatcharr.ingress.annotations Additional annotations to add to the ingress.
+## @param dispatcharr.ingress.hosts[0].host The host to use for the ingress.
+## @param dispatcharr.ingress.hosts[0].paths[0].path The path to use for the ingress.
+## @param dispatcharr.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
+## @param dispatcharr.ingress.tls The TLS configuration for the ingress.
+## @param dispatcharr.resources The resources to use for the acestream engine container.
+## @param dispatcharr.runtimeClassName The runtime class to use for the pod.
+## @param dispatcharr.autoscaling.enabled Whether to enable autoscaling.
+## @param dispatcharr.autoscaling.minReplicas The minimum number of replicas to scale to.
+## @param dispatcharr.autoscaling.maxReplicas The maximum number of replicas to scale to.
+## @param dispatcharr.autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
+## @param dispatcharr.autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
+## @param dispatcharr.nodeSelector The node selector to use for the pod.
+## @param dispatcharr.tolerations The tolerations to use for the pod.
+## @param dispatcharr.affinity The affinity to use for the pod.
+## @param dispatcharr.persistence.enabled Whether to enable persistence.
+## @param dispatcharr.persistence.storageClass The storage class to use for the persistence.
+## @param dispatcharr.persistence.existingClaim The name of an existing claim to use for the persistence.
+## @param dispatcharr.persistence.accessMode The access mode to use for the persistence.
+## @param dispatcharr.persistence.size The size to use for the persistence.
+## @param dispatcharr.persistence.backup.enabled Whether to enable backup persistence for Dispatcharr.
+## @param dispatcharr.persistence.backup.storageClass The storage class to use for the backup persistence.
+## @param dispatcharr.persistence.backup.existingClaim The name of an existing claim to use for the backup persistence.
+## @param dispatcharr.persistence.backup.accessMode The access mode to use for the backup persistence.
+## @param dispatcharr.persistence.backup.size The size to use for the backup persistence.
+## @param dispatcharr.persistence.additionalVolumes Additional volumes to add to the pod.
+## @param dispatcharr.persistence.additionalMounts Additional volume mounts to add to the pod.
+## @param dispatcharr.gluetun.enabled Whether to enable Gluetun VPN sidecar for routing acestream traffic through a VPN.
+## @param dispatcharr.gluetun.image.repository The Docker repository to pull the Gluetun image from.
+## @param dispatcharr.gluetun.image.tag The image tag to use for Gluetun.
+## @param dispatcharr.gluetun.image.pullPolicy The logic of image pulling for Gluetun.
+## @param dispatcharr.gluetun.image.autoupdate.enabled Whether to enable autoupdate for the Gluetun image.
+## @param dispatcharr.gluetun.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param dispatcharr.gluetun.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param dispatcharr.gluetun.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param dispatcharr.gluetun.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param dispatcharr.gluetun.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
+## @param dispatcharr.gluetun.env.VPN_SERVICE_PROVIDER The VPN service provider (e.g., nordvpn, expressvpn, mullvad, etc.).
+## @param dispatcharr.gluetun.env.VPN_TYPE The type of VPN protocol to use (openvpn or wireguard).
+## @param dispatcharr.gluetun.env.OPENVPN_USER Username for OpenVPN authentication (if using OpenVPN).
+## @param dispatcharr.gluetun.env.OPENVPN_PASSWORD Password for OpenVPN authentication (if using OpenVPN).
+## @param dispatcharr.gluetun.env.SERVER_REGIONS Region for server selection (e.g., for VPN providers that use regions instead of countries).
+## @param dispatcharr.gluetun.httpProxy.enabled Whether to enable HTTP proxy server in Gluetun.
+## @param dispatcharr.gluetun.httpProxy.port The port on which the HTTP proxy server will listen.
+## @param dispatcharr.gluetun.shadowsocksProxy.enabled Whether to enable Shadowsocks proxy server in Gluetun.
+## @param dispatcharr.gluetun.shadowsocksProxy.port The port on which the Shadowsocks proxy server will listen.
+## @param dispatcharr.gluetun.portForwarding.enabled Whether to enable VPN port forwarding for acestream (starts acestream with --port set to the forwarded port).
+## @param dispatcharr.gluetun.portForwarding.provider The VPN port forwarding provider (e.g., protonvpn, private internet access). Leave empty to use VPN_SERVICE_PROVIDER.
+## @param dispatcharr.gluetun.resources Resource limits and requests for the Gluetun container.
 ##
-acestream:
+dispatcharr:
   enabled: false
   replicaCount: 1
 
