@@ -1,5 +1,6 @@
 {{- if and .Values.cleanuparr.enabled .Values.cleanuparr.ingress.enabled -}}
 {{- $fullName := printf "%s-cleanuparr" .Release.Name -}}
+{{- $svcName := "cleanuparr" -}}
 {{- $svcPort := .Values.cleanuparr.service.port -}}
 {{- if and .Values.cleanuparr.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.cleanuparr.ingress.annotations "kubernetes.io/ingress.class") }}
@@ -53,11 +54,11 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}
+                name: {{ $svcName }}
                 port:
                   number: {{ $svcPort }}
               {{- else }}
-              serviceName: {{ $fullName }}
+              serviceName: {{ $svcName }}
               servicePort: {{ $svcPort }}
               {{- end }}
           {{- end }}

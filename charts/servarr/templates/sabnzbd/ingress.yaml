@@ -1,5 +1,6 @@
 {{- if and .Values.sabnzbd.enabled .Values.sabnzbd.ingress.enabled -}}
 {{- $fullName := printf "%s-sabnzbd" .Release.Name -}}
+{{- $svcName := "sabnzbd" -}}
 {{- $svcPort := .Values.sabnzbd.service.port -}}
 {{- if and .Values.sabnzbd.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.sabnzbd.ingress.annotations "kubernetes.io/ingress.class") }}
@@ -53,11 +54,11 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}
+                name: {{ $svcName }}
                 port:
                   number: {{ $svcPort }}
               {{- else }}
-              serviceName: {{ $fullName }}
+              serviceName: {{ $svcName }}
               servicePort: {{ $svcPort }}
               {{- end }}
           {{- end }}

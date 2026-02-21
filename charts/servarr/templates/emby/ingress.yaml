@@ -1,5 +1,6 @@
 {{- if and .Values.emby.enabled .Values.emby.ingress.enabled -}}
 {{- $fullName := printf "%s-emby" .Release.Name -}}
+{{- $svcName := "emby" -}}
 {{- $svcPort := .Values.emby.service.port -}}
 {{- if and .Values.emby.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.emby.ingress.annotations "kubernetes.io/ingress.class") }}
@@ -53,11 +54,11 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}
+                name: {{ $svcName }}
                 port:
                   number: {{ $svcPort }}
               {{- else }}
-              serviceName: {{ $fullName }}
+              serviceName: {{ $svcName }}
               servicePort: {{ $svcPort }}
               {{- end }}
           {{- end }}

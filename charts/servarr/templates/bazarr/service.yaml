@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-bazarr
+  name: bazarr
   labels:
     app.kubernetes.io/name: bazarr
     app.kubernetes.io/instance: {{ .Release.Name }}-bazarr

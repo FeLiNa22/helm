@@ -1,5 +1,6 @@
 {{- if and .Values.lidarr.enabled .Values.lidarr.ingress.enabled }}
 {{- $fullName := printf "%s-lidarr" .Release.Name -}}
+{{- $svcName := "lidarr" -}}
 {{- $svcPort := .Values.lidarr.service.port -}}
 {{- if and .Values.lidarr.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.lidarr.ingress.annotations "kubernetes.io/ingress.class") }}
@@ -53,11 +54,11 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}
+                name: {{ $svcName }}
                 port:
                   number: {{ $svcPort }}
               {{- else }}
-              serviceName: {{ $fullName }}
+              serviceName: {{ $svcName }}
               servicePort: {{ $svcPort }}
               {{- end }}
           {{- end }}

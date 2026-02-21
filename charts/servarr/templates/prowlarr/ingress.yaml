@@ -1,5 +1,6 @@
 {{- if and .Values.prowlarr.enabled .Values.prowlarr.ingress.enabled }}
 {{- $fullName := printf "%s-prowlarr" .Release.Name -}}
+{{- $svcName := "prowlarr" -}}
 {{- $svcPort := .Values.prowlarr.service.port -}}
 {{- if and .Values.prowlarr.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.prowlarr.ingress.annotations "kubernetes.io/ingress.class") }}
@@ -53,11 +54,11 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}
+                name: {{ $svcName }}
                 port:
                   number: {{ $svcPort }}
               {{- else }}
-              serviceName: {{ $fullName }}
+              serviceName: {{ $svcName }}
               servicePort: {{ $svcPort }}
               {{- end }}
           {{- end }}

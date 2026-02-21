@@ -1,5 +1,6 @@
 {{- if and .Values.qbittorrent.enabled .Values.qbittorrent.ingress.enabled }}
 {{- $fullName := printf "%s-qbittorrent" .Release.Name -}}
+{{- $svcName := "qbittorrent" -}}
 {{- $svcPort := .Values.qbittorrent.service.web.port -}}
 {{- if and .Values.qbittorrent.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.qbittorrent.ingress.annotations "kubernetes.io/ingress.class") }}
@@ -53,11 +54,11 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}-web
+                name: {{ $svcName }}-web
                 port:
                   number: {{ $svcPort }}
               {{- else }}
-              serviceName: {{ $fullName }}-web
+              serviceName: {{ $svcName }}-web
               servicePort: {{ $svcPort }}
               {{- end }}
           {{- end }}

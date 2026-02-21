@@ -1,5 +1,5 @@
 {{- $anyAutoupdate := false }}
-{{- $services := list "jellyfin" "emby" "plex" "sonarr" "radarr" "lidarr" "prowlarr" "bazarr" "qbittorrent" "sabnzbd" "seerr" "huntarr" "cleanuparr" "flaresolverr" "acestream" }}
+{{- $services := list "jellyfin" "emby" "plex" "sonarr" "radarr" "lidarr" "prowlarr" "bazarr" "qbittorrent" "sabnzbd" "seerr" "huntarr" "cleanuparr" "flaresolverr" "dispatcharr" }}
 {{- range $service := $services }}
   {{- $serviceConfig := index $.Values $service }}
   {{- if and $serviceConfig.enabled $serviceConfig.image.autoupdate.enabled }}
@@ -9,7 +9,7 @@
 {{- if and .Values.qbittorrent.enabled .Values.qbittorrent.gluetun.enabled .Values.qbittorrent.gluetun.image.autoupdate.enabled }}
   {{- $anyAutoupdate = true }}
 {{- end }}
-{{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled .Values.acestream.gluetun.image.autoupdate.enabled }}
+{{- if and .Values.dispatcharr.enabled .Values.dispatcharr.gluetun.enabled .Values.dispatcharr.gluetun.image.autoupdate.enabled }}
   {{- $anyAutoupdate = true }}
 {{- end }}
 {{- if $anyAutoupdate }}
@@ -171,11 +171,11 @@ spec:
               name: "qbittorrent.gluetun.image.repository"
               tag: "qbittorrent.gluetun.image.tag"
         {{- end }}
-        {{- if and .Values.acestream.enabled .Values.acestream.gluetun.enabled .Values.acestream.gluetun.image.autoupdate.enabled }}
-        {{- $imageTag := .Values.acestream.gluetun.image.tag | toString }}
+        {{- if and .Values.dispatcharr.enabled .Values.dispatcharr.gluetun.enabled .Values.dispatcharr.gluetun.image.autoupdate.enabled }}
+        {{- $imageTag := .Values.dispatcharr.gluetun.image.tag | toString }}
         {{- $imageTag = regexReplaceAll "@[a-z0-9]+:[a-f0-9]+" $imageTag "" }}
-        {{- $updateStrategy := .Values.acestream.gluetun.image.autoupdate.strategy }}
-        {{- $imageName := .Values.acestream.gluetun.image.repository }}
+        {{- $updateStrategy := .Values.dispatcharr.gluetun.image.autoupdate.strategy }}
+        {{- $imageName := .Values.dispatcharr.gluetun.image.repository }}
         {{- if not $updateStrategy }}
           {{- $staticLabels := list "latest" "develop" "dev" "beta" "alpha" "stable" "edge" "nightly" "rc" "canary" }}
           {{- $isStaticLabel := false }}
@@ -186,7 +186,7 @@ spec:
           {{- end }}
           {{- if $isStaticLabel }}
             {{- $updateStrategy = "digest" }}
-            {{- $imageName = printf "%s:%s" .Values.acestream.gluetun.image.repository $imageTag }}
+            {{- $imageName = printf "%s:%s" .Values.dispatcharr.gluetun.image.repository $imageTag }}
           {{- else if regexMatch "^v?[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
             {{- $updateStrategy = "semver" }}
             {{- $cleanTag := regexReplaceAll "^v" $imageTag "" }}
@@ -194,58 +194,58 @@ spec:
             {{- $major := index $parts 0 }}
             {{- $minor := index $parts 1 }}
             {{- if hasPrefix "v" $imageTag }}
-              {{- $imageName = printf "%s:v%s.%s.x" .Values.acestream.gluetun.image.repository $major $minor }}
+              {{- $imageName = printf "%s:v%s.%s.x" .Values.dispatcharr.gluetun.image.repository $major $minor }}
             {{- else }}
-              {{- $imageName = printf "%s:%s.%s.x" .Values.acestream.gluetun.image.repository $major $minor }}
+              {{- $imageName = printf "%s:%s.%s.x" .Values.dispatcharr.gluetun.image.repository $major $minor }}
             {{- end }}
           {{- end }}
-        {{- else if and (eq $updateStrategy "semver") .Values.acestream.gluetun.image.tag }}
+        {{- else if and (eq $updateStrategy "semver") .Values.dispatcharr.gluetun.image.tag }}
           {{- if regexMatch "^v?[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
             {{- $cleanTag := regexReplaceAll "^v" $imageTag "" }}
             {{- $parts := regexSplit "\\." $cleanTag -1 }}
             {{- $major := index $parts 0 }}
             {{- $minor := index $parts 1 }}
             {{- if hasPrefix "v" $imageTag }}
-              {{- $imageName = printf "%s:v%s.%s.x" .Values.acestream.gluetun.image.repository $major $minor }}
+              {{- $imageName = printf "%s:v%s.%s.x" .Values.dispatcharr.gluetun.image.repository $major $minor }}
             {{- else }}
-              {{- $imageName = printf "%s:%s.%s.x" .Values.acestream.gluetun.image.repository $major $minor }}
+              {{- $imageName = printf "%s:%s.%s.x" .Values.dispatcharr.gluetun.image.repository $major $minor }}
             {{- end }}
           {{- else }}
-            {{- $imageName = printf "%s:%s" .Values.acestream.gluetun.image.repository $imageTag }}
+            {{- $imageName = printf "%s:%s" .Values.dispatcharr.gluetun.image.repository $imageTag }}
           {{- end }}
-        {{- else if .Values.acestream.gluetun.image.tag }}
-          {{- $imageName = printf "%s:%s" .Values.acestream.gluetun.image.repository $imageTag }}
+        {{- else if .Values.dispatcharr.gluetun.image.tag }}
+          {{- $imageName = printf "%s:%s" .Values.dispatcharr.gluetun.image.repository $imageTag }}
         {{- end }}
-        - alias: "acestream-gluetun"
+        - alias: "dispatcharr-gluetun"
           imageName: {{ $imageName }}
-          {{- if or $updateStrategy .Values.acestream.gluetun.image.autoupdate.allowTags .Values.acestream.gluetun.image.autoupdate.ignoreTags .Values.acestream.gluetun.image.autoupdate.pullSecret .Values.acestream.gluetun.image.autoupdate.platforms }}
+          {{- if or $updateStrategy .Values.dispatcharr.gluetun.image.autoupdate.allowTags .Values.dispatcharr.gluetun.image.autoupdate.ignoreTags .Values.dispatcharr.gluetun.image.autoupdate.pullSecret .Values.dispatcharr.gluetun.image.autoupdate.platforms }}
           commonUpdateSettings:
             {{- if $updateStrategy }}
             updateStrategy: {{ $updateStrategy }}
             {{- end }}
-            {{- if .Values.acestream.gluetun.image.autoupdate.allowTags }}
-            allowTags: {{ .Values.acestream.gluetun.image.autoupdate.allowTags | quote }}
+            {{- if .Values.dispatcharr.gluetun.image.autoupdate.allowTags }}
+            allowTags: {{ .Values.dispatcharr.gluetun.image.autoupdate.allowTags | quote }}
             {{- end }}
-            {{- if .Values.acestream.gluetun.image.autoupdate.ignoreTags }}
+            {{- if .Values.dispatcharr.gluetun.image.autoupdate.ignoreTags }}
             ignoreTags:
-              {{- if kindIs "string" .Values.acestream.gluetun.image.autoupdate.ignoreTags }}
-              - {{ .Values.acestream.gluetun.image.autoupdate.ignoreTags | quote }}
+              {{- if kindIs "string" .Values.dispatcharr.gluetun.image.autoupdate.ignoreTags }}
+              - {{ .Values.dispatcharr.gluetun.image.autoupdate.ignoreTags | quote }}
               {{- else }}
-              {{- toYaml .Values.acestream.gluetun.image.autoupdate.ignoreTags | nindent 14 }}
+              {{- toYaml .Values.dispatcharr.gluetun.image.autoupdate.ignoreTags | nindent 14 }}
               {{- end }}
             {{- end }}
-            {{- if .Values.acestream.gluetun.image.autoupdate.pullSecret }}
-            pullSecret: {{ .Values.acestream.gluetun.image.autoupdate.pullSecret | quote }}
+            {{- if .Values.dispatcharr.gluetun.image.autoupdate.pullSecret }}
+            pullSecret: {{ .Values.dispatcharr.gluetun.image.autoupdate.pullSecret | quote }}
             {{- end }}
-            {{- if .Values.acestream.gluetun.image.autoupdate.platforms }}
+            {{- if .Values.dispatcharr.gluetun.image.autoupdate.platforms }}
             platforms:
-              {{- toYaml .Values.acestream.gluetun.image.autoupdate.platforms | nindent 14 }}
+              {{- toYaml .Values.dispatcharr.gluetun.image.autoupdate.platforms | nindent 14 }}
             {{- end }}
           {{- end }}
           manifestTargets:
             helm:
-              name: "acestream.gluetun.image.repository"
-              tag: "acestream.gluetun.image.tag"
+              name: "dispatcharr.gluetun.image.repository"
+              tag: "dispatcharr.gluetun.image.tag"
         {{- end }}
   {{- if .Values.imageUpdater.writeBackConfig }}
   writeBackConfig:
