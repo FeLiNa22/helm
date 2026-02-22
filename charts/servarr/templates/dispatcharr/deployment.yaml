@@ -113,7 +113,7 @@ spec:
             - name: VPN_PORT_FORWARDING_PROVIDER
               value: {{ .Values.dispatcharr.gluetun.portForwarding.provider | quote }}
             {{- end }}
-            # Write the forwarded port to a shared volume so dispatcharr can use it with --port argument
+            # Write the forwarded port to a shared volume so the acestream engine can start with the correct port
             - name: VPN_PORT_FORWARDING_UP_COMMAND
               value: '/bin/sh -c "echo {{ "{{PORT}}" }} > /gluetun-shared/forwarded_port"'
             {{- end }}
@@ -148,13 +148,13 @@ spec:
           resources:
             {{- toYaml .Values.dispatcharr.gluetun.resources | nindent 12 }}
       {{- end }}
-        - name: acestream-engine
+        - name: dispatcharr
           securityContext:
             {{- toYaml .Values.dispatcharr.securityContext | nindent 12 }}
           image: "{{ .Values.dispatcharr.image.repository }}:{{ .Values.dispatcharr.image.tag }}"
           imagePullPolicy: {{ .Values.dispatcharr.image.pullPolicy }}
           {{- if and .Values.dispatcharr.gluetun.enabled .Values.dispatcharr.gluetun.portForwarding.enabled }}
-          # Override command to wait for forwarded port and start dispatcharr with --port argument
+          # Override command to wait for the VPN forwarded port and start acestream with it
           command:
             - /bin/sh
             - -c
@@ -162,16 +162,19 @@ spec:
               echo "Waiting for VPN forwarded port (timeout: 5 minutes)..."
               TIMEOUT=150
               COUNT=0
+              PORT=6878
               while [ ! -f /gluetun-shared/forwarded_port ]; do
                 sleep 2
                 COUNT=$((COUNT + 1))
                 if [ $COUNT -ge $TIMEOUT ]; then
-                  echo "Error: Timeout waiting for forwarded port file"
-                  exit 1
+                  echo "Warning: Timeout waiting for forwarded port, using default port $PORT"
+                  break
                 fi
               done
-              PORT=$(cat /gluetun-shared/forwarded_port)
-              echo "Starting acestream engine with port $PORT"
+              if [ -f /gluetun-shared/forwarded_port ]; then
+                PORT=$(cat /gluetun-shared/forwarded_port)
+              fi
+              echo "Starting acestream with port $PORT"
               exec /srv/ace/start-engine --client-console --bind-all --port "$PORT"
           volumeMounts:
             - name: gluetun-shared
@@ -195,7 +198,7 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.dispatcharr.resources | nindent 12 }}
-        - name: dispatcharr
+        - name: dispatcharr-ui
           securityContext:
             {{- toYaml .Values.dispatcharr.securityContext | nindent 12 }}
           image: "{{ .Values.dispatcharr.dispatcharr.image.repository }}:{{ .Values.dispatcharr.dispatcharr.image.tag }}"
