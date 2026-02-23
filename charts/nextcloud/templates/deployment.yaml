@@ -40,7 +40,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ .Values.serviceAccount.name | default (printf "%s-nextcloud" .Release.Name) }}
+      serviceAccountName: {{ .Values.serviceAccount.name | default .Release.Name }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if .Values.initContainers }}
@@ -87,7 +87,7 @@ spec:
             {{- if eq .Values.postgres.mode "standalone" }}
             # Standalone PostgreSQL mode
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-nextcloud-postgresql
+              value: {{ .Release.Name }}-postgresql
             - name: POSTGRES_DB
               value: {{ .Values.postgres.username }}
             - name: POSTGRES_USER
@@ -106,7 +106,7 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ printf "%s-nextcloud-db-app" .Release.Name }}
+                  name: {{ printf "%s-postgres-cluster-app" .Release.Name }}
                   key: username
             - name: POSTGRES_PASSWORD
               valueFrom:

@@ -27,7 +27,7 @@ Returns empty for standalone mode (SQLite), cluster service name, or external ho
 */}}
 {{- define "vaultwarden.postgresql.host" -}}
 {{- if eq .Values.postgres.mode "cluster" }}
-{{- printf "%s-vaultwarden-db-rw" .Release.Name }}
+{{- printf "%s-postgres-cluster-rw" .Release.Name }}
 {{- else if eq .Values.postgres.mode "external" }}
 {{- .Values.postgres.external.host }}
 {{- else }}
