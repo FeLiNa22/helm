@@ -2807,9 +2807,9 @@ emby:
 
 ## @param dispatcharr.enabled Whether to enable Dispatcharr.
 ## @param dispatcharr.replicaCount The number of replicas to deploy.
-## @param dispatcharr.image.repository The Docker repository to pull the Acestream Engine image from.
-## @param dispatcharr.image.tag The image tag to use for Acestream Engine.
-## @param dispatcharr.image.pullPolicy The logic of image pulling for Acestream Engine.
+## @param dispatcharr.image.repository The Docker repository to pull the Dispatcharr image from.
+## @param dispatcharr.image.tag The image tag to use for Dispatcharr.
+## @param dispatcharr.image.pullPolicy The logic of image pulling for Dispatcharr.
 ## @param dispatcharr.image.autoupdate.enabled Whether to enable autoupdate for this service's image.
 ## @param dispatcharr.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
 ## @param dispatcharr.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
@@ -2824,21 +2824,26 @@ emby:
 ## @param dispatcharr.podAnnotations Additional annotations to add to the pod.
 ## @param dispatcharr.podSecurityContext.fsGroup The group ID to use for the pod.
 ## @param dispatcharr.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
-## @param dispatcharr.securityContext.privileged Whether to run the acestream-engine container in privileged mode to allow multicast operations.
+## @param dispatcharr.securityContext Security context for the Dispatcharr container.
 ## @param dispatcharr.initContainers Additional init containers to add to the pod.
-## @param dispatcharr.env Additional environment variables to add to the acestream engine container.
-## @param dispatcharr.dispatcharr.image.repository The Docker repository to pull the Dispatcharr image from.
-## @param dispatcharr.dispatcharr.image.tag The image tag to use for Dispatcharr.
-## @param dispatcharr.dispatcharr.image.pullPolicy The logic of image pulling for Dispatcharr.
-## @param dispatcharr.dispatcharr.env.PUID User ID for Dispatcharr process.
-## @param dispatcharr.dispatcharr.env.PGID Group ID for Dispatcharr process.
-## @param dispatcharr.dispatcharr.env.TZ Timezone for Dispatcharr.
-## @param dispatcharr.dispatcharr.env.UMASK File creation mask for Dispatcharr.
-## @param dispatcharr.dispatcharr.resources Resource limits and requests for the Dispatcharr container.
+## @param dispatcharr.env Additional environment variables to add to the Dispatcharr container.
+## @param dispatcharr.acestream.enabled Whether to enable the Acestream Engine sidecar container.
+## @param dispatcharr.acestream.image.repository The Docker repository to pull the Acestream Engine image from.
+## @param dispatcharr.acestream.image.tag The image tag to use for Acestream Engine.
+## @param dispatcharr.acestream.image.pullPolicy The logic of image pulling for Acestream Engine.
+## @param dispatcharr.acestream.image.autoupdate.enabled Whether to enable autoupdate for the Acestream Engine image.
+## @param dispatcharr.acestream.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param dispatcharr.acestream.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param dispatcharr.acestream.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param dispatcharr.acestream.image.autoupdate.pullSecret Pull secret name for private registries.
+## @param dispatcharr.acestream.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
+## @param dispatcharr.acestream.securityContext.privileged Whether to run the acestream-engine container in privileged mode to allow multicast operations.
+## @param dispatcharr.acestream.env Additional environment variables to add to the acestream engine container.
+## @param dispatcharr.acestream.resources Resource limits and requests for the Acestream Engine container.
 ## @param dispatcharr.service.type The type of service to create (applies to all ports).
-## @param dispatcharr.service.http.port The port on which the Acestream HTTP service will run.
+## @param dispatcharr.service.http.port The port on which the Acestream HTTP service will run. Only used when acestream.enabled is true.
 ## @param dispatcharr.service.http.nodePort The nodePort to use for the Acestream HTTP service. Only used if service.type is NodePort.
-## @param dispatcharr.service.udp.port The port on which the Acestream UDP service will run.
+## @param dispatcharr.service.udp.port The port on which the Acestream UDP service will run. Only used when acestream.enabled is true.
 ## @param dispatcharr.service.udp.nodePort The nodePort to use for the Acestream UDP service. Only used if service.type is NodePort.
 ## @param dispatcharr.service.dispatcharr.port The port on which the Dispatcharr service will run.
 ## @param dispatcharr.service.dispatcharr.nodePort The nodePort to use for the Dispatcharr service. Only used if service.type is NodePort.
@@ -2849,7 +2854,7 @@ emby:
 ## @param dispatcharr.ingress.hosts[0].paths[0].path The path to use for the ingress.
 ## @param dispatcharr.ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
 ## @param dispatcharr.ingress.tls The TLS configuration for the ingress.
-## @param dispatcharr.resources The resources to use for the acestream engine container.
+## @param dispatcharr.resources Resource limits and requests for the Dispatcharr container.
 ## @param dispatcharr.runtimeClassName The runtime class to use for the pod.
 ## @param dispatcharr.autoscaling.enabled Whether to enable autoscaling.
 ## @param dispatcharr.autoscaling.minReplicas The minimum number of replicas to scale to.
@@ -2899,7 +2904,7 @@ dispatcharr:
   replicaCount: 1
 
   image:
-    repository: wafy80/acestream
+    repository: ghcr.io/dispatcharr/dispatcharr
     pullPolicy: IfNotPresent
     tag: "latest"
     autoupdate:
@@ -2927,29 +2932,45 @@ dispatcharr:
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
 
-  securityContext:
-      privileged: true
-
+  securityContext: {}
 
   initContainers: []
     # - name: init-container
     #   image: busybox
     #   command: ['sh', '-c', 'echo "this is an init container"']
 
-  env: {}
-    # TZ: "Europe/Madrid"
-    # MY_VAR: "value"
+  env:
+    PUID: "1000"
+    PGID: "1000"
+    TZ: "Europe/London"
+    UMASK: "002"
 
-  dispatcharr:
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  acestream:
+    enabled: true
     image:
-      repository: ghcr.io/dispatcharr/dispatcharr
+      repository: wafy80/acestream
       pullPolicy: IfNotPresent
       tag: "latest"
-    env: 
-      PUID: "1000"
-      PGID: "1000"
-      TZ: "Europe/London"
-      UMASK: "002"
+      autoupdate:
+        enabled: false
+        strategy: ""
+        allowTags: ""
+        ignoreTags: []
+        pullSecret: ""
+        platforms: []
+    securityContext:
+      privileged: true
+    env: {}
+      # TZ: "Europe/Madrid"
+      # MY_VAR: "value"
     resources: {}
       # limits:
       #   cpu: 100m
