@@ -2827,6 +2827,10 @@ emby:
 ## @param dispatcharr.securityContext Security context for the Dispatcharr container.
 ## @param dispatcharr.initContainers Additional init containers to add to the pod.
 ## @param dispatcharr.env Additional environment variables to add to the Dispatcharr container.
+## @param dispatcharr.env.PUID User ID for Dispatcharr process.
+## @param dispatcharr.env.PGID Group ID for Dispatcharr process.
+## @param dispatcharr.env.TZ Timezone for Dispatcharr.
+## @param dispatcharr.env.UMASK File creation mask for Dispatcharr.
 ## @param dispatcharr.acestream.enabled Whether to enable the Acestream Engine sidecar container.
 ## @param dispatcharr.acestream.image.repository The Docker repository to pull the Acestream Engine image from.
 ## @param dispatcharr.acestream.image.tag The image tag to use for Acestream Engine.
