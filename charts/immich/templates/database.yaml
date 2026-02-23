@@ -166,7 +166,7 @@ spec:
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-immich-db
+  name: {{ .Release.Name }}-postgres-cluster
   labels:
     {{- include "immich.labels" . | nindent 4 }}
     app.kubernetes.io/component: database

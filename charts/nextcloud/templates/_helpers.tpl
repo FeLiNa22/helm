@@ -15,7 +15,7 @@ PostgreSQL secret name
 PostgreSQL host
 */}}
 {{- define "nextcloud.postgresql.host" -}}
-{{- printf "%s-nextcloud-db-rw" .Release.Name }}
+{{- printf "%s-postgres-cluster-rw" .Release.Name }}
 {{- end }}
 
 {{/*

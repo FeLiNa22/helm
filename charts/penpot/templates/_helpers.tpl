@@ -57,7 +57,7 @@ PostgreSQL host
 {{- if eq .Values.postgres.mode "standalone" }}
 {{- printf "%s-postgresql" (include "penpot.fullname" .) }}
 {{- else if eq .Values.postgres.mode "cluster" }}
-{{- printf "%s-penpot-db-rw" .Release.Name }}
+{{- printf "%s-postgres-cluster-rw" .Release.Name }}
 {{- else }}
 {{- .Values.postgres.external.host }}
 {{- end }}

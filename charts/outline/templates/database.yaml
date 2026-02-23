@@ -25,7 +25,7 @@ stringData:
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-outline-db
+  name: {{ .Release.Name }}-postgres-cluster
   labels:
     {{- include "outline.labels" . | nindent 4 }}
     app.kubernetes.io/component: database

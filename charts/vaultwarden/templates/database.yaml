@@ -24,7 +24,7 @@ stringData:
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Release.Name }}-vaultwarden-db
+  name: {{ .Release.Name }}-postgres-cluster
   labels:
     app.kubernetes.io/name: vaultwarden
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
