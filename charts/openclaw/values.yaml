@@ -1,0 +1,175 @@
+## Default values for openclaw
+
+## @section Image parameters
+
+## @param image.repository The Docker repository to pull the image from.
+## @param image.tag The image tag to use.
+## @param image.pullPolicy The logic of image pulling.
+## @param image.autoupdate.enabled Enable automatic image updates via ArgoCD Image Updater.
+## @param image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param image.autoupdate.pullSecret Reference to secret for private registry authentication.
+## @param image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
+##
+image:
+  repository: ghcr.io/openclaw/openclaw
+  tag: "main"
+  pullPolicy: IfNotPresent
+  autoupdate:
+    enabled: false
+    strategy: ""
+    allowTags: ""
+    ignoreTags: []
+    pullSecret: ""
+    platforms: []
+
+## @section Deployment parameters
+
+## @param replicaCount The number of replicas to deploy.
+##
+replicaCount: 1
+
+## @param openclaw.port Port on which the OpenClaw gateway will listen.
+## @param openclaw.bridgePort Port for the OpenClaw bridge/WebSocket relay.
+## @param openclaw.bind Gateway bind mode. Use 'lan' for container/Kubernetes deployments.
+## @param openclaw.gatewayToken.secretName Existing secret name containing the gateway token (mutually exclusive with value).
+## @param openclaw.gatewayToken.value Direct gateway token value to create a secret (mutually exclusive with secretName).
+## @param openclaw.persistence.config.enabled Whether to enable persistence for OpenClaw config.
+## @param openclaw.persistence.config.storageClass The storage class to use for config persistence.
+## @param openclaw.persistence.config.size Size of the config persistence volume.
+## @param openclaw.persistence.config.existingClaim Use an existing PVC for config persistence.
+## @param openclaw.persistence.workspace.enabled Whether to enable persistence for the agent workspace.
+## @param openclaw.persistence.workspace.storageClass The storage class to use for workspace persistence.
+## @param openclaw.persistence.workspace.size Size of the workspace persistence volume.
+## @param openclaw.persistence.workspace.existingClaim Use an existing PVC for workspace persistence.
+## @param openclaw.resources Resource limits and requests for the OpenClaw container.
+## @param openclaw.nodeSelector Optional node selector for pod scheduling.
+## @param openclaw.tolerations Tolerations for pod scheduling.
+## @param openclaw.affinity Affinity rules for pod scheduling.
+##
+openclaw:
+  port: 18789
+  bridgePort: 18790
+  bind: "lan"
+
+  # Gateway authentication token
+  # You must provide EITHER secretName (to use existing secret) OR value (to create new secret)
+  gatewayToken:
+    secretName: ""  # Name of existing secret containing OPENCLAW_GATEWAY_TOKEN key
+    value: ""       # Direct token value (if secretName is empty, this must be provided)
+
+  persistence:
+    config:
+      enabled: true
+      storageClass: ""
+      size: 512Mi
+      existingClaim: ""
+    workspace:
+      enabled: true
+      storageClass: ""
+      size: 1Gi
+      existingClaim: ""
+
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 256Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+## @section Velero Backup Schedule parameters
+
+## @param velero.enabled Whether to enable Velero backup schedules
+## @param velero.namespace The namespace where Velero is deployed (Schedule CRD must be created in Velero namespace)
+## @param velero.schedule The cron schedule for Velero backups (e.g., "0 2 * * *" for 2am daily)
+## @param velero.ttl Time to live for backups (e.g., "720h" for 30 days)
+## @param velero.includeClusterResources Whether to include cluster-scoped resources in backup
+## @param velero.snapshotVolumes Whether to take volume snapshots
+## @param velero.defaultVolumesToFsBackup Whether to use file system backup for volumes by default
+## @param velero.storageLocation The storage location for backups (leave empty for default)
+## @param velero.volumeSnapshotLocations The volume snapshot locations (leave empty for default)
+## @param velero.labelSelector Additional label selector to filter resources (optional)
+## @param velero.annotations Additional annotations to add to the Velero Schedule resources
+velero:
+  enabled: false
+  namespace: "velero"
+  schedule: "0 2 * * *"
+  ttl: "168h"
+  includeClusterResources: false
+  snapshotVolumes: true
+  defaultVolumesToFsBackup: false
+  storageLocation: ""
+  volumeSnapshotLocations: []
+  labelSelector: {}
+  annotations: {}
+
+## @section Environment Variables
+
+## @param env Environment variables for OpenClaw (use map format: key: value).
+##
+env:
+  HOME: /home/node
+  TERM: xterm-256color
+  # CLAUDE_AI_SESSION_KEY: ""
+  # CLAUDE_WEB_SESSION_KEY: ""
+  # CLAUDE_WEB_COOKIE: ""
+
+## @section Service parameters
+
+## @param service.type The type of service to create.
+## @param service.port The port on which the service will run.
+##
+service:
+  type: ClusterIP
+  port: 80
+
+## @section Ingress parameters
+
+## @param ingress.enabled Whether to enable the ingress.
+## @param ingress.className The ingress class name to use.
+## @param ingress.annotations Annotations for the Ingress resource.
+## @param ingress.tls.enabled Enable TLS for the Ingress.
+## @param ingress.tls.hosts List of hosts for which the TLS certificate is valid.
+## @param ingress.hosts[0].host The host name that the Ingress will respond to.
+## @param ingress.hosts[0].paths[0].path URL path for the HTTP rule.
+## @param ingress.hosts[0].paths[0].pathType Type of path matching.
+##
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  tls:
+    enabled: false
+    hosts: []
+  hosts:
+    - host: openclaw.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+## @section ArgoCD Image Updater parameters
+
+## @param imageUpdater.namespace Namespace where the ImageUpdater CRD will be created.
+## @param imageUpdater.argocdNamespace Namespace where ArgoCD Applications are located.
+## @param imageUpdater.applicationName Name or pattern of the ArgoCD Application to update. Defaults to Release name.
+## @param imageUpdater.imageAlias Alias for the image in the ImageUpdater CRD. Defaults to Release name.
+## @param imageUpdater.forceUpdate Force update even if image is not currently deployed.
+## @param imageUpdater.helm Helm-specific configuration for parameter names (e.g., {name: "image.repository", tag: "image.tag"}).
+## @param imageUpdater.kustomize Kustomize-specific configuration (e.g., {name: "original/image"}).
+## @param imageUpdater.writeBackConfig Write-back configuration for GitOps.
+##
+imageUpdater:
+  namespace: argocd
+  argocdNamespace: argocd
+  applicationName: ""
+  imageAlias: ""
+  forceUpdate: false
+  helm: {}
+  kustomize: {}
+  writeBackConfig: {}
