@@ -317,6 +317,10 @@ postgres:
       accessMode: ReadWriteOnce
       existingClaim: ""
 
+  # Restore the latest pg_dump backup to the database (runs as a Helm pre-install/pre-upgrade hook)
+  restore:
+    enabled: false
+
 ## @section ArgoCD Image Updater parameters
 
 ## @param imageUpdater.namespace Namespace where the ImageUpdater CRD will be created.

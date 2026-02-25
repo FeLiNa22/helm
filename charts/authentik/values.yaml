@@ -358,6 +358,10 @@ postgres:
       accessMode: ReadWriteOnce
       existingClaim: ""
 
+  # Restore the latest pg_dump backup to the database (runs as a Helm pre-install/pre-upgrade hook)
+  restore:
+    enabled: false
+
 ## @section Velero Backup Configuration
 
 ## @param velero.enabled Enable Velero backup schedules.
