@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "openclaw.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "openclaw.labels" . | nindent 4 }}
+    service: openclaw
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "openclaw.selectorLabels" . | nindent 6 }}
+      service: openclaw
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- if and .Values.velero.enabled .Values.openclaw.persistence.config.enabled }}
+      annotations:
+        backup.velero.io/backup-volumes: openclaw-config
+      {{- end }}
+      labels:
+        {{- include "openclaw.selectorLabels" . | nindent 8 }}
+        service: openclaw
+    spec:
+      containers:
+        - name: openclaw
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - node
+          args:
+            - dist/index.js
+            - gateway
+            - --bind
+            - {{ .Values.openclaw.bind | quote }}
+            - --port
+            - {{ .Values.openclaw.port | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.openclaw.port }}
+              protocol: TCP
+            - name: bridge
+              containerPort: {{ .Values.openclaw.bridgePort }}
+              protocol: TCP
+          env:
+            - name: OPENCLAW_GATEWAY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openclaw.gatewayTokenSecretName" . }}
+                  key: OPENCLAW_GATEWAY_TOKEN
+            - name: HOME
+              value: /home/node
+            - name: TERM
+              value: xterm-256color
+          {{- if .Values.env }}
+          {{- range $k,$v := .Values.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.openclaw.resources }}
+          resources:
+            {{- toYaml .Values.openclaw.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: openclaw-config
+              mountPath: /home/node/.openclaw
+            {{- if .Values.openclaw.persistence.workspace.enabled }}
+            - name: openclaw-workspace
+              mountPath: /home/node/.openclaw/workspace
+            {{- end }}
+      restartPolicy: Always
+      volumes:
+        - name: openclaw-config
+          {{- if .Values.openclaw.persistence.config.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.openclaw.persistence.config.existingClaim | default (printf "%s-config" (include "openclaw.fullname" .)) }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        {{- if .Values.openclaw.persistence.workspace.enabled }}
+        - name: openclaw-workspace
+          persistentVolumeClaim:
+            claimName: {{ .Values.openclaw.persistence.workspace.existingClaim | default (printf "%s-workspace" (include "openclaw.fullname" .)) }}
+        {{- end }}
+      {{- with .Values.openclaw.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.openclaw.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.openclaw.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
