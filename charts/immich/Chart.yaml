@@ -2,7 +2,7 @@ apiVersion: v2
 name: immich
 description: A Helm chart for Immich - High performance self-hosted photo and video management solution
 type: application
-version: 1.6.9
+version: 1.6.10
 appVersion: "v2.4.1"
 keywords:
   - immich

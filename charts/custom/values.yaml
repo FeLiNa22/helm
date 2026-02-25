@@ -230,6 +230,7 @@ velero:
 ## @param postgres.backup.persistence.storageClass Storage class for backup volume.
 ## @param postgres.backup.persistence.accessMode Access mode for backup volume (default: ReadWriteOnce).
 ## @param postgres.backup.persistence.existingClaim Use existing PVC for backups.
+## @param postgres.restore.enabled Restore the latest pg_dump backup on pre-install/pre-upgrade (default: false).
 ##
 postgres:
   enabled: false
