@@ -37,6 +37,7 @@ spec:
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
+      activeDeadlineSeconds: 300
       template:
         metadata:
           labels:
@@ -56,7 +57,29 @@ spec:
               set -e
               BACKUP_FILE="/backups/vaultwarden-backup-$(date +%Y%m%d-%H%M%S).dump"
               echo "Starting backup to $BACKUP_FILE"
-              pg_dump -h {{ include "vaultwarden.postgresql.host" . }} \
+
+              # Check disk space and free up room by removing old backups if necessary
+              LAST_BACKUP=$(ls -t /backups/vaultwarden-backup-*.dump 2>/dev/null | head -1 || true)
+              if [ -n "${LAST_BACKUP}" ]; then
+                NEEDED_KB=$(du -k "${LAST_BACKUP}" | cut -f1)
+                NEEDED_KB=$((NEEDED_KB + NEEDED_KB / 10))
+              else
+                NEEDED_KB=102400
+              fi
+              AVAILABLE_KB=$(df -k /backups | awk 'NR==2 {print $4}')
+              echo "Disk space check: ${AVAILABLE_KB}KB available, ~${NEEDED_KB}KB needed"
+              while [ "${AVAILABLE_KB}" -lt "${NEEDED_KB}" ]; do
+                OLDEST=$(ls -t /backups/vaultwarden-backup-*.dump 2>/dev/null | tail -1 || true)
+                if [ -z "${OLDEST}" ]; then
+                  echo "WARNING: Not enough disk space (${AVAILABLE_KB}KB available, ~${NEEDED_KB}KB needed) and no old backups to remove. Proceeding anyway..."
+                  break
+                fi
+                echo "Not enough space. Removing oldest backup: ${OLDEST}"
+                rm -f "${OLDEST}"
+                AVAILABLE_KB=$(df -k /backups | awk 'NR==2 {print $4}')
+              done
+
+              timeout 300 pg_dump -h {{ include "vaultwarden.postgresql.host" . }} \
                       -p {{ include "vaultwarden.postgresql.port" . }} \
                       -U {{ include "vaultwarden.postgresql.username" . }} \
                       -d {{ include "vaultwarden.postgresql.database" . }} \
