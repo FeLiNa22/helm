@@ -40,11 +40,30 @@ spec:
         - |
           set -e
           BACKUP_DIR="/backups"
-          LATEST=$(ls -t "${BACKUP_DIR}"/backup-*.sql.gz 2>/dev/null | head -1)
+          {{- if .Values.postgres.restore.name }}
+          LATEST="${BACKUP_DIR}/{{ .Values.postgres.restore.name }}"
+          if [ ! -f "$LATEST" ]; then
+            echo "Specified backup not found: ${LATEST}"
+            exit 1
+          fi
+          if ! gzip -t "$LATEST" 2>/dev/null; then
+            echo "Specified backup is not a valid gzip file: ${LATEST}"
+            exit 1
+          fi
+          {{- else }}
+          LATEST=""
+          for CANDIDATE in $(ls -t "${BACKUP_DIR}"/backup-*.sql.gz 2>/dev/null); do
+            if gzip -t "${CANDIDATE}" 2>/dev/null; then
+              LATEST="${CANDIDATE}"
+              break
+            fi
+            echo "Skipping invalid backup: ${CANDIDATE}"
+          done
           if [ -z "$LATEST" ]; then
-            echo "No backup found in ${BACKUP_DIR}, skipping restore"
+            echo "No valid backup found in ${BACKUP_DIR}, skipping restore"
             exit 0
           fi
+          {{- end }}
           echo "Restoring from ${LATEST}"
           gunzip -c "${LATEST}" | PGPASSWORD="$DB_PASSWORD" psql \
             -h "$DB_HOST" \

@@ -269,6 +269,7 @@ persistence:
 ## @param postgres.backup.persistence.accessMode Access mode for backup PVC.
 ## @param postgres.backup.persistence.existingClaim Use an existing PVC for backups.
 ## @param postgres.restore.enabled Restore the latest pg_dump backup on pre-install/pre-upgrade (default: false).
+## @param postgres.restore.name Optional backup filename to restore (e.g. authentik_backup_20240101_120000.sql.gz). If empty, restores the latest valid backup.
 ##
 postgres:
   # Mode: 'standalone', 'cluster', or 'external'
@@ -362,6 +363,7 @@ postgres:
   # Restore the latest pg_dump backup to the database (runs as a Helm pre-install/pre-upgrade hook)
   restore:
     enabled: false
+    name: ""  # Optional: specific backup filename to restore (e.g. authentik_backup_20240101_120000.sql.gz)
 
 ## @section Velero Backup Configuration
 
