@@ -148,11 +148,12 @@ spec:
           resources:
             {{- toYaml .Values.dispatcharr.gluetun.resources | nindent 12 }}
       {{- end }}
+      {{- if .Values.dispatcharr.acestream.enabled }}
         - name: acestream-engine
           securityContext:
-            {{- toYaml .Values.dispatcharr.securityContext | nindent 12 }}
-          image: "{{ .Values.dispatcharr.image.repository }}:{{ .Values.dispatcharr.image.tag }}"
-          imagePullPolicy: {{ .Values.dispatcharr.image.pullPolicy }}
+            {{- toYaml .Values.dispatcharr.acestream.securityContext | nindent 12 }}
+          image: "{{ .Values.dispatcharr.acestream.image.repository }}:{{ .Values.dispatcharr.acestream.image.tag }}"
+          imagePullPolicy: {{ .Values.dispatcharr.acestream.image.pullPolicy }}
           {{- if and .Values.dispatcharr.gluetun.enabled .Values.dispatcharr.gluetun.portForwarding.enabled }}
           # Override command to wait for forwarded port and start dispatcharr with --port argument
           command:
@@ -186,20 +187,21 @@ spec:
               containerPort: 8621
               protocol: UDP
         {{- end }}
-          {{- if .Values.dispatcharr.env }}
+          {{- if .Values.dispatcharr.acestream.env }}
           env:
-            {{- range $k,$v := .Values.dispatcharr.env }}
+            {{- range $k,$v := .Values.dispatcharr.acestream.env }}
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
           {{- end }}
           resources:
-            {{- toYaml .Values.dispatcharr.resources | nindent 12 }}
+            {{- toYaml .Values.dispatcharr.acestream.resources | nindent 12 }}
+      {{- end }}
         - name: dispatcharr
           securityContext:
             {{- toYaml .Values.dispatcharr.securityContext | nindent 12 }}
-          image: "{{ .Values.dispatcharr.dispatcharr.image.repository }}:{{ .Values.dispatcharr.dispatcharr.image.tag }}"
-          imagePullPolicy: {{ .Values.dispatcharr.dispatcharr.image.pullPolicy }}
+          image: "{{ .Values.dispatcharr.image.repository }}:{{ .Values.dispatcharr.image.tag }}"
+          imagePullPolicy: {{ .Values.dispatcharr.image.pullPolicy }}
           volumeMounts:
             - mountPath: /data
               name: config
@@ -216,15 +218,15 @@ spec:
               containerPort: 9191
               protocol: TCP
         {{- end }}
-          {{- if .Values.dispatcharr.dispatcharr.env }}
+          {{- if .Values.dispatcharr.env }}
           env:
-            {{- range $k,$v := .Values.dispatcharr.dispatcharr.env }}
+            {{- range $k,$v := .Values.dispatcharr.env }}
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
           {{- end }}
           resources:
-            {{- toYaml .Values.dispatcharr.dispatcharr.resources | nindent 12 }}
+            {{- toYaml .Values.dispatcharr.resources | nindent 12 }}
       {{- if .Values.dispatcharr.runtimeClassName }}
       runtimeClassName: {{ .Values.dispatcharr.runtimeClassName | quote }}
       {{- end }}
