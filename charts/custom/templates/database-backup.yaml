@@ -64,10 +64,13 @@ spec:
             - /bin/sh
             - -c
             - |
-              set -e
-              BACKUP_FILE="/backups/backup-$(date +%Y%m%d-%H%M%S).sql.gz"
+              set -eo pipefail
+              TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+              BACKUP_FILE="/backups/backup-${TIMESTAMP}.sql.gz"
+              TEMP_FILE="${BACKUP_FILE}.tmp"
               echo "Starting backup to $BACKUP_FILE"
-              PGPASSWORD="$DB_PASSWORD" pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_DATABASE" | gzip > "$BACKUP_FILE"
+              PGPASSWORD="$DB_PASSWORD" pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_DATABASE" | gzip > "$TEMP_FILE"
+              mv "$TEMP_FILE" "$BACKUP_FILE"
               echo "Backup completed: $BACKUP_FILE"
               
               # Cleanup old backups
