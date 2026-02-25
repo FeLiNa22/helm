@@ -1,0 +1,76 @@
+{{- if and .Values.postgres.enabled .Values.postgres.restore.enabled .Values.postgres.backup.persistence.enabled }}
+{{- $fullName := include "custom.fullname" . -}}
+{{- $secretName := include "custom.postgresql.secretName" . -}}
+
+{{- $restoreImage := "" }}
+{{- if .Values.postgres.backup.image.repository }}
+{{- $restoreImage = printf "%s:%s" .Values.postgres.backup.image.repository (.Values.postgres.backup.image.tag | default "latest") }}
+{{- else if eq .Values.postgres.mode "standalone" }}
+{{- $restoreImage = printf "%s:%s" .Values.postgres.standalone.image.repository .Values.postgres.standalone.image.tag }}
+{{- else }}
+{{- $restoreImage = "postgres:16-alpine" }}
+{{- end }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $fullName }}-postgres-restore
+  labels:
+    {{- include "custom.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres-restore
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "custom.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: postgres-restore
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: restore
+        image: {{ $restoreImage }}
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          BACKUP_DIR="/backups"
+          LATEST=$(ls -t "${BACKUP_DIR}"/backup-*.sql.gz 2>/dev/null | head -1)
+          if [ -z "$LATEST" ]; then
+            echo "No backup found in ${BACKUP_DIR}, skipping restore"
+            exit 0
+          fi
+          echo "Restoring from ${LATEST}"
+          gunzip -c "${LATEST}" | PGPASSWORD="$DB_PASSWORD" psql \
+            -h "$DB_HOST" \
+            -p "$DB_PORT" \
+            -U "$DB_USER" \
+            -d "$DB_DATABASE"
+          echo "Restore completed successfully"
+        env:
+        - name: DB_HOST
+          value: {{ include "custom.postgresql.host" . }}
+        - name: DB_PORT
+          value: {{ include "custom.postgresql.port" . | quote }}
+        - name: DB_DATABASE
+          value: {{ include "custom.postgresql.database" . }}
+        - name: DB_USER
+          value: {{ include "custom.postgresql.username" . }}
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secretName }}
+              key: password
+        volumeMounts:
+        - name: backup
+          mountPath: /backups
+      volumes:
+      - name: backup
+        persistentVolumeClaim:
+          claimName: {{ .Values.postgres.backup.persistence.existingClaim | default (printf "%s-postgres-backup" $fullName) }}
+{{- end }}
