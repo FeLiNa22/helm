@@ -31,12 +31,13 @@ metadata:
 data:
   backup.sh: |
     #!/bin/bash
-    set -e
+    set -eo pipefail
 
     BACKUP_DIR="/backups"
     RETENTION={{ .Values.postgres.backup.retention | default 30 }}
     TIMESTAMP=$(date +%Y%m%d_%H%M%S)
     BACKUP_FILE="${BACKUP_DIR}/immich_backup_${TIMESTAMP}.sql.gz"
+    TEMP_FILE="${BACKUP_FILE}.tmp"
 
     echo "Starting database backup at $(date)"
     echo "Backup file: ${BACKUP_FILE}"
@@ -44,7 +45,7 @@ data:
     # Create backup directory if it doesn't exist
     mkdir -p "${BACKUP_DIR}"
 
-    # Perform the backup using pg_dump
+    # Perform the backup using pg_dump, writing to a temp file first for atomicity
     PGPASSWORD="${POSTGRES_PASSWORD}" pg_dump \
       -h "${POSTGRES_HOST}" \
       -p "${POSTGRES_PORT:-5432}" \
@@ -52,7 +53,8 @@ data:
       -d "${POSTGRES_DB}" \
       --no-owner \
       --no-acl \
-      | gzip > "${BACKUP_FILE}"
+      | gzip > "${TEMP_FILE}"
+    mv "${TEMP_FILE}" "${BACKUP_FILE}"
 
     # Verify backup was created
     if [ -f "${BACKUP_FILE}" ]; then

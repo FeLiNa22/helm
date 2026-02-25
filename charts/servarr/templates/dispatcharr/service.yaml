@@ -12,7 +12,8 @@ metadata:
 spec:
   type: {{ .Values.dispatcharr.service.type | default "ClusterIP" }}
   ports:
-    # HTTP port (always enabled)
+    {{- if .Values.dispatcharr.acestream.enabled }}
+    # HTTP port (acestream)
     - port: {{ .Values.dispatcharr.service.http.port | default 6878 }}
       targetPort: http
       protocol: TCP
@@ -20,7 +21,7 @@ spec:
       {{- if (and (eq .Values.dispatcharr.service.type "NodePort") (not (empty .Values.dispatcharr.service.http.nodePort))) }}
       nodePort: {{ .Values.dispatcharr.service.http.nodePort }}
       {{- end }}
-    # UDP port (always enabled)
+    # UDP port (acestream)
     - port: {{ .Values.dispatcharr.service.udp.port | default 8621 }}
       targetPort: udp
       protocol: UDP
@@ -28,6 +29,7 @@ spec:
       {{- if (and (eq .Values.dispatcharr.service.type "NodePort") (not (empty .Values.dispatcharr.service.udp.nodePort))) }}
       nodePort: {{ .Values.dispatcharr.service.udp.nodePort }}
       {{- end }}
+    {{- end }}
     # Dispatcharr port (always enabled)
     - port: {{ .Values.dispatcharr.service.dispatcharr.port | default 9191 }}
       targetPort: dispatcharr

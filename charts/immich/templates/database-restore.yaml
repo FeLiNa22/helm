@@ -1,0 +1,104 @@
+{{- if and .Values.postgres.restore.enabled .Values.postgres.backup.persistence.enabled }}
+{{- $fullName := include "immich.fullname" . -}}
+{{- $secretName := include "immich.postgresql.secretName" . -}}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $fullName }}-postgres-restore
+  labels:
+    {{- include "immich.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres-restore
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "immich.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: postgres-restore
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: restore
+        {{- if and .Values.postgres.backup.image.repository .Values.postgres.backup.image.tag }}
+        image: "{{ .Values.postgres.backup.image.repository }}:{{ .Values.postgres.backup.image.tag }}"
+        {{- else if eq .Values.postgres.mode "standalone" }}
+        image: "{{ .Values.postgres.standalone.image.repository }}:{{ .Values.postgres.standalone.image.tag }}"
+        {{- else }}
+        image: "postgres:16-alpine"
+        {{- end }}
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          BACKUP_DIR="/backups"
+          {{- if .Values.postgres.restore.name }}
+          LATEST="${BACKUP_DIR}/{{ .Values.postgres.restore.name }}"
+          if [ ! -f "$LATEST" ]; then
+            echo "Specified backup not found: ${LATEST}"
+            exit 1
+          fi
+          if ! gzip -t "$LATEST" 2>/dev/null; then
+            echo "Specified backup is not a valid gzip file: ${LATEST}"
+            exit 1
+          fi
+          {{- else }}
+          LATEST=""
+          for CANDIDATE in $(ls -t "${BACKUP_DIR}"/immich_backup_*.sql.gz 2>/dev/null); do
+            if gzip -t "${CANDIDATE}" 2>/dev/null; then
+              LATEST="${CANDIDATE}"
+              break
+            fi
+            echo "Skipping invalid backup: ${CANDIDATE}"
+          done
+          if [ -z "$LATEST" ]; then
+            echo "No valid backup found in ${BACKUP_DIR}, skipping restore"
+            exit 0
+          fi
+          {{- end }}
+          echo "Restoring from ${LATEST}"
+          gunzip -c "${LATEST}" | PGPASSWORD="${POSTGRES_PASSWORD}" psql \
+            -h "${POSTGRES_HOST}" \
+            -p "${POSTGRES_PORT}" \
+            -U "${POSTGRES_USER}" \
+            -d "${POSTGRES_DB}"
+          echo "Restore completed successfully"
+        env:
+        - name: POSTGRES_HOST
+          value: {{ include "immich.postgresql.host" . }}
+        - name: POSTGRES_PORT
+          value: {{ include "immich.postgresql.port" . | quote }}
+        - name: POSTGRES_USER
+          value: {{ include "immich.postgresql.username" . | quote }}
+        - name: POSTGRES_DB
+          value: {{ include "immich.postgresql.database" . | quote }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secretName }}
+              key: password
+        volumeMounts:
+        - name: backup-data
+          mountPath: /backups
+      volumes:
+      - name: backup-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.postgres.backup.persistence.existingClaim | default (printf "%s-postgres-backup" $fullName) }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

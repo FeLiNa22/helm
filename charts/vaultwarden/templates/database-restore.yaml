@@ -1,0 +1,61 @@
+{{- if and .Values.postgres.restore.enabled (or (eq .Values.postgres.mode "cluster") (eq .Values.postgres.mode "external")) .Values.postgres.backup.persistence.enabled }}
+{{- $fullName := include "vaultwarden.fullname" . -}}
+{{- $secretName := include "vaultwarden.postgresql.secretName" . -}}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $fullName }}-db-restore
+  labels:
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: database-restore
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vaultwarden
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        app.kubernetes.io/component: database-restore
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: restore
+        image: postgres:16-alpine
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          BACKUP_DIR="/backups"
+          LATEST=$(ls -t "${BACKUP_DIR}"/vaultwarden-backup-*.dump 2>/dev/null | head -1)
+          if [ -z "$LATEST" ]; then
+            echo "No backup found in ${BACKUP_DIR}, skipping restore"
+            exit 0
+          fi
+          echo "Restoring from ${LATEST}"
+          pg_restore -h {{ include "vaultwarden.postgresql.host" . }} \
+                     -p {{ include "vaultwarden.postgresql.port" . }} \
+                     -U {{ include "vaultwarden.postgresql.username" . }} \
+                     -d {{ include "vaultwarden.postgresql.database" . }} \
+                     -c --if-exists -F c "$LATEST"
+          echo "Restore completed successfully"
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secretName }}
+              key: password
+        volumeMounts:
+        - name: backup
+          mountPath: /backups
+      volumes:
+      - name: backup
+        persistentVolumeClaim:
+          claimName: {{ .Values.postgres.backup.persistence.existingClaim | default (printf "%s-db-backup" $fullName) }}
+{{- end }}
