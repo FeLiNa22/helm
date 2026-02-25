@@ -2826,7 +2826,6 @@ emby:
 ## @param dispatcharr.podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param dispatcharr.securityContext Security context for the Dispatcharr container.
 ## @param dispatcharr.initContainers Additional init containers to add to the pod.
-## @param dispatcharr.env Additional environment variables to add to the Dispatcharr container.
 ## @param dispatcharr.env.PUID User ID for Dispatcharr process.
 ## @param dispatcharr.env.PGID Group ID for Dispatcharr process.
 ## @param dispatcharr.env.TZ Timezone for Dispatcharr.
