@@ -45,6 +45,7 @@ spec:
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
+      activeDeadlineSeconds: 300
       template:
         metadata:
           {{- if and .Values.velero.enabled .Values.postgres.backup.persistence.enabled }}
@@ -69,7 +70,30 @@ spec:
               BACKUP_FILE="/backups/backup-${TIMESTAMP}.sql.gz"
               TEMP_FILE="${BACKUP_FILE}.tmp"
               echo "Starting backup to $BACKUP_FILE"
-              PGPASSWORD="$DB_PASSWORD" pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_DATABASE" | gzip > "$TEMP_FILE"
+
+              # Check disk space and free up room by removing old backups if necessary
+              LAST_BACKUP=$(ls -t /backups/backup-*.sql.gz 2>/dev/null | head -1 || true)
+              if [ -n "${LAST_BACKUP}" ]; then
+                NEEDED_KB=$(du -k "${LAST_BACKUP}" | cut -f1)
+                NEEDED_KB=$((NEEDED_KB + NEEDED_KB / 10))
+              else
+                NEEDED_KB=102400
+              fi
+              AVAILABLE_KB=$(df -k /backups | awk 'NR==2 {print $4}')
+              echo "Disk space check: ${AVAILABLE_KB}KB available, ~${NEEDED_KB}KB needed"
+              while [ "${AVAILABLE_KB}" -lt "${NEEDED_KB}" ]; do
+                BACKUP_COUNT=$(ls /backups/backup-*.sql.gz 2>/dev/null | wc -l)
+                OLDEST=$(ls -t /backups/backup-*.sql.gz 2>/dev/null | tail -1 || true)
+                if [ -z "${OLDEST}" ] || [ "${BACKUP_COUNT}" -le 2 ]; then
+                  echo "WARNING: Not enough disk space (${AVAILABLE_KB}KB available, ~${NEEDED_KB}KB needed) and cannot remove more backups (minimum 2 kept). Proceeding anyway..."
+                  break
+                fi
+                echo "Not enough space. Removing oldest backup: ${OLDEST}"
+                rm -f "${OLDEST}"
+                AVAILABLE_KB=$(df -k /backups | awk 'NR==2 {print $4}')
+              done
+
+              PGPASSWORD="$DB_PASSWORD" timeout 300 pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_DATABASE" | gzip > "$TEMP_FILE"
               mv "$TEMP_FILE" "$BACKUP_FILE"
               echo "Backup completed: $BACKUP_FILE"
               

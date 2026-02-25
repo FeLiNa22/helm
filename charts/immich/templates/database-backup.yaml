@@ -45,8 +45,30 @@ data:
     # Create backup directory if it doesn't exist
     mkdir -p "${BACKUP_DIR}"
 
+    # Check disk space and free up room by removing old backups if necessary
+    LAST_BACKUP=$(ls -t "${BACKUP_DIR}"/immich_backup_*.sql.gz 2>/dev/null | head -1 || true)
+    if [ -n "${LAST_BACKUP}" ]; then
+      NEEDED_KB=$(du -k "${LAST_BACKUP}" | cut -f1)
+      NEEDED_KB=$((NEEDED_KB + NEEDED_KB / 10))
+    else
+      NEEDED_KB=102400
+    fi
+    AVAILABLE_KB=$(df -k "${BACKUP_DIR}" | awk 'NR==2 {print $4}')
+    echo "Disk space check: ${AVAILABLE_KB}KB available, ~${NEEDED_KB}KB needed"
+    while [ "${AVAILABLE_KB}" -lt "${NEEDED_KB}" ]; do
+      BACKUP_COUNT=$(ls "${BACKUP_DIR}"/immich_backup_*.sql.gz 2>/dev/null | wc -l)
+      OLDEST=$(ls -t "${BACKUP_DIR}"/immich_backup_*.sql.gz 2>/dev/null | tail -1 || true)
+      if [ -z "${OLDEST}" ] || [ "${BACKUP_COUNT}" -le 2 ]; then
+        echo "WARNING: Not enough disk space (${AVAILABLE_KB}KB available, ~${NEEDED_KB}KB needed) and cannot remove more backups (minimum 2 kept). Proceeding anyway..."
+        break
+      fi
+      echo "Not enough space. Removing oldest backup: ${OLDEST}"
+      rm -f "${OLDEST}"
+      AVAILABLE_KB=$(df -k "${BACKUP_DIR}" | awk 'NR==2 {print $4}')
+    done
+
     # Perform the backup using pg_dump, writing to a temp file first for atomicity
-    PGPASSWORD="${POSTGRES_PASSWORD}" pg_dump \
+    PGPASSWORD="${POSTGRES_PASSWORD}" timeout 300 pg_dump \
       -h "${POSTGRES_HOST}" \
       -p "${POSTGRES_PORT:-5432}" \
       -U "${POSTGRES_USER}" \
@@ -90,6 +112,7 @@ spec:
   failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
+      activeDeadlineSeconds: 300
       template:
         metadata:
           {{- if and .Values.velero.enabled .Values.postgres.backup.persistence.enabled }}
