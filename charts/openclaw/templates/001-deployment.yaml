@@ -50,6 +50,10 @@ spec:
                 secretKeyRef:
                   name: {{ include "openclaw.gatewayTokenSecretName" . }}
                   key: OPENCLAW_GATEWAY_TOKEN
+            - name: HOME
+              value: /home/node
+            - name: TERM
+              value: xterm-256color
           {{- if .Values.env }}
           {{- range $k,$v := .Values.env }}
             - name: {{ $k }}

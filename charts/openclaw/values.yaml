@@ -113,9 +113,7 @@ velero:
 
 ## @param env Environment variables for OpenClaw (use map format: key: value).
 ##
-env:
-  HOME: /home/node
-  TERM: xterm-256color
+env: {}
   # CLAUDE_AI_SESSION_KEY: ""
   # CLAUDE_WEB_SESSION_KEY: ""
   # CLAUDE_WEB_COOKIE: ""

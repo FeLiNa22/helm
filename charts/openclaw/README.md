@@ -113,7 +113,7 @@ The command removes all the Kubernetes components associated with the chart and 
 
 | Name  | Description                                                | Value  |
 | ----- | ---------------------------------------------------------- | ------ |
-| `env` | Environment variables for OpenClaw (use map format: key: value). | `HOME: /home/node, TERM: xterm-256color` |
+| `env` | Environment variables for OpenClaw (use map format: key: value). | `{}`  |
 
 ### Service parameters
 
