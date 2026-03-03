@@ -2907,6 +2907,28 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/ntfy-1.1.1/ntfy-1.1.1.tgz
     version: 1.1.1
+  openclaw:
+  - apiVersion: v2
+    appVersion: 2026.2.22
+    created: "2026-03-03T10:51:15.807163403Z"
+    description: OpenClaw Personal AI Assistant Helm Chart
+    digest: f8aa7efc7593ca8034036e896cfb29b26d2c9869a04d805eb428b50545cae873
+    home: https://github.com/FeLiNa22/helm/tree/main/charts/openclaw
+    icon: https://openclaw.ai/favicon.ico
+    keywords:
+    - kubernetes
+    - openclaw
+    - ai
+    - assistant
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: openclaw
+    sources:
+    - https://github.com/openclaw/openclaw
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/openclaw-1.0.0/openclaw-1.0.0.tgz
+    version: 1.0.0
   outline:
   - apiVersion: v2
     appVersion: 0.87.4
@@ -5910,4 +5932,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-03-03T01:32:06.531343115Z"
+generated: "2026-03-03T10:51:15.807662946Z"
