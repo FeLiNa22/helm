@@ -106,7 +106,7 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ printf "%s-postgres-cluster-app" .Release.Name }}
+                  name: {{ include "nextcloud.postgresql.secretName" . }}
                   key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
