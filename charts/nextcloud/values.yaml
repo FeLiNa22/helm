@@ -39,6 +39,8 @@
 ## @param nodeSelector The node selector to use for the pod.
 ## @param tolerations The tolerations to use for the pod.
 ## @param affinity The affinity to use for the pod.
+## @param env.PUID The user ID to run the Nextcloud process as.
+## @param env.PGID The group ID to run the Nextcloud process as.
 ## @param env.NEXTCLOUD_ADMIN_USER The admin username.
 ## @param env.NEXTCLOUD_ADMIN_PASSWORD The admin password.
 ## @param env.NEXTCLOUD_TRUSTED_DOMAINS Trusted domains for Nextcloud.
@@ -83,8 +85,9 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+  fsGroup: 1000
+  fsGroupChangePolicy: OnRootMismatch
 
 securityContext: {}
   # capabilities:
@@ -142,6 +145,8 @@ tolerations: []
 affinity: {}
 
 env:
+  PUID: "1000"
+  PGID: "1000"
   NEXTCLOUD_ADMIN_USER: "admin"
   NEXTCLOUD_ADMIN_PASSWORD: "admin"
   NEXTCLOUD_TRUSTED_DOMAINS: "localhost"
