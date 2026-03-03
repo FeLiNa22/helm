@@ -1,0 +1,17 @@
+name: openclaw
+maintainers:
+  - name: raulpatel
+    url: https://raulpatel.com
+apiVersion: v2
+appVersion: "2026.2.22"
+version: 1.0.0
+description: OpenClaw Personal AI Assistant Helm Chart
+home: https://github.com/FeLiNa22/helm/tree/main/charts/openclaw
+icon: https://openclaw.ai/favicon.ico
+keywords:
+  - kubernetes
+  - openclaw
+  - ai
+  - assistant
+sources:
+  - https://github.com/openclaw/openclaw
