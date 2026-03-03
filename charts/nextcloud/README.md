@@ -175,7 +175,8 @@ ingress:
 | `serviceAccount.annotations`                    | Additional annotations to add to the service account.                                                                               | `{}`                          |
 | `serviceAccount.name`                           | The name of the service account to use. If not set and create is true, a new service account will be created with a generated name. | `""`                          |
 | `podAnnotations`                                | Additional annotations to add to the pod.                                                                                           | `{}`                          |
-| `podSecurityContext`                            | The security context to use for the pod.                                                                                            | `{}`                          |
+| `podSecurityContext.fsGroup`                    | The group ID to use for the pod.                                                                                                    | `33`                          |
+| `podSecurityContext.fsGroupChangePolicy`        | Policy for changing ownership and permissions of the volume.                                                                        | `OnRootMismatch`              |
 | `securityContext`                               | The security context to use for the container.                                                                                      | `{}`                          |
 | `initContainers`                                | Additional init containers to add to the pod.                                                                                       | `[]`                          |
 | `service.type`                                  | The type of service to create.                                                                                                      | `LoadBalancer`                |
@@ -200,6 +201,8 @@ ingress:
 | `env.NEXTCLOUD_ADMIN_USER`                      | The admin username.                                                                                                                 | `admin`                       |
 | `env.NEXTCLOUD_ADMIN_PASSWORD`                  | The admin password.                                                                                                                 | `admin`                       |
 | `env.NEXTCLOUD_TRUSTED_DOMAINS`                 | Trusted domains for Nextcloud.                                                                                                      | `localhost`                   |
+| `env.PUID`                                      | The user ID to use for the Nextcloud process (www-data).                                                                            | `33`                          |
+| `env.PGID`                                      | The group ID to use for the Nextcloud process (www-data).                                                                           | `33`                          |
 | `persistence.enabled`                           | Whether to enable persistence.                                                                                                      | `true`                        |
 | `persistence.storageClass`                      | The storage class to use for the persistence.                                                                                       | `ceph-rbd`                    |
 | `persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                          |
