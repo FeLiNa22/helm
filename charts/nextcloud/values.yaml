@@ -46,8 +46,6 @@
 ## @param env.NEXTCLOUD_ADMIN_USER The admin username.
 ## @param env.NEXTCLOUD_ADMIN_PASSWORD The admin password.
 ## @param env.NEXTCLOUD_TRUSTED_DOMAINS Trusted domains for Nextcloud.
-## @param env.PUID The user ID to use for the Nextcloud process (www-data).
-## @param env.PGID The group ID to use for the Nextcloud process (www-data).
 ## @param persistence.enabled Whether to enable persistence.
 ## @param persistence.storageClass The storage class to use for the persistence.
 ## @param persistence.existingClaim The name of an existing claim to use for the persistence.
@@ -155,8 +153,6 @@ env:
   NEXTCLOUD_ADMIN_USER: "admin"
   NEXTCLOUD_ADMIN_PASSWORD: "admin"
   NEXTCLOUD_TRUSTED_DOMAINS: "localhost"
-  PUID: "33"
-  PGID: "33"
   # Database and cache connection will be configured via secrets when enabled
   # Otherwise, configure these manually for external services
 
