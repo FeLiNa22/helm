@@ -1,11 +1,4 @@
-{{- if and .Values.velero.enabled (or .Values.persistence.enabled .Values.persistence.backup.enabled) }}
-{{- $pvcType := "" }}
-{{- if .Values.persistence.backup.enabled }}
-{{- $pvcType = "backup" }}
-{{- else if .Values.persistence.enabled }}
-{{- $pvcType = "config" }}
-{{- end }}
-{{- if $pvcType }}
+{{- if and .Values.velero.enabled .Values.persistence.enabled }}
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
@@ -50,6 +43,5 @@ spec:
         app.kubernetes.io/name: nextcloud
         app.kubernetes.io/instance: {{ .Release.Name | quote }}
         velero.io/backup-type: scheduled
-        velero.io/pvc-target: {{ $pvcType }}
-{{- end }}
+        velero.io/pvc-target: config
 {{- end }}
