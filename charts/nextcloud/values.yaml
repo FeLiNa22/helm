@@ -17,7 +17,7 @@
 ## @param serviceAccount.annotations Additional annotations to add to the service account.
 ## @param serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
 ## @param podAnnotations Additional annotations to add to the pod.
-## @param podSecurityContext.fsGroup The group ID to use for the pod.
+## @param podSecurityContext.fsGroup The group ID to use for the pod (33 = www-data, matches official Nextcloud image).
 ## @param podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
 ## @param securityContext The security context to use for the container.
 ## @param initContainers Additional init containers to add to the pod.
@@ -40,8 +40,6 @@
 ## @param nodeSelector The node selector to use for the pod.
 ## @param tolerations The tolerations to use for the pod.
 ## @param affinity The affinity to use for the pod.
-## @param env.PUID The user ID to run the Nextcloud process as.
-## @param env.PGID The group ID to run the Nextcloud process as.
 ## @param env.TZ The timezone to use for the pod.
 ## @param env.NEXTCLOUD_ADMIN_USER The admin username.
 ## @param env.NEXTCLOUD_ADMIN_PASSWORD The admin password.
@@ -51,11 +49,6 @@
 ## @param persistence.existingClaim The name of an existing claim to use for the persistence.
 ## @param persistence.accessMode The access mode to use for the persistence.
 ## @param persistence.size The size to use for the persistence.
-## @param persistence.backup.enabled Whether to enable backup persistence.
-## @param persistence.backup.storageClass The storage class to use for backup persistence.
-## @param persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
-## @param persistence.backup.accessMode The access mode to use for backup persistence.
-## @param persistence.backup.size The size to use for backup persistence.
 ## @param persistence.additionalVolumes Additional volumes to add to the pod.
 ## @param persistence.additionalMounts Additional volume mounts to add to the pod.
 ##
@@ -88,7 +81,7 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext:
-  fsGroup: 1000
+  fsGroup: 33
   fsGroupChangePolicy: OnRootMismatch
 
 securityContext: {}
@@ -147,8 +140,6 @@ tolerations: []
 affinity: {}
 
 env:
-  PUID: "1000"
-  PGID: "1000"
   TZ: "Europe/London"
   NEXTCLOUD_ADMIN_USER: "admin"
   NEXTCLOUD_ADMIN_PASSWORD: "admin"
@@ -345,12 +336,6 @@ persistence:
   existingClaim: ""
   accessMode: ReadWriteOnce
   size: 512Mi
-  backup:
-    enabled: true
-    storageClass: "cephfs"
-    existingClaim: ""
-    accessMode: ReadWriteMany
-    size: 512Mi
   additionalVolumes: []
   additionalMounts: []
 
