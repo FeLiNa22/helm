@@ -1,0 +1,39 @@
+{{- if and .Values.openclaw.persistence.config.enabled (not .Values.openclaw.persistence.config.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "openclaw.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "openclaw.labels" . | nindent 4 }}
+    app.kubernetes.io/pvc-type: config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.openclaw.persistence.config.storageClass }}
+  storageClassName: {{ .Values.openclaw.persistence.config.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.openclaw.persistence.config.size }}
+{{- end }}
+---
+{{- if and .Values.openclaw.persistence.workspace.enabled (not .Values.openclaw.persistence.workspace.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "openclaw.fullname" . }}-workspace
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "openclaw.labels" . | nindent 4 }}
+    app.kubernetes.io/pvc-type: workspace
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.openclaw.persistence.workspace.storageClass }}
+  storageClassName: {{ .Values.openclaw.persistence.workspace.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.openclaw.persistence.workspace.size }}
+{{- end }}
