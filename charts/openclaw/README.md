@@ -78,6 +78,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `openclaw.port`                                    | Port on which the OpenClaw gateway will listen.                                     | `18789`     |
 | `openclaw.bridgePort`                              | Port for the OpenClaw bridge/WebSocket relay.                                       | `18790`     |
 | `openclaw.bind`                                    | Gateway bind mode. Use 'lan' for container/Kubernetes deployments.                  | `lan`       |
+| `openclaw.gatewayMode`                             | Gateway mode written to openclaw.json. Must be 'local' for container/Kubernetes deployments. | `local` |
 | `openclaw.gatewayToken.secretName`                 | Existing secret name containing the gateway token (mutually exclusive with value).  | `""`        |
 | `openclaw.gatewayToken.value`                      | Direct gateway token value to create a secret (mutually exclusive with secretName). | `""`        |
 | `openclaw.persistence.config.enabled`              | Whether to enable persistence for OpenClaw config.                                  | `true`      |

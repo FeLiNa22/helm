@@ -67,6 +67,9 @@ spec:
           volumeMounts:
             - name: openclaw-config
               mountPath: /home/node/.openclaw
+            - name: openclaw-config-json
+              mountPath: /home/node/.openclaw/openclaw.json
+              subPath: openclaw.json
             {{- if .Values.openclaw.persistence.workspace.enabled }}
             - name: openclaw-workspace
               mountPath: /home/node/.openclaw/workspace
@@ -85,6 +88,9 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.openclaw.persistence.workspace.existingClaim | default (printf "%s-workspace" (include "openclaw.fullname" .)) }}
         {{- end }}
+        - name: openclaw-config-json
+          configMap:
+            name: {{ include "openclaw.fullname" . }}-config
       {{- with .Values.openclaw.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

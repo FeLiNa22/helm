@@ -33,6 +33,7 @@ replicaCount: 1
 ## @param openclaw.port Port on which the OpenClaw gateway will listen.
 ## @param openclaw.bridgePort Port for the OpenClaw bridge/WebSocket relay.
 ## @param openclaw.bind Gateway bind mode. Use 'lan' for container/Kubernetes deployments.
+## @param openclaw.gatewayMode Gateway mode written to openclaw.json. Must be 'local' for container/Kubernetes deployments.
 ## @param openclaw.gatewayToken.secretName Existing secret name containing the gateway token (mutually exclusive with value).
 ## @param openclaw.gatewayToken.secretKey Key within the existing secret that holds the gateway token (required when secretName is set).
 ## @param openclaw.gatewayToken.value Direct gateway token value to create a secret (mutually exclusive with secretName).
@@ -53,6 +54,7 @@ openclaw:
   port: 18789
   bridgePort: 18790
   bind: "lan"
+  gatewayMode: "local"
 
   # Gateway authentication token
   # You must provide EITHER (secretName + secretKey) to reference an existing secret,
