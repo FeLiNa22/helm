@@ -34,6 +34,7 @@ replicaCount: 1
 ## @param openclaw.bridgePort Port for the OpenClaw bridge/WebSocket relay.
 ## @param openclaw.bind Gateway bind mode. Use 'lan' for container/Kubernetes deployments.
 ## @param openclaw.gatewayToken.secretName Existing secret name containing the gateway token (mutually exclusive with value).
+## @param openclaw.gatewayToken.secretKey Key within the existing secret that holds the gateway token (required when secretName is set).
 ## @param openclaw.gatewayToken.value Direct gateway token value to create a secret (mutually exclusive with secretName).
 ## @param openclaw.persistence.config.enabled Whether to enable persistence for OpenClaw config.
 ## @param openclaw.persistence.config.storageClass The storage class to use for config persistence.
@@ -54,9 +55,11 @@ openclaw:
   bind: "lan"
 
   # Gateway authentication token
-  # You must provide EITHER secretName (to use existing secret) OR value (to create new secret)
+  # You must provide EITHER (secretName + secretKey) to reference an existing secret,
+  # OR value to create a new secret from a plaintext token.
   gatewayToken:
-    secretName: ""  # Name of existing secret containing OPENCLAW_GATEWAY_TOKEN key
+    secretName: ""  # Name of existing secret containing the gateway token
+    secretKey: "OPENCLAW_GATEWAY_TOKEN"  # Key within the existing secret (required when secretName is set)
     value: ""       # Direct token value (if secretName is empty, this must be provided)
 
   persistence:
