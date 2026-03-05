@@ -49,7 +49,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "openclaw.gatewayTokenSecretName" . }}
-                  key: OPENCLAW_GATEWAY_TOKEN
+                  key: {{ include "openclaw.gatewayTokenSecretKey" . }}
             - name: HOME
               value: /home/node
             - name: TERM

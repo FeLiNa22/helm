@@ -60,3 +60,10 @@ Gateway token secret name
 {{- printf "%s-gateway-secret" (include "openclaw.fullname" .) }}
 {{- end }}
 {{- end }}
+
+{{/*
+Gateway token secret key
+*/}}
+{{- define "openclaw.gatewayTokenSecretKey" -}}
+{{- .Values.openclaw.gatewayToken.secretKey }}
+{{- end }}
