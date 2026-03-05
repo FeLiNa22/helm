@@ -1188,6 +1188,27 @@ entries:
   home-assistant:
   - apiVersion: v2
     appVersion: 2024.11.3
+    created: "2026-03-05T00:35:46.06251277Z"
+    description: Home Assistant Helm Chart
+    digest: 516d7dca063abf9b2fcc22601bbf2968b3a1efc7d5f7957df6ed9527cb82afc4
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/home-assistant
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - home-assistant
+    - smart-home
+    - automation
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: home-assistant
+    sources:
+    - https://github.com/home-assistant/core
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/home-assistant-1.2.3/home-assistant-1.2.3.tgz
+    version: 1.2.3
+  - apiVersion: v2
+    appVersion: 2024.11.3
     created: "2026-02-04T22:09:35.027349787Z"
     description: Home Assistant Helm Chart
     digest: 7aeb72b5550dd872c0e9ea74ad61b1d1c41e70e9492a1eeea8ec78b51eeb2218
@@ -2041,6 +2062,27 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/immich-1.0.1/immich-1.0.1.tgz
     version: 1.0.1
   mealie:
+  - apiVersion: v2
+    appVersion: v2.2.0
+    created: "2026-03-05T00:35:46.258269064Z"
+    description: Mealie Helm Chart
+    digest: 047df8810978da4184a059345f472e3ce9ab3e560fb9bc02f69b707bcbd9520f
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/mealie
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - mealie
+    - recipes
+    - cookbook
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: mealie
+    sources:
+    - https://github.com/mealie-recipes/mealie
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/mealie-1.2.3/mealie-1.2.3.tgz
+    version: 1.2.3
   - apiVersion: v2
     appVersion: v2.2.0
     created: "2026-02-04T22:09:35.667772503Z"
@@ -3864,6 +3906,28 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/postgresql-ha-1.0.1/postgresql-ha-1.0.1.tgz
     version: 1.0.1
   searxng:
+  - apiVersion: v2
+    appVersion: 1.0.1
+    created: "2026-03-05T00:35:46.4487355Z"
+    description: Raul SearXNG Helm Chart
+    digest: da040a5fb31b93278bc54c6dc0133bbb44d924c36956b9c7a149b193145085da
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/searxng
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - searxng
+    - metasearch
+    - search
+    - privacy
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: searxng
+    sources:
+    - https://github.com/searxng/searxng
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/searxng-1.1.5/searxng-1.1.5.tgz
+    version: 1.1.5
   - apiVersion: v2
     appVersion: 1.0.1
     created: "2026-01-31T23:33:31.124474661Z"
@@ -5998,4 +6062,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-03-04T20:24:17.748542963Z"
+generated: "2026-03-05T00:35:46.449275538Z"
