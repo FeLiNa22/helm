@@ -37,6 +37,8 @@ spec:
             - {{ .Values.openclaw.bind | quote }}
             - --port
             - {{ .Values.openclaw.port | quote }}
+            - --gateway-token
+            - $(OPENCLAW_GATEWAY_TOKEN)
           ports:
             - name: http
               containerPort: {{ .Values.openclaw.port }}
