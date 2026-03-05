@@ -3,6 +3,31 @@ entries:
   authentik:
   - apiVersion: v2
     appVersion: 2025.12.4
+    created: "2026-03-05T01:06:09.744668347Z"
+    description: A Helm chart for authentik - an open-source Identity Provider focused
+      on flexibility and versatility
+    digest: c7450c765337e6ba95b481d20d21e22abf7907fad32e5ebd29bf49491f78bd1b
+    home: https://goauthentik.io
+    keywords:
+    - authentik
+    - authentication
+    - identity
+    - sso
+    - saml
+    - oauth
+    - oidc
+    - ldap
+    maintainers:
+    - name: FeLiNa22
+    name: authentik
+    sources:
+    - https://github.com/goauthentik/authentik
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/authentik-1.0.13/authentik-1.0.13.tgz
+    version: 1.0.13
+  - apiVersion: v2
+    appVersion: 2025.12.4
     created: "2026-02-25T22:00:27.479164061Z"
     description: A Helm chart for authentik - an open-source Identity Provider focused
       on flexibility and versatility
@@ -629,6 +654,24 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/crewai-1.0.0/crewai-1.0.0.tgz
     version: 1.0.0
   custom:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2026-03-05T01:06:09.953027328Z"
+    description: A Helm chart for deploying a generic Docker image with optional PostgreSQL
+      database
+    digest: 9d2373619aa91bf5b9088c6e8001ad2c7ef2059ff622455bc2d27217276262b3
+    keywords:
+    - custom
+    - docker
+    - postgres
+    - generic
+    maintainers:
+    - name: FeLiNa22
+    name: custom
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/custom-0.4.8/custom-0.4.8.tgz
+    version: 0.4.8
   - apiVersion: v2
     appVersion: latest
     created: "2026-02-25T22:00:27.613924549Z"
@@ -1511,6 +1554,28 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/homepage-1.0.0/homepage-1.0.0.tgz
     version: 1.0.0
   immich:
+  - apiVersion: v2
+    appVersion: v2.4.1
+    created: "2026-03-05T01:06:10.136824778Z"
+    description: A Helm chart for Immich - High performance self-hosted photo and
+      video management solution
+    digest: fe3771a5c0d83542ec740d704fca641ad68090bef3fdbf3df6cca98ace7588a4
+    home: https://immich.app
+    keywords:
+    - immich
+    - photos
+    - videos
+    - media
+    - self-hosted
+    maintainers:
+    - name: FeLiNa22
+    name: immich
+    sources:
+    - https://github.com/immich-app/immich
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/immich-1.6.11/immich-1.6.11.tgz
+    version: 1.6.11
   - apiVersion: v2
     appVersion: v2.4.1
     created: "2026-02-25T22:00:27.75325658Z"
@@ -5833,6 +5898,27 @@ entries:
   vaultwarden:
   - apiVersion: v2
     appVersion: 1.35.1
+    created: "2026-03-05T01:06:10.335958468Z"
+    description: Vaultwarden Helm Chart
+    digest: 0b1c5e49aba72283b91ab90de408021e7456ee040cf7d3401396b3aecb85c4df
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/vaultwarden
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - vaultwarden
+    - bitwarden
+    - password-manager
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: vaultwarden
+    sources:
+    - https://github.com/dani-garcia/vaultwarden
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.4.4/vaultwarden-1.4.4.tgz
+    version: 1.4.4
+  - apiVersion: v2
+    appVersion: 1.35.1
     created: "2026-02-25T20:51:15.645789341Z"
     description: Vaultwarden Helm Chart
     digest: 7c36229a0542539896feaab2d2c30acb99098730413f3dae2db1776c9bd2f9a0
@@ -6062,4 +6148,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-03-05T00:35:46.449275538Z"
+generated: "2026-03-05T01:06:10.336781124Z"
