@@ -3083,6 +3083,27 @@ entries:
   openclaw:
   - apiVersion: v2
     appVersion: 2026.2.22
+    created: "2026-03-07T18:03:12.929252559Z"
+    description: OpenClaw Personal AI Assistant Helm Chart
+    digest: d89dd28bd45cfa297b86f04c82b1074b30125d77b0b65b31561c66d927aff918
+    home: https://github.com/FeLiNa22/helm/tree/main/charts/openclaw
+    icon: https://openclaw.ai/favicon.ico
+    keywords:
+    - kubernetes
+    - openclaw
+    - ai
+    - assistant
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: openclaw
+    sources:
+    - https://github.com/openclaw/openclaw
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/openclaw-1.0.2/openclaw-1.0.2.tgz
+    version: 1.0.2
+  - apiVersion: v2
+    appVersion: 2026.2.22
     created: "2026-03-05T13:42:32.67627993Z"
     description: OpenClaw Personal AI Assistant Helm Chart
     digest: 8ad899734a71d968dc963736719d63bdeb9281bc5363eeb83f12e89260ebbd4f
@@ -6169,4 +6190,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-03-05T13:42:32.676780951Z"
+generated: "2026-03-07T18:03:12.930015692Z"
