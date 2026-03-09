@@ -1,0 +1,90 @@
+# -- Deployment mode: standalone | cluster | external
+mode: standalone
+
+# -- PostgreSQL username
+username: postgres
+
+# -- PostgreSQL database name
+database: postgres
+
+# -- SQL statements to run after database creation
+initSQL: []
+
+# -- Password configuration. Either password.value or password.secretName must be set.
+password:
+  # -- Name of an existing secret containing the password (key: "password")
+  secretName: ""
+  # -- Plain-text password (creates a Secret)
+  value: ""
+
+# -- Standalone PostgreSQL StatefulSet configuration
+standalone:
+  image:
+    repository: postgres
+    tag: "16-alpine"
+  resources: {}
+  persistence:
+    enabled: true
+    size: 512Mi
+    storageClass: ""
+    existingClaim: ""
+
+# -- CloudNativePG Cluster configuration
+cluster:
+  # -- Suffix appended to Release.Name to form the Cluster resource name
+  name: postgres-cluster
+  instances: 2
+  image:
+    repository: ghcr.io/cloudnative-pg/postgresql
+    tag: "16"
+  persistence:
+    size: 512Mi
+    storageClass: ""
+    existingClaim: ""
+  pitrBackup:
+    enabled: false
+    retentionPolicy: "30d"
+    objectStorage:
+      destinationPath: ""
+      endpointURL: ""
+      secretName: ""
+      region: ""
+
+# -- External database configuration
+external:
+  host: ""
+  port: 5432
+
+# -- pg_dump backup CronJob configuration
+backup:
+  enabled: false
+  # -- Application name used in backup filenames. Defaults to Release.Name when empty.
+  appName: ""
+  cron: "0 2 * * *"
+  retention: 30
+  # -- Maximum seconds allowed for pg_dump to complete
+  timeout: 300
+  image:
+    repository: ""
+    tag: ""
+  persistence:
+    enabled: true
+    size: 512Mi
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    existingClaim: ""
+
+# -- One-shot restore Job (Helm pre-install/pre-upgrade hook)
+restore:
+  enabled: false
+  # -- Specific backup filename to restore. When empty, uses the latest valid backup.
+  name: ""
+
+# -- Node selector applied to standalone StatefulSet, backup CronJob, and restore Job pods
+nodeSelector: {}
+
+# -- Tolerations applied to standalone StatefulSet, backup CronJob, and restore Job pods
+tolerations: []
+
+# -- Affinity rules applied to standalone StatefulSet, backup CronJob, and restore Job pods
+affinity: {}

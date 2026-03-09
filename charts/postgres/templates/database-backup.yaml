@@ -1,0 +1,180 @@
+{{- if .Values.backup.enabled }}
+{{- $secretName := include "postgres.secretName" . -}}
+{{- $appName := include "postgres.backupAppName" . -}}
+{{- if and .Values.backup.persistence.enabled (not .Values.backup.persistence.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-postgres-backup
+  labels:
+    {{- include "postgres.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres-backup
+spec:
+  accessModes:
+    - {{ .Values.backup.persistence.accessMode | default "ReadWriteOnce" }}
+  {{- if .Values.backup.persistence.storageClass }}
+  storageClassName: {{ .Values.backup.persistence.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.backup.persistence.size | default "512Mi" }}
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-postgres-backup-script
+  labels:
+    {{- include "postgres.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres-backup
+data:
+  backup.sh: |
+    #!/bin/bash
+    set -eo pipefail
+
+    BACKUP_DIR="/backups"
+    APP_NAME="{{ $appName }}"
+    RETENTION={{ .Values.backup.retention | default 30 }}
+    TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+    BACKUP_FILE="${BACKUP_DIR}/${APP_NAME}_backup_${TIMESTAMP}.sql.gz"
+    TEMP_FILE="${BACKUP_FILE}.tmp"
+
+    echo "Starting database backup at $(date)"
+    echo "Backup file: ${BACKUP_FILE}"
+
+    # Create backup directory if it doesn't exist
+    mkdir -p "${BACKUP_DIR}"
+
+    # Check disk space and free up room by removing old backups if necessary
+    LAST_BACKUP=$(ls -t "${BACKUP_DIR}"/${APP_NAME}_backup_*.sql.gz 2>/dev/null | head -1 || true)
+    if [ -n "${LAST_BACKUP}" ]; then
+      NEEDED_KB=$(du -k "${LAST_BACKUP}" | cut -f1)
+      NEEDED_KB=$((NEEDED_KB + NEEDED_KB / 10))
+    else
+      NEEDED_KB=102400
+    fi
+    AVAILABLE_KB=$(df -k "${BACKUP_DIR}" | awk 'NR==2 {print $4}')
+    echo "Disk space check: ${AVAILABLE_KB}KB available, ~${NEEDED_KB}KB needed"
+    while [ "${AVAILABLE_KB}" -lt "${NEEDED_KB}" ]; do
+      BACKUP_COUNT=$(ls "${BACKUP_DIR}"/${APP_NAME}_backup_*.sql.gz 2>/dev/null | wc -l)
+      OLDEST=$(ls -t "${BACKUP_DIR}"/${APP_NAME}_backup_*.sql.gz 2>/dev/null | tail -1 || true)
+      if [ -z "${OLDEST}" ] || [ "${BACKUP_COUNT}" -le 2 ]; then
+        echo "WARNING: Not enough disk space (${AVAILABLE_KB}KB available, ~${NEEDED_KB}KB needed) and cannot remove more backups (minimum 2 kept). Proceeding anyway..."
+        break
+      fi
+      echo "Not enough space. Removing oldest backup: ${OLDEST}"
+      rm -f "${OLDEST}"
+      AVAILABLE_KB=$(df -k "${BACKUP_DIR}" | awk 'NR==2 {print $4}')
+    done
+
+    # Perform the backup using pg_dump, writing to a temp file first for atomicity
+    PGPASSWORD="${POSTGRES_PASSWORD}" timeout {{ .Values.backup.timeout | default 300 }} pg_dump \
+      -h "${POSTGRES_HOST}" \
+      -p "${POSTGRES_PORT:-5432}" \
+      -U "${POSTGRES_USER}" \
+      -d "${POSTGRES_DB}" \
+      --no-owner \
+      --no-acl \
+      | gzip > "${TEMP_FILE}"
+    mv "${TEMP_FILE}" "${BACKUP_FILE}"
+
+    # Verify backup was created
+    if [ -f "${BACKUP_FILE}" ]; then
+      BACKUP_SIZE=$(du -h "${BACKUP_FILE}" | cut -f1)
+      echo "Backup completed successfully: ${BACKUP_FILE} (${BACKUP_SIZE})"
+    else
+      echo "ERROR: Backup file was not created!"
+      exit 1
+    fi
+
+    # Clean up old backups (keep only the last RETENTION backups)
+    echo "Cleaning up old backups (keeping last ${RETENTION})..."
+    cd "${BACKUP_DIR}"
+    ls -t ${APP_NAME}_backup_*.sql.gz 2>/dev/null | tail -n +$((RETENTION + 1)) | xargs -r rm -f
+
+    # List remaining backups
+    echo "Current backups:"
+    ls -lh "${BACKUP_DIR}"/${APP_NAME}_backup_*.sql.gz 2>/dev/null || echo "No backups found"
+
+    echo "Backup process completed at $(date)"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-postgres-backup
+  labels:
+    {{- include "postgres.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres-backup
+spec:
+  schedule: {{ .Values.backup.cron | default "0 2 * * *" | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 300
+      template:
+        metadata:
+          labels:
+            {{- include "postgres.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: postgres-backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            {{- if and .Values.backup.image.repository .Values.backup.image.tag }}
+            image: "{{ .Values.backup.image.repository }}:{{ .Values.backup.image.tag }}"
+            {{- else if eq .Values.mode "standalone" }}
+            image: "{{ .Values.standalone.image.repository }}:{{ .Values.standalone.image.tag }}"
+            {{- else }}
+            image: "postgres:16-alpine"
+            {{- end }}
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/bash
+            - /scripts/backup.sh
+            env:
+            - name: POSTGRES_HOST
+              value: {{ include "postgres.host" . }}
+            - name: POSTGRES_PORT
+              value: {{ include "postgres.port" . | quote }}
+            - name: POSTGRES_USER
+              value: {{ include "postgres.username" . | quote }}
+            - name: POSTGRES_DB
+              value: {{ include "postgres.database" . | quote }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: password
+            volumeMounts:
+            - name: backup-scripts
+              mountPath: /scripts
+            - name: backup-data
+              mountPath: /backups
+          volumes:
+          - name: backup-scripts
+            configMap:
+              name: {{ .Release.Name }}-postgres-backup-script
+              defaultMode: 0755
+          - name: backup-data
+            {{- if .Values.backup.persistence.enabled }}
+            persistentVolumeClaim:
+              claimName: {{ .Values.backup.persistence.existingClaim | default (printf "%s-postgres-backup" .Release.Name) }}
+            {{- else }}
+            emptyDir: {}
+            {{- end }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}
