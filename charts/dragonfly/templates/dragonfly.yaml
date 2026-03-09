@@ -140,11 +140,7 @@ kind: Dragonfly
 metadata:
   name: {{ .Release.Name }}-dragonfly-cluster
   labels:
-    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | quote }}
-    app.kubernetes.io/name: dragonfly
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    app.kubernetes.io/component: dragonfly-cluster
+    {{- include "dragonfly.clusterLabels" . | nindent 4 }}
 spec:
   args:
     - "--default_lua_flags=allow-undeclared-keys"

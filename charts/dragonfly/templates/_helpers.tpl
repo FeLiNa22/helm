@@ -59,6 +59,17 @@ app.kubernetes.io/component: dragonfly
 {{- end -}}
 
 {{/*
+Labels for the DragonflyDB cluster CR (component: dragonfly-cluster).
+*/}}
+{{- define "dragonfly.clusterLabels" -}}
+helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | quote }}
+app.kubernetes.io/name: dragonfly
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/component: dragonfly-cluster
+{{- end -}}
+
+{{/*
 Selector labels.
 */}}
 {{- define "dragonfly.selectorLabels" -}}
