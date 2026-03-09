@@ -76,7 +76,7 @@ PostgreSQL host
 */}}
 {{- define "authentik.postgresql.host" -}}
 {{- if eq .Values.postgres.mode "standalone" }}
-{{- printf "%s-postgresql" (include "authentik.fullname" .) }}
+{{- printf "%s-postgresql" .Release.Name }}
 {{- else if eq .Values.postgres.mode "cluster" }}
 {{- printf "%s-%s-rw" .Release.Name .Values.postgres.cluster.name }}
 {{- else }}

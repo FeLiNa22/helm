@@ -583,6 +583,7 @@ dragonfly:
 ## @param postgres.external.port Port of external PostgreSQL.
 ##
 postgres:
+  enabled: true
   mode: standalone
   initSQL: []
     # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"

@@ -175,6 +175,7 @@ env:
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ##
 dragonfly:
+  enabled: false
   # Mode options: 'standalone', 'cluster', 'external', or 'disabled'
   # Set to 'disabled' if you don't need Redis caching for Nextcloud
   mode: disabled
@@ -276,6 +277,7 @@ dragonfly:
 ## @param postgres.external.port Port of external PostgreSQL.
 ##
 postgres:
+  enabled: true
   # Mode options: 'standalone', 'cluster', or 'external'
   mode: cluster
   # SQL commands to initialize the database

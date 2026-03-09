@@ -171,6 +171,7 @@ env:
 # Database configuration using CloudNativePG
 # Note: Frigate only supports cluster mode (no standalone or external modes)
 postgres:
+  enabled: true
   mode: cluster  # Only cluster mode supported for Frigate
   initSQL: []
     # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
@@ -186,6 +187,7 @@ postgres:
 
   # CloudNativePG Cluster deployment
   cluster:
+    name: "frigate-db"
     persistence:
       enabled: true
       size: 512Mi

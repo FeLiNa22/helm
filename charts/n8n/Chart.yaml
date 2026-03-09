@@ -4,7 +4,7 @@ maintainers:
     url: https://raulpatel.com
 apiVersion: v2
 appVersion: latest
-version: 1.2.5
+version: 1.2.6
 description: n8n workflow automation Helm Chart
 home: https://github.com/FeLiNa22/helm/tree/main/charts/n8n
 icon: https://n8n.io/favicon.ico
@@ -15,3 +15,10 @@ keywords:
   - automation
 sources:
   - https://github.com/n8n-io/n8n
+
+dependencies:
+  - name: postgres
+    version: ">=1.0.0"
+    repository: "file://../postgres"
+    alias: postgres
+    condition: postgres.enabled

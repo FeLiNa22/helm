@@ -272,6 +272,7 @@ persistence:
 ## @param postgres.restore.name Optional backup filename to restore (e.g. authentik_backup_20240101_120000.sql.gz). If empty, restores the latest valid backup.
 ##
 postgres:
+  enabled: true
   # Mode: 'standalone', 'cluster', or 'external'
   mode: standalone
   

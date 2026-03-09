@@ -96,9 +96,9 @@ DragonflyDB/Redis host
 */}}
 {{- define "outline.dragonfly.host" -}}
 {{- if eq .Values.dragonfly.mode "standalone" }}
-{{- printf "%s-dragonfly" (include "outline.fullname" .) }}
+{{- printf "%s-dragonfly" .Release.Name }}
 {{- else if eq .Values.dragonfly.mode "cluster" }}
-{{- printf "%s-dragonfly-cluster" (include "outline.fullname" .) }}
+{{- printf "%s-dragonfly-cluster" .Release.Name }}
 {{- else if eq .Values.dragonfly.mode "external" }}
 {{- .Values.dragonfly.external.host }}
 {{- end }}

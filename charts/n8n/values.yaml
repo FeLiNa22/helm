@@ -181,6 +181,7 @@ ingress:
 ## @param postgres.external.port Port of external PostgreSQL.
 ##
 postgres:
+  enabled: true
   mode: standalone
   type: postgresdb
   initSQL: []

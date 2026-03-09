@@ -180,6 +180,7 @@ persistence:
 ## @param postgres.restore.enabled Restore the latest pg_dump backup on pre-install/pre-upgrade (default: false).
 ##
 postgres:
+  enabled: false
   # Mode options: 'standalone' (internal SQLite, no PostgreSQL deployed), 'cluster' (CNPG), or 'external'
   mode: standalone
 

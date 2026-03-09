@@ -243,6 +243,7 @@ velero:
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ##
 dragonfly:
+  enabled: true
   # Mode options: 'standalone', 'cluster', or 'external'
   mode: standalone
 
@@ -378,6 +379,7 @@ dragonfly:
 ## @param postgres.restore.name Optional backup filename to restore (e.g. immich_backup_20240101_120000.sql.gz). If empty, restores the latest valid backup.
 ##
 postgres:
+  enabled: true
   # Mode options: 'standalone', 'cluster', or 'external'
   mode: standalone
   # SQL commands to initialize extensions (vectorchord for Immich)

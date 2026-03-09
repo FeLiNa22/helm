@@ -4,7 +4,7 @@ maintainers:
     url: https://raulpatel.com
 apiVersion: v2
 appVersion: 32.0.3
-version: 1.4.13
+version: 1.4.14
 description: Nextcloud Helm Chart
 type: application
 home: https://github.com/FeLiNa22/homeserver/tree/main/charts/nextcloud
@@ -16,3 +16,15 @@ keywords:
   - storage
 sources:
   - https://github.com/nextcloud/server
+
+dependencies:
+  - name: postgres
+    version: ">=1.0.0"
+    repository: "file://../postgres"
+    alias: postgres
+    condition: postgres.enabled
+  - name: dragonfly
+    version: ">=1.0.0"
+    repository: "file://../dragonfly"
+    alias: dragonfly
+    condition: dragonfly.enabled

@@ -271,6 +271,7 @@ postgres:
       storageClass: ""
   # CloudNativePG Cluster deployment (using CNPG operator)
   cluster:
+    name: "custom-db"
     persistence:
       enabled: true
       size: 1Gi

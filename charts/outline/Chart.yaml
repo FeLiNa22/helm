@@ -4,7 +4,7 @@ maintainers:
     url: https://raulpatel.com
 apiVersion: v2
 appVersion: 0.87.4
-version: 1.5.7
+version: 1.5.8
 description: Raul Outline Wiki Helm Chart
 home: https://github.com/FeLiNa22/homeserver/tree/main/charts/outline
 icon: https://raulpatel.com/images/raul.svg
@@ -21,3 +21,13 @@ dependencies:
     name: minio
     repository: https://charts.bitnami.com/bitnami
     version: 12.x.x
+  - name: postgres
+    version: ">=1.0.0"
+    repository: "file://../postgres"
+    alias: postgres
+    condition: postgres.enabled
+  - name: dragonfly
+    version: ">=1.0.0"
+    repository: "file://../dragonfly"
+    alias: dragonfly
+    condition: dragonfly.enabled
