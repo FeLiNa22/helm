@@ -1,0 +1,186 @@
+{{- if or (eq .Values.mode "standalone") (eq .Values.mode "cluster") }}
+{{- if .Values.password.value }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "dragonfly.secretName" . }}
+  labels:
+    {{- include "dragonfly.labels" . | nindent 4 }}
+type: kubernetes.io/basic-auth
+stringData:
+  username: {{ include "dragonfly.username" . }}
+  password: {{ .Values.password.value }}
+{{- else if not .Values.password.secretName }}
+{{- fail "Either password.value or password.secretName must be provided" }}
+{{- end }}
+{{- end }}
+
+{{- if eq .Values.mode "standalone" }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-dragonfly
+  labels:
+    {{- include "dragonfly.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "dragonfly.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "dragonfly.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: dragonfly
+          image: "{{ .Values.standalone.image.repository }}:{{ .Values.standalone.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          command:
+            - "dragonfly"
+            - "--default_lua_flags=allow-undeclared-keys"
+            {{- if .Values.standalone.persistence.enabled }}
+            - "--dir=/data"
+            - "--dbfilename=dump.rdb"
+            {{- end }}
+            - "--requirepass=$(DRAGONFLY_PASSWORD)"
+          env:
+            - name: DRAGONFLY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "dragonfly.secretName" . }}
+                  key: {{ include "dragonfly.passwordKey" . }}
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          {{- if .Values.standalone.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- end }}
+          livenessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.standalone.resources | nindent 12 }}
+      {{- if .Values.standalone.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-dragonfly
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-dragonfly
+  labels:
+    {{- include "dragonfly.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: redis
+      protocol: TCP
+      name: redis
+  selector:
+    {{- include "dragonfly.selectorLabels" . | nindent 4 }}
+{{- if .Values.standalone.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-dragonfly
+  labels:
+    {{- include "dragonfly.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.standalone.persistence.accessMode | quote }}
+  {{- if .Values.standalone.persistence.storageClass }}
+  storageClassName: {{ .Values.standalone.persistence.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.standalone.persistence.size }}
+{{- end }}
+{{- end }}
+
+{{- if eq .Values.mode "cluster" }}
+---
+apiVersion: dragonflydb.io/v1alpha1
+kind: Dragonfly
+metadata:
+  name: {{ .Release.Name }}-dragonfly-cluster
+  labels:
+    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | quote }}
+    app.kubernetes.io/name: dragonfly
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/component: dragonfly-cluster
+spec:
+  args:
+    - "--default_lua_flags=allow-undeclared-keys"
+  authentication:
+    passwordFromSecret:
+      name: {{ include "dragonfly.secretName" . }}
+      key: {{ include "dragonfly.passwordKey" . }}
+  replicas: {{ .Values.cluster.replicas }}
+  image: "{{ .Values.cluster.image.repository }}:{{ .Values.cluster.image.tag }}"
+  {{- if .Values.cluster.resources }}
+  resources:
+    {{- toYaml .Values.cluster.resources | nindent 4 }}
+  {{- end }}
+  {{- if .Values.cluster.persistence.enabled }}
+  snapshot:
+    cron: {{ .Values.cluster.snapshot.cron | quote }}
+    persistentVolumeClaimSpec:
+      accessModes:
+        - {{ .Values.cluster.persistence.accessMode | quote }}
+      {{- if .Values.cluster.persistence.storageClass }}
+      storageClassName: {{ .Values.cluster.persistence.storageClass }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.cluster.persistence.size }}
+  {{- end }}
+  {{- with .Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.affinity }}
+  affinity:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

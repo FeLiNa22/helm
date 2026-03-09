@@ -1,0 +1,46 @@
+# Mode: standalone | cluster | external
+mode: standalone
+
+username: "default"
+
+password:
+  secretName: ""
+  secretKey: "password"
+  value: ""
+
+standalone:
+  image:
+    repository: docker.dragonflydb.io/dragonflydb/dragonfly
+    tag: "v1.36.0"
+  resources:
+    limits:
+      memory: 512Mi
+  persistence:
+    enabled: true
+    size: 512Mi
+    storageClass: ""
+    accessMode: ReadWriteOnce
+
+cluster:
+  replicas: 2
+  image:
+    repository: docker.dragonflydb.io/dragonflydb/dragonfly
+    tag: "v1.36.0"
+  resources:
+    limits:
+      memory: 512Mi
+  persistence:
+    enabled: true
+    size: 512Mi
+    storageClass: ""
+    accessMode: ReadWriteOnce
+  snapshot:
+    cron: "*/5 * * * *"
+
+external:
+  host: ""
+  port: 6379
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
