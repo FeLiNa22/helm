@@ -78,6 +78,7 @@ backup:
 restore:
   enabled: false
   # -- Specific backup filename to restore. When empty, uses the latest valid backup.
+  # Format: {appName}_backup_YYYYMMDD_HHMMSS.sql.gz (e.g. myapp_backup_20240101_120000.sql.gz)
   name: ""
 
 # -- Node selector applied to standalone StatefulSet, backup CronJob, and restore Job pods

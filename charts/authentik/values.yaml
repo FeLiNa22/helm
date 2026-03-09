@@ -349,6 +349,7 @@ postgres:
   # Database backups (pg_dump)
   backup:
     enabled: false
+    appName: "authentik"  # Prefix for backup filenames (e.g. authentik_backup_YYYYMMDD.sql.gz)
     cron: "0 2 * * *"
     retention: 30
     image:

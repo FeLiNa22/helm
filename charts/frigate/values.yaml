@@ -187,6 +187,8 @@ postgres:
 
   # CloudNativePG Cluster deployment
   cluster:
+    # CNPG cluster name suffix: the full cluster name is {release}-{name}
+    # Using "frigate-db" preserves the original cluster name for existing deployments
     name: "frigate-db"
     persistence:
       enabled: true

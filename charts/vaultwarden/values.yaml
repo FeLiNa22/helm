@@ -180,6 +180,8 @@ persistence:
 ## @param postgres.restore.enabled Restore the latest pg_dump backup on pre-install/pre-upgrade (default: false).
 ##
 postgres:
+  # Vaultwarden defaults to SQLite (no PostgreSQL needed). Set enabled: true to deploy PostgreSQL.
+  # Use cluster or external mode for production deployments.
   enabled: false
   # Mode options: 'standalone' (internal SQLite, no PostgreSQL deployed), 'cluster' (CNPG), or 'external'
   mode: standalone
@@ -242,6 +244,7 @@ postgres:
   # Scheduled database backups using pg_dump (works for cluster and external modes only)
   backup:
     enabled: false
+    appName: "vaultwarden"  # Prefix for backup filenames (e.g. vaultwarden_backup_YYYYMMDD.sql.gz)
     cron: "0 2 * * *"  # Daily at 2am
     retention: 30  # Number of backups to retain
     persistence:

@@ -42,6 +42,7 @@ spec:
           imagePullPolicy: IfNotPresent
           command:
             - "dragonfly"
+            # allow-undeclared-keys enables Redis Lua scripts that use undeclared keys (required by some clients)
             - "--default_lua_flags=allow-undeclared-keys"
             {{- if .Values.standalone.persistence.enabled }}
             - "--dir=/data"
@@ -143,6 +144,7 @@ metadata:
     {{- include "dragonfly.clusterLabels" . | nindent 4 }}
 spec:
   args:
+    # allow-undeclared-keys enables Redis Lua scripts that use undeclared keys (required by some clients)
     - "--default_lua_flags=allow-undeclared-keys"
   authentication:
     passwordFromSecret:
