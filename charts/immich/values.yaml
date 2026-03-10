@@ -218,6 +218,7 @@ velero:
 ## @section DragonflyDB parameters
 ## DragonflyDB is a Redis-compatible in-memory data store used for Immich's job queue and caching
 
+## @param dragonfly.enabled Enable the dragonfly subchart.
 ## @param dragonfly.mode The mode of DragonflyDB deployment: 'standalone', 'cluster', or 'external'.
 ## @param dragonfly.username Username for DragonflyDB authentication (default: "default").
 ## @param dragonfly.password.secretName Name of existing secret containing the password (mutually exclusive with value).
@@ -306,6 +307,7 @@ dragonfly:
 ## @section Database parameters
 ## PostgreSQL with vectorchord extension is required for Immich
 
+## @param postgres.enabled Enable the postgres subchart.
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.username Username for the database.

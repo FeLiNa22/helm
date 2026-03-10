@@ -175,7 +175,7 @@ ingress:
 | `serviceAccount.annotations`                    | Additional annotations to add to the service account.                                                                               | `{}`                          |
 | `serviceAccount.name`                           | The name of the service account to use. If not set and create is true, a new service account will be created with a generated name. | `""`                          |
 | `podAnnotations`                                | Additional annotations to add to the pod.                                                                                           | `{}`                          |
-| `podSecurityContext.fsGroup`                    | The group ID to use for the pod.                                                                                                    | `33`                          |
+| `podSecurityContext.fsGroup`                    | The group ID to use for the pod (33 = www-data, matches official Nextcloud image).                                                  | `33`                          |
 | `podSecurityContext.fsGroupChangePolicy`        | Policy for changing ownership and permissions of the volume.                                                                        | `OnRootMismatch`              |
 | `securityContext`                               | The security context to use for the container.                                                                                      | `{}`                          |
 | `initContainers`                                | Additional init containers to add to the pod.                                                                                       | `[]`                          |
@@ -198,21 +198,15 @@ ingress:
 | `nodeSelector`                                  | The node selector to use for the pod.                                                                                               | `{}`                          |
 | `tolerations`                                   | The tolerations to use for the pod.                                                                                                 | `[]`                          |
 | `affinity`                                      | The affinity to use for the pod.                                                                                                    | `{}`                          |
+| `env.TZ`                                        | The timezone to use for the pod.                                                                                                    | `Europe/London`               |
 | `env.NEXTCLOUD_ADMIN_USER`                      | The admin username.                                                                                                                 | `admin`                       |
 | `env.NEXTCLOUD_ADMIN_PASSWORD`                  | The admin password.                                                                                                                 | `admin`                       |
 | `env.NEXTCLOUD_TRUSTED_DOMAINS`                 | Trusted domains for Nextcloud.                                                                                                      | `localhost`                   |
-| `env.PUID`                                      | The user ID to use for the Nextcloud process (www-data).                                                                            | `33`                          |
-| `env.PGID`                                      | The group ID to use for the Nextcloud process (www-data).                                                                           | `33`                          |
 | `persistence.enabled`                           | Whether to enable persistence.                                                                                                      | `true`                        |
 | `persistence.storageClass`                      | The storage class to use for the persistence.                                                                                       | `ceph-rbd`                    |
 | `persistence.existingClaim`                     | The name of an existing claim to use for the persistence.                                                                           | `""`                          |
 | `persistence.accessMode`                        | The access mode to use for the persistence.                                                                                         | `ReadWriteOnce`               |
 | `persistence.size`                              | The size to use for the persistence.                                                                                                | `512Mi`                       |
-| `persistence.backup.enabled`                    | Whether to enable backup persistence.                                                                                               | `true`                        |
-| `persistence.backup.storageClass`               | The storage class to use for backup persistence.                                                                                    | `cephfs`                      |
-| `persistence.backup.existingClaim`              | The name of an existing claim to use for backup persistence.                                                                        | `""`                          |
-| `persistence.backup.accessMode`                 | The access mode to use for backup persistence.                                                                                      | `ReadWriteMany`               |
-| `persistence.backup.size`                       | The size to use for backup persistence.                                                                                             | `512Mi`                       |
 | `persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                          |
 | `persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                          |
 
@@ -220,6 +214,7 @@ ingress:
 
 | Name                                                  | Description                                                                             | Value                                         |
 | ----------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `dragonfly.enabled`                                   | Enable the dragonfly subchart.                                                          | `false`                                       |
 | `dragonfly.mode`                                      | The mode of DragonflyDB deployment: 'standalone', 'cluster', 'external', or 'disabled'. | `disabled`                                    |
 | `dragonfly.username`                                  | Username for DragonflyDB authentication (default: "default").                           | `default`                                     |
 | `dragonfly.password.secretName`                       | Name of existing secret containing the password (mutually exclusive with value).        | `""`                                          |
@@ -243,6 +238,7 @@ ingress:
 | `dragonfly.cluster.snapshot.cron`                     | Cron schedule for Dragonfly cluster snapshots.                                          | `*/5 * * * *`                                 |
 | `dragonfly.external.host`                             | Hostname of external DragonflyDB/Redis (when mode is 'external').                       | `""`                                          |
 | `dragonfly.external.port`                             | Port of external DragonflyDB/Redis.                                                     | `6379`                                        |
+| `postgres.enabled`                                    | Enable the postgres subchart.                                                           | `true`                                        |
 | `postgres.mode`                                       | The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.              | `cluster`                                     |
 | `postgres.initSQL`                                    | Array of SQL commands to run on database initialization.                                | `[]`                                          |
 | `postgres.username`                                   | Username for the database.                                                              | `nextcloud`                                   |

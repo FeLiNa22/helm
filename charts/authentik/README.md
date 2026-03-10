@@ -333,6 +333,183 @@ worker:
 
 ## Parameters
 
+### Authentik Server parameters
+
+| Name                                         | Description                                                                            | Value                        |
+| -------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------- |
+| `replicaCount`                               | The number of replicas to deploy for the server.                                       | `1`                          |
+| `image.repository`                           | The Docker repository to pull the image from.                                          | `ghcr.io/goauthentik/server` |
+| `image.pullPolicy`                           | The logic of image pulling.                                                            | `IfNotPresent`               |
+| `image.tag`                                  | The image tag to use.                                                                  | `2025.12.4`                  |
+| `image.autoupdate.enabled`                   | Enable automatic image updates via ArgoCD Image Updater.                               | `false`                      |
+| `image.autoupdate.strategy`                  | Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest). | `""`                         |
+| `image.autoupdate.allowTags`                 | Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").  | `""`                         |
+| `image.autoupdate.ignoreTags`                | List of glob patterns to ignore specific tags.                                         | `[]`                         |
+| `image.autoupdate.pullSecret`                | Reference to secret for private registry authentication.                               | `""`                         |
+| `image.autoupdate.platforms`                 | List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).                       | `[]`                         |
+| `imagePullSecrets`                           | The image pull secrets to use.                                                         | `[]`                         |
+| `deployment.strategy.type`                   | The deployment strategy to use.                                                        | `Recreate`                   |
+| `serviceAccount.create`                      | Whether to create a service account.                                                   | `true`                       |
+| `serviceAccount.annotations`                 | Additional annotations to add to the service account.                                  | `{}`                         |
+| `serviceAccount.name`                        | The name of the service account to use.                                                | `""`                         |
+| `podAnnotations`                             | Additional annotations to add to the pod.                                              | `{}`                         |
+| `podSecurityContext`                         | The security context to use for the pod.                                               | `{}`                         |
+| `securityContext`                            | The security context to use for the container.                                         | `{}`                         |
+| `initContainers`                             | Additional init containers to add to the pod.                                          | `[]`                         |
+| `service.type`                               | The type of service to create.                                                         | `ClusterIP`                  |
+| `service.port`                               | The port on which the service will run.                                                | `9000`                       |
+| `service.httpsPort`                          | The HTTPS port on which the service will run.                                          | `9443`                       |
+| `service.nodePort`                           | The nodePort to use for the service. Only used if service.type is NodePort.            | `""`                         |
+| `ingress.enabled`                            | Whether to create an ingress for the service.                                          | `false`                      |
+| `ingress.className`                          | The ingress class name to use.                                                         | `""`                         |
+| `ingress.annotations`                        | Additional annotations to add to the ingress.                                          | `{}`                         |
+| `ingress.hosts[0].host`                      | The host to use for the ingress.                                                       | `authentik.local`            |
+| `ingress.hosts[0].paths[0].path`             | The path to use for the ingress.                                                       | `/`                          |
+| `ingress.hosts[0].paths[0].pathType`         | The path type to use for the ingress.                                                  | `Prefix`                     |
+| `ingress.tls`                                | The TLS configuration for the ingress.                                                 | `[]`                         |
+| `resources`                                  | The resources to use for the pod.                                                      | `{}`                         |
+| `autoscaling.enabled`                        | Whether to enable autoscaling.                                                         | `false`                      |
+| `autoscaling.minReplicas`                    | The minimum number of replicas to scale to.                                            | `1`                          |
+| `autoscaling.maxReplicas`                    | The maximum number of replicas to scale to.                                            | `5`                          |
+| `autoscaling.targetCPUUtilizationPercentage` | The target CPU utilization percentage to use for autoscaling.                          | `80`                         |
+| `nodeSelector`                               | The node selector to use for the pod.                                                  | `{}`                         |
+| `tolerations`                                | The tolerations to use for the pod.                                                    | `[]`                         |
+| `affinity`                                   | The affinity to use for the pod.                                                       | `{}`                         |
+| `rbac.create`                                | Whether to create RBAC resources for outpost deployment.                               | `true`                       |
+
+### Authentik Worker parameters
+
+| Name                                                | Description                                                   | Value   |
+| --------------------------------------------------- | ------------------------------------------------------------- | ------- |
+| `worker.enabled`                                    | Enable the worker deployment.                                 | `true`  |
+| `worker.replicaCount`                               | The number of replicas to deploy for the worker.              | `1`     |
+| `worker.resources`                                  | The resources to use for the worker pod.                      | `{}`    |
+| `worker.autoscaling.enabled`                        | Whether to enable autoscaling for the worker.                 | `false` |
+| `worker.autoscaling.minReplicas`                    | The minimum number of replicas to scale to.                   | `1`     |
+| `worker.autoscaling.maxReplicas`                    | The maximum number of replicas to scale to.                   | `5`     |
+| `worker.autoscaling.targetCPUUtilizationPercentage` | The target CPU utilization percentage to use for autoscaling. | `80`    |
+| `worker.nodeSelector`                               | The node selector to use for the worker pod.                  | `{}`    |
+| `worker.tolerations`                                | The tolerations to use for the worker pod.                    | `[]`    |
+| `worker.affinity`                                   | The affinity to use for the worker pod.                       | `{}`    |
+
+### Environment Variables
+
+| Name     | Description                   | Value           |
+| -------- | ----------------------------- | --------------- |
+| `env.TZ` | Timezone for the application. | `Europe/London` |
+
+### Authentik Configuration
+
+| Name                               | Description                                                                                   | Value   |
+| ---------------------------------- | --------------------------------------------------------------------------------------------- | ------- |
+| `authentik.secretKey`              | Secret key used for cookie signing and unique user IDs. Must be provided - never leave empty. | `""`    |
+| `authentik.errorReporting.enabled` | Enable anonymous error reporting to sentry.                                                   | `false` |
+| `authentik.logLevel`               | Log level (debug, info, warning, error, critical).                                            | `info`  |
+| `authentik.email.host`             | SMTP server hostname.                                                                         | `""`    |
+| `authentik.email.port`             | SMTP server port.                                                                             | `587`   |
+| `authentik.email.username`         | SMTP username.                                                                                | `""`    |
+| `authentik.email.password`         | SMTP password.                                                                                | `""`    |
+| `authentik.email.useTLS`           | Use STARTTLS for SMTP.                                                                        | `false` |
+| `authentik.email.useSSL`           | Use SSL for SMTP.                                                                             | `false` |
+| `authentik.email.timeout`          | SMTP connection timeout.                                                                      | `30`    |
+| `authentik.email.from`             | Email from address.                                                                           | `""`    |
+
+### Persistence Configuration
+
+| Name                            | Description                                  | Value           |
+| ------------------------------- | -------------------------------------------- | --------------- |
+| `persistence.enabled`           | Enable persistence for data files.           | `false`         |
+| `persistence.storageClass`      | Storage class for the PVC.                   | `""`            |
+| `persistence.size`              | Size of the PVC.                             | `512Mi`         |
+| `persistence.accessMode`        | Access mode for the PVC.                     | `ReadWriteMany` |
+| `persistence.existingClaim`     | Use an existing PVC instead of creating one. | `""`            |
+| `persistence.additionalVolumes` | Additional volumes to mount.                 | `[]`            |
+| `persistence.additionalMounts`  | Additional mount paths for volumes.          | `[]`            |
+
+### PostgreSQL Configuration
+
+| Name                                                        | Description                                                                                                                     | Value                               |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `postgres.enabled`                                          | Enable the postgres subchart.                                                                                                   | `true`                              |
+| `postgres.mode`                                             | Database deployment mode: 'standalone', 'cluster', or 'external'.                                                               | `standalone`                        |
+| `postgres.initSQL`                                          | Array of SQL commands to run on database initialization.                                                                        | `[]`                                |
+| `postgres.database`                                         | Database name.                                                                                                                  | `authentik`                         |
+| `postgres.username`                                         | Database username.                                                                                                              | `authentik`                         |
+| `postgres.password.secretName`                              | Existing secret name for database password (mutually exclusive with value).                                                     | `""`                                |
+| `postgres.password.value`                                   | Direct password value to create a secret (mutually exclusive with secretName).                                                  | `""`                                |
+| `postgres.standalone.persistence.enabled`                   | Enable persistence for standalone database.                                                                                     | `true`                              |
+| `postgres.standalone.persistence.storageClass`              | Storage class for standalone database PVC.                                                                                      | `""`                                |
+| `postgres.standalone.persistence.size`                      | Size of the standalone database PVC.                                                                                            | `512Mi`                             |
+| `postgres.standalone.persistence.existingClaim`             | Use an existing PVC for standalone database.                                                                                    | `""`                                |
+| `postgres.standalone.image.repository`                      | PostgreSQL image repository for standalone mode.                                                                                | `postgres`                          |
+| `postgres.standalone.image.tag`                             | PostgreSQL image tag for standalone mode.                                                                                       | `16-alpine`                         |
+| `postgres.standalone.image.autoupdate.enabled`              | Enable automatic image updates for standalone PostgreSQL.                                                                       | `false`                             |
+| `postgres.standalone.image.autoupdate.updateStrategy`       | Strategy for image updates for standalone PostgreSQL.                                                                           | `""`                                |
+| `postgres.standalone.resources`                             | Resource limits for standalone database.                                                                                        | `{}`                                |
+| `postgres.cluster.instances`                                | Number of instances in the cluster.                                                                                             | `2`                                 |
+| `postgres.cluster.readReplicas.enabled`                     | Enable read replicas configuration for authentik (uses CNPG read-only service).                                                 | `true`                              |
+| `postgres.cluster.persistence.enabled`                      | Enable persistence for cluster database.                                                                                        | `true`                              |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for cluster database PVC.                                                                                         | `""`                                |
+| `postgres.cluster.persistence.size`                         | Size of the cluster database PVC.                                                                                               | `512Mi`                             |
+| `postgres.cluster.image.repository`                         | PostgreSQL image repository for cluster mode.                                                                                   | `ghcr.io/cloudnative-pg/postgresql` |
+| `postgres.cluster.image.tag`                                | PostgreSQL image tag for cluster mode.                                                                                          | `16`                                |
+| `postgres.cluster.pitrBackup.enabled`                       | Enable point-in-time recovery backups.                                                                                          | `false`                             |
+| `postgres.cluster.pitrBackup.retentionPolicy`               | Retention policy for PITR backups.                                                                                              | `30d`                               |
+| `postgres.cluster.pitrBackup.objectStorage.destinationPath` | S3 path for backups.                                                                                                            | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.endpointURL`     | S3 endpoint URL.                                                                                                                | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.secretName`      | Secret containing S3 credentials.                                                                                               | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.region`          | S3 region.                                                                                                                      | `""`                                |
+| `postgres.external.host`                                    | External database hostname.                                                                                                     | `""`                                |
+| `postgres.external.port`                                    | External database port.                                                                                                         | `5432`                              |
+| `postgres.backup.enabled`                                   | Enable scheduled pg_dump backups.                                                                                               | `false`                             |
+| `postgres.backup.cron`                                      | Cron schedule for backups.                                                                                                      | `0 2 * * *`                         |
+| `postgres.backup.retention`                                 | Number of backups to retain.                                                                                                    | `30`                                |
+| `postgres.backup.image.repository`                          | Custom image repository for backup job (optional).                                                                              | `""`                                |
+| `postgres.backup.image.tag`                                 | Custom image tag for backup job (optional).                                                                                     | `""`                                |
+| `postgres.backup.persistence.enabled`                       | Enable persistence for backups.                                                                                                 | `true`                              |
+| `postgres.backup.persistence.size`                          | Size of the backup PVC.                                                                                                         | `512Mi`                             |
+| `postgres.backup.persistence.storageClass`                  | Storage class for backup PVC.                                                                                                   | `""`                                |
+| `postgres.backup.persistence.accessMode`                    | Access mode for backup PVC.                                                                                                     | `ReadWriteOnce`                     |
+| `postgres.backup.persistence.existingClaim`                 | Use an existing PVC for backups.                                                                                                | `""`                                |
+| `postgres.restore.enabled`                                  | Restore the latest pg_dump backup on pre-install/pre-upgrade (default: false).                                                  | `false`                             |
+| `postgres.restore.name`                                     | Optional backup filename to restore (e.g. authentik_backup_20240101_120000.sql.gz). If empty, restores the latest valid backup. | `""`                                |
+
+### Velero Backup Configuration
+
+| Name                              | Description                                 | Value       |
+| --------------------------------- | ------------------------------------------- | ----------- |
+| `velero.enabled`                  | Enable Velero backup schedules.             | `false`     |
+| `velero.namespace`                | Namespace where Velero is installed.        | `velero`    |
+| `velero.schedule`                 | Cron schedule for backups.                  | `0 2 * * *` |
+| `velero.ttl`                      | Time to live for backups.                   | `168h`      |
+| `velero.includeClusterResources`  | Include cluster-scoped resources.           | `false`     |
+| `velero.snapshotVolumes`          | Enable volume snapshots.                    | `true`      |
+| `velero.defaultVolumesToFsBackup` | Use filesystem backup instead of snapshots. | `false`     |
+| `velero.storageLocation`          | Backup storage location.                    | `""`        |
+| `velero.volumeSnapshotLocations`  | Volume snapshot locations.                  | `[]`        |
+| `velero.labelSelector`            | Label selector for resources to backup.     | `{}`        |
+| `velero.annotations`              | Additional annotations for the schedule.    | `{}`        |
+
+### ArgoCD Image Updater Configuration
+
+| Name                           | Description                          | Value    |
+| ------------------------------ | ------------------------------------ | -------- |
+| `imageUpdater.namespace`       | Namespace for ArgoCD Image Updater.  | `argocd` |
+| `imageUpdater.argocdNamespace` | Namespace where ArgoCD is installed. | `argocd` |
+| `imageUpdater.applicationName` | Name of the ArgoCD application.      | `""`     |
+| `imageUpdater.imageAlias`      | Alias for the image.                 | `""`     |
+| `imageUpdater.forceUpdate`     | Force update the image.              | `false`  |
+| `imageUpdater.helm`            | Helm-specific configuration.         | `{}`     |
+| `imageUpdater.kustomize`       | Kustomize-specific configuration.    | `{}`     |
+| `imageUpdater.writeBackConfig` | Write-back configuration.            | `{}`     |
+
+### Blueprints Configuration
+
+| Name                    | Description                               | Value |
+| ----------------------- | ----------------------------------------- | ----- |
+| `blueprints.configMaps` | List of ConfigMaps containing blueprints. | `[]`  |
+| `blueprints.secrets`    | List of Secrets containing blueprints.    | `[]`  |
+
 ## Upgrading
 
 ### To upgrade the chart:

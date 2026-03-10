@@ -227,6 +227,7 @@ persistence:
 
 ## @section PostgreSQL Configuration
 
+## @param postgres.enabled Enable the postgres subchart.
 ## @param postgres.mode Database deployment mode: 'standalone', 'cluster', or 'external'.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.database Database name.

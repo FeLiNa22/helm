@@ -140,6 +140,7 @@ ingress:
 ## @section Database parameters
 ## PostgreSQL database is required for n8n
 
+## @param postgres.enabled Enable the postgres subchart.
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param postgres.type Database type (postgresdb, postgres, mysql, mariadb, sqlite).
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
