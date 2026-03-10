@@ -15,9 +15,9 @@ PostgreSQL host for client connections.
 */}}
 {{- define "postgres.host" -}}
 {{- if eq .Values.mode "standalone" }}
-{{- printf "%s-postgresql" .Release.Name }}
+{{- printf "%s-postgres" .Release.Name }}
 {{- else if eq .Values.mode "cluster" }}
-{{- printf "%s-rw" .Release.Name }}
+{{- printf "%s-postgres-cluster-rw" .Release.Name }}
 {{- else }}
 {{- .Values.external.host }}
 {{- end }}
@@ -49,10 +49,10 @@ PostgreSQL database name.
 {{- end }}
 
 {{/*
-CNPG Cluster resource name: {Release.Name}
+CNPG Cluster resource name: {Release.Name}-postgres-cluster
 */}}
 {{- define "postgres.clusterName" -}}
-{{- .Release.Name }}
+{{- printf "%s-postgres-cluster" .Release.Name }}
 {{- end }}
 {{/*
 Common labels

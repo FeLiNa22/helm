@@ -15,7 +15,7 @@ PostgreSQL secret name
 PostgreSQL host
 */}}
 {{- define "frigate.postgresql.host" -}}
-{{- printf "%s-rw" .Release.Name }}
+{{- printf "%s-postgres-cluster-rw" .Release.Name }}
 {{- end }}
 
 {{/*

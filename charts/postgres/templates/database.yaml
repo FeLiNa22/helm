@@ -23,7 +23,7 @@ stringData:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-postgresql-init
+  name: {{ .Release.Name }}-postgres-init
   labels:
     {{- include "postgres.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
@@ -41,7 +41,7 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-postgresql
+  name: {{ .Release.Name }}-postgres
   labels:
     {{- include "postgres.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
@@ -59,12 +59,12 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-postgresql
+  name: {{ .Release.Name }}-postgres
   labels:
     {{- include "postgres.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
 spec:
-  serviceName: {{ .Release.Name }}-postgresql
+  serviceName: {{ .Release.Name }}-postgres
   replicas: 1
   selector:
     matchLabels:
@@ -131,7 +131,7 @@ spec:
       {{- if .Values.initSQL }}
       - name: init-scripts
         configMap:
-          name: {{ .Release.Name }}-postgresql-init
+          name: {{ .Release.Name }}-postgres-init
           defaultMode: 0755
       {{- end }}
       {{- if not .Values.standalone.persistence.enabled }}

@@ -76,9 +76,9 @@ PostgreSQL host
 */}}
 {{- define "authentik.postgresql.host" -}}
 {{- if eq .Values.postgres.mode "standalone" }}
-{{- printf "%s-postgresql" .Release.Name }}
+{{- printf "%s-postgres" .Release.Name }}
 {{- else if eq .Values.postgres.mode "cluster" }}
-{{- printf "%s-rw" .Release.Name }}
+{{- printf "%s-postgres-cluster-rw" .Release.Name }}
 {{- else }}
 {{- .Values.postgres.external.host }}
 {{- end }}
@@ -89,7 +89,7 @@ PostgreSQL read-only host (for read replicas)
 */}}
 {{- define "authentik.postgresql.readHost" -}}
 {{- if eq .Values.postgres.mode "cluster" }}
-{{- printf "%s-ro" .Release.Name }}
+{{- printf "%s-postgres-cluster-ro" .Release.Name }}
 {{- end }}
 {{- end }}
 
