@@ -242,7 +242,6 @@ persistence:
 ## @param postgres.standalone.image.autoupdate.enabled Enable automatic image updates for standalone PostgreSQL.
 ## @param postgres.standalone.image.autoupdate.updateStrategy Strategy for image updates for standalone PostgreSQL.
 ## @param postgres.standalone.resources Resource limits for standalone database.
-## @param postgres.cluster.name Name of the CloudNativePG cluster.
 ## @param postgres.cluster.instances Number of instances in the cluster.
 ## @param postgres.cluster.readReplicas.enabled Enable read replicas configuration for authentik (uses CNPG read-only service).
 ## @param postgres.cluster.persistence.enabled Enable persistence for cluster database.
@@ -319,7 +318,6 @@ postgres:
   
   # Cluster mode - CloudNativePG
   cluster:
-    name: authentik-db
     instances: 2
     # Enable read replicas for load distribution
     # When enabled, authentik will use the read-only service endpoint for read operations
@@ -349,7 +347,6 @@ postgres:
   # Database backups (pg_dump)
   backup:
     enabled: false
-    appName: "authentik"  # Prefix for backup filenames (e.g. authentik_backup_YYYYMMDD.sql.gz)
     cron: "0 2 * * *"
     retention: 30
     image:

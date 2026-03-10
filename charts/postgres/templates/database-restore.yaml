@@ -1,6 +1,5 @@
 {{- if and .Values.restore.enabled .Values.backup.persistence.enabled }}
 {{- $secretName := include "postgres.secretName" . -}}
-{{- $appName := include "postgres.backupAppName" . -}}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -37,7 +36,7 @@ spec:
         - |
           set -e
           BACKUP_DIR="/backups"
-          APP_NAME="{{ $appName }}"
+          APP_NAME="{{ .Release.Name }}"
           {{- if .Values.restore.name }}
           LATEST="${BACKUP_DIR}/{{ .Values.restore.name }}"
           if [ ! -f "$LATEST" ]; then

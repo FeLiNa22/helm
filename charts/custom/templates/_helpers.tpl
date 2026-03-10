@@ -60,7 +60,7 @@ PostgreSQL host
 {{- if eq .Values.postgres.mode "standalone" }}
 {{- printf "%s-postgresql" .Release.Name }}
 {{- else if eq .Values.postgres.mode "cluster" }}
-{{- printf "%s-custom-db-rw" .Release.Name }}
+{{- printf "%s-rw" .Release.Name }}
 {{- else }}
 {{- .Values.postgres.external.host }}
 {{- end }}

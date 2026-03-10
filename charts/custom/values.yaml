@@ -271,9 +271,6 @@ postgres:
       storageClass: ""
   # CloudNativePG Cluster deployment (using CNPG operator)
   cluster:
-    # CNPG cluster name suffix: the full cluster name is {release}-{name}
-    # Using "custom-db" preserves the original cluster name for existing deployments
-    name: "custom-db"
     persistence:
       enabled: true
       size: 1Gi
@@ -310,7 +307,6 @@ postgres:
   # Scheduled database backups using pg_dump (works for all database modes)
   backup:
     enabled: false
-    appName: ""  # Prefix for backup filenames (defaults to Helm release name if empty)
     cron: "0 2 * * *"  # Daily at 2am
     retention: 30  # Number of backups to retain
     image:

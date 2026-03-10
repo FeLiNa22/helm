@@ -463,7 +463,6 @@ postgres:
   # Scheduled database backups using pg_dump (works for all database modes)
   backup:
     enabled: false
-    appName: "immich"  # Prefix for backup filenames (e.g. immich_backup_YYYYMMDD.sql.gz)
     cron: "0 2 * * *"  # Daily at 2am
     retention: 30  # Number of backups to retain
     image:

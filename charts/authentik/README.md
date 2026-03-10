@@ -126,7 +126,6 @@ postgres:
     value: ""  # Direct password value (creates kubernetes.io/basic-auth secret)
     secretName: ""  # OR use existing secret
   cluster:
-    name: authentik-db
     instances: 3  # Number of replicas
     # Enable read replicas for load distribution (default: true)
     # When enabled, authentik will use the CNPG read-only service endpoint for read operations
@@ -383,7 +382,7 @@ kubectl logs -l app.kubernetes.io/component=database
 
 # Cluster mode
 kubectl get cluster
-kubectl cnpg status authentik-db
+kubectl cnpg status <release-name>
 ```
 
 ### Worker not processing tasks
