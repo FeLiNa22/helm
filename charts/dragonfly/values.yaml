@@ -1,13 +1,26 @@
-# Mode: standalone | cluster | external
+## @section DragonflyDB parameters
+
+## @param mode Deployment mode: 'standalone', 'cluster', or 'external'.
 mode: standalone
 
+## @param username Username for DragonflyDB authentication.
 username: "default"
 
+## @param password.secretName Name of an existing secret containing the password.
+## @param password.secretKey Key in the secret that holds the password.
+## @param password.value Plain-text password. Creates a Secret when set.
 password:
   secretName: ""
   secretKey: "password"
   value: ""
 
+## @param standalone.image.repository Docker image repository for standalone DragonflyDB.
+## @param standalone.image.tag Docker image tag for standalone DragonflyDB.
+## @param standalone.resources.limits.memory Memory limit for standalone DragonflyDB.
+## @param standalone.persistence.enabled Enable persistent storage for standalone DragonflyDB.
+## @param standalone.persistence.size Size of the persistent volume.
+## @param standalone.persistence.storageClass Storage class for the persistent volume.
+## @param standalone.persistence.accessMode Access mode for the persistent volume.
 standalone:
   image:
     repository: docker.dragonflydb.io/dragonflydb/dragonfly
@@ -21,6 +34,15 @@ standalone:
     storageClass: ""
     accessMode: ReadWriteOnce
 
+## @param cluster.replicas Number of replicas in the DragonflyDB cluster.
+## @param cluster.image.repository Docker image repository for DragonflyDB cluster.
+## @param cluster.image.tag Docker image tag for DragonflyDB cluster.
+## @param cluster.resources.limits.memory Memory limit for cluster DragonflyDB instances.
+## @param cluster.persistence.enabled Enable persistent storage for cluster DragonflyDB.
+## @param cluster.persistence.size Size of the persistent volume for each cluster replica.
+## @param cluster.persistence.storageClass Storage class for the persistent volume.
+## @param cluster.persistence.accessMode Access mode for the persistent volume.
+## @param cluster.snapshot.cron Cron schedule for DragonflyDB cluster snapshots.
 cluster:
   replicas: 2
   image:
@@ -37,10 +59,17 @@ cluster:
   snapshot:
     cron: "*/5 * * * *"
 
+## @param external.host Hostname of the external DragonflyDB/Redis instance.
+## @param external.port Port of the external DragonflyDB/Redis instance.
 external:
   host: ""
   port: 6379
 
+## @param nodeSelector Node selector for DragonflyDB pods.
 nodeSelector: {}
+
+## @param tolerations Tolerations for DragonflyDB pods.
 tolerations: []
+
+## @param affinity Affinity rules for DragonflyDB pods.
 affinity: {}
