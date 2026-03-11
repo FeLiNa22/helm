@@ -3,6 +3,37 @@ entries:
   authentik:
   - apiVersion: v2
     appVersion: 2025.12.4
+    created: "2026-03-11T10:23:33.000091346Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    description: A Helm chart for authentik - an open-source Identity Provider focused
+      on flexibility and versatility
+    digest: 8bd5cbdc1c64074192f9aeacf7130580a30086f806969fb62404d54e480e0fd3
+    home: https://goauthentik.io
+    keywords:
+    - authentik
+    - authentication
+    - identity
+    - sso
+    - saml
+    - oauth
+    - oidc
+    - ldap
+    maintainers:
+    - name: FeLiNa22
+    name: authentik
+    sources:
+    - https://github.com/goauthentik/authentik
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/authentik-1.0.14/authentik-1.0.14.tgz
+    version: 1.0.14
+  - apiVersion: v2
+    appVersion: 2025.12.4
     created: "2026-03-05T01:06:09.744668347Z"
     description: A Helm chart for authentik - an open-source Identity Provider focused
       on flexibility and versatility
@@ -656,6 +687,30 @@ entries:
   custom:
   - apiVersion: v2
     appVersion: latest
+    created: "2026-03-11T10:23:33.136865088Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    description: A Helm chart for deploying a generic Docker image with optional PostgreSQL
+      database
+    digest: 86af625205b93b4b9ffcf7b561b718b7e1eaa719d498e0e8e77a2bcb292d96a2
+    keywords:
+    - custom
+    - docker
+    - postgres
+    - generic
+    maintainers:
+    - name: FeLiNa22
+    name: custom
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/custom-0.4.9/custom-0.4.9.tgz
+    version: 0.4.9
+  - apiVersion: v2
+    appVersion: latest
     created: "2026-03-05T01:06:09.953027328Z"
     description: A Helm chart for deploying a generic Docker image with optional PostgreSQL
       database
@@ -888,6 +943,25 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/custom-0.3.0/custom-0.3.0.tgz
     version: 0.3.0
+  dragonfly:
+  - apiVersion: v2
+    appVersion: v1.36.0
+    created: "2026-03-11T10:23:33.30628777Z"
+    description: DragonflyDB - standalone Deployment, DragonflyDB operator cluster,
+      or external Redis-compatible cache
+    digest: 50bada5fdc6c1d28368e25f7c138a6c53bdf90f65619ef1030dd9017b35c92d5
+    keywords:
+    - dragonfly
+    - dragonflydb
+    - redis
+    - cache
+    maintainers:
+    - name: FeLiNa22
+    name: dragonfly
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/dragonfly-1.0.0/dragonfly-1.0.0.tgz
+    version: 1.0.0
   excalidraw:
   - apiVersion: v2
     appVersion: 0.17.6
@@ -953,6 +1027,35 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/excalidraw-1.0.1/excalidraw-1.0.1.tgz
     version: 1.0.1
   frigate:
+  - apiVersion: v2
+    appVersion: 0.14.1
+    created: "2026-03-11T10:23:33.449292239Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    description: Frigate NVR Helm Chart
+    digest: 1a4fe5bd75a8cf7d1fe1c258588bc15edc5f1836815b74e0da89780b897d89d5
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/frigate
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - frigate
+    - nvr
+    - security
+    - cameras
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: frigate
+    sources:
+    - https://github.com/blakeblackshear/frigate
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/frigate-1.3.5/frigate-1.3.5.tgz
+    version: 1.3.5
   - apiVersion: v2
     appVersion: 0.14.1
     created: "2026-02-15T01:48:11.529656812Z"
@@ -1554,6 +1657,39 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/homepage-1.0.0/homepage-1.0.0.tgz
     version: 1.0.0
   immich:
+  - apiVersion: v2
+    appVersion: v2.4.1
+    created: "2026-03-11T10:23:33.569520722Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    - alias: dragonfly
+      condition: dragonfly.enabled
+      name: dragonfly
+      repository: file://../dragonfly
+      version: '>=1.0.0'
+    description: A Helm chart for Immich - High performance self-hosted photo and
+      video management solution
+    digest: e725b338f71b1840fdde787acceab02e9a95aaae78aaf4040ec18b2b4c0b77c7
+    home: https://immich.app
+    keywords:
+    - immich
+    - photos
+    - videos
+    - media
+    - self-hosted
+    maintainers:
+    - name: FeLiNa22
+    name: immich
+    sources:
+    - https://github.com/immich-app/immich
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/immich-1.6.12/immich-1.6.12.tgz
+    version: 1.6.12
   - apiVersion: v2
     appVersion: v2.4.1
     created: "2026-03-05T01:06:10.136824778Z"
@@ -2277,6 +2413,33 @@ entries:
   n8n:
   - apiVersion: v2
     appVersion: latest
+    created: "2026-03-11T10:23:33.722772631Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    description: n8n workflow automation Helm Chart
+    digest: 1889a31098dc96a05d3a100956e1d5b6198603da4450a6cb4d4fee82437d7438
+    home: https://github.com/FeLiNa22/helm/tree/main/charts/n8n
+    icon: https://n8n.io/favicon.ico
+    keywords:
+    - kubernetes
+    - n8n
+    - workflow
+    - automation
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: n8n
+    sources:
+    - https://github.com/n8n-io/n8n
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/n8n-1.2.6/n8n-1.2.6.tgz
+    version: 1.2.6
+  - apiVersion: v2
+    appVersion: latest
     created: "2026-02-23T13:43:34.326086365Z"
     description: n8n workflow automation Helm Chart
     digest: c5a067e662762b7b4b232afef8bd5cfa5b1da729b431512b915b8a876fa110ef
@@ -2486,6 +2649,39 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/n8n-1.1.2/n8n-1.1.2.tgz
     version: 1.1.2
   nextcloud:
+  - apiVersion: v2
+    appVersion: 32.0.3
+    created: "2026-03-11T10:23:33.878078452Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    - alias: dragonfly
+      condition: dragonfly.enabled
+      name: dragonfly
+      repository: file://../dragonfly
+      version: '>=1.0.0'
+    description: Nextcloud Helm Chart
+    digest: 927197b6b12235a78ae8890392c89e382be11fa3a449e6f248f0c9bbc76b84a0
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/nextcloud
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - nextcloud
+    - cloud
+    - storage
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: nextcloud
+    sources:
+    - https://github.com/nextcloud/server
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/nextcloud-1.4.14/nextcloud-1.4.14.tgz
+    version: 1.4.14
   - apiVersion: v2
     appVersion: 32.0.3
     created: "2026-03-04T20:24:17.748020855Z"
@@ -3147,6 +3343,42 @@ entries:
   outline:
   - apiVersion: v2
     appVersion: 0.87.4
+    created: "2026-03-11T10:23:34.058916266Z"
+    dependencies:
+    - condition: global.minioEnabled
+      name: minio
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.x.x
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    - alias: dragonfly
+      condition: dragonfly.enabled
+      name: dragonfly
+      repository: file://../dragonfly
+      version: '>=1.0.0'
+    description: Raul Outline Wiki Helm Chart
+    digest: 1c195fc99aa995520037a47da0d3144dc4f7893002ae41173829606fd271f2f7
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/outline
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - outline
+    - wiki
+    - docs
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: outline
+    sources:
+    - https://github.com/outline/outline
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/outline-1.5.8/outline-1.5.8.tgz
+    version: 1.5.8
+  - apiVersion: v2
+    appVersion: 0.87.4
     created: "2026-02-23T13:43:34.598267784Z"
     dependencies:
     - condition: global.minioEnabled
@@ -3596,6 +3828,38 @@ entries:
   penpot:
   - apiVersion: v2
     appVersion: 2.12.1
+    created: "2026-03-11T10:23:34.212799104Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    - alias: dragonfly
+      condition: dragonfly.enabled
+      name: dragonfly
+      repository: file://../dragonfly
+      version: '>=1.0.0'
+    description: Raul Penpot Helm Chart
+    digest: adb5e0c0bb3da7333b226470d1af3faf7e0ebf53eee32ecadfa9d7275afd9c4f
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/penpot
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - penpot
+    - penpotapp
+    - design
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: penpot
+    sources:
+    - https://github.com/penpot/penpot
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/penpot-1.5.8/penpot-1.5.8.tgz
+    version: 1.5.8
+  - apiVersion: v2
+    appVersion: 2.12.1
     created: "2026-02-23T13:43:34.738070581Z"
     description: Raul Penpot Helm Chart
     digest: 9c6b9217c3ae3c59d1bbd03fb5ae345e6b9cf0bb031360d39453b1082fb84da3
@@ -3986,6 +4250,24 @@ entries:
     - https://github.com/penpot/penpot
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/penpot-1.0.1/penpot-1.0.1.tgz
+    version: 1.0.1
+  postgres:
+  - apiVersion: v2
+    appVersion: "16"
+    created: "2026-03-11T10:23:34.377627877Z"
+    description: PostgreSQL database - standalone StatefulSet, CloudNativePG cluster,
+      or external database
+    digest: 71485196cc2ed4581c425d099ae9efd6e252b85d5d6ded39b17001e459eb6e01
+    keywords:
+    - postgresql
+    - postgres
+    - database
+    maintainers:
+    - name: FeLiNa22
+    name: postgres
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/postgres-1.0.1/postgres-1.0.1.tgz
     version: 1.0.1
   postgresql-ha:
   - apiVersion: v2
@@ -5940,6 +6222,33 @@ entries:
   vaultwarden:
   - apiVersion: v2
     appVersion: 1.35.1
+    created: "2026-03-11T10:23:34.523079424Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    description: Vaultwarden Helm Chart
+    digest: e5878400425a8a53a2d7b1a0b1a6d6404f6ae22cd8252ce9cad8d366de7819a1
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/vaultwarden
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - vaultwarden
+    - bitwarden
+    - password-manager
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: vaultwarden
+    sources:
+    - https://github.com/dani-garcia/vaultwarden
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.4.5/vaultwarden-1.4.5.tgz
+    version: 1.4.5
+  - apiVersion: v2
+    appVersion: 1.35.1
     created: "2026-03-05T01:06:10.335958468Z"
     description: Vaultwarden Helm Chart
     digest: 0b1c5e49aba72283b91ab90de408021e7456ee040cf7d3401396b3aecb85c4df
@@ -6190,4 +6499,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-03-07T18:03:12.930015692Z"
+generated: "2026-03-11T10:23:34.523785863Z"
