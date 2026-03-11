@@ -211,13 +211,9 @@ spec:
     storageClass: {{ .Values.cluster.persistence.storageClass }}
     {{- end }}
 
-  postgresql:
-    {{- if .Values.cluster.postgresql.parameters }}
-    parameters:
-      {{- toYaml .Values.cluster.postgresql.parameters | nindent 6 }}
-    {{- end }}
-    pg_hba:
-      - host all all all scram-sha-256
+  {{- if .Values.cluster.postgresql }}
+  {{- toYaml .Values.cluster.postgresql }}
+  {{- end }}
 
   monitoring:
     enablePodMonitor: false
