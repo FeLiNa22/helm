@@ -344,7 +344,7 @@ dragonfly:
 ## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
 ## @param postgres.cluster.persistence.size Size of the persistence volume.
 ## @param postgres.cluster.persistence.storageClass Storage class for persistence.
-## @param postgres.cluster.postgresql.parameters Map of PostgreSQL configuration parameters to pass to the CNPG Cluster.
+## @param postgres.cluster.postgresql.parameters [object] Map of PostgreSQL configuration parameters to pass to the CNPG Cluster.
 ## @param postgres.cluster.pitrBackup.enabled Enable PITR backups for CNPG cluster (default: false).
 ## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
 ## @param postgres.cluster.persistence.size Size of the persistence volume.

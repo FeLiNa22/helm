@@ -212,8 +212,10 @@ spec:
     {{- end }}
 
   postgresql:
+    {{- if .Values.cluster.postgresql.parameters }}
     parameters:
       {{- toYaml .Values.cluster.postgresql.parameters | nindent 6 }}
+    {{- end }}
     pg_hba:
       - host all all all scram-sha-256
 
