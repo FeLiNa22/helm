@@ -28,7 +28,6 @@ Reusable PostgreSQL dependency chart. Supports standalone (StatefulSet), cluster
 | `cluster.persistence.storageClass`                 | Storage class for the persistent volume.                                                                 | `""`                                |
 | `cluster.persistence.existingClaim`                | Name of an existing PVC to use (not applicable for CNPG clusters).                                       | `""`                                |
 | `cluster.postgresql.parameters`                    | Map of PostgreSQL configuration parameters (merged into the CNPG Cluster postgresql.parameters section). | `{}`                                |
-| `cluster.postgresql.shared_preload_libraries`      | List of libraries to preload at server startup (uses CNPG spec.postgresql.shared_preload_libraries, not parameters). | `[]`                                |
 | `cluster.pitrBackup.enabled`                       | Enable Point-in-Time Recovery backups for the CNPG cluster.                                              | `false`                             |
 | `cluster.pitrBackup.retentionPolicy`               | Retention policy for PITR backups (e.g. "30d").                                                          | `30d`                               |
 | `cluster.pitrBackup.objectStorage.destinationPath` | Destination path in the object storage bucket.                                                           | `""`                                |
