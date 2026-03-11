@@ -225,6 +225,10 @@ spec:
       work_mem: "1310kB"
       min_wal_size: "1GB"
       max_wal_size: "4GB"
+    {{- if .Values.cluster.postgresql.sharedPreloadLibraries }}
+    shared_preload_libraries:
+      {{- toYaml .Values.cluster.postgresql.sharedPreloadLibraries | nindent 6 }}
+    {{- end }}
     pg_hba:
       - host all all all scram-sha-256
 
