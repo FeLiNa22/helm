@@ -211,8 +211,10 @@ spec:
     storageClass: {{ .Values.cluster.persistence.storageClass }}
     {{- end }}
 
-  {{- if .Values.cluster.postgresql }}
-  {{- toYaml .Values.cluster.postgresql }}
+
+  {{- with .Values.cluster.postgresql }}
+  postgresql:
+    {{- toYaml . | nindent 4 }}
   {{- end }}
 
   monitoring:
