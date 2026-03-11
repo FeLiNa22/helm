@@ -345,7 +345,6 @@ dragonfly:
 ## @param postgres.cluster.persistence.size Size of the persistence volume.
 ## @param postgres.cluster.persistence.storageClass Storage class for persistence.
 ## @param postgres.cluster.postgresql.parameters Map of PostgreSQL configuration parameters to pass to the CNPG Cluster.
-## @param postgres.cluster.postgresql.sharedPreloadLibraries List of shared libraries to preload in PostgreSQL (e.g. vchord.so).
 ## @param postgres.cluster.pitrBackup.enabled Enable PITR backups for CNPG cluster (default: false).
 ## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
 ## @param postgres.cluster.persistence.size Size of the persistence volume.
@@ -441,8 +440,8 @@ postgres:
       repository: tensorchord/cloudnative-vectorchord
       tag: "16-0.3.0"
     postgresql:
-      sharedPreloadLibraries:
-        - vchord.so
+      parameters:
+        shared_preload_libraries: "vchord.so"
     # PITR (Point-in-Time Recovery) backup configuration for CNPG
     # This is in addition to pg_dump backups configured in database.backup
     pitrBackup:

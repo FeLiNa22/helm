@@ -43,7 +43,6 @@ standalone:
 ## @param cluster.persistence.storageClass Storage class for the persistent volume.
 ## @param cluster.persistence.existingClaim Name of an existing PVC to use (not applicable for CNPG clusters).
 ## @param cluster.postgresql.parameters Map of PostgreSQL configuration parameters (merged into the CNPG Cluster postgresql.parameters section).
-## @param cluster.postgresql.sharedPreloadLibraries List of shared libraries to preload in PostgreSQL (e.g. vchord.so).
 ## @param cluster.pitrBackup.enabled Enable Point-in-Time Recovery backups for the CNPG cluster.
 ## @param cluster.pitrBackup.retentionPolicy Retention policy for PITR backups (e.g. "30d").
 ## @param cluster.pitrBackup.objectStorage.destinationPath Destination path in the object storage bucket.
@@ -73,7 +72,6 @@ cluster:
       work_mem: "1310kB"
       min_wal_size: "1GB"
       max_wal_size: "4GB"
-    sharedPreloadLibraries: []
   pitrBackup:
     enabled: false
     retentionPolicy: "30d"
