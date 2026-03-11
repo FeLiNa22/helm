@@ -440,8 +440,8 @@ postgres:
       repository: tensorchord/cloudnative-vectorchord
       tag: "16-0.3.0"
     postgresql:
-      parameters: 
-        shared_preload_libraries: "vchord.so"
+      shared_preload_libraries: 
+        - "vchord.so"
     # PITR (Point-in-Time Recovery) backup configuration for CNPG
     # This is in addition to pg_dump backups configured in database.backup
     pitrBackup:
