@@ -78,7 +78,7 @@ spec:
             {{- if eq .Values.postgres.mode "standalone" }}
             # Standalone PostgreSQL mode
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-postgresql
+              value: {{ .Release.Name }}-postgres
             - name: POSTGRES_DB
               value: {{ .Values.postgres.username }}
             - name: POSTGRES_USER

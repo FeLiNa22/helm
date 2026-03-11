@@ -543,6 +543,7 @@ dragonfly:
 ## @section Database parameters
 ## PostgreSQL database is required for Penpot
 
+## @param postgres.enabled Enable the postgres subchart.
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.username Username for the database.
@@ -583,6 +584,7 @@ dragonfly:
 ## @param postgres.external.port Port of external PostgreSQL.
 ##
 postgres:
+  enabled: true
   mode: standalone
   initSQL: []
     # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"

@@ -1,0 +1,13 @@
+apiVersion: v2
+name: dragonfly
+description: DragonflyDB - standalone Deployment, DragonflyDB operator cluster, or external Redis-compatible cache
+type: application
+version: 1.0.0
+appVersion: "v1.36.0"
+keywords:
+  - dragonfly
+  - dragonflydb
+  - redis
+  - cache
+maintainers:
+  - name: FeLiNa22

@@ -1,32 +1,31 @@
-{{- if .Values.postgres.backup.enabled }}
-{{- $fullName := include "authentik.fullname" . -}}
-{{- $secretName := include "authentik.postgresql.secretName" . -}}
-{{- if and .Values.postgres.backup.persistence.enabled (not .Values.postgres.backup.persistence.existingClaim) }}
+{{- if .Values.backup.enabled }}
+{{- $secretName := include "postgres.secretName" . -}}
+{{- if and .Values.backup.persistence.enabled (not .Values.backup.persistence.existingClaim) }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ $fullName }}-postgres-backup
+  name: {{ .Release.Name }}-postgres-backup
   labels:
-    {{- include "authentik.labels" . | nindent 4 }}
+    {{- include "postgres.labels" . | nindent 4 }}
     app.kubernetes.io/component: postgres-backup
 spec:
   accessModes:
-    - {{ .Values.postgres.backup.persistence.accessMode | default "ReadWriteOnce" }}
-  {{- if .Values.postgres.backup.persistence.storageClass }}
-  storageClassName: {{ .Values.postgres.backup.persistence.storageClass }}
+    - {{ .Values.backup.persistence.accessMode | default "ReadWriteOnce" }}
+  {{- if .Values.backup.persistence.storageClass }}
+  storageClassName: {{ .Values.backup.persistence.storageClass }}
   {{- end }}
   resources:
     requests:
-      storage: {{ .Values.postgres.backup.persistence.size | default "512Mi" }}
+      storage: {{ .Values.backup.persistence.size | default "512Mi" }}
 {{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $fullName }}-postgres-backup-script
+  name: {{ .Release.Name }}-postgres-backup-script
   labels:
-    {{- include "authentik.labels" . | nindent 4 }}
+    {{- include "postgres.labels" . | nindent 4 }}
     app.kubernetes.io/component: postgres-backup
 data:
   backup.sh: |
@@ -34,9 +33,10 @@ data:
     set -eo pipefail
 
     BACKUP_DIR="/backups"
-    RETENTION={{ .Values.postgres.backup.retention | default 30 }}
+    APP_NAME="{{ .Release.Name }}"
+    RETENTION={{ .Values.backup.retention | default 30 }}
     TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-    BACKUP_FILE="${BACKUP_DIR}/authentik_backup_${TIMESTAMP}.sql.gz"
+    BACKUP_FILE="${BACKUP_DIR}/${APP_NAME}_backup_${TIMESTAMP}.sql.gz"
     TEMP_FILE="${BACKUP_FILE}.tmp"
 
     echo "Starting database backup at $(date)"
@@ -46,7 +46,7 @@ data:
     mkdir -p "${BACKUP_DIR}"
 
     # Check disk space and free up room by removing old backups if necessary
-    LAST_BACKUP=$(ls -t "${BACKUP_DIR}"/authentik_backup_*.sql.gz 2>/dev/null | head -1 || true)
+    LAST_BACKUP=$(ls -t "${BACKUP_DIR}"/${APP_NAME}_backup_*.sql.gz 2>/dev/null | head -1 || true)
     if [ -n "${LAST_BACKUP}" ]; then
       NEEDED_KB=$(du -k "${LAST_BACKUP}" | cut -f1)
       NEEDED_KB=$((NEEDED_KB + NEEDED_KB / 10))
@@ -56,8 +56,8 @@ data:
     AVAILABLE_KB=$(df -k "${BACKUP_DIR}" | awk 'NR==2 {print $4}')
     echo "Disk space check: ${AVAILABLE_KB}KB available, ~${NEEDED_KB}KB needed"
     while [ "${AVAILABLE_KB}" -lt "${NEEDED_KB}" ]; do
-      BACKUP_COUNT=$(ls "${BACKUP_DIR}"/authentik_backup_*.sql.gz 2>/dev/null | wc -l)
-      OLDEST=$(ls -t "${BACKUP_DIR}"/authentik_backup_*.sql.gz 2>/dev/null | tail -1 || true)
+      BACKUP_COUNT=$(ls "${BACKUP_DIR}"/${APP_NAME}_backup_*.sql.gz 2>/dev/null | wc -l)
+      OLDEST=$(ls -t "${BACKUP_DIR}"/${APP_NAME}_backup_*.sql.gz 2>/dev/null | tail -1 || true)
       if [ -z "${OLDEST}" ] || [ "${BACKUP_COUNT}" -le 2 ]; then
         echo "WARNING: Not enough disk space (${AVAILABLE_KB}KB available, ~${NEEDED_KB}KB needed) and cannot remove more backups (minimum 2 kept). Proceeding anyway..."
         break
@@ -68,7 +68,7 @@ data:
     done
 
     # Perform the backup using pg_dump, writing to a temp file first for atomicity
-    PGPASSWORD="${POSTGRES_PASSWORD}" timeout 300 pg_dump \
+    PGPASSWORD="${POSTGRES_PASSWORD}" timeout {{ .Values.backup.timeout | default 300 }} pg_dump \
       -h "${POSTGRES_HOST}" \
       -p "${POSTGRES_PORT:-5432}" \
       -U "${POSTGRES_USER}" \
@@ -90,23 +90,23 @@ data:
     # Clean up old backups (keep only the last RETENTION backups)
     echo "Cleaning up old backups (keeping last ${RETENTION})..."
     cd "${BACKUP_DIR}"
-    ls -t authentik_backup_*.sql.gz 2>/dev/null | tail -n +$((RETENTION + 1)) | xargs -r rm -f
+    ls -t ${APP_NAME}_backup_*.sql.gz 2>/dev/null | tail -n +$((RETENTION + 1)) | xargs -r rm -f
 
     # List remaining backups
     echo "Current backups:"
-    ls -lh "${BACKUP_DIR}"/authentik_backup_*.sql.gz 2>/dev/null || echo "No backups found"
+    ls -lh "${BACKUP_DIR}"/${APP_NAME}_backup_*.sql.gz 2>/dev/null || echo "No backups found"
 
     echo "Backup process completed at $(date)"
 ---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ $fullName }}-postgres-backup
+  name: {{ .Release.Name }}-postgres-backup
   labels:
-    {{- include "authentik.labels" . | nindent 4 }}
+    {{- include "postgres.labels" . | nindent 4 }}
     app.kubernetes.io/component: postgres-backup
 spec:
-  schedule: {{ .Values.postgres.backup.cron | default "0 2 * * *" | quote }}
+  schedule: {{ .Values.backup.cron | default "0 2 * * *" | quote }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
@@ -115,21 +115,17 @@ spec:
       activeDeadlineSeconds: 300
       template:
         metadata:
-          {{- if and .Values.velero.enabled .Values.postgres.backup.persistence.enabled }}
-          annotations:
-            backup.velero.io/backup-volumes: backup-data
-          {{- end }}
           labels:
-            {{- include "authentik.selectorLabels" . | nindent 12 }}
+            {{- include "postgres.selectorLabels" . | nindent 12 }}
             app.kubernetes.io/component: postgres-backup
         spec:
           restartPolicy: OnFailure
           containers:
           - name: backup
-            {{- if and .Values.postgres.backup.image.repository .Values.postgres.backup.image.tag }}
-            image: "{{ .Values.postgres.backup.image.repository }}:{{ .Values.postgres.backup.image.tag }}"
-            {{- else if eq .Values.postgres.mode "standalone" }}
-            image: "{{ .Values.postgres.standalone.image.repository }}:{{ .Values.postgres.standalone.image.tag }}"
+            {{- if and .Values.backup.image.repository .Values.backup.image.tag }}
+            image: "{{ .Values.backup.image.repository }}:{{ .Values.backup.image.tag }}"
+            {{- else if eq .Values.mode "standalone" }}
+            image: "{{ .Values.standalone.image.repository }}:{{ .Values.standalone.image.tag }}"
             {{- else }}
             image: "postgres:16-alpine"
             {{- end }}
@@ -139,13 +135,13 @@ spec:
             - /scripts/backup.sh
             env:
             - name: POSTGRES_HOST
-              value: {{ include "authentik.postgresql.host" . }}
+              value: {{ include "postgres.host" . }}
             - name: POSTGRES_PORT
-              value: {{ include "authentik.postgresql.port" . | quote }}
+              value: {{ include "postgres.port" . | quote }}
             - name: POSTGRES_USER
-              value: {{ include "authentik.postgresql.username" . | quote }}
+              value: {{ include "postgres.username" . | quote }}
             - name: POSTGRES_DB
-              value: {{ include "authentik.postgresql.database" . | quote }}
+              value: {{ include "postgres.database" . | quote }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -159,12 +155,12 @@ spec:
           volumes:
           - name: backup-scripts
             configMap:
-              name: {{ $fullName }}-postgres-backup-script
+              name: {{ .Release.Name }}-postgres-backup-script
               defaultMode: 0755
           - name: backup-data
-            {{- if .Values.postgres.backup.persistence.enabled }}
+            {{- if .Values.backup.persistence.enabled }}
             persistentVolumeClaim:
-              claimName: {{ .Values.postgres.backup.persistence.existingClaim | default (printf "%s-postgres-backup" $fullName) }}
+              claimName: {{ .Values.backup.persistence.existingClaim | default (printf "%s-postgres-backup" .Release.Name) }}
             {{- else }}
             emptyDir: {}
             {{- end }}

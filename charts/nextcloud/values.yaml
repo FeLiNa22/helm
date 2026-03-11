@@ -150,6 +150,7 @@ env:
 ## @section DragonflyDB parameters
 ## DragonflyDB provides Redis-compatible caching for Nextcloud
 
+## @param dragonfly.enabled Enable the dragonfly subchart.
 ## @param dragonfly.mode The mode of DragonflyDB deployment: 'standalone', 'cluster', 'external', or 'disabled'.
 ## @param dragonfly.username Username for DragonflyDB authentication (default: "default").
 ## @param dragonfly.password.secretName Name of existing secret containing the password (mutually exclusive with value).
@@ -175,6 +176,7 @@ env:
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ##
 dragonfly:
+  enabled: false
   # Mode options: 'standalone', 'cluster', 'external', or 'disabled'
   # Set to 'disabled' if you don't need Redis caching for Nextcloud
   mode: disabled
@@ -236,6 +238,7 @@ dragonfly:
     # Password is sourced from the secret configured in dragonfly.password.secretName / dragonfly.password.secretKey
 
 # Database configuration
+## @param postgres.enabled Enable the postgres subchart.
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.username Username for the database.
@@ -276,6 +279,7 @@ dragonfly:
 ## @param postgres.external.port Port of external PostgreSQL.
 ##
 postgres:
+  enabled: true
   # Mode options: 'standalone', 'cluster', or 'external'
   mode: cluster
   # SQL commands to initialize the database

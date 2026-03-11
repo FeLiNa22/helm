@@ -149,6 +149,7 @@ persistence:
 ## @section Database parameters
 ## PostgreSQL database configuration for Vaultwarden
 
+## @param postgres.enabled Enable the postgres subchart.
 ## @param postgres.mode The mode of database deployment: 'standalone' (internal SQLite), 'cluster' (CloudNativePG), or 'external' (existing PostgreSQL).
 ## @param postgres.initSQL Array of SQL commands to run on database initialization (for cluster mode).
 ## @param postgres.username Username for the PostgreSQL database.
@@ -180,6 +181,9 @@ persistence:
 ## @param postgres.restore.enabled Restore the latest pg_dump backup on pre-install/pre-upgrade (default: false).
 ##
 postgres:
+  # Vaultwarden defaults to SQLite (no PostgreSQL needed). Set enabled: true to deploy PostgreSQL.
+  # Use cluster or external mode for production deployments.
+  enabled: false
   # Mode options: 'standalone' (internal SQLite, no PostgreSQL deployed), 'cluster' (CNPG), or 'external'
   mode: standalone
 

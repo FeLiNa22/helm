@@ -55,7 +55,7 @@ PostgreSQL host
 */}}
 {{- define "n8n.postgresql.host" -}}
 {{- if eq .Values.postgres.mode "standalone" }}
-{{- printf "%s-postgresql" (include "n8n.fullname" .) }}
+{{- printf "%s-postgres" .Release.Name }}
 {{- else if eq .Values.postgres.mode "cluster" }}
 {{- printf "%s-postgres-cluster-rw" .Release.Name }}
 {{- else }}

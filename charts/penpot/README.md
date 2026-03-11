@@ -281,6 +281,7 @@ The command removes all the Kubernetes components associated with the chart and 
 
 | Name                                                  | Description                                                                    | Value                               |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------- |
+| `postgres.enabled`                                    | Enable the postgres subchart.                                                  | `true`                              |
 | `postgres.mode`                                       | The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.     | `standalone`                        |
 | `postgres.initSQL`                                    | Array of SQL commands to run on database initialization.                       | `[]`                                |
 | `postgres.username`                                   | Username for the database.                                                     | `penpot`                            |

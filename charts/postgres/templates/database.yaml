@@ -1,0 +1,275 @@
+{{- $secretName := include "postgres.secretName" . -}}
+
+{{- if .Values.password.value }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  labels:
+    {{- include "postgres.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+type: kubernetes.io/basic-auth
+stringData:
+  username: {{ include "postgres.username" . }}
+  password: {{ .Values.password.value }}
+{{- else if not .Values.password.secretName }}
+{{- fail "Either password.value or password.secretName must be provided" }}
+{{- end }}
+
+{{- if eq .Values.mode "standalone" }}
+{{- if .Values.initSQL }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-postgres-init
+  labels:
+    {{- include "postgres.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+data:
+  init-extensions.sh: |
+    #!/bin/bash
+    set -e
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+      {{- range .Values.initSQL }}
+      {{ . }}
+      {{- end }}
+    EOSQL
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-postgres
+  labels:
+    {{- include "postgres.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: postgresql
+      protocol: TCP
+  selector:
+    {{- include "postgres.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-postgres
+  labels:
+    {{- include "postgres.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  serviceName: {{ .Release.Name }}-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "postgres.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: database
+  template:
+    metadata:
+      labels:
+        {{- include "postgres.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: database
+    spec:
+      containers:
+      - name: postgresql
+        image: "{{ .Values.standalone.image.repository }}:{{ .Values.standalone.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: postgresql
+          containerPort: 5432
+          protocol: TCP
+        env:
+        - name: POSTGRES_USER
+          value: {{ include "postgres.username" . | quote }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secretName }}
+              key: password
+        - name: POSTGRES_DB
+          value: {{ include "postgres.database" . | quote }}
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+        {{- if .Values.initSQL }}
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d
+        {{- end }}
+        {{- if .Values.standalone.resources }}
+        resources:
+          {{- toYaml .Values.standalone.resources | nindent 10 }}
+        {{- end }}
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U {{ include "postgres.username" . | quote }} -d {{ include "postgres.database" . | quote }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U {{ include "postgres.username" . | quote }} -d {{ include "postgres.database" . | quote }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+      volumes:
+      {{- if .Values.initSQL }}
+      - name: init-scripts
+        configMap:
+          name: {{ .Release.Name }}-postgres-init
+          defaultMode: 0755
+      {{- end }}
+      {{- if not .Values.standalone.persistence.enabled }}
+      - name: data
+        emptyDir: {}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- if .Values.standalone.persistence.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        {{- include "postgres.labels" . | nindent 8 }}
+        app.kubernetes.io/component: database
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      {{- if .Values.standalone.persistence.storageClass }}
+      storageClassName: {{ .Values.standalone.persistence.storageClass }}
+      {{- end }}
+      {{- if .Values.standalone.persistence.existingClaim }}
+      volumeName: {{ .Values.standalone.persistence.existingClaim }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.standalone.persistence.size }}
+  {{- end }}
+
+{{- else if eq .Values.mode "cluster" }}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "postgres.clusterName" . }}
+  labels:
+    {{- include "postgres.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  instances: {{ .Values.cluster.instances }}
+  primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
+
+  imageName: {{ .Values.cluster.image.repository }}:{{ .Values.cluster.image.tag }}
+
+  bootstrap:
+    initdb:
+      database: {{ include "postgres.database" . }}
+      owner: {{ include "postgres.username" . }}
+      secret:
+        name: {{ $secretName }}
+      {{- if .Values.initSQL }}
+      postInitSQL:
+        {{- toYaml .Values.initSQL | nindent 8 }}
+      {{- end }}
+
+  managed:
+    roles:
+    - name: {{ include "postgres.username" . }}
+      ensure: present
+      login: true
+      superuser: true
+
+  storage:
+    size: {{ .Values.cluster.persistence.size }}
+    {{- if .Values.cluster.persistence.storageClass }}
+    storageClass: {{ .Values.cluster.persistence.storageClass }}
+    {{- end }}
+
+  postgresql:
+    parameters:
+      max_connections: "200"
+      shared_buffers: "256MB"
+      effective_cache_size: "1GB"
+      maintenance_work_mem: "64MB"
+      checkpoint_completion_target: "0.9"
+      wal_buffers: "16MB"
+      default_statistics_target: "100"
+      random_page_cost: "1.1"
+      effective_io_concurrency: "200"
+      work_mem: "1310kB"
+      min_wal_size: "1GB"
+      max_wal_size: "4GB"
+    pg_hba:
+      - host all all all scram-sha-256
+
+  monitoring:
+    enablePodMonitor: false
+
+  {{- if .Values.cluster.pitrBackup.enabled }}
+  backup:
+    barmanObjectStore:
+      destinationPath: {{ .Values.cluster.pitrBackup.objectStorage.destinationPath }}
+      {{- if .Values.cluster.pitrBackup.objectStorage.endpointURL }}
+      endpointURL: {{ .Values.cluster.pitrBackup.objectStorage.endpointURL }}
+      {{- end }}
+      {{- if .Values.cluster.pitrBackup.objectStorage.secretName }}
+      s3Credentials:
+        accessKeyId:
+          name: {{ .Values.cluster.pitrBackup.objectStorage.secretName }}
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: {{ .Values.cluster.pitrBackup.objectStorage.secretName }}
+          key: ACCESS_SECRET_KEY
+        {{- if .Values.cluster.pitrBackup.objectStorage.region }}
+        region:
+          value: {{ .Values.cluster.pitrBackup.objectStorage.region }}
+        {{- end }}
+      {{- end }}
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: {{ .Values.cluster.pitrBackup.retentionPolicy | default "30d" | quote }}
+  {{- end }}
+
+  {{- with .Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.affinity }}
+  affinity:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

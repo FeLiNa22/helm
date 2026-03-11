@@ -58,7 +58,7 @@ PostgreSQL host
 */}}
 {{- define "immich.postgresql.host" -}}
 {{- if eq .Values.postgres.mode "standalone" }}
-{{- printf "%s-postgresql" (include "immich.fullname" .) }}
+{{- printf "%s-postgres" .Release.Name }}
 {{- else if eq .Values.postgres.mode "cluster" }}
 {{- printf "%s-postgres-cluster-rw" .Release.Name }}
 {{- else }}
@@ -109,9 +109,9 @@ DragonflyDB/Redis host
 */}}
 {{- define "immich.dragonfly.host" -}}
 {{- if eq .Values.dragonfly.mode "standalone" }}
-{{- printf "%s-dragonfly" (include "immich.fullname" .) }}
+{{- printf "%s-dragonfly" .Release.Name }}
 {{- else if eq .Values.dragonfly.mode "cluster" }}
-{{- printf "%s-dragonfly-cluster" (include "immich.fullname" .) }}
+{{- printf "%s-dragonfly-cluster" .Release.Name }}
 {{- else if eq .Values.dragonfly.mode "external" }}
 {{- .Values.dragonfly.external.host }}
 {{- end }}

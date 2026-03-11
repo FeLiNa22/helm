@@ -1,13 +1,12 @@
-{{- if and .Values.postgres.restore.enabled .Values.postgres.backup.persistence.enabled }}
-{{- $fullName := include "authentik.fullname" . -}}
-{{- $secretName := include "authentik.postgresql.secretName" . -}}
+{{- if and .Values.restore.enabled .Values.backup.persistence.enabled }}
+{{- $secretName := include "postgres.secretName" . -}}
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ $fullName }}-postgres-restore
+  name: {{ .Release.Name }}-postgres-restore
   labels:
-    {{- include "authentik.labels" . | nindent 4 }}
+    {{- include "postgres.labels" . | nindent 4 }}
     app.kubernetes.io/component: postgres-restore
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
@@ -17,16 +16,16 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "authentik.selectorLabels" . | nindent 8 }}
+        {{- include "postgres.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: postgres-restore
     spec:
       restartPolicy: OnFailure
       containers:
       - name: restore
-        {{- if and .Values.postgres.backup.image.repository .Values.postgres.backup.image.tag }}
-        image: "{{ .Values.postgres.backup.image.repository }}:{{ .Values.postgres.backup.image.tag }}"
-        {{- else if eq .Values.postgres.mode "standalone" }}
-        image: "{{ .Values.postgres.standalone.image.repository }}:{{ .Values.postgres.standalone.image.tag }}"
+        {{- if and .Values.backup.image.repository .Values.backup.image.tag }}
+        image: "{{ .Values.backup.image.repository }}:{{ .Values.backup.image.tag }}"
+        {{- else if eq .Values.mode "standalone" }}
+        image: "{{ .Values.standalone.image.repository }}:{{ .Values.standalone.image.tag }}"
         {{- else }}
         image: "postgres:16-alpine"
         {{- end }}
@@ -37,19 +36,20 @@ spec:
         - |
           set -e
           BACKUP_DIR="/backups"
-          {{- if .Values.postgres.restore.name }}
-          LATEST="${BACKUP_DIR}/{{ .Values.postgres.restore.name }}"
+          APP_NAME="{{ .Release.Name }}"
+          {{- if .Values.restore.name }}
+          LATEST="${BACKUP_DIR}/{{ .Values.restore.name }}"
           if [ ! -f "$LATEST" ]; then
             echo "Specified backup not found: ${LATEST}"
             exit 1
           fi
           if ! gzip -t "$LATEST" 2>/dev/null; then
-            echo "Specified backup is not a valid gzip file: ${LATEST}"
+            echo "Specified backup is not a valid gzip file: ${LATEST}. Verify the file integrity or set restore.name to a different backup."
             exit 1
           fi
           {{- else }}
           LATEST=""
-          for CANDIDATE in $(ls -t "${BACKUP_DIR}"/authentik_backup_*.sql.gz 2>/dev/null); do
+          for CANDIDATE in $(ls -t "${BACKUP_DIR}"/${APP_NAME}_backup_*.sql.gz 2>/dev/null); do
             if gzip -t "${CANDIDATE}" 2>/dev/null; then
               LATEST="${CANDIDATE}"
               break
@@ -70,13 +70,13 @@ spec:
           echo "Restore completed successfully"
         env:
         - name: POSTGRES_HOST
-          value: {{ include "authentik.postgresql.host" . }}
+          value: {{ include "postgres.host" . }}
         - name: POSTGRES_PORT
-          value: {{ include "authentik.postgresql.port" . | quote }}
+          value: {{ include "postgres.port" . | quote }}
         - name: POSTGRES_USER
-          value: {{ include "authentik.postgresql.username" . | quote }}
+          value: {{ include "postgres.username" . | quote }}
         - name: POSTGRES_DB
-          value: {{ include "authentik.postgresql.database" . | quote }}
+          value: {{ include "postgres.database" . | quote }}
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -88,7 +88,7 @@ spec:
       volumes:
       - name: backup-data
         persistentVolumeClaim:
-          claimName: {{ .Values.postgres.backup.persistence.existingClaim | default (printf "%s-postgres-backup" $fullName) }}
+          claimName: {{ .Values.backup.persistence.existingClaim | default (printf "%s-postgres-backup" .Release.Name) }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

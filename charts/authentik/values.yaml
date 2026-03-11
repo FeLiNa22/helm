@@ -227,6 +227,7 @@ persistence:
 
 ## @section PostgreSQL Configuration
 
+## @param postgres.enabled Enable the postgres subchart.
 ## @param postgres.mode Database deployment mode: 'standalone', 'cluster', or 'external'.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.database Database name.
@@ -242,7 +243,6 @@ persistence:
 ## @param postgres.standalone.image.autoupdate.enabled Enable automatic image updates for standalone PostgreSQL.
 ## @param postgres.standalone.image.autoupdate.updateStrategy Strategy for image updates for standalone PostgreSQL.
 ## @param postgres.standalone.resources Resource limits for standalone database.
-## @param postgres.cluster.name Name of the CloudNativePG cluster.
 ## @param postgres.cluster.instances Number of instances in the cluster.
 ## @param postgres.cluster.readReplicas.enabled Enable read replicas configuration for authentik (uses CNPG read-only service).
 ## @param postgres.cluster.persistence.enabled Enable persistence for cluster database.
@@ -272,6 +272,7 @@ persistence:
 ## @param postgres.restore.name Optional backup filename to restore (e.g. authentik_backup_20240101_120000.sql.gz). If empty, restores the latest valid backup.
 ##
 postgres:
+  enabled: true
   # Mode: 'standalone', 'cluster', or 'external'
   mode: standalone
   
@@ -318,7 +319,6 @@ postgres:
   
   # Cluster mode - CloudNativePG
   cluster:
-    name: authentik-db
     instances: 2
     # Enable read replicas for load distribution
     # When enabled, authentik will use the read-only service endpoint for read operations

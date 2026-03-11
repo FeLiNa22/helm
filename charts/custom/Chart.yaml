@@ -2,7 +2,7 @@ apiVersion: v2
 name: custom
 description: A Helm chart for deploying a generic Docker image with optional PostgreSQL database
 type: application
-version: 0.4.8
+version: 0.4.9
 appVersion: "latest"
 keywords:
   - custom
@@ -11,3 +11,10 @@ keywords:
   - generic
 maintainers:
   - name: FeLiNa22
+
+dependencies:
+  - name: postgres
+    version: ">=1.0.0"
+    repository: "file://../postgres"
+    alias: postgres
+    condition: postgres.enabled
