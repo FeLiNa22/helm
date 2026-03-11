@@ -1659,6 +1659,39 @@ entries:
   immich:
   - apiVersion: v2
     appVersion: v2.4.1
+    created: "2026-03-11T17:30:45.093658535Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    - alias: dragonfly
+      condition: dragonfly.enabled
+      name: dragonfly
+      repository: file://../dragonfly
+      version: '>=1.0.0'
+    description: A Helm chart for Immich - High performance self-hosted photo and
+      video management solution
+    digest: 4d8e19faa7ddce49488946029d6a1efc67db7b7bae872760416be1b0ddc5f202
+    home: https://immich.app
+    keywords:
+    - immich
+    - photos
+    - videos
+    - media
+    - self-hosted
+    maintainers:
+    - name: FeLiNa22
+    name: immich
+    sources:
+    - https://github.com/immich-app/immich
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/immich-1.6.14/immich-1.6.14.tgz
+    version: 1.6.14
+  - apiVersion: v2
+    appVersion: v2.4.1
     created: "2026-03-11T14:55:55.197862221Z"
     dependencies:
     - alias: postgres
@@ -4287,6 +4320,23 @@ entries:
   postgres:
   - apiVersion: v2
     appVersion: "16"
+    created: "2026-03-11T17:30:45.228754065Z"
+    description: PostgreSQL database - standalone StatefulSet, CloudNativePG cluster,
+      or external database
+    digest: 3a27bc72b64200db21a489cd56d31a9f0cc0ee537cb3ea626d2c18c576870e47
+    keywords:
+    - postgresql
+    - postgres
+    - database
+    maintainers:
+    - name: FeLiNa22
+    name: postgres
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/postgres-1.0.3/postgres-1.0.3.tgz
+    version: 1.0.3
+  - apiVersion: v2
+    appVersion: "16"
     created: "2026-03-11T14:55:55.369742255Z"
     description: PostgreSQL database - standalone StatefulSet, CloudNativePG cluster,
       or external database
@@ -6549,4 +6599,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-03-11T14:55:55.370466988Z"
+generated: "2026-03-11T17:30:45.229963248Z"
