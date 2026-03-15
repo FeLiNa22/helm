@@ -348,7 +348,7 @@ postgres:
   # Database backups (pg_dump)
   backup:
     enabled: false
-    cron: "0 2 * * *"
+    cron: ""
     retention: 30
     image:
       repository: ""  # Leave empty to use standalone image or postgres:16-alpine for external mode
