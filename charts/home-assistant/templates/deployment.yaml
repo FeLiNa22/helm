@@ -20,15 +20,17 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
+      {{- $annotations := dict }}
       {{- if and .Values.velero.enabled (or .Values.persistence.enabled .Values.persistence.backup.enabled) }}
-      annotations:
-        backup.velero.io/backup-volumes: {{ if .Values.persistence.backup.enabled }}backup{{ else }}config{{ end }}
+        {{- $backupVol := ternary "backup" "config" .Values.persistence.backup.enabled }}
+        {{- $_ := set $annotations "backup.velero.io/backup-volumes" $backupVol }}
       {{- end }}
       {{- with .Values.podAnnotations }}
-      {{- if not (and $.Values.velero.enabled (or $.Values.persistence.enabled $.Values.persistence.backup.enabled)) }}
-      annotations:
+        {{- $annotations = merge $annotations . }}
       {{- end }}
-        {{- toYaml . | nindent 8 }}
+      {{- if $annotations }}
+      annotations:
+        {{- toYaml $annotations | nindent 8 }}
       {{- end }}
       labels:
         app.kubernetes.io/name: home-assistant
@@ -36,6 +38,14 @@ spec:
         app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
         app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     spec:
+      {{- if .Values.hostNetwork }}
+      hostNetwork: {{ .Values.hostNetwork }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy }}
+      {{- else if .Values.hostNetwork }}
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -88,6 +98,18 @@ spec:
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
