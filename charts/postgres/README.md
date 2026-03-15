@@ -1,6 +1,6 @@
 # postgres
 
-Reusable PostgreSQL dependency chart. Supports standalone (StatefulSet), cluster (CloudNativePG CRD), and external modes. Includes optional pg_dump backup CronJob and restore Job.
+Reusable PostgreSQL dependency chart. Supports standalone (StatefulSet), cluster (CloudNativePG CRD), and external modes. Includes optional backup (CNPG ScheduledBackup in cluster mode, pg_dump CronJob otherwise) and restore Job.
 
 ## Parameters
 
@@ -36,8 +36,8 @@ Reusable PostgreSQL dependency chart. Supports standalone (StatefulSet), cluster
 | `cluster.pitrBackup.objectStorage.region`          | Region of the object storage bucket.                                                                     | `""`                                |
 | `external.host`                                    | Hostname of the external PostgreSQL instance.                                                            | `""`                                |
 | `external.port`                                    | Port of the external PostgreSQL instance.                                                                | `5432`                              |
-| `backup.enabled`                                   | Enable pg_dump CronJob backup.                                                                           | `false`                             |
-| `backup.cron`                                      | Cron schedule for pg_dump backup (default: daily at 2am).                                                | `0 2 * * *`                         |
+| `backup.enabled`                                   | Enable backup. When mode=cluster, creates a CNPG ScheduledBackup CRD. Otherwise creates a pg_dump CronJob. | `false`                             |
+| `backup.cron`                                      | Cron schedule for backup (default: weekly on Sunday at midnight). Drives CNPG ScheduledBackup in cluster mode, pg_dump CronJob otherwise. | `0 0 * * 0`                         |
 | `backup.retention`                                 | Number of days to retain backups.                                                                        | `30`                                |
 | `backup.timeout`                                   | Maximum seconds allowed for pg_dump to complete.                                                         | `300`                               |
 | `backup.image.repository`                          | Docker image repository for the backup job (defaults to standalone image).                               | `""`                                |
@@ -47,8 +47,8 @@ Reusable PostgreSQL dependency chart. Supports standalone (StatefulSet), cluster
 | `backup.persistence.storageClass`                  | Storage class for the backup persistent volume.                                                          | `""`                                |
 | `backup.persistence.accessMode`                    | Access mode for the backup persistent volume.                                                            | `ReadWriteOnce`                     |
 | `backup.persistence.existingClaim`                 | Name of an existing PVC for backups.                                                                     | `""`                                |
-| `restore.enabled`                                  | Enable one-shot restore Job (Helm pre-install/pre-upgrade hook).                                         | `false`                             |
-| `restore.name`                                     | Specific backup filename to restore. When empty, uses the latest valid backup.                           | `""`                                |
+| `restore.enabled`                                  | Enable restore. In cluster mode, configures CNPG recovery bootstrap. Otherwise runs a pg_dump restore Job (Helm pre-install/pre-upgrade hook). | `false`                             |
+| `restore.name`                                     | Backup to restore. In cluster mode, the name of the CNPG Backup resource (required). In standalone/external mode, a backup filename; empty means latest. | `""`                                |
 | `nodeSelector`                                     | Node selector for standalone StatefulSet, backup CronJob, and restore Job pods.                          | `{}`                                |
 | `tolerations`                                      | Tolerations for standalone StatefulSet, backup CronJob, and restore Job pods.                            | `[]`                                |
 | `affinity`                                         | Affinity rules for standalone StatefulSet, backup CronJob, and restore Job pods.                         | `{}`                                |

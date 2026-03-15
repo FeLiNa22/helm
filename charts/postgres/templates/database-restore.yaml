@@ -1,4 +1,4 @@
-{{- if and .Values.restore.enabled .Values.backup.persistence.enabled }}
+{{- if and .Values.restore.enabled .Values.backup.persistence.enabled (ne .Values.mode "cluster") }}
 {{- $secretName := include "postgres.secretName" . -}}
 ---
 apiVersion: batch/v1

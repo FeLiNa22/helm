@@ -188,6 +188,11 @@ spec:
   imageName: {{ .Values.cluster.image.repository }}:{{ .Values.cluster.image.tag }}
 
   bootstrap:
+    {{- if .Values.restore.enabled }}
+    recovery:
+      backup:
+        name: {{ required "restore.name must be set to the name of a CNPG Backup resource when restoring in cluster mode (list available backups with: kubectl get backups -n <namespace>)" .Values.restore.name }}
+    {{- else }}
     initdb:
       database: {{ include "postgres.database" . }}
       owner: {{ include "postgres.username" . }}
@@ -197,6 +202,7 @@ spec:
       postInitSQL:
         {{- toYaml .Values.initSQL | nindent 8 }}
       {{- end }}
+    {{- end }}
 
   managed:
     roles:
