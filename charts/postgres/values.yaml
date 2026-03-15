@@ -75,31 +75,20 @@ external:
   host: ""
   port: 5432
 
-## @param backup.enabled Enable backup. When mode=cluster, configures barmanObjectStore on the Cluster CRD and creates a CNPG ScheduledBackup CRD. When mode=standalone or mode=external, creates a pg_dump CronJob.
+## @param backup.enabled Enable backup. When mode=cluster, creates a CNPG ScheduledBackup CRD. Otherwise creates a pg_dump CronJob.
 ## @param backup.cron Cron schedule for backup (default: weekly on Sunday at midnight UTC). In cluster mode this drives the CNPG ScheduledBackup; otherwise it drives the pg_dump CronJob.
-## @param backup.retentionPolicy Retention policy for CNPG base backups (cluster mode only, e.g. "30d").
-## @param backup.objectStorage.destinationPath Destination path in the object storage bucket (cluster mode only).
-## @param backup.objectStorage.endpointURL Endpoint URL for the object storage provider (cluster mode only).
-## @param backup.objectStorage.secretName Name of the secret containing object storage credentials (cluster mode only).
-## @param backup.objectStorage.region Region of the object storage bucket (cluster mode only).
-## @param backup.retention Number of days to retain pg_dump backups (standalone/external mode only).
-## @param backup.timeout Maximum seconds allowed for pg_dump to complete (standalone/external mode only).
-## @param backup.image.repository Docker image repository for the pg_dump backup job (standalone/external mode only, defaults to standalone image).
-## @param backup.image.tag Docker image tag for the pg_dump backup job.
-## @param backup.persistence.enabled Enable persistent storage for pg_dump backup files (standalone/external mode only).
-## @param backup.persistence.size Size of the persistent volume for pg_dump backups.
-## @param backup.persistence.storageClass Storage class for the pg_dump backup persistent volume.
-## @param backup.persistence.accessMode Access mode for the pg_dump backup persistent volume.
-## @param backup.persistence.existingClaim Name of an existing PVC for pg_dump backups.
+## @param backup.retention Number of days to retain backups.
+## @param backup.timeout Maximum seconds allowed for pg_dump to complete.
+## @param backup.image.repository Docker image repository for the backup job (defaults to standalone image).
+## @param backup.image.tag Docker image tag for the backup job.
+## @param backup.persistence.enabled Enable persistent storage for backup files.
+## @param backup.persistence.size Size of the persistent volume for backups.
+## @param backup.persistence.storageClass Storage class for the backup persistent volume.
+## @param backup.persistence.accessMode Access mode for the backup persistent volume.
+## @param backup.persistence.existingClaim Name of an existing PVC for backups.
 backup:
   enabled: false
   cron: "0 0 * * 0"
-  retentionPolicy: "30d"
-  objectStorage:
-    destinationPath: ""
-    endpointURL: ""
-    secretName: ""
-    region: ""
   retention: 30
   timeout: 300
   image:
