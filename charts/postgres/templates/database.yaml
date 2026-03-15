@@ -226,31 +226,36 @@ spec:
   monitoring:
     enablePodMonitor: false
 
-  {{- if .Values.cluster.pitrBackup.enabled }}
+  {{- if or .Values.backup.enabled .Values.cluster.pitrBackup.enabled }}
+  {{- $destPath := .Values.backup.objectStorage.destinationPath | default .Values.cluster.pitrBackup.objectStorage.destinationPath }}
+  {{- $endpointURL := .Values.backup.objectStorage.endpointURL | default .Values.cluster.pitrBackup.objectStorage.endpointURL }}
+  {{- $objectStorageSecretName := .Values.backup.objectStorage.secretName | default .Values.cluster.pitrBackup.objectStorage.secretName }}
+  {{- $region := .Values.backup.objectStorage.region | default .Values.cluster.pitrBackup.objectStorage.region }}
+  {{- $retentionPolicy := .Values.backup.retentionPolicy | default .Values.cluster.pitrBackup.retentionPolicy | default "30d" }}
   backup:
     barmanObjectStore:
-      destinationPath: {{ .Values.cluster.pitrBackup.objectStorage.destinationPath }}
-      {{- if .Values.cluster.pitrBackup.objectStorage.endpointURL }}
-      endpointURL: {{ .Values.cluster.pitrBackup.objectStorage.endpointURL }}
+      destinationPath: {{ $destPath }}
+      {{- if $endpointURL }}
+      endpointURL: {{ $endpointURL }}
       {{- end }}
-      {{- if .Values.cluster.pitrBackup.objectStorage.secretName }}
+      {{- if $objectStorageSecretName }}
       s3Credentials:
         accessKeyId:
-          name: {{ .Values.cluster.pitrBackup.objectStorage.secretName }}
+          name: {{ $objectStorageSecretName }}
           key: ACCESS_KEY_ID
         secretAccessKey:
-          name: {{ .Values.cluster.pitrBackup.objectStorage.secretName }}
+          name: {{ $objectStorageSecretName }}
           key: ACCESS_SECRET_KEY
-        {{- if .Values.cluster.pitrBackup.objectStorage.region }}
+        {{- if $region }}
         region:
-          value: {{ .Values.cluster.pitrBackup.objectStorage.region }}
+          value: {{ $region }}
         {{- end }}
       {{- end }}
       wal:
         compression: gzip
       data:
         compression: gzip
-    retentionPolicy: {{ .Values.cluster.pitrBackup.retentionPolicy | default "30d" | quote }}
+    retentionPolicy: {{ $retentionPolicy | quote }}
   {{- end }}
 
   {{- with .Values.nodeSelector }}
