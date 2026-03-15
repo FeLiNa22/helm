@@ -80,7 +80,7 @@ spec:
             - name: POSTGRES_HOST
               value: {{ .Release.Name }}-postgres
             - name: POSTGRES_DB
-              value: {{ .Values.postgres.username }}
+              value: {{ include "nextcloud.postgresql.database" . }}
             - name: POSTGRES_USER
               value: {{ .Values.postgres.username }}
             - name: POSTGRES_PASSWORD
@@ -109,7 +109,7 @@ spec:
             - name: POSTGRES_HOST
               value: {{ .Values.postgres.external.host }}:{{ .Values.postgres.external.port | default 5432 }}
             - name: POSTGRES_DB
-              value: {{ .Values.postgres.username }}
+              value: {{ include "nextcloud.postgresql.database" . }}
             - name: POSTGRES_USER
               value: {{ .Values.postgres.username }}
             - name: POSTGRES_PASSWORD
@@ -130,10 +130,60 @@ spec:
                   name: {{ include "nextcloud.dragonfly.secretName" . }}
                   key: {{ include "nextcloud.dragonfly.passwordKey" . }}
             {{- end }}
+            - name: NEXTCLOUD_DATA_DIR
+              value: /var/www/html/data
             {{- range $k,$v := .Values.env }}
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
+          {{- with .Values.livenessProbe }}
+          {{- if .enabled }}
+          livenessProbe:
+            httpGet:
+              path: /status.php
+              port: http
+              httpHeaders:
+                - name: Host
+                  value: {{ $.Values.nextcloudHost | quote }}
+            initialDelaySeconds: {{ .initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
+            successThreshold: {{ .successThreshold }}
+            failureThreshold: {{ .failureThreshold }}
+          {{- end }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          {{- if .enabled }}
+          readinessProbe:
+            httpGet:
+              path: /status.php
+              port: http
+              httpHeaders:
+                - name: Host
+                  value: {{ $.Values.nextcloudHost | quote }}
+            initialDelaySeconds: {{ .initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
+            successThreshold: {{ .successThreshold }}
+            failureThreshold: {{ .failureThreshold }}
+          {{- end }}
+          {{- end }}
+          {{- with .Values.startupProbe }}
+          {{- if .enabled }}
+          startupProbe:
+            httpGet:
+              path: /status.php
+              port: http
+              httpHeaders:
+                - name: Host
+                  value: {{ $.Values.nextcloudHost | quote }}
+            initialDelaySeconds: {{ .initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
+            successThreshold: {{ .successThreshold }}
+            failureThreshold: {{ .failureThreshold }}
+          {{- end }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
