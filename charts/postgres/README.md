@@ -1,6 +1,6 @@
 # postgres
 
-Reusable PostgreSQL dependency chart. Supports standalone (StatefulSet), cluster (CloudNativePG CRD), and external modes. Includes optional pg_dump backup CronJob and restore Job.
+Reusable PostgreSQL dependency chart. Supports standalone (StatefulSet), cluster (CloudNativePG CRD), and external modes. Includes optional backup (CNPG ScheduledBackup in cluster mode, pg_dump CronJob otherwise) and restore Job.
 
 ## Parameters
 
@@ -36,7 +36,7 @@ Reusable PostgreSQL dependency chart. Supports standalone (StatefulSet), cluster
 | `cluster.pitrBackup.objectStorage.region`          | Region of the object storage bucket.                                                                     | `""`                                |
 | `external.host`                                    | Hostname of the external PostgreSQL instance.                                                            | `""`                                |
 | `external.port`                                    | Port of the external PostgreSQL instance.                                                                | `5432`                              |
-| `backup.enabled`                                   | Enable pg_dump CronJob backup.                                                                           | `false`                             |
+| `backup.enabled`                                   | Enable backup. When mode=cluster, creates a CNPG ScheduledBackup CRD. Otherwise creates a pg_dump CronJob. | `false`                             |
 | `backup.cron`                                      | Cron schedule for pg_dump backup (default: daily at 2am).                                                | `0 2 * * *`                         |
 | `backup.retention`                                 | Number of days to retain backups.                                                                        | `30`                                |
 | `backup.timeout`                                   | Maximum seconds allowed for pg_dump to complete.                                                         | `300`                               |

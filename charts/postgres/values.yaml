@@ -75,7 +75,7 @@ external:
   host: ""
   port: 5432
 
-## @param backup.enabled Enable pg_dump CronJob backup.
+## @param backup.enabled Enable backup. When mode=cluster, creates a CNPG ScheduledBackup CRD. Otherwise creates a pg_dump CronJob.
 ## @param backup.cron Cron schedule for pg_dump backup (default: daily at 2am).
 ## @param backup.retention Number of days to retain backups.
 ## @param backup.timeout Maximum seconds allowed for pg_dump to complete.
