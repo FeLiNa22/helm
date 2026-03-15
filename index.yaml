@@ -4374,6 +4374,23 @@ entries:
   postgres:
   - apiVersion: v2
     appVersion: "16"
+    created: "2026-03-15T19:31:39.643462685Z"
+    description: PostgreSQL database - standalone StatefulSet, CloudNativePG cluster,
+      or external database
+    digest: cd6917f048903347bf68fe8b4caf6ae9db381fc8a22782f163e5bbbd09e39d66
+    keywords:
+    - postgresql
+    - postgres
+    - database
+    maintainers:
+    - name: FeLiNa22
+    name: postgres
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/postgres-1.0.4/postgres-1.0.4.tgz
+    version: 1.0.4
+  - apiVersion: v2
+    appVersion: "16"
     created: "2026-03-11T17:30:45.228754065Z"
     description: PostgreSQL database - standalone StatefulSet, CloudNativePG cluster,
       or external database
@@ -6653,4 +6670,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-03-15T17:49:48.190397602Z"
+generated: "2026-03-15T19:31:39.643946725Z"
