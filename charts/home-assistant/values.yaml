@@ -19,6 +19,8 @@
 ## @param podAnnotations Additional annotations to add to the pod.
 ## @param podSecurityContext The security context to use for the pod.
 ## @param securityContext.privileged Whether to run the container in privileged mode.
+## @param hostNetwork Enable host network mode (required for local device discovery).
+## @param dnsPolicy Set the DNS policy. Use ClusterFirstWithHostNet when hostNetwork is true.
 ## @param initContainers Additional init containers to add to the pod.
 ## @param service.type The type of service to create.
 ## @param service.port The port on which the service will run.
@@ -36,6 +38,21 @@
 ## @param autoscaling.maxReplicas The maximum number of replicas to scale to.
 ## @param autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
 ## @param autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
+## @param livenessProbe.failureThreshold Failure threshold for the liveness probe.
+## @param livenessProbe.httpGet.path HTTP path for the liveness probe.
+## @param livenessProbe.httpGet.port HTTP port for the liveness probe.
+## @param livenessProbe.httpGet.scheme HTTP scheme for the liveness probe.
+## @param livenessProbe.periodSeconds Period in seconds for the liveness probe.
+## @param livenessProbe.successThreshold Success threshold for the liveness probe.
+## @param livenessProbe.timeoutSeconds Timeout in seconds for the liveness probe.
+## @param readinessProbe.failureThreshold Failure threshold for the readiness probe.
+## @param readinessProbe.httpGet.path HTTP path for the readiness probe.
+## @param readinessProbe.httpGet.port HTTP port for the readiness probe.
+## @param readinessProbe.httpGet.scheme HTTP scheme for the readiness probe.
+## @param readinessProbe.periodSeconds Period in seconds for the readiness probe.
+## @param readinessProbe.successThreshold Success threshold for the readiness probe.
+## @param readinessProbe.timeoutSeconds Timeout in seconds for the readiness probe.
+## @param startupProbe Startup probe configuration for the Home Assistant container.
 ## @param nodeSelector The node selector to use for the pod.
 ## @param tolerations The tolerations to use for the pod.
 ## @param affinity The affinity to use for the pod.
@@ -93,6 +110,14 @@ securityContext:
   # runAsNonRoot: true
   # runAsUser: 1000
 
+# Enable hostNetwork to allow Home Assistant to access host-level network interfaces.
+# This is required for auto-discovery of local devices (mDNS, UPnP, etc.).
+hostNetwork: false
+
+# Set the DNS policy. Use ClusterFirstWithHostNet when hostNetwork is true so that
+# in-cluster DNS still works alongside host network access.
+dnsPolicy: ""
+
 initContainers: []
   # - name: init-container
   #   image: busybox
@@ -133,6 +158,37 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
+
+livenessProbe:
+  failureThreshold: 3
+  httpGet:
+    path: /
+    port: http
+    scheme: HTTP
+  periodSeconds: 20
+  successThreshold: 1
+  timeoutSeconds: 2
+
+readinessProbe:
+  failureThreshold: 3
+  httpGet:
+    path: /
+    port: http
+    scheme: HTTP
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 1
+
+startupProbe: {}
+  # initialDelaySeconds: 30
+  # periodSeconds: 5
+  # timeoutSeconds: 1
+  # successThreshold: 1
+  # failureThreshold: 30
+  # httpGet:
+  #   scheme: HTTP
+  #   path: /
+  #   port: http
 
 nodeSelector: {}
 
