@@ -1334,6 +1334,27 @@ entries:
   home-assistant:
   - apiVersion: v2
     appVersion: 2024.11.3
+    created: "2026-03-15T17:49:48.189736353Z"
+    description: Home Assistant Helm Chart
+    digest: 7f8a618323623b4da5c1dcd189eaba9a65de38ed410903bb9ffed824f93de782
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/home-assistant
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - home-assistant
+    - smart-home
+    - automation
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: home-assistant
+    sources:
+    - https://github.com/home-assistant/core
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/home-assistant-1.2.4/home-assistant-1.2.4.tgz
+    version: 1.2.4
+  - apiVersion: v2
+    appVersion: 2024.11.3
     created: "2026-03-05T00:35:46.06251277Z"
     description: Home Assistant Helm Chart
     digest: 516d7dca063abf9b2fcc22601bbf2968b3a1efc7d5f7957df6ed9527cb82afc4
@@ -6632,4 +6653,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-03-15T17:24:36.609988871Z"
+generated: "2026-03-15T17:49:48.190397602Z"
