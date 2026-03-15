@@ -147,6 +147,61 @@ env:
   # Database and cache connection will be configured via secrets when enabled
   # Otherwise, configure these manually for external services
 
+## @param nextcloudHost The hostname used for liveness/readiness probe Host headers. Should match the ingress host.
+nextcloudHost: "localhost"
+
+## @param cronjob.enabled Whether to enable the Nextcloud background job CronJob.
+## @param cronjob.schedule Cron schedule for background jobs (default: every 5 minutes).
+## @param cronjob.successfulJobsHistoryLimit Number of successful job history entries to keep.
+## @param cronjob.failedJobsHistoryLimit Number of failed job history entries to keep.
+cronjob:
+  enabled: true
+  schedule: "*/5 * * * *"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 5
+
+## @param livenessProbe.enabled Whether to enable the liveness probe.
+## @param livenessProbe.initialDelaySeconds Initial delay before the liveness probe starts.
+## @param livenessProbe.periodSeconds Period between liveness probe checks.
+## @param livenessProbe.timeoutSeconds Timeout for the liveness probe.
+## @param livenessProbe.successThreshold Success threshold for the liveness probe.
+## @param livenessProbe.failureThreshold Failure threshold for the liveness probe.
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+## @param readinessProbe.enabled Whether to enable the readiness probe.
+## @param readinessProbe.initialDelaySeconds Initial delay before the readiness probe starts.
+## @param readinessProbe.periodSeconds Period between readiness probe checks.
+## @param readinessProbe.timeoutSeconds Timeout for the readiness probe.
+## @param readinessProbe.successThreshold Success threshold for the readiness probe.
+## @param readinessProbe.failureThreshold Failure threshold for the readiness probe.
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+## @param startupProbe.enabled Whether to enable the startup probe.
+## @param startupProbe.initialDelaySeconds Initial delay before the startup probe starts.
+## @param startupProbe.periodSeconds Period between startup probe checks.
+## @param startupProbe.timeoutSeconds Timeout for the startup probe.
+## @param startupProbe.successThreshold Success threshold for the startup probe.
+## @param startupProbe.failureThreshold Failure threshold for the startup probe (30 * 10s = 5 min max startup time).
+startupProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 30
+
 ## @section DragonflyDB parameters
 ## DragonflyDB provides Redis-compatible caching for Nextcloud
 
