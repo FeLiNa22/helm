@@ -2717,6 +2717,39 @@ entries:
   nextcloud:
   - apiVersion: v2
     appVersion: 32.0.3
+    created: "2026-03-15T17:24:36.48480292Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    - alias: dragonfly
+      condition: dragonfly.enabled
+      name: dragonfly
+      repository: file://../dragonfly
+      version: '>=1.0.0'
+    description: Nextcloud Helm Chart
+    digest: e9c50cdc98d0f2dae88a4ef8b4077970e3cc4f896d63f2d3bc17de91579a30e8
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/nextcloud
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - nextcloud
+    - cloud
+    - storage
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: nextcloud
+    sources:
+    - https://github.com/nextcloud/server
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/nextcloud-1.5.0/nextcloud-1.5.0.tgz
+    version: 1.5.0
+  - apiVersion: v2
+    appVersion: 32.0.3
     created: "2026-03-11T10:23:33.878078452Z"
     dependencies:
     - alias: postgres
@@ -6599,4 +6632,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-03-11T17:30:45.229963248Z"
+generated: "2026-03-15T17:24:36.609988871Z"
