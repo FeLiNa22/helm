@@ -122,7 +122,7 @@ metadata:
     {{- include "postgres.labels" . | nindent 4 }}
     app.kubernetes.io/component: postgres-backup
 spec:
-  schedule: {{ .Values.backup.cron | default "0 2 * * *" | quote }}
+  schedule: {{ .Values.backup.cron | default "0 0 * * 0" | quote }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
