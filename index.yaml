@@ -1029,6 +1029,29 @@ entries:
   frigate:
   - apiVersion: v2
     appVersion: 0.14.1
+    created: "2026-03-17T23:17:00.786256968Z"
+    description: Frigate NVR Helm Chart
+    digest: 8d7be57273c95234efdd5d4db181c1773edadc90cc5e4693ba3c99626cdd8bb8
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/frigate
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - frigate
+    - nvr
+    - security
+    - cameras
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: frigate
+    sources:
+    - https://github.com/blakeblackshear/frigate
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/frigate-1.4.0/frigate-1.4.0.tgz
+    version: 1.4.0
+  - apiVersion: v2
+    appVersion: 0.14.1
     created: "2026-03-17T18:01:05.961279363Z"
     dependencies:
     - alias: postgres
@@ -6699,4 +6722,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-03-17T18:01:06.095434004Z"
+generated: "2026-03-17T23:17:00.786698125Z"
