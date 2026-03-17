@@ -49,6 +49,8 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        - name: data
+          emptyDir: { }
         - name: media
           {{- if .Values.persistence.media.enabled }}
           persistentVolumeClaim:
@@ -56,6 +58,10 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.shmSize | default "1Gi" }}
         {{- if .Values.tmpfs.enabled }}
         - name: cache
           emptyDir:
@@ -74,8 +80,12 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
+            - mountPath: /data
+              name: data
             - mountPath: /media/frigate
               name: media
+            - mountPath: /dev/shm
+              name: dshm
             {{- if .Values.tmpfs.enabled }}
             - mountPath: /tmp/cache
               name: cache
@@ -87,28 +97,25 @@ spec:
             - name: http
               containerPort: 5000
               protocol: TCP
+            - name: http-auth
+              containerPort: 8971
+              protocol: TCP
+            - name: rtmp
+              containerPort: 1935
+              protocol: TCP
             - name: rtsp
               containerPort: 8554
               protocol: TCP
-            - name: webrtc
+            - name: webrtc-tcp
               containerPort: 8555
               protocol: TCP
+            - name: webrtc-udp
+              containerPort: 8555
+              protocol: UDP
+            - name: go2rtc-admin
+              containerPort: 1984
+              protocol: TCP
           env:
-            {{- if eq .Values.postgres.mode "cluster" }}
-            - name: DB_USER
-              value: {{ .Values.postgres.username }}
-            - name: DB_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "frigate.postgresql.secretName" . }}
-                  key: password
-            - name: DB_HOST
-              value: {{ include "frigate.postgresql.host" . }}
-            - name: DB_NAME
-              value: {{ include "frigate.postgresql.database" . }}
-            - name: FRIGATE_DATABASE_URL
-              value: "postgresql://$(DB_USER):$(DB_PASS)@$(DB_HOST):5432/$(DB_NAME)"
-            {{- end }}
             {{- range $k,$v := .Values.env }}
             - name: {{ $k }}
               value: {{ $v | quote }}

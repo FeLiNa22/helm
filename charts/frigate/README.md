@@ -58,22 +58,7 @@ See `values.yaml` for configuration options.
 | `tolerations`                                   | The tolerations to use for the pod.                                                                                                 | `[]`                                |
 | `affinity`                                      | The affinity to use for the pod.                                                                                                    | `{}`                                |
 | `env.TZ`                                        | The timezone to use for the pod.                                                                                                    | `Europe/London`                     |
-| `postgres.enabled`                              | Enable the postgres subchart.                                                                                                       | `true`                              |
-| `postgres.mode`                                 | The mode of PostgreSQL deployment (only 'cluster' is supported for Frigate).                                                        | `cluster`                           |
-| `postgres.initSQL`                              | Array of SQL commands to run on database initialization.                                                                            | `[]`                                |
-| `postgres.username`                             | Username for the database.                                                                                                          | `frigate`                           |
-| `postgres.database`                             | Database name for PostgreSQL.                                                                                                       | `frigate`                           |
-| `postgres.password.secretName`                  | Existing secret name for database password (mutually exclusive with value).                                                         | `""`                                |
-| `postgres.password.value`                       | Direct password value to create a secret (mutually exclusive with secretName).                                                      | `""`                                |
-| `postgres.cluster.instances`                    | Number of PostgreSQL instances (replicas).                                                                                          | `1`                                 |
-| `postgres.cluster.persistence.enabled`          | Enable persistence for cluster PostgreSQL.                                                                                          | `true`                              |
-| `postgres.cluster.persistence.size`             | Size of the persistence volume.                                                                                                     | `512Mi`                             |
-| `postgres.cluster.persistence.storageClass`     | Storage class for persistence.                                                                                                      | `""`                                |
-| `postgres.cluster.image.repository`             | PostgreSQL container image repository.                                                                                              | `ghcr.io/cloudnative-pg/postgresql` |
-| `postgres.cluster.persistence.enabled`          | Enable persistence for cluster PostgreSQL.                                                                                          | `true`                              |
-| `postgres.cluster.persistence.size`             | Size of the persistence volume.                                                                                                     | `512Mi`                             |
-| `postgres.cluster.persistence.storageClass`     | Storage class for persistence.                                                                                                      | `""`                                |
-| `postgres.cluster.image.tag`                    | PostgreSQL container image tag.                                                                                                     | `16.6`                              |
+| `shmSize`                                       | The size of the shared memory (/dev/shm) for Frigate.                                                                               | `1Gi`                               |
 | `tmpfs.enabled`                                 | Whether to enable tmpfs cache for Frigate.                                                                                          | `true`                              |
 | `tmpfs.size`                                    | The size of the tmpfs cache for Frigate.                                                                                            | `1Gi`                               |
 | `persistence.config.enabled`                    | Whether to enable persistence for the config.                                                                                       | `true`                              |
@@ -88,6 +73,22 @@ See `values.yaml` for configuration options.
 | `persistence.media.size`                        | The size to use for the media.                                                                                                      | `512Mi`                             |
 | `persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                                |
 | `persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                                |
+
+### Velero backup parameters
+
+| Name                              | Description                                                                              | Value        |
+| --------------------------------- | ---------------------------------------------------------------------------------------- | ------------ |
+| `velero.enabled`                  | Whether to enable Velero backup schedules.                                               | `false`      |
+| `velero.namespace`                | The namespace where Velero is deployed (Schedule CRD must be created in Velero namespace). | `velero`     |
+| `velero.schedule`                 | The cron schedule for Velero backups (e.g., "0 2 * * *" for 2am daily).                 | `0 2 * * *`  |
+| `velero.ttl`                      | Time to live for backups (e.g., "720h" for 30 days).                                     | `168h`       |
+| `velero.includeClusterResources`  | Whether to include cluster-scoped resources in backup.                                   | `false`      |
+| `velero.snapshotVolumes`          | Whether to take volume snapshots.                                                        | `true`       |
+| `velero.defaultVolumesToFsBackup` | Whether to use file system backup for volumes by default.                                | `false`      |
+| `velero.storageLocation`          | The storage location for backups (leave empty for default).                              | `""`         |
+| `velero.volumeSnapshotLocations`  | The volume snapshot locations (leave empty for default).                                 | `[]`         |
+| `velero.labelSelector`            | Additional label selector to filter resources (optional).                                | `{}`         |
+| `velero.annotations`              | Additional annotations to add to the Velero Schedule resources.                          | `{}`         |
 
 ### ArgoCD Image Updater parameters
 

@@ -40,22 +40,7 @@
 ## @param tolerations The tolerations to use for the pod.
 ## @param affinity The affinity to use for the pod.
 ## @param env.TZ The timezone to use for the pod.
-## @param postgres.enabled Enable the postgres subchart.
-## @param postgres.mode The mode of PostgreSQL deployment (only 'cluster' is supported for Frigate).
-## @param postgres.initSQL Array of SQL commands to run on database initialization.
-## @param postgres.username Username for the database.
-## @param postgres.database Database name for PostgreSQL.
-## @param postgres.password.secretName Existing secret name for database password (mutually exclusive with value).
-## @param postgres.password.value Direct password value to create a secret (mutually exclusive with secretName).
-## @param postgres.cluster.instances Number of PostgreSQL instances (replicas).
-## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
-## @param postgres.cluster.persistence.size Size of the persistence volume.
-## @param postgres.cluster.persistence.storageClass Storage class for persistence.
-## @param postgres.cluster.image.repository PostgreSQL container image repository.
-## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
-## @param postgres.cluster.persistence.size Size of the persistence volume.
-## @param postgres.cluster.persistence.storageClass Storage class for persistence.
-## @param postgres.cluster.image.tag PostgreSQL container image tag.
+## @param shmSize The size of the shared memory (/dev/shm) for Frigate.
 ## @param tmpfs.enabled Whether to enable tmpfs cache for Frigate.
 ## @param tmpfs.size The size of the tmpfs cache for Frigate.
 ## @param persistence.config.enabled Whether to enable persistence for the config.
@@ -160,38 +145,8 @@ affinity: {}
 
 env:
   TZ: "Europe/London"
-  # Database connection will be configured via secrets when database.enabled=true
-  # Otherwise, Frigate will use SQLite
-  # FRIGATE_DATABASE_URL: "postgresql://user:password@host:5432/frigate"
 
-# Database configuration using CloudNativePG
-# Note: Frigate only supports cluster mode (no standalone or external modes)
-postgres:
-  enabled: true
-  mode: cluster  # Only cluster mode supported for Frigate
-  initSQL: []
-    # - "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
-
-  username: frigate
-  database: "frigate"
-
-  # Secret configuration for database password
-  # You must provide EITHER secretName (to use existing secret) OR value (to create new secret with password)
-  password:
-    secretName: ""  # Name of existing secret containing the password
-    value: ""  # Direct password value (if secretName is empty, this must be provided)
-
-  # CloudNativePG Cluster deployment
-  cluster:
-    persistence:
-      enabled: true
-      size: 512Mi
-      storageClass: ""
-
-    instances: 1
-    image:
-      repository: ghcr.io/cloudnative-pg/postgresql
-      tag: "16.6"
+shmSize: 1Gi
 
 tmpfs:
   enabled: true
@@ -212,6 +167,33 @@ persistence:
     size: 512Mi
   additionalVolumes: []
   additionalMounts: []
+
+
+## @section Velero backup parameters
+
+## @param velero.enabled Whether to enable Velero backup schedules
+## @param velero.namespace The namespace where Velero is deployed (Schedule CRD must be created in Velero namespace)
+## @param velero.schedule The cron schedule for Velero backups (e.g., "0 2 * * *" for 2am daily)
+## @param velero.ttl Time to live for backups (e.g., "720h" for 30 days)
+## @param velero.includeClusterResources Whether to include cluster-scoped resources in backup
+## @param velero.snapshotVolumes Whether to take volume snapshots
+## @param velero.defaultVolumesToFsBackup Whether to use file system backup for volumes by default
+## @param velero.storageLocation The storage location for backups (leave empty for default)
+## @param velero.volumeSnapshotLocations The volume snapshot locations (leave empty for default)
+## @param velero.labelSelector Additional label selector to filter resources (optional)
+## @param velero.annotations Additional annotations to add to the Velero Schedule resources
+velero:
+  enabled: false
+  namespace: "velero"
+  schedule: "0 2 * * *"
+  ttl: "168h"
+  includeClusterResources: false
+  snapshotVolumes: true
+  defaultVolumesToFsBackup: false
+  storageLocation: ""
+  volumeSnapshotLocations: []
+  labelSelector: {}
+  annotations: {}
 
 
 ## @section ArgoCD Image Updater parameters
