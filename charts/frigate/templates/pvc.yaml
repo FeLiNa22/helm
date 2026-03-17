@@ -24,32 +24,6 @@ spec:
 {{- end }}
 
 ---
-{{- if and .Values.enabled .Values.persistence.data.enabled (not .Values.persistence.data.existingClaim) }}
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: {{ .Release.Name }}-data
-  labels:
-    app.kubernetes.io/name: frigate
-    app.kubernetes.io/instance: {{ .Release.Name | quote }}
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
-  {{- if .Values.persistence.data.annotations }}
-  annotations:
-    {{- toYaml .Values.persistence.data.annotations | nindent 4 }}
-  {{- end }}
-spec:
-  accessModes:
-    - {{ .Values.persistence.data.accessMode | quote }}
-  {{- if .Values.persistence.data.storageClass }}
-  storageClassName: {{ .Values.persistence.data.storageClass | quote }}
-  {{- end }}
-  resources:
-    requests:
-      storage: {{ .Values.persistence.data.size | quote }}
-{{- end }}
-
----
 {{- if and .Values.enabled .Values.persistence.media.enabled (not .Values.persistence.media.existingClaim) }}
 kind: PersistentVolumeClaim
 apiVersion: v1

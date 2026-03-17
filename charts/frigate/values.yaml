@@ -48,11 +48,6 @@
 ## @param persistence.config.existingClaim The name of an existing claim to use for the config.
 ## @param persistence.config.accessMode The access mode to use for the config.
 ## @param persistence.config.size The size to use for the config.
-## @param persistence.data.enabled Whether to enable persistence for the SQLite database.
-## @param persistence.data.storageClass The storage class to use for the data.
-## @param persistence.data.existingClaim The name of an existing claim to use for the data.
-## @param persistence.data.accessMode The access mode to use for the data.
-## @param persistence.data.size The size to use for the data.
 ## @param persistence.media.enabled Whether to enable persistence for the media.
 ## @param persistence.media.storageClass The storage class to use for the media.
 ## @param persistence.media.existingClaim The name of an existing claim to use for the media.
@@ -159,12 +154,6 @@ tmpfs:
 
 persistence:
   config:
-    enabled: true
-    storageClass: "ceph-rbd"
-    existingClaim: ""
-    accessMode: ReadWriteOnce
-    size: 512Mi
-  data:
     enabled: true
     storageClass: "ceph-rbd"
     existingClaim: ""
