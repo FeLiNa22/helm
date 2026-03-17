@@ -86,11 +86,6 @@ See `values.yaml` for configuration options.
 | `persistence.media.existingClaim`               | The name of an existing claim to use for the media.                                                                                 | `""`                                |
 | `persistence.media.accessMode`                  | The access mode to use for the media.                                                                                               | `ReadWriteOnce`                     |
 | `persistence.media.size`                        | The size to use for the media.                                                                                                      | `512Mi`                             |
-| `persistence.backup.enabled`                    | Whether to enable backup persistence.                                                                                               | `true`                              |
-| `persistence.backup.storageClass`               | The storage class to use for backup persistence.                                                                                    | `cephfs`                            |
-| `persistence.backup.existingClaim`              | The name of an existing claim to use for backup persistence.                                                                        | `""`                                |
-| `persistence.backup.accessMode`                 | The access mode to use for backup persistence.                                                                                      | `ReadWriteMany`                     |
-| `persistence.backup.size`                       | The size to use for backup persistence.                                                                                             | `512Mi`                             |
 | `persistence.additionalVolumes`                 | Additional volumes to add to the pod.                                                                                               | `[]`                                |
 | `persistence.additionalMounts`                  | Additional volume mounts to add to the pod.                                                                                         | `[]`                                |
 
