@@ -687,6 +687,30 @@ entries:
   custom:
   - apiVersion: v2
     appVersion: latest
+    created: "2026-03-18T10:59:40.054704347Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    description: A Helm chart for deploying a generic Docker image with optional PostgreSQL
+      database
+    digest: ccc0ff2c0c43816892117881af402fb450d3c67439233fa120cfe047bbac64f2
+    keywords:
+    - custom
+    - docker
+    - postgres
+    - generic
+    maintainers:
+    - name: FeLiNa22
+    name: custom
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/custom-0.5.0/custom-0.5.0.tgz
+    version: 0.5.0
+  - apiVersion: v2
+    appVersion: latest
     created: "2026-03-11T10:23:33.136865088Z"
     dependencies:
     - alias: postgres
@@ -1027,6 +1051,29 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/excalidraw-1.0.1/excalidraw-1.0.1.tgz
     version: 1.0.1
   frigate:
+  - apiVersion: v2
+    appVersion: 0.14.1
+    created: "2026-03-18T10:59:40.277495202Z"
+    description: Frigate NVR Helm Chart
+    digest: 9f7de544a2c9a097d32812c0d86dd2abbd48d2c29b4d381566346ab99a846693
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/frigate
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - frigate
+    - nvr
+    - security
+    - cameras
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: frigate
+    sources:
+    - https://github.com/blakeblackshear/frigate
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/frigate-1.4.1/frigate-1.4.1.tgz
+    version: 1.4.1
   - apiVersion: v2
     appVersion: 0.14.1
     created: "2026-03-17T23:17:00.786256968Z"
@@ -1386,6 +1433,27 @@ entries:
   home-assistant:
   - apiVersion: v2
     appVersion: 2024.11.3
+    created: "2026-03-18T10:59:40.489506306Z"
+    description: Home Assistant Helm Chart
+    digest: daf0c8d41abd9d67b3a155e41cd3cf54722d9b1f2647829a2b02c0cd1e499009
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/home-assistant
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - home-assistant
+    - smart-home
+    - automation
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: home-assistant
+    sources:
+    - https://github.com/home-assistant/core
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/home-assistant-1.2.5/home-assistant-1.2.5.tgz
+    version: 1.2.5
+  - apiVersion: v2
+    appVersion: 2024.11.3
     created: "2026-03-15T17:49:48.189736353Z"
     description: Home Assistant Helm Chart
     digest: 7f8a618323623b4da5c1dcd189eaba9a65de38ed410903bb9ffed824f93de782
@@ -1553,6 +1621,28 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/home-assistant-1.0.1/home-assistant-1.0.1.tgz
     version: 1.0.1
   homepage:
+  - apiVersion: v2
+    appVersion: v0.9.15
+    created: "2026-03-18T10:59:40.769260321Z"
+    description: Homepage Dashboard Helm Chart with Kubernetes Service Discovery
+    digest: 311cc08409d36043e238becdd2eacedbc05a38a58c5ef19340c7fb4831083bd2
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/homepage
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - homepage
+    - dashboard
+    - service-discovery
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: homepage
+    sources:
+    - https://github.com/gethomepage/homepage
+    type: application
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/homepage-1.2.3/homepage-1.2.3.tgz
+    version: 1.2.3
   - apiVersion: v2
     appVersion: v0.9.15
     created: "2026-02-04T22:09:35.230914012Z"
@@ -2404,6 +2494,27 @@ entries:
   mealie:
   - apiVersion: v2
     appVersion: v2.2.0
+    created: "2026-03-18T10:59:41.018537878Z"
+    description: Mealie Helm Chart
+    digest: 1c245f6c5b0bff9a1d9281ecc83e516da8fb89ab7684cfb35fe70a90e85ae1b5
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/mealie
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - mealie
+    - recipes
+    - cookbook
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: mealie
+    sources:
+    - https://github.com/mealie-recipes/mealie
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/mealie-1.2.4/mealie-1.2.4.tgz
+    version: 1.2.4
+  - apiVersion: v2
+    appVersion: v2.2.0
     created: "2026-03-05T00:35:46.258269064Z"
     description: Mealie Helm Chart
     digest: 047df8810978da4184a059345f472e3ce9ab3e560fb9bc02f69b707bcbd9520f
@@ -2550,6 +2661,33 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/mealie-1.0.1/mealie-1.0.1.tgz
     version: 1.0.1
   n8n:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2026-03-18T10:59:41.247193356Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    description: n8n workflow automation Helm Chart
+    digest: b52231a40d7414dcaf68e0dee4f924fa4f3b6f6034efda235050d11799b99846
+    home: https://github.com/FeLiNa22/helm/tree/main/charts/n8n
+    icon: https://n8n.io/favicon.ico
+    keywords:
+    - kubernetes
+    - n8n
+    - workflow
+    - automation
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: n8n
+    sources:
+    - https://github.com/n8n-io/n8n
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/n8n-1.2.7/n8n-1.2.7.tgz
+    version: 1.2.7
   - apiVersion: v2
     appVersion: latest
     created: "2026-03-11T10:23:33.722772631Z"
@@ -3406,6 +3544,28 @@ entries:
   ntfy:
   - apiVersion: v2
     appVersion: v2.16.0
+    created: "2026-03-18T10:59:41.430713447Z"
+    description: ntfy Helm Chart - Simple HTTP-based pub-sub notification service
+    digest: ee2c00147fe1da52e135fd2ccfa624979f4acb32ee010e5e28d463729b2cfb32
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/ntfy
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - ntfy
+    - notifications
+    - push-notifications
+    - pub-sub
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: ntfy
+    sources:
+    - https://github.com/binwiederhier/ntfy
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/ntfy-1.1.3/ntfy-1.1.3.tgz
+    version: 1.1.3
+  - apiVersion: v2
+    appVersion: v2.16.0
     created: "2026-02-04T22:09:36.310277672Z"
     description: ntfy Helm Chart - Simple HTTP-based pub-sub notification service
     digest: b2b9b143e17a576e41463fc86af46bf2716ab308472215c0b71a8b06acc1674f
@@ -3449,6 +3609,27 @@ entries:
     - https://github.com/FeLiNa22/helm/releases/download/ntfy-1.1.1/ntfy-1.1.1.tgz
     version: 1.1.1
   openclaw:
+  - apiVersion: v2
+    appVersion: 2026.2.22
+    created: "2026-03-18T10:59:41.717993903Z"
+    description: OpenClaw Personal AI Assistant Helm Chart
+    digest: 5d7a220de9041dfd467220060ff4d933af6d1c163f9d8253213eba1ecc00673a
+    home: https://github.com/FeLiNa22/helm/tree/main/charts/openclaw
+    icon: https://openclaw.ai/favicon.ico
+    keywords:
+    - kubernetes
+    - openclaw
+    - ai
+    - assistant
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: openclaw
+    sources:
+    - https://github.com/openclaw/openclaw
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/openclaw-1.0.3/openclaw-1.0.3.tgz
+    version: 1.0.3
   - apiVersion: v2
     appVersion: 2026.2.22
     created: "2026-03-07T18:03:12.929252559Z"
@@ -6445,6 +6626,33 @@ entries:
   vaultwarden:
   - apiVersion: v2
     appVersion: 1.35.1
+    created: "2026-03-18T10:59:41.950547959Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgres
+      repository: file://../postgres
+      version: '>=1.0.0'
+    description: Vaultwarden Helm Chart
+    digest: 5700b1169d020d290da39ccfb6124940812fcecbe989216aee5840d337d46bb1
+    home: https://github.com/FeLiNa22/homeserver/tree/main/charts/vaultwarden
+    icon: https://raulpatel.com/images/raul.svg
+    keywords:
+    - kubernetes
+    - vaultwarden
+    - bitwarden
+    - password-manager
+    maintainers:
+    - name: raulpatel
+      url: https://raulpatel.com
+    name: vaultwarden
+    sources:
+    - https://github.com/dani-garcia/vaultwarden
+    urls:
+    - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.4.6/vaultwarden-1.4.6.tgz
+    version: 1.4.6
+  - apiVersion: v2
+    appVersion: 1.35.1
     created: "2026-03-11T10:23:34.523079424Z"
     dependencies:
     - alias: postgres
@@ -6722,4 +6930,4 @@ entries:
     urls:
     - https://github.com/FeLiNa22/helm/releases/download/vaultwarden-1.0.1/vaultwarden-1.0.1.tgz
     version: 1.0.1
-generated: "2026-03-17T23:17:00.786698125Z"
+generated: "2026-03-18T10:59:41.951148674Z"
