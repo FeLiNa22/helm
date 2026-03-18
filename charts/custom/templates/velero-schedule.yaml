@@ -44,5 +44,4 @@ spec:
       labels:
         {{- include "custom.labels" . | nindent 8 }}
         velero.io/backup-type: scheduled
-        velero.io/pvc-target: data
 {{- end }}
