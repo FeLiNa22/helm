@@ -43,5 +43,4 @@ spec:
         app.kubernetes.io/name: frigate
         app.kubernetes.io/instance: {{ .Release.Name | quote }}
         velero.io/backup-type: scheduled
-        velero.io/pvc-target: config-media
 {{- end }}

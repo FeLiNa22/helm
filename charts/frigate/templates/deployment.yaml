@@ -20,8 +20,14 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- if and .Values.velero.enabled (or .Values.persistence.config.enabled .Values.persistence.media.enabled) }}
       annotations:
+        backup.velero.io/backup-volumes: {{ if and .Values.persistence.config.enabled .Values.persistence.media.enabled }}config,media{{ else if .Values.persistence.config.enabled }}config{{ else }}media{{ end }}
+      {{- end }}
+      {{- with .Values.podAnnotations }}
+      {{- if not (and $.Values.velero.enabled (or $.Values.persistence.config.enabled $.Values.persistence.media.enabled)) }}
+      annotations:
+      {{- end }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:

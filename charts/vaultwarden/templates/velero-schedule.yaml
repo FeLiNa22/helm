@@ -1,6 +1,4 @@
 {{- if and .Values.velero.enabled .Values.persistence.enabled }}
-{{- $pvcType := "config" }}
-{{- if $pvcType }}
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
@@ -45,6 +43,4 @@ spec:
         app.kubernetes.io/name: vaultwarden
         app.kubernetes.io/instance: {{ .Release.Name | quote }}
         velero.io/backup-type: scheduled
-        velero.io/pvc-target: {{ $pvcType }}
-{{- end }}
 {{- end }}
