@@ -1,4 +1,4 @@
-{{- if and .Values.velero.enabled .Values.persistence.enabled }}
+{{- if .Values.velero.enabled }}
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
