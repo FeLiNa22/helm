@@ -1,4 +1,4 @@
-{{- if and .Values.velero.enabled .Values.homeassistant.persistence.enabled }}
+{{- if .Values.velero.enabled }}
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
@@ -37,6 +37,10 @@ spec:
     {{- if .Values.velero.volumeSnapshotLocations }}
     volumeSnapshotLocations:
       {{- toYaml .Values.velero.volumeSnapshotLocations | nindent 6 }}
+    {{- end }}
+    {{- if .Values.velero.labelSelector }}
+    labelSelector:
+      {{- toYaml .Values.velero.labelSelector | nindent 6 }}
     {{- end }}
     metadata:
       labels:

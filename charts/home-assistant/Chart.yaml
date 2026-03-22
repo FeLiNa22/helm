@@ -19,7 +19,7 @@ sources:
 
 dependencies:
   - name: home-assistant
-    version: ">=0.3.0"
+    version: "0.3.50"
     repository: "https://pajikos.github.io/home-assistant-helm-chart/"
     alias: homeassistant
     condition: homeassistant.enabled

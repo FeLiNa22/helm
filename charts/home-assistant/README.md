@@ -44,103 +44,129 @@ The chart supports three PostgreSQL deployment modes via `postgres.mode`:
 
 ### PostgreSQL parameters
 
-| Name | Description | Value |
-| ---- | ----------- | ----- |
-| `postgres.enabled` | Whether to deploy the PostgreSQL dependency. | `true` |
-| `postgres.mode` | Deployment mode: `standalone`, `cluster`, or `external`. | `standalone` |
-| `postgres.username` | PostgreSQL username. | `homeassistant` |
-| `postgres.database` | PostgreSQL database name. | `homeassistant` |
-| `postgres.password.value` | Plain-text password. Creates a Secret when set. | `""` |
-| `postgres.password.secretName` | Name of an existing secret containing the password. | `""` |
-| `postgres.standalone.image.repository` | Docker image repository for standalone PostgreSQL. | `postgres` |
-| `postgres.standalone.image.tag` | Docker image tag for standalone PostgreSQL. | `16-alpine` |
-| `postgres.standalone.persistence.enabled` | Enable persistent storage for standalone PostgreSQL. | `true` |
-| `postgres.standalone.persistence.size` | Size of the persistent volume. | `512Mi` |
-| `postgres.standalone.persistence.storageClass` | Storage class for the persistent volume. | `""` |
-| `postgres.cluster.instances` | Number of PostgreSQL instances in the CloudNativePG cluster. | `2` |
-| `postgres.cluster.image.repository` | Docker image repository for CloudNativePG cluster. | `ghcr.io/cloudnative-pg/postgresql` |
-| `postgres.cluster.image.tag` | Docker image tag for CloudNativePG cluster. | `16` |
-| `postgres.cluster.persistence.size` | Size of the persistent volume for each cluster instance. | `512Mi` |
-| `postgres.cluster.persistence.storageClass` | Storage class for the persistent volume. | `""` |
-| `postgres.external.host` | Hostname of the external PostgreSQL instance. | `""` |
-| `postgres.external.port` | Port of the external PostgreSQL instance. | `5432` |
+| Name                                                        | Description                                                                                                                                                                                                                                          | Value                               |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `postgres.enabled`                                          | Whether to deploy the PostgreSQL dependency.                                                                                                                                                                                                         | `true`                              |
+| `postgres.mode`                                             | Deployment mode: 'standalone', 'cluster', or 'external'.                                                                                                                                                                                             | `standalone`                        |
+| `postgres.username`                                         | PostgreSQL username.                                                                                                                                                                                                                                 | `homeassistant`                     |
+| `postgres.database`                                         | PostgreSQL database name.                                                                                                                                                                                                                            | `homeassistant`                     |
+| `postgres.password.value`                                   | Plain-text password. Creates a Secret when set (mutually exclusive with secretName).                                                                                                                                                                 | `""`                                |
+| `postgres.password.secretName`                              | Name of an existing secret containing the password (mutually exclusive with value). Note: to configure the HA recorder, you must also set homeassistant.postgres.password to the same password value since it is used to generate HA's secrets.yaml. | `""`                                |
+| `postgres.standalone.image.repository`                      | Docker image repository for standalone PostgreSQL.                                                                                                                                                                                                   | `postgres`                          |
+| `postgres.standalone.image.tag`                             | Docker image tag for standalone PostgreSQL.                                                                                                                                                                                                          | `16-alpine`                         |
+| `postgres.standalone.resources`                             | Resource requests/limits for standalone PostgreSQL.                                                                                                                                                                                                  | `{}`                                |
+| `postgres.standalone.persistence.enabled`                   | Enable persistent storage for standalone PostgreSQL.                                                                                                                                                                                                 | `true`                              |
+| `postgres.standalone.persistence.size`                      | Size of the persistent volume.                                                                                                                                                                                                                       | `512Mi`                             |
+| `postgres.standalone.persistence.storageClass`              | Storage class for the persistent volume.                                                                                                                                                                                                             | `""`                                |
+| `postgres.standalone.persistence.existingClaim`             | Existing PVC name for standalone PostgreSQL.                                                                                                                                                                                                         | `""`                                |
+| `postgres.cluster.instances`                                | Number of PostgreSQL instances in the CloudNativePG cluster.                                                                                                                                                                                         | `2`                                 |
+| `postgres.cluster.image.repository`                         | Docker image repository for CloudNativePG cluster.                                                                                                                                                                                                   | `ghcr.io/cloudnative-pg/postgresql` |
+| `postgres.cluster.image.tag`                                | Docker image tag for CloudNativePG cluster.                                                                                                                                                                                                          | `16`                                |
+| `postgres.cluster.persistence.size`                         | Size of the persistent volume for each cluster instance.                                                                                                                                                                                             | `512Mi`                             |
+| `postgres.cluster.persistence.storageClass`                 | Storage class for the persistent volume.                                                                                                                                                                                                             | `""`                                |
+| `postgres.cluster.pitrBackup.enabled`                       | Enable Point-in-Time Recovery backups for the CNPG cluster.                                                                                                                                                                                          | `false`                             |
+| `postgres.cluster.pitrBackup.retentionPolicy`               | Retention policy for PITR backups (e.g. "30d").                                                                                                                                                                                                      | `30d`                               |
+| `postgres.cluster.pitrBackup.objectStorage.destinationPath` | Destination path in the object storage bucket.                                                                                                                                                                                                       | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.endpointURL`     | Endpoint URL for the object storage provider.                                                                                                                                                                                                        | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.secretName`      | Name of the secret containing object storage credentials.                                                                                                                                                                                            | `""`                                |
+| `postgres.cluster.pitrBackup.objectStorage.region`          | Region of the object storage bucket.                                                                                                                                                                                                                 | `""`                                |
+| `postgres.external.host`                                    | Hostname of the external PostgreSQL instance.                                                                                                                                                                                                        | `""`                                |
+| `postgres.external.port`                                    | Port of the external PostgreSQL instance.                                                                                                                                                                                                            | `5432`                              |
 
 ### Home Assistant parameters
 
-| Name | Description | Value |
-| ---- | ----------- | ----- |
-| `homeassistant.enabled` | Whether to deploy the Home Assistant dependency. | `true` |
-| `homeassistant.image.repository` | Docker image repository. | `ghcr.io/home-assistant/home-assistant` |
-| `homeassistant.image.tag` | Docker image tag. | `2026.3.3` |
-| `homeassistant.image.pullPolicy` | Image pull policy. | `IfNotPresent` |
-| `homeassistant.image.autoupdate.enabled` | Enable automatic image updates via ArgoCD Image Updater. | `false` |
-| `homeassistant.image.autoupdate.strategy` | Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest). | `""` |
-| `homeassistant.image.autoupdate.allowTags` | Match function for allowed tags. | `""` |
-| `homeassistant.image.autoupdate.ignoreTags` | List of glob patterns to ignore specific tags. | `[]` |
-| `homeassistant.image.autoupdate.pullSecret` | Reference to secret for private registry authentication. | `""` |
-| `homeassistant.image.autoupdate.platforms` | List of target platforms. | `[]` |
-| `homeassistant.controller.type` | Controller type: `Deployment` or `StatefulSet`. | `Deployment` |
-| `homeassistant.deploymentStrategy` | Deployment strategy (`RollingUpdate` or `Recreate`). | `Recreate` |
-| `homeassistant.hostNetwork` | Enable host network mode (required for local device discovery). | `false` |
-| `homeassistant.securityContext.privileged` | Run the container in privileged mode. | `true` |
-| `homeassistant.service.type` | Service type. | `LoadBalancer` |
-| `homeassistant.service.port` | Service port. | `8123` |
-| `homeassistant.ingress.enabled` | Whether to create an ingress for the service. | `true` |
-| `homeassistant.ingress.className` | Ingress class name. | `""` |
-| `homeassistant.ingress.hosts[0].host` | Ingress host. | `chart-example.local` |
-| `homeassistant.ingress.hosts[0].paths[0].path` | Ingress path. | `/` |
-| `homeassistant.ingress.tls` | Ingress TLS configuration. | `[]` |
-| `homeassistant.resources` | CPU/memory resource requests/limits. | `{}` |
-| `homeassistant.env` | Environment variables (array format). | `[{name: TZ, value: "Europe/London"}]` |
-| `homeassistant.persistence.enabled` | Whether to enable persistence for the Home Assistant config directory. | `true` |
-| `homeassistant.persistence.storageClass` | Storage class for the persistent volume claim. | `ceph-rbd` |
-| `homeassistant.persistence.existingClaim` | Name of an existing PVC to use. | `""` |
-| `homeassistant.persistence.accessMode` | Access mode for the PVC. | `ReadWriteOnce` |
-| `homeassistant.persistence.size` | Size of the PVC. | `512Mi` |
-| `homeassistant.additionalVolumes` | Additional volumes to add to the pod. | `[]` |
-| `homeassistant.additionalMounts` | Additional volume mounts to add to the pod. | `[]` |
-| `homeassistant.nodeSelector` | Node selector for the pod. | `{}` |
-| `homeassistant.tolerations` | Tolerations for the pod. | `[]` |
-| `homeassistant.affinity` | Affinity for the pod. | `{}` |
-
-### Home Assistant postgres connection parameters
-
-These values configure the recorder integration in `configuration.yaml` and must mirror the top-level `postgres` section.
-
-| Name | Description | Value |
-| ---- | ----------- | ----- |
-| `homeassistant.postgres.mode` | Postgres mode – must match `postgres.mode`. | `standalone` |
-| `homeassistant.postgres.username` | Postgres username – must match `postgres.username`. | `homeassistant` |
-| `homeassistant.postgres.password` | Postgres password – must match `postgres.password.value`. | `""` |
-| `homeassistant.postgres.database` | Postgres database name – must match `postgres.database`. | `homeassistant` |
-| `homeassistant.postgres.external.host` | External postgres host (only when `postgres.mode=external`). | `""` |
-| `homeassistant.postgres.external.port` | External postgres port (only when `postgres.mode=external`). | `5432` |
+| Name                                               | Description                                                                                                                                                                                                                       | Value                                   |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `homeassistant.enabled`                            | Whether to deploy the Home Assistant dependency.                                                                                                                                                                                  | `true`                                  |
+| `homeassistant.image.repository`                   | Docker image repository.                                                                                                                                                                                                          | `ghcr.io/home-assistant/home-assistant` |
+| `homeassistant.image.tag`                          | Docker image tag.                                                                                                                                                                                                                 | `2026.3.3`                              |
+| `homeassistant.image.pullPolicy`                   | Image pull policy.                                                                                                                                                                                                                | `IfNotPresent`                          |
+| `homeassistant.image.autoupdate.enabled`           | Enable automatic image updates via ArgoCD Image Updater.                                                                                                                                                                          | `false`                                 |
+| `homeassistant.image.autoupdate.strategy`          | Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).                                                                                                                                            | `""`                                    |
+| `homeassistant.image.autoupdate.allowTags`         | Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").                                                                                                                                             | `""`                                    |
+| `homeassistant.image.autoupdate.ignoreTags`        | List of glob patterns to ignore specific tags.                                                                                                                                                                                    | `[]`                                    |
+| `homeassistant.image.autoupdate.pullSecret`        | Reference to secret for private registry authentication.                                                                                                                                                                          | `""`                                    |
+| `homeassistant.image.autoupdate.platforms`         | List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).                                                                                                                                                                  | `[]`                                    |
+| `homeassistant.controller.type`                    | Controller type: 'Deployment' or 'StatefulSet'.                                                                                                                                                                                   | `Deployment`                            |
+| `homeassistant.deploymentStrategy`                 | Deployment strategy (RollingUpdate or Recreate).                                                                                                                                                                                  | `Recreate`                              |
+| `homeassistant.hostNetwork`                        | Enable host network mode (required for local device discovery).                                                                                                                                                                   | `false`                                 |
+| `homeassistant.securityContext.privileged`         | Whether to run the container in privileged mode.                                                                                                                                                                                  | `true`                                  |
+| `homeassistant.service.type`                       | Service type.                                                                                                                                                                                                                     | `LoadBalancer`                          |
+| `homeassistant.service.port`                       | Service port.                                                                                                                                                                                                                     | `8123`                                  |
+| `homeassistant.ingress.enabled`                    | Whether to create an Ingress resource.                                                                                                                                                                                            | `true`                                  |
+| `homeassistant.ingress.className`                  | Ingress class name.                                                                                                                                                                                                               | `""`                                    |
+| `homeassistant.ingress.annotations`                | Additional annotations for the Ingress.                                                                                                                                                                                           | `{}`                                    |
+| `homeassistant.ingress.hosts[0].host`              | Ingress hostname.                                                                                                                                                                                                                 | `chart-example.local`                   |
+| `homeassistant.ingress.hosts[0].paths[0].path`     | Ingress path.                                                                                                                                                                                                                     | `/`                                     |
+| `homeassistant.ingress.hosts[0].paths[0].pathType` | Ingress path type.                                                                                                                                                                                                                | `ImplementationSpecific`                |
+| `homeassistant.ingress.tls`                        | Ingress TLS configuration.                                                                                                                                                                                                        | `[]`                                    |
+| `homeassistant.resources`                          | CPU/memory resource requests/limits.                                                                                                                                                                                              | `{}`                                    |
+| `homeassistant.env[0].name`                        | Name of the first environment variable.                                                                                                                                                                                           | `TZ`                                    |
+| `homeassistant.env[0].value`                       | Value of the first environment variable.                                                                                                                                                                                          | `Europe/London`                         |
+| `homeassistant.livenessProbe.failureThreshold`     | Failure threshold for the liveness probe.                                                                                                                                                                                         | `3`                                     |
+| `homeassistant.livenessProbe.httpGet.path`         | HTTP path for the liveness probe.                                                                                                                                                                                                 | `/`                                     |
+| `homeassistant.livenessProbe.httpGet.port`         | HTTP port for the liveness probe.                                                                                                                                                                                                 | `http`                                  |
+| `homeassistant.livenessProbe.httpGet.scheme`       | HTTP scheme for the liveness probe.                                                                                                                                                                                               | `HTTP`                                  |
+| `homeassistant.livenessProbe.periodSeconds`        | Period in seconds for the liveness probe.                                                                                                                                                                                         | `20`                                    |
+| `homeassistant.livenessProbe.successThreshold`     | Success threshold for the liveness probe.                                                                                                                                                                                         | `1`                                     |
+| `homeassistant.livenessProbe.timeoutSeconds`       | Timeout in seconds for the liveness probe.                                                                                                                                                                                        | `2`                                     |
+| `homeassistant.readinessProbe.failureThreshold`    | Failure threshold for the readiness probe.                                                                                                                                                                                        | `3`                                     |
+| `homeassistant.readinessProbe.httpGet.path`        | HTTP path for the readiness probe.                                                                                                                                                                                                | `/`                                     |
+| `homeassistant.readinessProbe.httpGet.port`        | HTTP port for the readiness probe.                                                                                                                                                                                                | `http`                                  |
+| `homeassistant.readinessProbe.httpGet.scheme`      | HTTP scheme for the readiness probe.                                                                                                                                                                                              | `HTTP`                                  |
+| `homeassistant.readinessProbe.periodSeconds`       | Period in seconds for the readiness probe.                                                                                                                                                                                        | `10`                                    |
+| `homeassistant.readinessProbe.successThreshold`    | Success threshold for the readiness probe.                                                                                                                                                                                        | `1`                                     |
+| `homeassistant.readinessProbe.timeoutSeconds`      | Timeout in seconds for the readiness probe.                                                                                                                                                                                       | `1`                                     |
+| `homeassistant.startupProbe.initialDelaySeconds`   | Initial delay in seconds for the startup probe.                                                                                                                                                                                   | `30`                                    |
+| `homeassistant.startupProbe.periodSeconds`         | Period in seconds for the startup probe.                                                                                                                                                                                          | `5`                                     |
+| `homeassistant.startupProbe.timeoutSeconds`        | Timeout in seconds for the startup probe.                                                                                                                                                                                         | `1`                                     |
+| `homeassistant.startupProbe.successThreshold`      | Success threshold for the startup probe.                                                                                                                                                                                          | `1`                                     |
+| `homeassistant.startupProbe.failureThreshold`      | Failure threshold for the startup probe.                                                                                                                                                                                          | `30`                                    |
+| `homeassistant.startupProbe.httpGet.scheme`        | HTTP scheme for the startup probe.                                                                                                                                                                                                | `HTTP`                                  |
+| `homeassistant.startupProbe.httpGet.path`          | HTTP path for the startup probe.                                                                                                                                                                                                  | `/`                                     |
+| `homeassistant.startupProbe.httpGet.port`          | HTTP port for the startup probe.                                                                                                                                                                                                  | `http`                                  |
+| `homeassistant.persistence.enabled`                | Whether to enable persistence for the Home Assistant config directory.                                                                                                                                                            | `true`                                  |
+| `homeassistant.persistence.storageClass`           | Storage class for the persistent volume claim.                                                                                                                                                                                    | `ceph-rbd`                              |
+| `homeassistant.persistence.existingClaim`          | Name of an existing PVC to use.                                                                                                                                                                                                   | `""`                                    |
+| `homeassistant.persistence.accessMode`             | Access mode for the PVC.                                                                                                                                                                                                          | `ReadWriteOnce`                         |
+| `homeassistant.persistence.size`                   | Size of the PVC.                                                                                                                                                                                                                  | `512Mi`                                 |
+| `homeassistant.nodeSelector`                       | Node selector for the pod.                                                                                                                                                                                                        | `{}`                                    |
+| `homeassistant.tolerations`                        | Tolerations for the pod.                                                                                                                                                                                                          | `[]`                                    |
+| `homeassistant.affinity`                           | Affinity rules for the pod.                                                                                                                                                                                                       | `{}`                                    |
+| `homeassistant.postgres.mode`                      | Postgres mode - must match top-level postgres.mode.                                                                                                                                                                               | `standalone`                            |
+| `homeassistant.postgres.username`                  | Postgres username - must match top-level postgres.username.                                                                                                                                                                       | `homeassistant`                         |
+| `homeassistant.postgres.password`                  | Plain-text password used to build the recorder db_url written to the "{release-name}-ha-secrets" Secret. Required when postgres is enabled; must match postgres.password.value (or the password in postgres.password.secretName). | `""`                                    |
+| `homeassistant.postgres.database`                  | Postgres database name - must match top-level postgres.database.                                                                                                                                                                  | `homeassistant`                         |
+| `homeassistant.postgres.external.host`             | External postgres host (only used when postgres.mode=external).                                                                                                                                                                   | `""`                                    |
+| `homeassistant.postgres.external.port`             | External postgres port (only used when postgres.mode=external).                                                                                                                                                                   | `5432`                                  |
+| `homeassistant.configuration.enabled`              | Enable automatic configuration.yaml setup via init container.                                                                                                                                                                     | `true`                                  |
+| `homeassistant.configuration.forceInit`            | Force-merge the default configuration on every start.                                                                                                                                                                             | `false`                                 |
 
 ### Velero Backup Schedule parameters
 
-| Name | Description | Value |
-| ---- | ----------- | ----- |
-| `velero.enabled` | Whether to enable Velero backup schedules | `false` |
-| `velero.namespace` | Namespace where Velero is deployed | `velero` |
-| `velero.schedule` | Cron schedule for Velero backups | `0 2 * * *` |
-| `velero.ttl` | Time to live for backups | `168h` |
-| `velero.includeClusterResources` | Include cluster-scoped resources in backup | `false` |
-| `velero.snapshotVolumes` | Take volume snapshots | `true` |
-| `velero.defaultVolumesToFsBackup` | Use file system backup for volumes by default | `false` |
-| `velero.storageLocation` | Storage location for backups | `""` |
-| `velero.volumeSnapshotLocations` | Volume snapshot locations | `[]` |
-| `velero.labelSelector` | Label selector to filter resources | `{}` |
-| `velero.annotations` | Additional annotations for Velero Schedule resources | `{}` |
+| Name                              | Description                                                                               | Value       |
+| --------------------------------- | ----------------------------------------------------------------------------------------- | ----------- |
+| `velero.enabled`                  | Whether to enable Velero backup schedules                                                 | `false`     |
+| `velero.namespace`                | The namespace where Velero is deployed (Schedule CRD must be created in Velero namespace) | `velero`    |
+| `velero.schedule`                 | The cron schedule for Velero backups (e.g., "0 2 * * *" for 2am daily)                    | `0 2 * * *` |
+| `velero.ttl`                      | Time to live for backups (e.g., "720h" for 30 days)                                       | `168h`      |
+| `velero.includeClusterResources`  | Whether to include cluster-scoped resources in backup                                     | `false`     |
+| `velero.snapshotVolumes`          | Whether to take volume snapshots                                                          | `true`      |
+| `velero.defaultVolumesToFsBackup` | Whether to use file system backup for volumes by default                                  | `false`     |
+| `velero.storageLocation`          | The storage location for backups (leave empty for default)                                | `""`        |
+| `velero.volumeSnapshotLocations`  | The volume snapshot locations (leave empty for default)                                   | `[]`        |
+| `velero.labelSelector`            | Label selector to filter resources included in the backup (optional)                      | `{}`        |
+| `velero.annotations`              | Additional annotations to add to the Velero Schedule resources                            | `{}`        |
 
 ### ArgoCD Image Updater parameters
 
-| Name | Description | Value |
-| ---- | ----------- | ----- |
-| `imageUpdater.namespace` | Namespace where the ImageUpdater CRD will be created. | `argocd` |
-| `imageUpdater.argocdNamespace` | Namespace where ArgoCD Applications are located. | `argocd` |
-| `imageUpdater.applicationName` | Name or pattern of the ArgoCD Application to update. Defaults to Release name. | `""` |
-| `imageUpdater.imageAlias` | Alias for the image in the ImageUpdater CRD. Defaults to Release name. | `""` |
-| `imageUpdater.forceUpdate` | Force update even if image is not currently deployed. | `false` |
-| `imageUpdater.helm` | Helm-specific configuration for parameter names. | `{}` |
-| `imageUpdater.kustomize` | Kustomize-specific configuration. | `{}` |
-| `imageUpdater.writeBackConfig` | Write-back configuration for GitOps. | `{}` |
+| Name                           | Description                                                                                                                       | Value    |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `imageUpdater.namespace`       | Namespace where the ImageUpdater CRD will be created.                                                                             | `argocd` |
+| `imageUpdater.argocdNamespace` | Namespace where ArgoCD Applications are located.                                                                                  | `argocd` |
+| `imageUpdater.applicationName` | Name or pattern of the ArgoCD Application to update. Defaults to Release name.                                                    | `""`     |
+| `imageUpdater.imageAlias`      | Alias for the image in the ImageUpdater CRD. Defaults to Release name.                                                            | `""`     |
+| `imageUpdater.forceUpdate`     | Force update even if image is not currently deployed.                                                                             | `false`  |
+| `imageUpdater.helm`            | Helm-specific configuration for parameter names (e.g., {name: "homeassistant.image.repository", tag: "homeassistant.image.tag"}). | `{}`     |
+| `imageUpdater.kustomize`       | Kustomize-specific configuration (e.g., {name: "original/image"}).                                                                | `{}`     |
+| `imageUpdater.writeBackConfig` | Write-back configuration for GitOps.                                                                                              | `{}`     |

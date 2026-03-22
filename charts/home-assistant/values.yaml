@@ -5,17 +5,25 @@
 ## @param postgres.username PostgreSQL username.
 ## @param postgres.database PostgreSQL database name.
 ## @param postgres.password.value Plain-text password. Creates a Secret when set (mutually exclusive with secretName).
-## @param postgres.password.secretName Name of an existing secret containing the password (mutually exclusive with value).
+## @param postgres.password.secretName Name of an existing secret containing the password (mutually exclusive with value). Note: to configure the HA recorder, you must also set homeassistant.postgres.password to the same password value since it is used to generate HA's secrets.yaml.
 ## @param postgres.standalone.image.repository Docker image repository for standalone PostgreSQL.
 ## @param postgres.standalone.image.tag Docker image tag for standalone PostgreSQL.
+## @param postgres.standalone.resources Resource requests/limits for standalone PostgreSQL.
 ## @param postgres.standalone.persistence.enabled Enable persistent storage for standalone PostgreSQL.
 ## @param postgres.standalone.persistence.size Size of the persistent volume.
 ## @param postgres.standalone.persistence.storageClass Storage class for the persistent volume.
+## @param postgres.standalone.persistence.existingClaim Existing PVC name for standalone PostgreSQL.
 ## @param postgres.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster.
 ## @param postgres.cluster.image.repository Docker image repository for CloudNativePG cluster.
 ## @param postgres.cluster.image.tag Docker image tag for CloudNativePG cluster.
 ## @param postgres.cluster.persistence.size Size of the persistent volume for each cluster instance.
 ## @param postgres.cluster.persistence.storageClass Storage class for the persistent volume.
+## @param postgres.cluster.pitrBackup.enabled Enable Point-in-Time Recovery backups for the CNPG cluster.
+## @param postgres.cluster.pitrBackup.retentionPolicy Retention policy for PITR backups (e.g. "30d").
+## @param postgres.cluster.pitrBackup.objectStorage.destinationPath Destination path in the object storage bucket.
+## @param postgres.cluster.pitrBackup.objectStorage.endpointURL Endpoint URL for the object storage provider.
+## @param postgres.cluster.pitrBackup.objectStorage.secretName Name of the secret containing object storage credentials.
+## @param postgres.cluster.pitrBackup.objectStorage.region Region of the object storage bucket.
 ## @param postgres.external.host Hostname of the external PostgreSQL instance.
 ## @param postgres.external.port Port of the external PostgreSQL instance.
 postgres:
@@ -58,11 +66,17 @@ postgres:
 
 ## @section Home Assistant parameters
 ## Configuration for the upstream pajikos/home-assistant Helm chart dependency.
-## All standard upstream chart values are supported under this key.
 ## See https://github.com/pajikos/home-assistant-helm-chart for full reference.
 ##
 ## The postgres sub-section configures the database connection for Home Assistant's
-## recorder integration. It must match the top-level postgres section.
+## recorder integration and must mirror the top-level postgres section.
+##
+## Database credentials are stored in a Kubernetes Secret named "{release-name}-ha-secrets"
+## and mounted to /config/secrets.yaml in the Home Assistant container so that
+## configuration.yaml can safely use `!secret recorder_db_url`.
+##
+## ⚠️  Update additionalVolumes[0].secret.secretName to "{release-name}-ha-secrets" to
+##     match your Helm release name (default assumes release name "home-assistant").
 ##
 ## @param homeassistant.enabled Whether to deploy the Home Assistant dependency.
 ## @param homeassistant.image.repository Docker image repository.
@@ -74,12 +88,64 @@ postgres:
 ## @param homeassistant.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
 ## @param homeassistant.image.autoupdate.pullSecret Reference to secret for private registry authentication.
 ## @param homeassistant.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
+## @param homeassistant.controller.type Controller type: 'Deployment' or 'StatefulSet'.
+## @param homeassistant.deploymentStrategy Deployment strategy (RollingUpdate or Recreate).
+## @param homeassistant.hostNetwork Enable host network mode (required for local device discovery).
+## @param homeassistant.securityContext.privileged Whether to run the container in privileged mode.
+## @param homeassistant.service.type Service type.
+## @param homeassistant.service.port Service port.
+## @param homeassistant.ingress.enabled Whether to create an Ingress resource.
+## @param homeassistant.ingress.className Ingress class name.
+## @param homeassistant.ingress.annotations Additional annotations for the Ingress.
+## @param homeassistant.ingress.hosts[0].host Ingress hostname.
+## @param homeassistant.ingress.hosts[0].paths[0].path Ingress path.
+## @param homeassistant.ingress.hosts[0].paths[0].pathType Ingress path type.
+## @param homeassistant.ingress.tls Ingress TLS configuration.
+## @param homeassistant.resources CPU/memory resource requests/limits.
+## @param homeassistant.env[0].name Name of the first environment variable.
+## @param homeassistant.env[0].value Value of the first environment variable.
+## @param homeassistant.livenessProbe.failureThreshold Failure threshold for the liveness probe.
+## @param homeassistant.livenessProbe.httpGet.path HTTP path for the liveness probe.
+## @param homeassistant.livenessProbe.httpGet.port HTTP port for the liveness probe.
+## @param homeassistant.livenessProbe.httpGet.scheme HTTP scheme for the liveness probe.
+## @param homeassistant.livenessProbe.periodSeconds Period in seconds for the liveness probe.
+## @param homeassistant.livenessProbe.successThreshold Success threshold for the liveness probe.
+## @param homeassistant.livenessProbe.timeoutSeconds Timeout in seconds for the liveness probe.
+## @param homeassistant.readinessProbe.failureThreshold Failure threshold for the readiness probe.
+## @param homeassistant.readinessProbe.httpGet.path HTTP path for the readiness probe.
+## @param homeassistant.readinessProbe.httpGet.port HTTP port for the readiness probe.
+## @param homeassistant.readinessProbe.httpGet.scheme HTTP scheme for the readiness probe.
+## @param homeassistant.readinessProbe.periodSeconds Period in seconds for the readiness probe.
+## @param homeassistant.readinessProbe.successThreshold Success threshold for the readiness probe.
+## @param homeassistant.readinessProbe.timeoutSeconds Timeout in seconds for the readiness probe.
+## @param homeassistant.startupProbe.initialDelaySeconds Initial delay in seconds for the startup probe.
+## @param homeassistant.startupProbe.periodSeconds Period in seconds for the startup probe.
+## @param homeassistant.startupProbe.timeoutSeconds Timeout in seconds for the startup probe.
+## @param homeassistant.startupProbe.successThreshold Success threshold for the startup probe.
+## @param homeassistant.startupProbe.failureThreshold Failure threshold for the startup probe.
+## @param homeassistant.startupProbe.httpGet.scheme HTTP scheme for the startup probe.
+## @param homeassistant.startupProbe.httpGet.path HTTP path for the startup probe.
+## @param homeassistant.startupProbe.httpGet.port HTTP port for the startup probe.
+## @param homeassistant.persistence.enabled Whether to enable persistence for the Home Assistant config directory.
+## @param homeassistant.persistence.storageClass Storage class for the persistent volume claim.
+## @param homeassistant.persistence.existingClaim Name of an existing PVC to use.
+## @param homeassistant.persistence.accessMode Access mode for the PVC.
+## @param homeassistant.persistence.size Size of the PVC.
+## @skip homeassistant.additionalVolumes
+## @skip homeassistant.additionalMounts
+## @param homeassistant.nodeSelector Node selector for the pod.
+## @param homeassistant.tolerations Tolerations for the pod.
+## @param homeassistant.affinity Affinity rules for the pod.
 ## @param homeassistant.postgres.mode Postgres mode - must match top-level postgres.mode.
 ## @param homeassistant.postgres.username Postgres username - must match top-level postgres.username.
-## @param homeassistant.postgres.password Postgres password - must match top-level postgres.password.value.
+## @param homeassistant.postgres.password Plain-text password used to build the recorder db_url written to the "{release-name}-ha-secrets" Secret. Required when postgres is enabled; must match postgres.password.value (or the password in postgres.password.secretName).
 ## @param homeassistant.postgres.database Postgres database name - must match top-level postgres.database.
 ## @param homeassistant.postgres.external.host External postgres host (only used when postgres.mode=external).
 ## @param homeassistant.postgres.external.port External postgres port (only used when postgres.mode=external).
+## @param homeassistant.configuration.enabled Enable automatic configuration.yaml setup via init container.
+## @param homeassistant.configuration.forceInit Force-merge the default configuration on every start.
+## @skip homeassistant.configuration.trusted_proxies
+## @skip homeassistant.configuration.templateConfig
 homeassistant:
   enabled: true
 
@@ -122,8 +188,7 @@ homeassistant:
 
   resources: {}
 
-  # NOTE: The upstream pajikos/home-assistant chart uses array format for env (not map format).
-  # This is required for compatibility with the upstream chart's templates.
+  # NOTE: The upstream pajikos/home-assistant chart uses array format for env.
   env:
     - name: TZ
       value: "Europe/London"
@@ -166,30 +231,43 @@ homeassistant:
     accessMode: ReadWriteOnce
     size: 512Mi
 
-  additionalVolumes: []
-  additionalMounts: []
+  # Additional volumes and mounts for the HA pod.
+  # The ha-secrets volume below mounts the "{release-name}-ha-secrets" Secret (created by this
+  # chart when homeassistant.postgres.password is set) to /config/secrets.yaml so that
+  # Home Assistant can use `!secret recorder_db_url` in configuration.yaml.
+  # ⚠️  Update secretName to "{release-name}-ha-secrets" to match your Helm release name.
+  additionalVolumes:
+    - name: ha-secrets
+      secret:
+        secretName: "home-assistant-ha-secrets"
+  additionalMounts:
+    - name: ha-secrets
+      mountPath: /config/secrets.yaml
+      subPath: secrets.yaml
+      readOnly: true
 
   nodeSelector: {}
   tolerations: []
   affinity: {}
 
   ## Postgres connection config for Home Assistant's recorder integration.
-  ## These values are used in configuration.templateConfig (processed as a Go template)
+  ## These values are used to generate HA's secrets.yaml (via the ha-db-secret.yaml template)
   ## and must match the top-level postgres section.
   postgres:
     mode: standalone
     username: homeassistant
-    ## Plain-text password for the recorder db_url in configuration.yaml.
-    ## Must match the top-level postgres.password.value.
+    ## Plain-text password written to the "{release-name}-ha-secrets" Kubernetes Secret.
+    ## Must match postgres.password.value. The recorder db_url is NOT embedded in any
+    ## ConfigMap; it is stored in a Secret and referenced via `!secret recorder_db_url`.
     password: ""
     database: homeassistant
     external:
       host: ""
       port: 5432
 
-  ## Home Assistant configuration.yaml setup.
-  ## Enables the upstream chart's init container to create configuration.yaml with
-  ## the recorder integration pointing to the PostgreSQL database.
+  ## Home Assistant configuration.yaml setup via upstream chart's init container.
+  ## The templateConfig uses `!secret recorder_db_url` so that the database password
+  ## is never stored in a ConfigMap.
   configuration:
     enabled: true
     forceInit: false
@@ -216,14 +294,8 @@ homeassistant:
       {{- end }}
 
       {{- if .Values.postgres.password }}
-      {{- $postgresHost := printf "%s-postgres" .Release.Name -}}
-      {{- if eq .Values.postgres.mode "cluster" -}}
-      {{- $postgresHost = printf "%s-postgres-cluster-rw" .Release.Name -}}
-      {{- else if eq .Values.postgres.mode "external" -}}
-      {{- $postgresHost = printf "%s:%v" .Values.postgres.external.host (.Values.postgres.external.port | default 5432) -}}
-      {{- end }}
       recorder:
-        db_url: "postgresql://{{ .Values.postgres.username }}:{{ .Values.postgres.password }}@{{ $postgresHost }}/{{ .Values.postgres.database }}"
+        db_url: !secret recorder_db_url
       {{- end }}
 
       # Load frontend themes from the themes folder
@@ -245,7 +317,7 @@ homeassistant:
 ## @param velero.defaultVolumesToFsBackup Whether to use file system backup for volumes by default
 ## @param velero.storageLocation The storage location for backups (leave empty for default)
 ## @param velero.volumeSnapshotLocations The volume snapshot locations (leave empty for default)
-## @param velero.labelSelector Additional label selector to filter resources (optional)
+## @param velero.labelSelector Label selector to filter resources included in the backup (optional)
 ## @param velero.annotations Additional annotations to add to the Velero Schedule resources
 velero:
   enabled: false
@@ -259,6 +331,7 @@ velero:
   volumeSnapshotLocations: []
   labelSelector: {}
   annotations: {}
+
 
 ## @section ArgoCD Image Updater parameters
 

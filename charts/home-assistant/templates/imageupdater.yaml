@@ -1,4 +1,4 @@
-{{- if .Values.homeassistant.image.autoupdate.enabled }}
+{{- if and .Values.homeassistant.enabled .Values.homeassistant.image.autoupdate.enabled }}
 {{- $imageTag := .Values.homeassistant.image.tag | toString }}
 {{- $imageTag = regexReplaceAll "@[a-z0-9]+:[a-f0-9]+" $imageTag "" }}
 {{- $updateStrategy := .Values.homeassistant.image.autoupdate.strategy }}
