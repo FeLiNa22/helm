@@ -1,225 +1,238 @@
+## @section PostgreSQL parameters
+
+## @param postgres.enabled Whether to deploy the PostgreSQL dependency.
+## @param postgres.mode Deployment mode: 'standalone', 'cluster', or 'external'.
+## @param postgres.username PostgreSQL username.
+## @param postgres.database PostgreSQL database name.
+## @param postgres.password.value Plain-text password. Creates a Secret when set (mutually exclusive with secretName).
+## @param postgres.password.secretName Name of an existing secret containing the password (mutually exclusive with value).
+## @param postgres.standalone.image.repository Docker image repository for standalone PostgreSQL.
+## @param postgres.standalone.image.tag Docker image tag for standalone PostgreSQL.
+## @param postgres.standalone.persistence.enabled Enable persistent storage for standalone PostgreSQL.
+## @param postgres.standalone.persistence.size Size of the persistent volume.
+## @param postgres.standalone.persistence.storageClass Storage class for the persistent volume.
+## @param postgres.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster.
+## @param postgres.cluster.image.repository Docker image repository for CloudNativePG cluster.
+## @param postgres.cluster.image.tag Docker image tag for CloudNativePG cluster.
+## @param postgres.cluster.persistence.size Size of the persistent volume for each cluster instance.
+## @param postgres.cluster.persistence.storageClass Storage class for the persistent volume.
+## @param postgres.external.host Hostname of the external PostgreSQL instance.
+## @param postgres.external.port Port of the external PostgreSQL instance.
+postgres:
+  enabled: true
+  mode: standalone
+  username: homeassistant
+  database: homeassistant
+  password:
+    secretName: ""
+    value: ""
+  standalone:
+    image:
+      repository: postgres
+      tag: "16-alpine"
+    resources: {}
+    persistence:
+      enabled: true
+      size: 512Mi
+      storageClass: ""
+      existingClaim: ""
+  cluster:
+    instances: 2
+    image:
+      repository: ghcr.io/cloudnative-pg/postgresql
+      tag: "16"
+    persistence:
+      size: 512Mi
+      storageClass: ""
+    pitrBackup:
+      enabled: false
+      retentionPolicy: "30d"
+      objectStorage:
+        destinationPath: ""
+        endpointURL: ""
+        secretName: ""
+        region: ""
+  external:
+    host: ""
+    port: 5432
+
 ## @section Home Assistant parameters
-
-## @param enabled Whether to enable Home Assistant.
-## @param replicaCount The number of replicas to deploy.
-## @param image.repository The Docker repository to pull the image from.
-## @param image.tag The image tag to use.
-## @param image.pullPolicy The logic of image pulling.
-## @param image.autoupdate.enabled Enable automatic image updates via ArgoCD Image Updater.
-## @param image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
-## @param image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
-## @param image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
-## @param image.autoupdate.pullSecret Reference to secret for private registry authentication.
-## @param image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
-## @param imagePullSecrets The image pull secrets to use.
-## @param deployment.strategy.type The deployment strategy to use.
-## @param serviceAccount.create Whether to create a service account.
-## @param serviceAccount.annotations Additional annotations to add to the service account.
-## @param serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
-## @param podAnnotations Additional annotations to add to the pod.
-## @param podSecurityContext The security context to use for the pod.
-## @param securityContext.privileged Whether to run the container in privileged mode.
-## @param hostNetwork Enable host network mode (required for local device discovery).
-## @param dnsPolicy Set the DNS policy. Use ClusterFirstWithHostNet when hostNetwork is true.
-## @param initContainers Additional init containers to add to the pod.
-## @param service.type The type of service to create.
-## @param service.port The port on which the service will run.
-## @param service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
-## @param ingress.enabled Whether to create an ingress for the service.
-## @param ingress.className The ingress class name to use.
-## @param ingress.annotations Additional annotations to add to the ingress.
-## @param ingress.hosts[0].host The host to use for the ingress.
-## @param ingress.hosts[0].paths[0].path The path to use for the ingress.
-## @param ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
-## @param ingress.tls The TLS configuration for the ingress.
-## @param resources The resources to use for the pod.
-## @param autoscaling.enabled Whether to enable autoscaling.
-## @param autoscaling.minReplicas The minimum number of replicas to scale to.
-## @param autoscaling.maxReplicas The maximum number of replicas to scale to.
-## @param autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
-## @param autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
-## @param livenessProbe.failureThreshold Failure threshold for the liveness probe.
-## @param livenessProbe.httpGet.path HTTP path for the liveness probe.
-## @param livenessProbe.httpGet.port HTTP port for the liveness probe.
-## @param livenessProbe.httpGet.scheme HTTP scheme for the liveness probe.
-## @param livenessProbe.periodSeconds Period in seconds for the liveness probe.
-## @param livenessProbe.successThreshold Success threshold for the liveness probe.
-## @param livenessProbe.timeoutSeconds Timeout in seconds for the liveness probe.
-## @param readinessProbe.failureThreshold Failure threshold for the readiness probe.
-## @param readinessProbe.httpGet.path HTTP path for the readiness probe.
-## @param readinessProbe.httpGet.port HTTP port for the readiness probe.
-## @param readinessProbe.httpGet.scheme HTTP scheme for the readiness probe.
-## @param readinessProbe.periodSeconds Period in seconds for the readiness probe.
-## @param readinessProbe.successThreshold Success threshold for the readiness probe.
-## @param readinessProbe.timeoutSeconds Timeout in seconds for the readiness probe.
-## @param startupProbe.initialDelaySeconds Initial delay in seconds before the startup probe is initiated.
-## @param startupProbe.periodSeconds Period in seconds for the startup probe.
-## @param startupProbe.timeoutSeconds Timeout in seconds for the startup probe.
-## @param startupProbe.successThreshold Success threshold for the startup probe.
-## @param startupProbe.failureThreshold Failure threshold for the startup probe.
-## @param startupProbe.httpGet.scheme HTTP scheme for the startup probe.
-## @param startupProbe.httpGet.path HTTP path for the startup probe.
-## @param startupProbe.httpGet.port HTTP port for the startup probe.
-## @param nodeSelector The node selector to use for the pod.
-## @param tolerations The tolerations to use for the pod.
-## @param affinity The affinity to use for the pod.
-## @param env.TZ The timezone to use for the pod.
-## @param persistence.enabled Whether to enable persistence.
-## @param persistence.storageClass The storage class to use for the persistence.
-## @param persistence.existingClaim The name of an existing claim to use for the persistence.
-## @param persistence.accessMode The access mode to use for the persistence.
-## @param persistence.size The size to use for the persistence.
-## @param persistence.backup.enabled Whether to enable backup persistence.
-## @param persistence.backup.storageClass The storage class to use for backup persistence.
-## @param persistence.backup.existingClaim The name of an existing claim to use for backup persistence.
-## @param persistence.backup.accessMode The access mode to use for backup persistence.
-## @param persistence.backup.size The size to use for backup persistence.
-## @param persistence.additionalVolumes Additional volumes to add to the pod.
-## @param persistence.additionalMounts Additional volume mounts to add to the pod.
+## Configuration for the upstream pajikos/home-assistant Helm chart dependency.
+## All standard upstream chart values are supported under this key.
+## See https://github.com/pajikos/home-assistant-helm-chart for full reference.
 ##
-enabled: true
-replicaCount: 1
-
-image:
-  repository: ghcr.io/home-assistant/home-assistant
-  pullPolicy: IfNotPresent
-  tag: "2024.11.3"
-  autoupdate:
-    enabled: false
-    strategy: ""
-    allowTags: ""
-    ignoreTags: []
-    pullSecret: ""
-    platforms: []
-
-imagePullSecrets: []
-
-deployment:
-  strategy:
-    type: Recreate
-
-serviceAccount:
-  create: true
-  annotations: {}
-  name: ""
-
-podAnnotations: {}
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext:
-  privileged: true
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-# Enable hostNetwork to allow Home Assistant to access host-level network interfaces.
-# This is required for auto-discovery of local devices (mDNS, UPnP, etc.).
-hostNetwork: false
-
-# Set the DNS policy. Use ClusterFirstWithHostNet when hostNetwork is true so that
-# in-cluster DNS still works alongside host network access.
-dnsPolicy: ""
-
-initContainers: []
-  # - name: init-container
-  #   image: busybox
-  #   command: ['sh', '-c', 'echo "this is an init container"']
-
-service:
-  type: LoadBalancer
-  port: 8123
-  nodePort: ""
-
-ingress:
+## The postgres sub-section configures the database connection for Home Assistant's
+## recorder integration. It must match the top-level postgres section.
+##
+## @param homeassistant.enabled Whether to deploy the Home Assistant dependency.
+## @param homeassistant.image.repository Docker image repository.
+## @param homeassistant.image.tag Docker image tag.
+## @param homeassistant.image.pullPolicy Image pull policy.
+## @param homeassistant.image.autoupdate.enabled Enable automatic image updates via ArgoCD Image Updater.
+## @param homeassistant.image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param homeassistant.image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
+## @param homeassistant.image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param homeassistant.image.autoupdate.pullSecret Reference to secret for private registry authentication.
+## @param homeassistant.image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
+## @param homeassistant.postgres.mode Postgres mode - must match top-level postgres.mode.
+## @param homeassistant.postgres.username Postgres username - must match top-level postgres.username.
+## @param homeassistant.postgres.password Postgres password - must match top-level postgres.password.value.
+## @param homeassistant.postgres.database Postgres database name - must match top-level postgres.database.
+## @param homeassistant.postgres.external.host External postgres host (only used when postgres.mode=external).
+## @param homeassistant.postgres.external.port External postgres port (only used when postgres.mode=external).
+homeassistant:
   enabled: true
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
 
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  image:
+    repository: ghcr.io/home-assistant/home-assistant
+    pullPolicy: IfNotPresent
+    tag: "2026.3.3"
+    autoupdate:
+      enabled: false
+      strategy: ""
+      allowTags: ""
+      ignoreTags: []
+      pullSecret: ""
+      platforms: []
 
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
+  controller:
+    type: Deployment
 
-livenessProbe:
-  failureThreshold: 3
-  httpGet:
-    path: /
-    port: http
-    scheme: HTTP
-  periodSeconds: 20
-  successThreshold: 1
-  timeoutSeconds: 2
+  deploymentStrategy: Recreate
 
-readinessProbe:
-  failureThreshold: 3
-  httpGet:
-    path: /
-    port: http
-    scheme: HTTP
-  periodSeconds: 10
-  successThreshold: 1
-  timeoutSeconds: 1
+  hostNetwork: false
 
-startupProbe:
-  initialDelaySeconds: 30
-  periodSeconds: 5
-  timeoutSeconds: 1
-  successThreshold: 1
-  failureThreshold: 30
-  httpGet:
-    scheme: HTTP
-    path: /
-    port: http
+  securityContext:
+    privileged: true
 
-nodeSelector: {}
+  service:
+    type: LoadBalancer
+    port: 8123
 
-tolerations: []
-
-affinity: {}
-
-env:
-  TZ: "Europe/London"
-
-persistence:
-  enabled: true
-  storageClass: "ceph-rbd"
-  existingClaim: ""
-  accessMode: ReadWriteOnce
-  size: 512Mi
-  backup:
+  ingress:
     enabled: true
-    storageClass: "cephfs"
+    className: ""
+    annotations: {}
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+
+  resources: {}
+
+  # NOTE: The upstream pajikos/home-assistant chart uses array format for env (not map format).
+  # This is required for compatibility with the upstream chart's templates.
+  env:
+    - name: TZ
+      value: "Europe/London"
+
+  livenessProbe:
+    failureThreshold: 3
+    httpGet:
+      path: /
+      port: http
+      scheme: HTTP
+    periodSeconds: 20
+    successThreshold: 1
+    timeoutSeconds: 2
+
+  readinessProbe:
+    failureThreshold: 3
+    httpGet:
+      path: /
+      port: http
+      scheme: HTTP
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+
+  startupProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 30
+    httpGet:
+      scheme: HTTP
+      path: /
+      port: http
+
+  persistence:
+    enabled: true
+    storageClass: "ceph-rbd"
     existingClaim: ""
-    accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
     size: 512Mi
+
   additionalVolumes: []
   additionalMounts: []
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  ## Postgres connection config for Home Assistant's recorder integration.
+  ## These values are used in configuration.templateConfig (processed as a Go template)
+  ## and must match the top-level postgres section.
+  postgres:
+    mode: standalone
+    username: homeassistant
+    ## Plain-text password for the recorder db_url in configuration.yaml.
+    ## Must match the top-level postgres.password.value.
+    password: ""
+    database: homeassistant
+    external:
+      host: ""
+      port: 5432
+
+  ## Home Assistant configuration.yaml setup.
+  ## Enables the upstream chart's init container to create configuration.yaml with
+  ## the recorder integration pointing to the PostgreSQL database.
+  configuration:
+    enabled: true
+    forceInit: false
+    trusted_proxies:
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
+      - 127.0.0.0/8
+    templateConfig: |-
+      # Loads default set of integrations. Do not remove.
+      default_config:
+
+      {{- if .Values.serviceMonitor.enabled }}
+      prometheus:
+      {{- end }}
+
+      {{- if or .Values.ingress.enabled .Values.ingress.external }}
+      http:
+        use_x_forwarded_for: true
+        trusted_proxies:
+          {{- range .Values.configuration.trusted_proxies }}
+          - {{ . }}
+          {{- end }}
+      {{- end }}
+
+      {{- if .Values.postgres.password }}
+      {{- $postgresHost := printf "%s-postgres" .Release.Name -}}
+      {{- if eq .Values.postgres.mode "cluster" -}}
+      {{- $postgresHost = printf "%s-postgres-cluster-rw" .Release.Name -}}
+      {{- else if eq .Values.postgres.mode "external" -}}
+      {{- $postgresHost = printf "%s:%v" .Values.postgres.external.host (.Values.postgres.external.port | default 5432) -}}
+      {{- end }}
+      recorder:
+        db_url: "postgresql://{{ .Values.postgres.username }}:{{ .Values.postgres.password }}@{{ $postgresHost }}/{{ .Values.postgres.database }}"
+      {{- end }}
+
+      # Load frontend themes from the themes folder
+      frontend:
+        themes: !include_dir_merge_named themes
+
+      automation: !include automations.yaml
+      script: !include scripts.yaml
+      scene: !include scenes.yaml
 
 ## @section Velero Backup Schedule parameters
 
@@ -247,7 +260,6 @@ velero:
   labelSelector: {}
   annotations: {}
 
-
 ## @section ArgoCD Image Updater parameters
 
 ## @param imageUpdater.namespace Namespace where the ImageUpdater CRD will be created.
@@ -255,10 +267,9 @@ velero:
 ## @param imageUpdater.applicationName Name or pattern of the ArgoCD Application to update. Defaults to Release name.
 ## @param imageUpdater.imageAlias Alias for the image in the ImageUpdater CRD. Defaults to Release name.
 ## @param imageUpdater.forceUpdate Force update even if image is not currently deployed.
-## @param imageUpdater.helm Helm-specific configuration for parameter names (e.g., {name: "image.repository", tag: "image.tag"}).
+## @param imageUpdater.helm Helm-specific configuration for parameter names (e.g., {name: "homeassistant.image.repository", tag: "homeassistant.image.tag"}).
 ## @param imageUpdater.kustomize Kustomize-specific configuration (e.g., {name: "original/image"}).
 ## @param imageUpdater.writeBackConfig Write-back configuration for GitOps.
-##
 imageUpdater:
   namespace: argocd
   argocdNamespace: argocd
