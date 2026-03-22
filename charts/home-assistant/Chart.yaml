@@ -3,8 +3,8 @@ maintainers:
   - name: raulpatel
     url: https://raulpatel.com
 apiVersion: v2
-appVersion: 2024.11.3
-version: 1.2.5
+appVersion: "2026.3.3"
+version: 1.2.6
 description: Home Assistant Helm Chart
 home: https://github.com/FeLiNa22/homeserver/tree/main/charts/home-assistant
 icon: https://raulpatel.com/images/raul.svg
@@ -15,3 +15,16 @@ keywords:
   - automation
 sources:
   - https://github.com/home-assistant/core
+  - https://github.com/pajikos/home-assistant-helm-chart
+
+dependencies:
+  - name: home-assistant
+    version: "0.3.50"
+    repository: "https://pajikos.github.io/home-assistant-helm-chart/"
+    alias: homeassistant
+    condition: homeassistant.enabled
+  - name: postgres
+    version: ">=1.0.0"
+    repository: "file://../postgres"
+    alias: postgres
+    condition: postgres.enabled
