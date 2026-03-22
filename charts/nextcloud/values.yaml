@@ -230,7 +230,7 @@ postgres:
 
   # Secret configuration for database password
   password:
-    secretName: ""
+    secretName: "nextcloud-postgres-secret"
     value: ""
 
   # Standalone PostgreSQL deployment (using StatefulSet)
