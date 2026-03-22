@@ -1,8 +1,10 @@
 {{- if .Values.image.autoupdate.enabled }}
-{{- $imageTag := .Values.image.tag | toString }}
+{{- $registry := .Values.nextcloud.image.registry | default "docker.io" }}
+{{- $repo := .Values.nextcloud.image.repository | default "library/nextcloud" }}
+{{- $imageTag := .Values.nextcloud.image.tag | toString }}
 {{- $imageTag = regexReplaceAll "@[a-z0-9]+:[a-f0-9]+" $imageTag "" }}
 {{- $updateStrategy := .Values.image.autoupdate.strategy }}
-{{- $imageName := .Values.image.repository }}
+{{- $imageName := printf "%s/%s" $registry $repo }}
 {{- if not $updateStrategy }}
   {{- $staticLabels := list "latest" "develop" "dev" "beta" "alpha" "stable" "edge" "nightly" "rc" "canary" }}
   {{- $isStaticLabel := false }}
@@ -13,25 +15,25 @@
   {{- end }}
   {{- if $isStaticLabel }}
     {{- $updateStrategy = "digest" }}
-    {{- $imageName = printf "%s:%s" .Values.image.repository $imageTag }}
+    {{- $imageName = printf "%s/%s:%s" $registry $repo $imageTag }}
   {{- else if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
     {{- $updateStrategy = "semver" }}
     {{- $parts := regexSplit "\\." $imageTag -1 }}
     {{- $major := index $parts 0 }}
     {{- $minor := index $parts 1 }}
-    {{- $imageName = printf "%s:%s.%s.x" .Values.image.repository $major $minor }}
+    {{- $imageName = printf "%s/%s:%s.%s.x" $registry $repo $major $minor }}
   {{- end }}
-{{- else if and (eq $updateStrategy "semver") .Values.image.tag }}
+{{- else if and (eq $updateStrategy "semver") .Values.nextcloud.image.tag }}
   {{- if regexMatch "^[0-9]+\\.[0-9]+\\.[0-9]+$" $imageTag }}
     {{- $parts := regexSplit "\\." $imageTag -1 }}
     {{- $major := index $parts 0 }}
     {{- $minor := index $parts 1 }}
-    {{- $imageName = printf "%s:%s.%s.x" .Values.image.repository $major $minor }}
+    {{- $imageName = printf "%s/%s:%s.%s.x" $registry $repo $major $minor }}
   {{- else }}
-    {{- $imageName = printf "%s:%s" .Values.image.repository $imageTag }}
+    {{- $imageName = printf "%s/%s:%s" $registry $repo $imageTag }}
   {{- end }}
-{{- else if .Values.image.tag }}
-  {{- $imageName = printf "%s:%s" .Values.image.repository $imageTag }}
+{{- else if .Values.nextcloud.image.tag }}
+  {{- $imageName = printf "%s/%s:%s" $registry $repo $imageTag }}
 {{- end }}
 apiVersion: argocd-image-updater.argoproj.io/v1alpha1
 kind: ImageUpdater
@@ -80,8 +82,8 @@ spec:
               {{- if .Values.imageUpdater.helm }}
               {{- toYaml .Values.imageUpdater.helm | nindent 14 }}
               {{- else }}
-              name: "image.repository"
-              tag: "image.tag"
+              name: "nextcloud.image.repository"
+              tag: "nextcloud.image.tag"
               {{- end }}
             {{- if .Values.imageUpdater.kustomize }}
             kustomize:

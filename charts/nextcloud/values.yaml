@@ -1,216 +1,127 @@
-## @section Nextcloud parameters
-
-## @param enabled Whether to enable Nextcloud.
-## @param replicaCount The number of replicas to deploy.
-## @param image.repository The Docker repository to pull the image from.
-## @param image.tag The image tag to use.
-## @param image.pullPolicy The logic of image pulling.
-## @param image.autoupdate.enabled Enable automatic image updates via ArgoCD Image Updater.
-## @param image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
-## @param image.autoupdate.allowTags Match function for allowed tags (e.g., "regexp:^[0-9]+\\.[0-9]+\\.[0-9]+$" or "any").
-## @param image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
-## @param image.autoupdate.pullSecret Reference to secret for private registry authentication.
-## @param image.autoupdate.platforms List of target platforms (e.g., ["linux/amd64", "linux/arm64"]).
-## @param imagePullSecrets The image pull secrets to use.
-## @param deployment.strategy.type The deployment strategy to use.
-## @param serviceAccount.create Whether to create a service account.
-## @param serviceAccount.annotations Additional annotations to add to the service account.
-## @param serviceAccount.name The name of the service account to use. If not set and create is true, a new service account will be created with a generated name.
-## @param podAnnotations Additional annotations to add to the pod.
-## @param podSecurityContext.fsGroup The group ID to use for the pod (33 = www-data, matches official Nextcloud image).
-## @param podSecurityContext.fsGroupChangePolicy Policy for changing ownership and permissions of the volume.
-## @param securityContext The security context to use for the container.
-## @param initContainers Additional init containers to add to the pod.
-## @param service.type The type of service to create.
-## @param service.port The port on which the service will run.
-## @param service.nodePort The nodePort to use for the service. Only used if service.type is NodePort.
-## @param ingress.enabled Whether to create an ingress for the service.
-## @param ingress.className The ingress class name to use.
-## @param ingress.annotations Additional annotations to add to the ingress.
-## @param ingress.hosts[0].host The host to use for the ingress.
-## @param ingress.hosts[0].paths[0].path The path to use for the ingress.
-## @param ingress.hosts[0].paths[0].pathType The path type to use for the ingress.
-## @param ingress.tls The TLS configuration for the ingress.
-## @param resources The resources to use for the pod.
-## @param autoscaling.enabled Whether to enable autoscaling.
-## @param autoscaling.minReplicas The minimum number of replicas to scale to.
-## @param autoscaling.maxReplicas The maximum number of replicas to scale to.
-## @param autoscaling.targetCPUUtilizationPercentage The target CPU utilization percentage to use for autoscaling.
-## @param autoscaling.targetMemoryUtilizationPercentage The target memory utilization percentage to use for autoscaling.
-## @param nodeSelector The node selector to use for the pod.
-## @param tolerations The tolerations to use for the pod.
-## @param affinity The affinity to use for the pod.
-## @param env.TZ The timezone to use for the pod.
-## @param env.NEXTCLOUD_ADMIN_USER The admin username.
-## @param env.NEXTCLOUD_ADMIN_PASSWORD The admin password.
-## @param env.NEXTCLOUD_TRUSTED_DOMAINS Trusted domains for Nextcloud.
-## @param persistence.enabled Whether to enable persistence.
-## @param persistence.storageClass The storage class to use for the persistence.
-## @param persistence.existingClaim The name of an existing claim to use for the persistence.
-## @param persistence.accessMode The access mode to use for the persistence.
-## @param persistence.size The size to use for the persistence.
-## @param persistence.additionalVolumes Additional volumes to add to the pod.
-## @param persistence.additionalMounts Additional volume mounts to add to the pod.
+## @section Nextcloud upstream chart parameters
+## Configuration for the upstream nextcloud/nextcloud Helm chart.
+## Full reference: https://github.com/nextcloud/helm/blob/main/charts/nextcloud/values.yaml
 ##
-enabled: true
-replicaCount: 1
+## ⚠️  The 'nextcloud' key below maps to the upstream nextcloud/nextcloud chart dependency.
+##    All standard upstream chart values can be set here.
 
-image:
-  repository: docker.io/library/nextcloud
-  pullPolicy: IfNotPresent
-  tag: "32.0.3"
-  autoupdate:
+## @param nextcloud.internalDatabase.enabled Disable the built-in SQLite database (we use postgres subchart instead).
+## @param nextcloud.externalDatabase.enabled Enable external PostgreSQL database.
+## @param nextcloud.externalDatabase.type Database type (postgresql or mysql).
+## @param nextcloud.externalDatabase.host Hostname of the PostgreSQL service.
+## @param nextcloud.externalDatabase.database Database name.
+## @param nextcloud.externalDatabase.existingSecret.enabled Use an existing secret for database credentials.
+## @param nextcloud.externalDatabase.existingSecret.secretName Name of the secret containing database credentials.
+## @param nextcloud.externalDatabase.existingSecret.usernameKey Key in the secret for the username.
+## @param nextcloud.externalDatabase.existingSecret.passwordKey Key in the secret for the password.
+## @param nextcloud.externalRedis.enabled Enable external Redis/DragonflyDB for caching.
+## @param nextcloud.externalRedis.host Hostname of the Redis/DragonflyDB service.
+## @param nextcloud.externalRedis.port Port of the Redis/DragonflyDB service.
+## @param nextcloud.externalRedis.existingSecret.enabled Use an existing secret for Redis credentials.
+## @param nextcloud.externalRedis.existingSecret.secretName Name of the secret containing Redis credentials.
+## @param nextcloud.externalRedis.existingSecret.passwordKey Key in the secret for the Redis password.
+## @param nextcloud.nextcloud.host The hostname for Nextcloud (used in the Nextcloud config and probes).
+## @param nextcloud.nextcloud.username Nextcloud admin username.
+## @param nextcloud.nextcloud.password Nextcloud admin password.
+## @param nextcloud.image.registry Docker registry for the Nextcloud image.
+## @param nextcloud.image.repository Docker image repository for Nextcloud.
+## @param nextcloud.image.tag Nextcloud image tag.
+## @param nextcloud.ingress.enabled Whether to create an Ingress resource.
+## @param nextcloud.ingress.annotations Additional annotations for the Ingress.
+## @param nextcloud.ingress.path Ingress path.
+## @param nextcloud.ingress.pathType Ingress path type.
+## @param nextcloud.persistence.enabled Enable persistent storage for Nextcloud data.
+## @param nextcloud.persistence.storageClass Storage class for the PVC.
+## @param nextcloud.persistence.size Size of the persistent volume.
+## @param nextcloud.postgresql.enabled Disable the Bitnami PostgreSQL subchart (we use our own postgres subchart).
+## @param nextcloud.mariadb.enabled Disable the Bitnami MariaDB subchart (we use our own postgres subchart).
+## @param nextcloud.redis.enabled Disable the Bitnami Redis subchart (we use our own dragonfly subchart).
+##
+nextcloud:
+  internalDatabase:
     enabled: false
-    strategy: ""
-    allowTags: ""
-    ignoreTags: []
-    pullSecret: ""
-    platforms: []
 
-imagePullSecrets: []
+  ## External PostgreSQL configuration.
+  ## The host and secret name below follow the naming convention of the postgres subchart:
+  ##   host: {release-name}-postgres-cluster-rw  (cluster mode)
+  ##         {release-name}-postgres              (standalone mode)
+  ##   secretName: {release-name}-postgres-secret
+  ## ⚠️  Update these values to match your Helm release name if it differs from "nextcloud".
+  externalDatabase:
+    enabled: true
+    type: postgresql
+    host: "nextcloud-postgres-cluster-rw"
+    database: nextcloud
+    existingSecret:
+      enabled: true
+      secretName: "nextcloud-postgres-secret"
+      usernameKey: username
+      passwordKey: password
 
-deployment:
-  strategy:
-    type: Recreate
+  ## External Redis/DragonflyDB configuration.
+  ## The host and secret name below follow the naming convention of the dragonfly subchart:
+  ##   host: {release-name}-dragonfly         (standalone mode)
+  ##         {release-name}-dragonfly-cluster  (cluster mode)
+  ##   secretName: {release-name}-dragonfly-secret
+  ## ⚠️  Update these values to match your Helm release name if it differs from "nextcloud".
+  ## Set enabled: true when dragonfly.mode is not 'disabled'.
+  externalRedis:
+    enabled: false
+    host: "nextcloud-dragonfly"
+    port: "6379"
+    existingSecret:
+      enabled: true
+      secretName: "nextcloud-dragonfly-secret"
+      passwordKey: password
 
-serviceAccount:
-  create: true
-  annotations: {}
-  name: ""
+  nextcloud:
+    host: nextcloud.example.com
+    username: admin
+    password: changeme
 
-podAnnotations: {}
+  image:
+    registry: docker.io
+    repository: library/nextcloud
+    tag: "33.0.0"
+    pullPolicy: IfNotPresent
 
-podSecurityContext:
-  fsGroup: 33
-  fsGroupChangePolicy: OnRootMismatch
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # nginx.ingress.kubernetes.io/proxy-body-size: 4G
+    path: /
+    pathType: Prefix
+    tls: []
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: 8Gi
+    existingClaim: ""
 
-initContainers: []
-  # - name: init-container
-  #   image: busybox
-  #   command: ['sh', '-c', 'echo "this is an init container"']
+  resources: {}
 
-service:
-  type: LoadBalancer
-  port: 80
-  nodePort: ""
-
-ingress:
-  enabled: true
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
-
-env:
-  TZ: "Europe/London"
-  NEXTCLOUD_ADMIN_USER: "admin"
-  NEXTCLOUD_ADMIN_PASSWORD: "admin"
-  NEXTCLOUD_TRUSTED_DOMAINS: "localhost"
-  # Database and cache connection will be configured via secrets when enabled
-  # Otherwise, configure these manually for external services
-
-## @param nextcloudHost The hostname used for liveness/readiness probe Host headers. Should match the ingress host.
-nextcloudHost: "localhost"
-
-## @param cronjob.enabled Whether to enable the Nextcloud background job CronJob.
-## @param cronjob.schedule Cron schedule for background jobs (default: every 5 minutes).
-## @param cronjob.successfulJobsHistoryLimit Number of successful job history entries to keep.
-## @param cronjob.failedJobsHistoryLimit Number of failed job history entries to keep.
-cronjob:
-  enabled: true
-  schedule: "*/5 * * * *"
-  successfulJobsHistoryLimit: 2
-  failedJobsHistoryLimit: 5
-
-## @param livenessProbe.enabled Whether to enable the liveness probe.
-## @param livenessProbe.initialDelaySeconds Initial delay before the liveness probe starts.
-## @param livenessProbe.periodSeconds Period between liveness probe checks.
-## @param livenessProbe.timeoutSeconds Timeout for the liveness probe.
-## @param livenessProbe.successThreshold Success threshold for the liveness probe.
-## @param livenessProbe.failureThreshold Failure threshold for the liveness probe.
-livenessProbe:
-  enabled: true
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 5
-  successThreshold: 1
-  failureThreshold: 3
-
-## @param readinessProbe.enabled Whether to enable the readiness probe.
-## @param readinessProbe.initialDelaySeconds Initial delay before the readiness probe starts.
-## @param readinessProbe.periodSeconds Period between readiness probe checks.
-## @param readinessProbe.timeoutSeconds Timeout for the readiness probe.
-## @param readinessProbe.successThreshold Success threshold for the readiness probe.
-## @param readinessProbe.failureThreshold Failure threshold for the readiness probe.
-readinessProbe:
-  enabled: true
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 5
-  successThreshold: 1
-  failureThreshold: 3
-
-## @param startupProbe.enabled Whether to enable the startup probe.
-## @param startupProbe.initialDelaySeconds Initial delay before the startup probe starts.
-## @param startupProbe.periodSeconds Period between startup probe checks.
-## @param startupProbe.timeoutSeconds Timeout for the startup probe.
-## @param startupProbe.successThreshold Success threshold for the startup probe.
-## @param startupProbe.failureThreshold Failure threshold for the startup probe (30 * 10s = 5 min max startup time).
-startupProbe:
-  enabled: true
-  initialDelaySeconds: 30
-  periodSeconds: 10
-  timeoutSeconds: 5
-  successThreshold: 1
-  failureThreshold: 30
+  ## Disable Bitnami subcharts — we use the postgres and dragonfly subcharts instead.
+  postgresql:
+    enabled: false
+  mariadb:
+    enabled: false
+  redis:
+    enabled: false
 
 ## @section DragonflyDB parameters
-## DragonflyDB provides Redis-compatible caching for Nextcloud
+## DragonflyDB provides Redis-compatible caching for Nextcloud.
+## When enabling, also set nextcloud.externalRedis.enabled: true and
+## update nextcloud.externalRedis.host to match the release name.
 
 ## @param dragonfly.enabled Enable the dragonfly subchart.
 ## @param dragonfly.mode The mode of DragonflyDB deployment: 'standalone', 'cluster', 'external', or 'disabled'.
 ## @param dragonfly.username Username for DragonflyDB authentication (default: "default").
-## @param dragonfly.password.secretName Name of existing secret containing the password (mutually exclusive with value).
-## @param dragonfly.password.secretKey Key in the secret containing the password (only used when secretName is provided).
-## @param dragonfly.password.value Direct password value (mutually exclusive with secretName).
+## @param dragonfly.password.secretName Name of existing secret containing the password.
+## @param dragonfly.password.secretKey Key in the secret containing the password.
+## @param dragonfly.password.value Direct password value.
 ## @param dragonfly.standalone.image.repository The Docker repository for Dragonfly image.
 ## @param dragonfly.standalone.image.tag The image tag for Dragonfly.
 ## @param dragonfly.standalone.resources.limits.memory Memory limit for standalone Dragonfly.
@@ -226,29 +137,25 @@ startupProbe:
 ## @param dragonfly.cluster.persistence.size Size of the persistence volume for Dragonfly cluster.
 ## @param dragonfly.cluster.persistence.storageClass Storage class for Dragonfly cluster persistence.
 ## @param dragonfly.cluster.persistence.accessMode Access mode for Dragonfly cluster persistence volume.
-## @param dragonfly.cluster.snapshot.cron Cron schedule for Dragonfly cluster snapshots.
 ## @param dragonfly.external.host Hostname of external DragonflyDB/Redis (when mode is 'external').
 ## @param dragonfly.external.port Port of external DragonflyDB/Redis.
 ##
 dragonfly:
   enabled: false
   # Mode options: 'standalone', 'cluster', 'external', or 'disabled'
-  # Set to 'disabled' if you don't need Redis caching for Nextcloud
+  # When changing from 'disabled', also set nextcloud.externalRedis.enabled: true
   mode: disabled
 
   # Username for DragonflyDB authentication
   username: "default"
 
   # Secret configuration for DragonflyDB password
-  # You must provide EITHER secretName (to use existing secret) OR value (to create new secret with password)
-  # When creating a new secret (using password.value), the secret will use type kubernetes.io/basic-auth
-  # with keys 'username' and 'password' (secretKey is ignored in this case)
   password:
-    secretName: ""  # Name of existing secret containing the password
-    secretKey: "password"  # Key in the secret containing the password (only used when secretName is provided)
-    value: ""  # Direct password value (if secretName is empty, password will be auto-generated)
+    secretName: ""
+    secretKey: "password"
+    value: ""
 
-  # Standalone Dragonfly deployment (simple single-instance)
+  # Standalone Dragonfly deployment
   standalone:
     image:
       repository: docker.dragonflydb.io/dragonflydb/dragonfly
@@ -256,9 +163,6 @@ dragonfly:
     resources:
       limits:
         memory: 512Mi
-      # requests:
-      #   cpu: 100m
-      #   memory: 256Mi
     persistence:
       enabled: true
       size: 512Mi
@@ -274,61 +178,42 @@ dragonfly:
     resources:
       limits:
         memory: 512Mi
-      # requests:
-      #   cpu: 500m
-      #   memory: 256Mi
     persistence:
       enabled: true
       size: 512Mi
       storageClass: ""
       accessMode: ReadWriteOnce
     snapshot:
-      # Snapshot schedule in cron format (default: every 5 minutes)
       cron: "*/5 * * * *"
 
   # External DragonflyDB/Redis configuration (used when mode is 'external')
   external:
     host: ""
     port: 6379
-    # Password is sourced from the secret configured in dragonfly.password.secretName / dragonfly.password.secretKey
 
-# Database configuration
+## @section PostgreSQL parameters
+
 ## @param postgres.enabled Enable the postgres subchart.
 ## @param postgres.mode The mode of PostgreSQL deployment: 'standalone', 'cluster', or 'external'.
 ## @param postgres.initSQL Array of SQL commands to run on database initialization.
 ## @param postgres.username Username for the database.
 ## @param postgres.database Database name for PostgreSQL.
-## @param postgres.password.secretName Existing secret name for database password (mutually exclusive with value).
-## @param postgres.password.value Direct password value to create a secret (mutually exclusive with secretName).
+## @param postgres.password.secretName Existing secret name for database password.
+## @param postgres.password.value Direct password value to create a secret.
 ## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
 ## @param postgres.standalone.persistence.size Size of the persistence volume.
 ## @param postgres.standalone.persistence.storageClass Storage class for persistence.
 ## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
 ## @param postgres.standalone.image.repository PostgreSQL image repository.
-## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
-## @param postgres.standalone.persistence.size Size of the persistence volume.
-## @param postgres.standalone.persistence.storageClass Storage class for persistence.
-## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
 ## @param postgres.standalone.image.tag PostgreSQL image tag.
-## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
-## @param postgres.standalone.persistence.size Size of the persistence volume.
-## @param postgres.standalone.persistence.storageClass Storage class for persistence.
-## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
-## @param postgres.standalone.image.autoupdate.enabled Enable automatic image updates for standalone database (default: false).
-## @param postgres.standalone.persistence.enabled Enable persistence for standalone PostgreSQL.
-## @param postgres.standalone.persistence.size Size of the persistence volume.
-## @param postgres.standalone.persistence.storageClass Storage class for persistence.
-## @param postgres.standalone.persistence.existingClaim Use an existing PVC.
-## @param postgres.standalone.image.autoupdate.updateStrategy Strategy for image updates (e.g., semver, latest).
+## @param postgres.standalone.image.autoupdate.enabled Enable automatic image updates for standalone database.
+## @param postgres.standalone.image.autoupdate.updateStrategy Strategy for image updates.
 ## @param postgres.standalone.resources Resource limits and requests for standalone PostgreSQL.
 ## @param postgres.cluster.instances Number of PostgreSQL instances (replicas).
 ## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
 ## @param postgres.cluster.persistence.size Size of the persistence volume.
 ## @param postgres.cluster.persistence.storageClass Storage class for persistence.
 ## @param postgres.cluster.image.repository PostgreSQL container image repository.
-## @param postgres.cluster.persistence.enabled Enable persistence for cluster PostgreSQL.
-## @param postgres.cluster.persistence.size Size of the persistence volume.
-## @param postgres.cluster.persistence.storageClass Storage class for persistence.
 ## @param postgres.cluster.image.tag PostgreSQL container image tag.
 ## @param postgres.external.host Hostname of external PostgreSQL (when mode is 'external').
 ## @param postgres.external.port Port of external PostgreSQL.
@@ -338,17 +223,15 @@ postgres:
   # Mode options: 'standalone', 'cluster', or 'external'
   mode: cluster
   # SQL commands to initialize the database
-  # Each line should be a complete SQL statement
   initSQL: []
 
   username: nextcloud
   database: "nextcloud"
 
   # Secret configuration for database password
-  # You must provide EITHER secretName (to use existing secret) OR value (to create new secret with password)
   password:
-    secretName: ""  # Name of existing secret containing the password
-    value: ""  # Direct password value (if secretName is empty, this must be provided)
+    secretName: ""
+    value: ""
 
   # Standalone PostgreSQL deployment (using StatefulSet)
   standalone:
@@ -359,19 +242,13 @@ postgres:
         enabled: false
         updateStrategy: ""
     resources: {}
-      # limits:
-      #   cpu: 1000m
-      #   memory: 2Gi
-      # requests:
-      #   cpu: 100m
-      #   memory: 256Mi
-
 
     persistence:
       enabled: true
       size: 512Mi
       storageClass: "ceph-rbd"
       existingClaim: ""
+
   # CloudNativePG Cluster deployment (using CNPG operator)
   cluster:
     persistence:
@@ -389,28 +266,19 @@ postgres:
     host: ""
     port: 5432
 
-persistence:
-  enabled: true
-  storageClass: "ceph-rbd"
-  existingClaim: ""
-  accessMode: ReadWriteOnce
-  size: 512Mi
-  additionalVolumes: []
-  additionalMounts: []
-
 ## @section Velero Backup Schedule parameters
 
-## @param velero.enabled Whether to enable Velero backup schedules
-## @param velero.namespace The namespace where Velero is deployed (Schedule CRD must be created in Velero namespace)
-## @param velero.schedule The cron schedule for Velero backups (e.g., "0 2 * * *" for 2am daily)
-## @param velero.ttl Time to live for backups (e.g., "720h" for 30 days)
-## @param velero.includeClusterResources Whether to include cluster-scoped resources in backup
-## @param velero.snapshotVolumes Whether to take volume snapshots
-## @param velero.defaultVolumesToFsBackup Whether to use file system backup for volumes by default
-## @param velero.storageLocation The storage location for backups (leave empty for default)
-## @param velero.volumeSnapshotLocations The volume snapshot locations (leave empty for default)
-## @param velero.labelSelector Additional label selector to filter resources (optional)
-## @param velero.annotations Additional annotations to add to the Velero Schedule resources
+## @param velero.enabled Whether to enable Velero backup schedules.
+## @param velero.namespace The namespace where Velero is deployed.
+## @param velero.schedule The cron schedule for Velero backups.
+## @param velero.ttl Time to live for backups.
+## @param velero.includeClusterResources Whether to include cluster-scoped resources in backup.
+## @param velero.snapshotVolumes Whether to take volume snapshots.
+## @param velero.defaultVolumesToFsBackup Whether to use file system backup for volumes by default.
+## @param velero.storageLocation The storage location for backups.
+## @param velero.volumeSnapshotLocations The volume snapshot locations.
+## @param velero.labelSelector Additional label selector to filter resources.
+## @param velero.annotations Additional annotations to add to the Velero Schedule resources.
 velero:
   enabled: false
   namespace: "velero"
@@ -424,16 +292,32 @@ velero:
   labelSelector: {}
   annotations: {}
 
+## @section Image autoupdate parameters (ArgoCD Image Updater)
+
+## @param image.autoupdate.enabled Enable automatic image updates via ArgoCD Image Updater.
+## @param image.autoupdate.strategy Strategy for image updates (semver, latest, newest-build, name, alphabetical, digest).
+## @param image.autoupdate.allowTags Match function for allowed tags.
+## @param image.autoupdate.ignoreTags List of glob patterns to ignore specific tags.
+## @param image.autoupdate.pullSecret Reference to secret for private registry authentication.
+## @param image.autoupdate.platforms List of target platforms.
+image:
+  autoupdate:
+    enabled: false
+    strategy: ""
+    allowTags: ""
+    ignoreTags: []
+    pullSecret: ""
+    platforms: []
 
 ## @section ArgoCD Image Updater parameters
 
 ## @param imageUpdater.namespace Namespace where the ImageUpdater CRD will be created.
 ## @param imageUpdater.argocdNamespace Namespace where ArgoCD Applications are located.
-## @param imageUpdater.applicationName Name or pattern of the ArgoCD Application to update. Defaults to Release name.
-## @param imageUpdater.imageAlias Alias for the image in the ImageUpdater CRD. Defaults to Release name.
+## @param imageUpdater.applicationName Name or pattern of the ArgoCD Application to update.
+## @param imageUpdater.imageAlias Alias for the image in the ImageUpdater CRD.
 ## @param imageUpdater.forceUpdate Force update even if image is not currently deployed.
-## @param imageUpdater.helm Helm-specific configuration for parameter names (e.g., {name: "image.repository", tag: "image.tag"}).
-## @param imageUpdater.kustomize Kustomize-specific configuration (e.g., {name: "original/image"}).
+## @param imageUpdater.helm Helm-specific configuration for parameter names.
+## @param imageUpdater.kustomize Kustomize-specific configuration.
 ## @param imageUpdater.writeBackConfig Write-back configuration for GitOps.
 ##
 imageUpdater:
