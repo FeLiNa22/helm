@@ -1,82 +1,6 @@
-## @section PostgreSQL parameters
-
-## @param postgres.enabled Whether to deploy the PostgreSQL dependency.
-## @param postgres.mode Deployment mode: 'standalone', 'cluster', or 'external'.
-## @param postgres.username PostgreSQL username.
-## @param postgres.database PostgreSQL database name.
-## @param postgres.password.value Plain-text password. Creates a Secret when set (mutually exclusive with secretName).
-## @param postgres.password.secretName Name of an existing secret containing the password (mutually exclusive with value). Note: to configure the HA recorder, you must also set homeassistant.postgres.password to the same password value since it is used to generate HA's secrets.yaml.
-## @param postgres.standalone.image.repository Docker image repository for standalone PostgreSQL.
-## @param postgres.standalone.image.tag Docker image tag for standalone PostgreSQL.
-## @param postgres.standalone.resources Resource requests/limits for standalone PostgreSQL.
-## @param postgres.standalone.persistence.enabled Enable persistent storage for standalone PostgreSQL.
-## @param postgres.standalone.persistence.size Size of the persistent volume.
-## @param postgres.standalone.persistence.storageClass Storage class for the persistent volume.
-## @param postgres.standalone.persistence.existingClaim Existing PVC name for standalone PostgreSQL.
-## @param postgres.cluster.instances Number of PostgreSQL instances in the CloudNativePG cluster.
-## @param postgres.cluster.image.repository Docker image repository for CloudNativePG cluster.
-## @param postgres.cluster.image.tag Docker image tag for CloudNativePG cluster.
-## @param postgres.cluster.persistence.size Size of the persistent volume for each cluster instance.
-## @param postgres.cluster.persistence.storageClass Storage class for the persistent volume.
-## @param postgres.cluster.pitrBackup.enabled Enable Point-in-Time Recovery backups for the CNPG cluster.
-## @param postgres.cluster.pitrBackup.retentionPolicy Retention policy for PITR backups (e.g. "30d").
-## @param postgres.cluster.pitrBackup.objectStorage.destinationPath Destination path in the object storage bucket.
-## @param postgres.cluster.pitrBackup.objectStorage.endpointURL Endpoint URL for the object storage provider.
-## @param postgres.cluster.pitrBackup.objectStorage.secretName Name of the secret containing object storage credentials.
-## @param postgres.cluster.pitrBackup.objectStorage.region Region of the object storage bucket.
-## @param postgres.external.host Hostname of the external PostgreSQL instance.
-## @param postgres.external.port Port of the external PostgreSQL instance.
-postgres:
-  enabled: true
-  mode: standalone
-  username: homeassistant
-  database: homeassistant
-  password:
-    secretName: ""
-    value: ""
-  standalone:
-    image:
-      repository: postgres
-      tag: "16-alpine"
-    resources: {}
-    persistence:
-      enabled: true
-      size: 512Mi
-      storageClass: ""
-      existingClaim: ""
-  cluster:
-    instances: 2
-    image:
-      repository: ghcr.io/cloudnative-pg/postgresql
-      tag: "16"
-    persistence:
-      size: 512Mi
-      storageClass: ""
-    pitrBackup:
-      enabled: false
-      retentionPolicy: "30d"
-      objectStorage:
-        destinationPath: ""
-        endpointURL: ""
-        secretName: ""
-        region: ""
-  external:
-    host: ""
-    port: 5432
-
 ## @section Home Assistant parameters
 ## Configuration for the upstream pajikos/home-assistant Helm chart dependency.
 ## See https://github.com/pajikos/home-assistant-helm-chart for full reference.
-##
-## The postgres sub-section configures the database connection for Home Assistant's
-## recorder integration and must mirror the top-level postgres section.
-##
-## Database credentials are stored in a Kubernetes Secret named "{release-name}-ha-secrets"
-## and mounted to /config/secrets.yaml in the Home Assistant container so that
-## configuration.yaml can safely use `!secret recorder_db_url`.
-##
-## ⚠️  Update additionalVolumes[0].secret.secretName to "{release-name}-ha-secrets" to
-##     match your Helm release name (default assumes release name "home-assistant").
 ##
 ## @param homeassistant.enabled Whether to deploy the Home Assistant dependency.
 ## @param homeassistant.image.repository Docker image repository.
@@ -136,12 +60,6 @@ postgres:
 ## @param homeassistant.nodeSelector Node selector for the pod.
 ## @param homeassistant.tolerations Tolerations for the pod.
 ## @param homeassistant.affinity Affinity rules for the pod.
-## @param homeassistant.postgres.mode Postgres mode - must match top-level postgres.mode.
-## @param homeassistant.postgres.username Postgres username - must match top-level postgres.username.
-## @param homeassistant.postgres.password Plain-text password used to build the recorder db_url written to the "{release-name}-ha-secrets" Secret. Required when postgres is enabled; must match postgres.password.value (or the password in postgres.password.secretName).
-## @param homeassistant.postgres.database Postgres database name - must match top-level postgres.database.
-## @param homeassistant.postgres.external.host External postgres host (only used when postgres.mode=external).
-## @param homeassistant.postgres.external.port External postgres port (only used when postgres.mode=external).
 ## @param homeassistant.configuration.enabled Enable automatic configuration.yaml setup via init container.
 ## @param homeassistant.configuration.forceInit Force-merge the default configuration on every start.
 ## @skip homeassistant.configuration.trusted_proxies
@@ -231,43 +149,14 @@ homeassistant:
     accessMode: ReadWriteOnce
     size: 512Mi
 
-  # Additional volumes and mounts for the HA pod.
-  # The ha-secrets volume below mounts the "{release-name}-ha-secrets" Secret (created by this
-  # chart when homeassistant.postgres.password is set) to /config/secrets.yaml so that
-  # Home Assistant can use `!secret recorder_db_url` in configuration.yaml.
-  # ⚠️  Update secretName to "{release-name}-ha-secrets" to match your Helm release name.
-  additionalVolumes:
-    - name: ha-secrets
-      secret:
-        secretName: "home-assistant-ha-secrets"
-  additionalMounts:
-    - name: ha-secrets
-      mountPath: /config/secrets.yaml
-      subPath: secrets.yaml
-      readOnly: true
+  additionalVolumes: []
+  additionalMounts: []
 
   nodeSelector: {}
   tolerations: []
   affinity: {}
 
-  ## Postgres connection config for Home Assistant's recorder integration.
-  ## These values are used to generate HA's secrets.yaml (via the ha-db-secret.yaml template)
-  ## and must match the top-level postgres section.
-  postgres:
-    mode: standalone
-    username: homeassistant
-    ## Plain-text password written to the "{release-name}-ha-secrets" Kubernetes Secret.
-    ## Must match postgres.password.value. The recorder db_url is NOT embedded in any
-    ## ConfigMap; it is stored in a Secret and referenced via `!secret recorder_db_url`.
-    password: ""
-    database: homeassistant
-    external:
-      host: ""
-      port: 5432
-
   ## Home Assistant configuration.yaml setup via upstream chart's init container.
-  ## The templateConfig uses `!secret recorder_db_url` so that the database password
-  ## is never stored in a ConfigMap.
   configuration:
     enabled: true
     forceInit: false
@@ -291,11 +180,6 @@ homeassistant:
           {{- range .Values.configuration.trusted_proxies }}
           - {{ . }}
           {{- end }}
-      {{- end }}
-
-      {{- if .Values.postgres.password }}
-      recorder:
-        db_url: !secret recorder_db_url
       {{- end }}
 
       # Load frontend themes from the themes folder

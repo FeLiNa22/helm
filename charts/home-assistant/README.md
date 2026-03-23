@@ -1,13 +1,12 @@
 # Home Assistant Helm Chart
 
-This Helm chart deploys [Home Assistant](https://www.home-assistant.io/) on Kubernetes using the upstream [pajikos/home-assistant-helm-chart](https://github.com/pajikos/home-assistant-helm-chart) as a dependency, with an optional [PostgreSQL](https://www.postgresql.org/) database managed by the local `postgres` chart.
+This Helm chart deploys [Home Assistant](https://www.home-assistant.io/) on Kubernetes using the upstream [pajikos/home-assistant-helm-chart](https://github.com/pajikos/home-assistant-helm-chart) as a dependency.
 
 ## Prerequisites
 
 - Kubernetes 1.20+
 - Helm 3.0+
 - PV provisioner support in the underlying infrastructure (for persistence)
-- CloudNativePG operator (if using `postgres.mode: cluster`)
 
 ## Installation
 
@@ -15,10 +14,8 @@ This Helm chart deploys [Home Assistant](https://www.home-assistant.io/) on Kube
 # Update dependencies
 helm dependency update ./home-assistant
 
-# Install the chart with a postgres password
-helm install home-assistant ./home-assistant \
-  --set postgres.password.value=mysecretpassword \
-  --set homeassistant.postgres.password=mysecretpassword
+# Install the chart
+helm install home-assistant ./home-assistant
 ```
 
 ## Architecture
@@ -26,52 +23,8 @@ helm install home-assistant ./home-assistant \
 This chart deploys the following components:
 
 1. **Home Assistant** – The main application server (via upstream `pajikos/home-assistant` subchart)
-2. **PostgreSQL** – Database for Home Assistant's recorder integration (via local `postgres` subchart)
-
-Home Assistant's recorder integration is automatically configured to use the PostgreSQL instance deployed by the postgres subchart.
-
-## Database Configuration
-
-The chart supports three PostgreSQL deployment modes via `postgres.mode`:
-
-- **standalone** (default): Simple StatefulSet deployment for home server use
-- **cluster**: CloudNativePG operator for high-availability (requires CNPG operator)
-- **external**: Connect to an existing PostgreSQL instance
-
-> **Note:** `postgres.password.value` and `homeassistant.postgres.password` must be set to the same value. The former creates the PostgreSQL secret; the latter is used to construct the `recorder.db_url` in Home Assistant's `configuration.yaml`.
 
 ## Parameters
-
-### PostgreSQL parameters
-
-| Name                                                        | Description                                                                                                                                                                                                                                          | Value                               |
-| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| `postgres.enabled`                                          | Whether to deploy the PostgreSQL dependency.                                                                                                                                                                                                         | `true`                              |
-| `postgres.mode`                                             | Deployment mode: 'standalone', 'cluster', or 'external'.                                                                                                                                                                                             | `standalone`                        |
-| `postgres.username`                                         | PostgreSQL username.                                                                                                                                                                                                                                 | `homeassistant`                     |
-| `postgres.database`                                         | PostgreSQL database name.                                                                                                                                                                                                                            | `homeassistant`                     |
-| `postgres.password.value`                                   | Plain-text password. Creates a Secret when set (mutually exclusive with secretName).                                                                                                                                                                 | `""`                                |
-| `postgres.password.secretName`                              | Name of an existing secret containing the password (mutually exclusive with value). Note: to configure the HA recorder, you must also set homeassistant.postgres.password to the same password value since it is used to generate HA's secrets.yaml. | `""`                                |
-| `postgres.standalone.image.repository`                      | Docker image repository for standalone PostgreSQL.                                                                                                                                                                                                   | `postgres`                          |
-| `postgres.standalone.image.tag`                             | Docker image tag for standalone PostgreSQL.                                                                                                                                                                                                          | `16-alpine`                         |
-| `postgres.standalone.resources`                             | Resource requests/limits for standalone PostgreSQL.                                                                                                                                                                                                  | `{}`                                |
-| `postgres.standalone.persistence.enabled`                   | Enable persistent storage for standalone PostgreSQL.                                                                                                                                                                                                 | `true`                              |
-| `postgres.standalone.persistence.size`                      | Size of the persistent volume.                                                                                                                                                                                                                       | `512Mi`                             |
-| `postgres.standalone.persistence.storageClass`              | Storage class for the persistent volume.                                                                                                                                                                                                             | `""`                                |
-| `postgres.standalone.persistence.existingClaim`             | Existing PVC name for standalone PostgreSQL.                                                                                                                                                                                                         | `""`                                |
-| `postgres.cluster.instances`                                | Number of PostgreSQL instances in the CloudNativePG cluster.                                                                                                                                                                                         | `2`                                 |
-| `postgres.cluster.image.repository`                         | Docker image repository for CloudNativePG cluster.                                                                                                                                                                                                   | `ghcr.io/cloudnative-pg/postgresql` |
-| `postgres.cluster.image.tag`                                | Docker image tag for CloudNativePG cluster.                                                                                                                                                                                                          | `16`                                |
-| `postgres.cluster.persistence.size`                         | Size of the persistent volume for each cluster instance.                                                                                                                                                                                             | `512Mi`                             |
-| `postgres.cluster.persistence.storageClass`                 | Storage class for the persistent volume.                                                                                                                                                                                                             | `""`                                |
-| `postgres.cluster.pitrBackup.enabled`                       | Enable Point-in-Time Recovery backups for the CNPG cluster.                                                                                                                                                                                          | `false`                             |
-| `postgres.cluster.pitrBackup.retentionPolicy`               | Retention policy for PITR backups (e.g. "30d").                                                                                                                                                                                                      | `30d`                               |
-| `postgres.cluster.pitrBackup.objectStorage.destinationPath` | Destination path in the object storage bucket.                                                                                                                                                                                                       | `""`                                |
-| `postgres.cluster.pitrBackup.objectStorage.endpointURL`     | Endpoint URL for the object storage provider.                                                                                                                                                                                                        | `""`                                |
-| `postgres.cluster.pitrBackup.objectStorage.secretName`      | Name of the secret containing object storage credentials.                                                                                                                                                                                            | `""`                                |
-| `postgres.cluster.pitrBackup.objectStorage.region`          | Region of the object storage bucket.                                                                                                                                                                                                                 | `""`                                |
-| `postgres.external.host`                                    | Hostname of the external PostgreSQL instance.                                                                                                                                                                                                        | `""`                                |
-| `postgres.external.port`                                    | Port of the external PostgreSQL instance.                                                                                                                                                                                                            | `5432`                              |
 
 ### Home Assistant parameters
 
@@ -133,12 +86,6 @@ The chart supports three PostgreSQL deployment modes via `postgres.mode`:
 | `homeassistant.nodeSelector`                       | Node selector for the pod.                                                                                                                                                                                                        | `{}`                                    |
 | `homeassistant.tolerations`                        | Tolerations for the pod.                                                                                                                                                                                                          | `[]`                                    |
 | `homeassistant.affinity`                           | Affinity rules for the pod.                                                                                                                                                                                                       | `{}`                                    |
-| `homeassistant.postgres.mode`                      | Postgres mode - must match top-level postgres.mode.                                                                                                                                                                               | `standalone`                            |
-| `homeassistant.postgres.username`                  | Postgres username - must match top-level postgres.username.                                                                                                                                                                       | `homeassistant`                         |
-| `homeassistant.postgres.password`                  | Plain-text password used to build the recorder db_url written to the "{release-name}-ha-secrets" Secret. Required when postgres is enabled; must match postgres.password.value (or the password in postgres.password.secretName). | `""`                                    |
-| `homeassistant.postgres.database`                  | Postgres database name - must match top-level postgres.database.                                                                                                                                                                  | `homeassistant`                         |
-| `homeassistant.postgres.external.host`             | External postgres host (only used when postgres.mode=external).                                                                                                                                                                   | `""`                                    |
-| `homeassistant.postgres.external.port`             | External postgres port (only used when postgres.mode=external).                                                                                                                                                                   | `5432`                                  |
 | `homeassistant.configuration.enabled`              | Enable automatic configuration.yaml setup via init container.                                                                                                                                                                     | `true`                                  |
 | `homeassistant.configuration.forceInit`            | Force-merge the default configuration on every start.                                                                                                                                                                             | `false`                                 |
 
