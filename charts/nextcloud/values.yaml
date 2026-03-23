@@ -33,6 +33,8 @@
 ## @param nextcloud.persistence.enabled Enable persistent storage for Nextcloud data.
 ## @param nextcloud.persistence.storageClass Storage class for the PVC.
 ## @param nextcloud.persistence.size Size of the persistent volume.
+## @param nextcloud.persistence.accessMode Access mode for the PVC.
+## @param nextcloud.persistence.existingClaim Name of an existing PVC to use. Defaults to the release name. Set to a custom name to use a pre-existing claim and skip PVC creation.
 ## @param nextcloud.postgresql.enabled Disable the Bitnami PostgreSQL subchart (we use our own postgres subchart).
 ## @param nextcloud.mariadb.enabled Disable the Bitnami MariaDB subchart (we use our own postgres subchart).
 ## @param nextcloud.redis.enabled Disable the Bitnami Redis subchart (we use our own dragonfly subchart).
@@ -99,7 +101,8 @@ nextcloud:
     enabled: true
     storageClass: ""
     size: 8Gi
-    existingClaim: ""
+    accessMode: ReadWriteOnce
+    existingClaim: "nextcloud"
 
   resources: {}
 
